@@ -6,9 +6,14 @@
 <h1>Contacts</h1>
 
 {% if contacts %}
-	<ul>
+	<table border=1>
+	<tr><th>Contact Name</th><th>Object Name</th><th>Inherits from</th></tr>
 	{% for contact in contacts %}
-		<li><a href="contact/{{ contact.contact_name }}">{{ contact.contact_name }} </a></li>
+		<tr>
+			<td><a href="contact/{{ contact.contact_name }}">{{ contact.contact_name }} </a></td>
+			<td>{{ contact.name }}</td>
+			<td>{{ contact.use }}</td>
+		</tr>
 	{% endfor %}
 	</ul>
 {% else %}
