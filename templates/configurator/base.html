@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <title>{% block title %}My title{% endblock %}</title>
+
+
+<style type="text/css">
+hr {color: sienna}
+p {margin-left: 20px}
+.left {
+float:left;
+}
+.right {
+float:right;
+}
+#sidebar {
+width:20%;
+}
+#content {
+width:65%;
+}
+#container {
+width:100%;
+}
+.odd {
+background-color:#DDDDCC;
+}
+.even {
+background-color:#CCDDDD;
+}
+</style>
+
+
+</head>
+
+<body>
+<div id=container>
+    <div id="sidebar" class="left">
+        {% block sidebar %}
+        <ul>
+		<li><a href="/adagios/configurator/addnewhost/">Add New Host</a></li>
+		<li><a href="/adagios/configurator/addnewtemplate">Add Template To Host</a></li>
+		<li><a href="/adagios/configurator/host">List Hosts</a></li>
+		<li><a href="/adagios/configurator/contact">List Contacts</a></li>
+        </ul>
+        {% endblock %}
+    </div>
+
+    <div id="content" class="left">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+</body>
+</html>

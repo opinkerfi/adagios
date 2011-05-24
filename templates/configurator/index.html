@@ -1,0 +1,18 @@
+{% extends "configurator/base.html" %}
+
+{% block title %}Characters{% endblock %}
+
+{% block content %}
+<h1>Hosts</h1>
+
+{% if hosts %}
+	<ul>
+	{% for host in hosts %}
+		<li><a href="/adagios/configurator/host/{{ host.host_name }}">{{ host.host_name }} </a></li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No hosts found. </p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,34 @@
+
+{% extends "configurator/base.html" %}
+
+{% block title %}Host{% endblock %}
+
+{% block content %}
+
+
+{% if service %}
+<!--
+{{ service }}
+-->
+<h1>{{ host.host_name }} - {{ service.service_description }}</h1>
+        <table border=1>
+	{% for key,value in not_template.items %}
+		<tr><td>{{ key }}</td><td>{{ value }} </td></tr>
+	{% endfor %}
+	</table>
+<pre>
+Attributes from template:
+<table border=1>
+	{% for key,value in template.items %}
+		<tr><td>{{ key }}</td><td>{{ value }} </td></tr>
+	{% endfor %}
+	</table>
+
+</pre>
+
+{% else %}
+	<p>service not found. </p>
+{% endif %}
+
+
+{% endblock %}
