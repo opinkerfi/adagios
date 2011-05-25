@@ -3,6 +3,10 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+# Hack to allow relative template paths
+import os
+djangopath = os.path.abspath('.')
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -81,7 +85,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/opt/adagios/templates/',
+    "%s/templates" % (djangopath),
 )
 
 INSTALLED_APPS = (
