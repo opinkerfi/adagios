@@ -6,8 +6,10 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
     # Example:
-     (r'^adagios/$', 'configurator.views.index'),
-     (r'^adagios/configurator$', 'configurator.views.index'),
+    (r'^$', 'configurator.views.home'),
+    (r'^adagios/api/host/(?P<host_name>.*)\.(?P<ext>.+)$', 'configurator.views.api_host'), 
+    (r'^adagios/$', 'configurator.views.index'),
+    (r'^adagios/configurator$', 'configurator.views.index'),
     (r'^adagios/configurator/host$', 'configurator.views.test'),
     (r'^adagios/configurator/host/(?P<host_name>.+)/(?P<service_description>.+)/(?P<field_name>.+)=(?P<new_value>.+)$', 'configurator.views.edit_service'),
     (r'^adagios/configurator/host/(?P<host_name>.+)/(?P<service_description>.+)$', 'configurator.views.service'),

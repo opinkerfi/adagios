@@ -1,10 +1,16 @@
-from django.shortcuts import render_to_response
-
+from django.shortcuts import render_to_response, redirect
+from django.core import serializers
+from django.http import HttpResponse, HttpResponseServerError
+from django.utils import simplejson
 
 from doit import *
 
 def test(request):
 	return index(request)
+
+def home(request):
+	return redirect('adagios')
+
 def index(request):
 	parse()
 	c = {}
@@ -101,7 +107,33 @@ def edit_service( request, host_name, service_description,field_name,new_value):
 	return render_to_response('configurator/service.html', c)
 
 
+def api_host(request, host_name=None, ext='xml'):
+	parse()
+	c = {}
+	c['hosts'] = get_hosts()
+		
+		
+	if host_name != None:
+		c['host'] = get_host( host_name )
+		data = ''
+		if ext == 'xml':
+			import xml.marshal.generic
+			data = xml.marshal.generic.dumps(c['host'])
+		elif ext == 'html':
+			return render_to_response('configuration/api/host.html', c)
+		elif ext == 'json':
+			import json
+			data = json.dumps(c['host'])
+		else:
+			return HttpResponseServerError("fle")
+		return HttpResponse(data, mimetype='application/javascript')
 
+	return NotImplementedError
+
+def api_dnslookup(request, host_name=None):
+	import socket
+	
+	raise NotImplementedError
 
 
 
