@@ -14,8 +14,9 @@ def home(request):
 def index(request):
 	parse()
 	c = {}
-	c['hosts'] = get_hosts()
+	c['hosts'] = get_hosts(None)
 	return render_to_response('configurator/index.html', c)
+
 
 
 def list_contacts(request):
@@ -107,6 +108,8 @@ def edit_service( request, host_name, service_description,field_name,new_value):
 	return render_to_response('configurator/service.html', c)
 
 
+
+
 def api_host(request, host_name=None, ext='xml'):
 	parse()
 	c = {}
@@ -120,7 +123,7 @@ def api_host(request, host_name=None, ext='xml'):
 			import xml.marshal.generic
 			data = xml.marshal.generic.dumps(c['host'])
 		elif ext == 'html':
-			return render_to_response('configurator/api/host.html', c)
+			return render_to_response('configuration/api/host.html', c)
 		elif ext == 'json':
 			import json
 			data = json.dumps(c['host'])
@@ -134,6 +137,3 @@ def api_dnslookup(request, host_name=None):
 	import socket
 	
 	raise NotImplementedError
-
-
-
