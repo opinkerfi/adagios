@@ -60,7 +60,10 @@ def addhost(host_name, ipaddress=None, group_name="default", templates=[], use=N
 	 force -- Force operation. Overwrite config files needed.
 	
 	Examples:
-	addhost(host_name="example_host",group="database_servers")
+	 addhost(host_name="example_host",group="database_servers")
+
+	Returns:
+	 True if operation was successful.
 	"""
 	pass
 
@@ -91,6 +94,9 @@ def addgroup(group_name, alias=None, force=False):
 	
 	Examples:
 	 addgroup(group_name="db-servers", alias="Database Servers")
+
+	Returns:
+	 True if operation was successful
 	"""
 	pass
 
@@ -104,6 +110,42 @@ def findhost(host_name):
 	Examples:
 	>>> print findhost("host.example.com")
 	"/etc/okconfig/hosts/default/host.example.com-host.cfg"
+	"""
+	pass
+
+def get_templates():
+	""" Returns a list of available templates """
+	#return ["windows","linux","mysql","apache"]
+	pass
+
+def get_hosts():
+	""" Returns a list of available hosts """
+	#return ["host1","host2","host3"]
+	pass
+
+def install_nsclient(remote_host, username, password):
+	""" Logs into remote (windows) host and installs NSClient.
+	
+	Args:
+	 remote_host -- Hostname/IPAddress of remote host
+	 username -- Name of a user with administrative privileges on the remote host
+	 password -- Password to use
+	
+	Returns:
+	 True if operation was successful. Otherwise False
+	"""
+	pass
+
+def install_nrpe(remote_host, username, password=None):
+	""" Logs into remote (unix) host and install nrpe-client.
+	
+	Args:
+	 remote_host -- Hostname/IPAddress of remote host
+	 username -- Username to use
+	 password -- Password to use. If None, try to use ssh keys
+	
+	Returns:
+	 True if operation was successful.
 	"""
 	pass
 
