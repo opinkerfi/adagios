@@ -1,0 +1,35 @@
+hr {
+	color: sienna
+}
+
+p {
+	margin-left: 20px
+}
+
+.left {
+	float:left;
+}
+
+.right {
+	float:right;
+}
+
+#sidebar {
+	width:20%;
+}
+
+#content {
+	width:65%;
+}
+
+#container {
+	width:100%;
+}
+
+.odd {
+	background-color:#DDDDCC;
+}
+
+.even {
+	background-color:#CCDDDD;
+}
