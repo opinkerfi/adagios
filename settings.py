@@ -5,7 +5,7 @@ TEMPLATE_DEBUG = DEBUG
 
 # Hack to allow relative template paths
 import os
-djangopath = os.path.abspath('.')
+djangopath = os.path.dirname(__file__)
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
