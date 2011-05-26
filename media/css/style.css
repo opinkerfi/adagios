@@ -33,3 +33,9 @@ p {
 .even {
 	background-color:#CCDDDD;
 }
+
+#logo {
+	background: url("/static/adagios-logo.png") no-repeat scroll 0 0 transparent;
+	display: block;
+	height: 62px;
+	}

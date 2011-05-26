@@ -137,3 +137,5 @@ def api_dnslookup(request, host_name=None):
 
 
 
+def addhost(request):
+	return render_to_response('configurator/addhost.html')
