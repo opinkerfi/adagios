@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     (r'^adagios/configurator/contact/(?P<contact_name>.+)$', 'configurator.views.contact'),
     (r'^adagios/configurator/contact$', 'configurator.views.list_contacts'),
     (r'^adagios/configurator/host/(?P<host_name>.+)/(?P<service_description>.+)$', 'configurator.views.service'),
+    (r'^objectbrowser', include('objectbrowser.urls')),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:
