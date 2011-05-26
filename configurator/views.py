@@ -5,7 +5,13 @@ from django.utils import simplejson
 
 # For API methods
 import json
-import xml.marshal.generic
+
+
+xmlsupport = True
+try:
+	import xml.marshal.generic	
+except Exception, e:
+	xmlsupport = False
 
 from doit import *
 
@@ -115,8 +121,10 @@ def api_host(request, host_name=None, ext='xml'):
 	parse()
 	c = {}
 	c['hosts'] = get_hosts()
-		
-		
+	
+	if xmlsupport == False and ext == 'xml':
+		return HttpResponse('<h1>XML not supported, missing xml.marshall', mimetype='text/html')
+
 	if host_name != None:
 		c['host'] = get_host( host_name )
 		data = ''
