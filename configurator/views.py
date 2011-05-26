@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response, redirect
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
 from django.utils import simplejson
+import okconfig
 
 # For API methods
 import json
@@ -116,30 +117,34 @@ def edit_service( request, host_name, service_description,field_name,new_value):
 			items_not_from_template[k] = v
 	return render_to_response('configurator/service.html', c)
 
+def stringify(data, ext):	
+	if xmlsupport == False and ext == 'xml':
+		return HttpResponse('<h1>XML not supported, missing xml.marshall', mimetype='text/html')
+
+	if ext == 'xml':
+		string = xml.marshal.generic.dumps(data)
+		mime_type = 'text/xml'
+	elif ext == 'html':
+		return render_to_response('configurator/api/host.html', data)
+	elif ext == 'json':
+		string = json.dumps(data)
+		mime_type = 'application/json'
+	else:
+		return HttpResponseServerError("Invalid extension")
+	return HttpResponse(string, mimetype=mime_type)
+
+def api_get_templates(request, ext='xml'):
+	c = {}
+
+	c['templates'] = okconfig.get_templates()
+	return stringify(c, ext)
 
 def api_host(request, host_name=None, ext='xml'):
 	parse()
 	c = {}
-	c['hosts'] = get_hosts()
-	
-	if xmlsupport == False and ext == 'xml':
-		return HttpResponse('<h1>XML not supported, missing xml.marshall', mimetype='text/html')
-
 	if host_name != None:
 		c['host'] = get_host( host_name )
-		data = ''
-		if ext == 'xml':
-			data = xml.marshal.generic.dumps(c['host'])
-			mime_type = 'text/xml'
-		elif ext == 'html':
-			return render_to_response('configurator/api/host.html', c)
-		elif ext == 'json':
-			
-			data = json.dumps(c['host'])
-			mime_type = 'application/json'
-		else:
-			return HttpResponseServerError("fle")
-		return HttpResponse(data, mimetype=mime_type)
+		return stringify(c, ext)
 
 	return NotImplementedError
 
