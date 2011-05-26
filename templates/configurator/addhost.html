@@ -4,6 +4,34 @@
 {% block title %}Characters{% endblock %}
 
 {% block sidebar %} {% endblock %}
-{% block content %}
 
+{% block javascript %}
+
+$(document).ready(function() {
+  $('#hostname').focus();
+});
+
+{% endblock %}
+
+
+{% block content %}
+<div id="addhost">
+<form action="#" method="POST">
+<span class="label">Hostname</span> <input id="hostname" type="text" name="hostname" /><br/>
+<span class="label">Description</span> <input id="description" type="text" name="description" /><br/>
+<span class="label">IP Address</span> <input id="ipaddress" type="text" name="ipaddress" /><br/>
+</form>
+</div>
+
+<script type="text/javascript">                                         
+$('#hostname').blur(function() {
+	if ($('#ipaddress').val() == "") {
+		$.getJSON("/adagios/api/gethostbyname/" + $('#hostname').val(), function(json) {
+    		$('#ipaddress').val(json.host);
+ 		});
+	}
+});
+
+                                 
+    </script>                                                                
 {% endblock %}

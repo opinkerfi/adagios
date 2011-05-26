@@ -3,6 +3,10 @@ from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
 from django.utils import simplejson
 
+# For API methods
+import json
+import xml.marshal.generic
+
 from doit import *
 
 def test(request):
@@ -117,23 +121,30 @@ def api_host(request, host_name=None, ext='xml'):
 		c['host'] = get_host( host_name )
 		data = ''
 		if ext == 'xml':
-			import xml.marshal.generic
 			data = xml.marshal.generic.dumps(c['host'])
+			mime_type = 'text/xml'
 		elif ext == 'html':
 			return render_to_response('configurator/api/host.html', c)
 		elif ext == 'json':
-			import json
+			
 			data = json.dumps(c['host'])
+			mime_type = 'application/json'
 		else:
 			return HttpResponseServerError("fle")
-		return HttpResponse(data, mimetype='application/javascript')
+		return HttpResponse(data, mimetype=mime_type)
 
 	return NotImplementedError
 
-def api_dnslookup(request, host_name=None):
+def api_gethostbyname(request, host_name=None):
 	import socket
 	
-	raise NotImplementedError
+	host = ''
+	try:
+		host = socket.gethostbyname(host_name)
+	except:
+		pass
+	
+	return HttpResponse(json.dumps({'host': host}), mimetype='application/json') 
 
 
 

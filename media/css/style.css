@@ -39,3 +39,9 @@ p {
 	display: block;
 	height: 62px;
 	}
+
+#addhost .label {
+	font-weight: bold;
+	width: 180px;
+	float: left;
+}
