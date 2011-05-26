@@ -59,11 +59,13 @@
 <!-- tabs work as navigator for scrollable -->
 <ul id="flowtabs" class="navi">
 	<li><a id="t1" href="#host">Host</a></li>
-	<li><a id="t2" href="#services">Services</a></li>
-	<li><a id="t2" href="#complete">Complete</a></li>
+	<li><a id="t2" href="#templates">Templates</a></li>
+	<li><a id="t3" href="#review">Review</a></li>
+	<li><a id="t4" href="#complete">Complete</a></li>
 
 </ul>
 
+<form action="#" method="POST">
 <!-- panes -->
 <div id="flowpanes">
 
@@ -72,33 +74,57 @@
 	<div class="items">
 
 		<div>
+			
+			  <fieldset id="hostinfo">
+				<legend>Host Information</legend>
 
-		<div id="addhost">
-			<form action="#" method="POST">
-				<span class="label">Hostname</span> <input id="hostname" type="text" name="hostname" /><span class="warning" id="warn_hostname"></span><br/>
-				<span class="label">Description</span> <input id="description" type="text" name="description" /><br/>
-				<span class="label">IP Address</span> <input id="ipaddress" type="text" name="ipaddress" /><br/>
-			</form>
-			</div>
+			  		
+						<p>
+							<label for="hostname">Hostname <em>*</em></label>
+							<input id="hostname" type="text" name="hostname" />
+							<span id="warn_hostname"></span>
+						</p>
+						<p>
+							<label for="description">Description</label>
+							<input id="description" type="text" name="description" />
+							<span id="warn_description"></span>
+						</p>
+						<p>
+							<label for="ipaddress">IP Address <em>*</em></label>
+							<input id="ipaddress" type="text" name="ipaddress" />
+							<span id="warn_hostname"></span>
+						</p>
+			  		
+				</fieldset>
+			
+		</div>	
+		
+		<div>
+
+			<fieldset id="templateinfo">
+			  <legend>Select Relevant Templates</legend>
+						<p id="templates">
+							<input id="windows" type="CHECKBOX" name="windows" /> <label for="windows">Microsoft Windows</label>
+						</p>
+						<p>
+							<input id="windows" type="CHECKBOX" name="windows" /> <label for="windows">Microsoft Windows</label>
+						</p>
+
+			</fieldset>
 		</div>
 
 		<div>
-
-			<h2>Services</h2>
+				<h2>Review</h2>
 		</div>
-
 		<div>
-
 				<h2>Complete</h2>
-
-
 		</div>
 
 	</div>
 
 </div>
-
-<p style="text-align:center;width:700px">
+</form>		
+<p style="text-align:center;width:500px">
 	<button class="custom prev">&laquo; Previous</button>
 	<button class="custom next">Next &raquo;</button>
 
@@ -131,15 +157,32 @@ $(function() {
 </script>
 		<script type="text/javascript">
 				$('#hostname').keypress(function() {
-					if ($('#warn_hostname').text() != "") {
-						$('#warn_hostname').text("");
+					if ($('#warn_hostname').html() != "") {
+						$('#warn_hostname').html("");
 					}
 				});
-				$('#hostname').blur(function() {
-					$.getJSON("/adagios/api/host/" + $('#hostname').val() + ".json", function(json) {
+				$('#hostname').blur(function(e) {
+					if ($(this).val() == "") {
+						return false;
+					}
+					$.getJSON("/adagios/api/host/" + $(this).val() + ".json", function(json) {
 						if (json.host.host_name != "null") {		
-							$('#warn_hostname').text("Host already exists");
+							$('#warn_hostname').html('<img src="/static/attention.png" title="Hostname already exists" />');
+							$("#warn_hostname img[title]").tooltip({
+							
+	// place tooltip on the right edge
+	position: "center right",
+
+	// a little tweaking of the position
+	offset: [-2, 10],
+
+	// use the built-in fadeIn/fadeOut effect
+	effect: "fade",
+
+	// custom opacity setting
+	opacity: 0.7 });
 							$('#hostname').select();
+							e.stopImmediatePropagation();
 						}
 					});
 					$.getJSON("/adagios/api/gethostbyname/" + $('#hostname').val(), function(json) {

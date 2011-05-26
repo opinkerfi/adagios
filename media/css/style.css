@@ -1,3 +1,7 @@
+body {
+	font-face: helvetica, georgia, courier, arial;
+}
+
 hr {
 	color: sienna;
 }
@@ -40,18 +44,65 @@ p {
 	height: 62px;
 	}
 
-#addhost .label {
-	font-weight: bold;
-	width: 180px;
-	float: left;
-}
-
 .warning {
-	font-weight: bold;
-	color: black;
-	background: yellow;
+	margin-left: 20px;
+}
+
+em {
+	color: red;
 }
 
 
+/* tooltip styling. by default the element to be styled is .tooltip  */
+/* simple css-based tooltip */
+.tooltip {
+	background-color:#000;
+	border:1px solid #fff;
+	padding:10px 15px;
+	width:200px;
+	display:none;
+	color:#fff;
+	text-align:left;
+	font-size:12px;
+
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 10px #000;
+	-webkit-box-shadow:0 0 10px #000;
+}
+
+
+
+
+
+
+
+label
+{
+	width: 12em;
+	height: 30px;
+	float: left;
+	text-align: left;
+	margin-right: 0.5em;
+	vertical-align: middle;
+	display: block;
+}
+
+legend
+{
+color: #fff;
+background: #aaa20c;
+border: 2px solid #781351;
+padding: 2px 6px;
+font-weight: bold;
+} 
+
+fieldset {
+	background: #fff;
+	border: 1px solid red;
+}
+.submit input
+{
+	margin-left: 4.5em;
+} 
 
 

@@ -28,11 +28,12 @@
 	background: url(/static/blue_panes.jpg) no-repeat;
 	display:block;
 	height: 31px;   
-	width: 189px; 	
+	width: 129px; 	
 	padding:0px;
 	margin:0px;
 	
 	/* font decoration */
+	font-weight: bold;
 	color:#000;
 	font-size:12px;
 	line-height:33px;
@@ -68,7 +69,9 @@
 	height:450px;	
 }
 
-
+#flowpanes div div.left {
+	margin:0px 0px;
+}
 /* single pane */
 #flowpanes div {
 	display:none;	
@@ -91,7 +94,7 @@
 }
 
 #flowpanes p, #flowpanes samp {
-	color:#ccc;		
+	color:#000;		
 }
 
 #flowpanes .narrow {
