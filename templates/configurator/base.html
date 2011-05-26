@@ -5,13 +5,16 @@
     <title>{% block title %}My title{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 
-    <script type="text/javascript" src="/static/js/jquery.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tools.min.js"></script>
 
     <script type="text/javascript">                                         
 
 {% block javascript %}{% endblock %}
                                  
     </script>                                                                
+{% block head %}{% endblock %}
+
+
 </head>
 
 <body>

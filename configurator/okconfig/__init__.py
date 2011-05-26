@@ -115,8 +115,16 @@ def findhost(host_name):
 
 def get_templates():
 	""" Returns a list of available templates """
-	#return ["windows","linux","mysql","apache"]
-	pass
+
+	
+	return [
+		{'id': "windows", 'name': "Microsoft Windows"},
+		{'id': "linux", 'name': 'Linux'},
+		{'id': "mysql", 'name': 'MySQL'},
+		{'id': "apache", 'name': 'Apache Webserver'},
+		{'id': "mssql", 'name': 'Microsoft SQL Server'}
+		]
+
 
 def get_hosts():
 	""" Returns a list of available hosts """

@@ -45,3 +45,13 @@ p {
 	width: 180px;
 	float: left;
 }
+
+.warning {
+	font-weight: bold;
+	color: black;
+	background: yellow;
+}
+
+
+
+
