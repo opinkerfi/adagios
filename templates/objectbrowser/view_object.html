@@ -1,9 +1,8 @@
 {% extends "configurator/base.html" %}
 
-{% block title %}Contact{% endblock %}
+{% block title %}c.object_type{% endblock %}
 
 {% block content %}
-
 
 {% if messages %}
 	<h1> Messages from the developers </h1>
@@ -32,7 +31,7 @@ Attributes from template:
 </pre>
 
 {% else %}
-	<p>Contact not found. </p>
+	<p>{{ c.object_type }} not found. </p>
 {% endif %}
 
 {% endblock %}

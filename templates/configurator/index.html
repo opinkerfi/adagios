@@ -8,7 +8,7 @@
 {% if hosts %}
 	<ul>
 	{% for host in hosts %}
-		<li><a href="/adagios/configurator/host/{{ host.host_name }}">{{ host.host_name }} </a></li>
+		<li><a href="host/{{ host.host_name }}">{{ host.host_name }} </a></li>
 	{% endfor %}
 	</ul>
 {% else %}
