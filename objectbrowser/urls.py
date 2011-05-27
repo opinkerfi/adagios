@@ -8,8 +8,11 @@ urlpatterns = patterns('',
     #(r'^/host/(?P<host_name>.+)$', 'objectbrowser.views.get_host'),
     
     #(r'/contact/+$', 'objectbrowser.views.list_contacts'),
+    (r'/(?P<object_type>.+)/(?P<attribute_name>.+)=(?P<attribute_value>.+)$', 'objectbrowser.views.view_objects'),
+    (r'/(?P<attribute_name>.+)=(?P<attribute_value>.+)$', 'objectbrowser.views.list_objects'),
     (r'/(?P<object_type>.+)+$', 'objectbrowser.views.list_objects'),
-    (r'/(?P<object_type>.+)/+$', 'objectbrowser.views.list_objects'),
+    (r'/+$', 'objectbrowser.views.list_object_types'),
+    
     #(r'/contact/(?P<contact_name>.+)$', 'objectbrowser.views.get_contact'),
 
 

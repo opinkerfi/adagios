@@ -1,6 +1,6 @@
 
 
-{% block title %}Showing {{ object_type }}{% endblock %}
+{% block title %}{{ object_type }}{% endblock %}
 
 {% block content %}
 
@@ -18,7 +18,7 @@
 	<tr><th>Object Name</th><th>Object Type</th><th>Inherits from</th><th>Filename</th></tr>
 	{% for o in objects %}
 		<tr>
-			<td><a href="{{ o.object_type }}/{{ o.name }}">{{ o.name }} </a></td>
+			<td><a href="{{ o.object_type }}/id={{ o.id }}">{{ o.name }} </a></td>
 			<td>{{ o.object_type }}</td>
 			<td>{{ o.use }}</td>
 			<td>{{ o.filename }}</td>

@@ -35,7 +35,6 @@ def list_contacts(request):
 	c['contacts'] = get_contacts()
 	return render_to_response('configurator/list_contacts.html', c)
 
-
 def host(request, host_name=None):
 	parse()
 	c = {}
