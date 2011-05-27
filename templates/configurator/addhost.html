@@ -1,13 +1,35 @@
 
 {% extends "configurator/base.html" %}
 
-{% block title %}Characters{% endblock %}
+{% block title %}Adagios - Add Host{% endblock %}
 
 {% block sidebar %}arg {% endblock %}
 
 {% block javascript %}
 		$(document).ready(function() {
 			$('#hostname').focus();
+			$.getJSON("/adagios/api/get_templates.json", function(json) {
+				deferred = [];
+				$.each(json.templates, function(key, object) {
+					if (object.parents.length == 0) {
+						
+						$('#os').append($('<option></option>').val(key).text(object.name));
+						$('#subtemplates').append("<fieldset class='subtemplate' id='subtemplate_" + key + "'><legend>Templates</legend></fieldset>");
+					} else {
+						deferred.push(key);
+					}
+						      	/* <p><input type="checkbox" class="left" /> <label>Microsoft Exchange</p>
+						      	<p style="clear: both"><input type="checkbox" class="left" /> <label>Microsoft SQL Server</p>
+					<fieldset class="subtemplates" id="subtemplates">
+						    <legend>Templates</legend>
+						  </fieldset> */
+				});
+				$.each(deferred, function(key, template) {
+					$.each(json.templates[template].parents, function(i, parent) {
+						$('#subtemplate_' + parent).append('<p style="clear: both"><input type="checkbox" name="' + template + ' class="left" /> <label>' + json.templates[template].name + '</p>');
+					});
+				});
+			});
 		});
 
 {% endblock %}
@@ -107,17 +129,10 @@
 						<p>
 						    <select id="os">
 						      <option value="none">-- select --</option>
-						      <option value="windows">Microsoft Windows</option>
-						      <option value="linux">Linux</option>
-						      <option value="switch">Switch</option>
 						    </select>
 						</p>
-						<p>
-						  <fieldset id="subtemplates">
-						    <legend>Templates</legend>
-						      	<p><input type="checkbox" class="left" /> <label>Microsoft Exchange</p>
-						      	<p style="clear: both"><input type="checkbox" class="left" /> <label>Microsoft SQL Server</p>
-						  </fieldset>
+						<p id="subtemplates">
+						  
 						</p>
 			</fieldset>
 		</div>
@@ -136,7 +151,6 @@
 <p style="text-align:center;width:500px">
 	<button class="custom prev">&laquo; Previous</button>
 	<button class="custom next">Next &raquo;</button>
-
 </p>
 
 <!-- activate tabs with JavaScript -->
@@ -173,7 +187,8 @@ $(function() {
 				
 				
 				$('#os').change(function() {
-					$('#subtemplates').show();
+					$('.subtemplate').hide();					
+					$('#subtemplate_' + $('#os').val()).show();
 				});
 				
 				$('#hostname').blur(function(e) {
