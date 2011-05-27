@@ -144,6 +144,16 @@ def install_nsclient(remote_host, username, password):
 	"""
 	pass
 
+def check_agent(host_name):
+	""" Checks a remote host if it has a valid okconfig client configuration
+	
+	Args:
+		host_name -- hostname (or ip address of remote host)
+	Returns:
+		True/False, [ "List","of","messages" ]
+	"""
+	pass
+
 def install_nrpe(remote_host, username, password=None):
 	""" Logs into remote (unix) host and install nrpe-client.
 	
