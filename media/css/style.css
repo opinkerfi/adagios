@@ -1,5 +1,8 @@
 body {
 	font-face: helvetica, georgia, courier, arial;
+	background: #ccc;
+	margin: 0;
+	padding: 0;
 }
 
 hr {
@@ -19,11 +22,14 @@ p {
 }
 
 #sidebar {
-	width:20%;
+	margin-top: 12px;
+	margin-left: 12px;
+	width:140px;
 }
 
 #content {
-	width:65%;
+	padding-top: 12px;
+	width:800px;
 }
 
 #container {
@@ -39,9 +45,12 @@ p {
 }
 
 #logo {
-	background: url("/static/adagios-logo.png") no-repeat scroll 0 0 transparent;
+	background: url("/static/adagios-logo.png") no-repeat scroll 10px 10px #fff;
 	display: block;
-	height: 62px;
+	height: 72px;
+	padding: 0;
+	margin: 0;
+	border-bottom: 1px solid #000;
 	}
 
 .warning {
@@ -106,3 +115,6 @@ fieldset {
 } 
 
 
+fieldset#subtemplates {
+	display: none;
+}

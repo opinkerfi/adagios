@@ -28,14 +28,14 @@
 	background: url(/static/blue_panes.jpg) no-repeat;
 	display:block;
 	height: 31px;   
-	width: 129px; 	
+	width: 189px; 	
 	padding:0px;
 	margin:0px;
 	
 	/* font decoration */
 	font-weight: bold;
 	color:#000;
-	font-size:12px;
+	font-size:14px;
 	line-height:33px;
 	text-align:center;
 	text-decoration:none;

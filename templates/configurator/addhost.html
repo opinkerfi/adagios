@@ -3,7 +3,7 @@
 
 {% block title %}Characters{% endblock %}
 
-{% block sidebar %} {% endblock %}
+{% block sidebar %}arg {% endblock %}
 
 {% block javascript %}
 		$(document).ready(function() {
@@ -103,13 +103,22 @@
 
 			<fieldset id="templateinfo">
 			  <legend>Select Relevant Templates</legend>
-						<p id="templates">
-							<input id="windows" type="CHECKBOX" name="windows" /> <label for="windows">Microsoft Windows</label>
+			  			
+						<p>
+						    <select id="os">
+						      <option value="none">-- select --</option>
+						      <option value="windows">Microsoft Windows</option>
+						      <option value="linux">Linux</option>
+						      <option value="switch">Switch</option>
+						    </select>
 						</p>
 						<p>
-							<input id="windows" type="CHECKBOX" name="windows" /> <label for="windows">Microsoft Windows</label>
+						  <fieldset id="subtemplates">
+						    <legend>Templates</legend>
+						      	<p><input type="checkbox" class="left" /> <label>Microsoft Exchange</p>
+						      	<p style="clear: both"><input type="checkbox" class="left" /> <label>Microsoft SQL Server</p>
+						  </fieldset>
 						</p>
-
 			</fieldset>
 		</div>
 
@@ -161,6 +170,12 @@ $(function() {
 						$('#warn_hostname').html("");
 					}
 				});
+				
+				
+				$('#os').change(function() {
+					$('#subtemplates').show();
+				});
+				
 				$('#hostname').blur(function(e) {
 					if ($(this).val() == "") {
 						return false;
