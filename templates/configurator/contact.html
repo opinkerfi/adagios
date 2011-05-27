@@ -5,6 +5,15 @@
 {% block content %}
 
 
+{% if messages %}
+	<h1> Messages from the developers </h1>
+	<ul>
+	{% for message in messages %}
+		<li>{{ message }}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
 {% if contact %}
 <h1>{{ contact.contact_name }}</h1>
         <table border=1>

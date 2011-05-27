@@ -1,0 +1,35 @@
+
+
+{% block title %}{{ object_type }}{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+	<h1> Messages from the developers </h1>
+	<ul>
+	{% for message in messages %}
+		<li>{{ message }}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
+
+{% if first_object %}
+<!--
+{{ first_object }}
+-->
+id={{ first_object.id }}
+	<table border=1>
+	<tr><th>Attribute Name</th><th>Defined Value</th><th>Inherited Value</th></tr>
+	{{ first_object.data }}
+	{% for attr in attr_val %}
+		<tr>
+			<td>{{ attr.0 }}</td><td>{{ attr.1 }}</td><td> {{attr.2}}</td>
+		</tr>
+	{% endfor %} 
+	
+{% else %}
+	<p>No objects found. </p>
+{% endif %}
+
+{% endblock %}
