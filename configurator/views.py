@@ -127,7 +127,7 @@ def stringify(data, ext):
 	elif ext == 'html':
 		return render_to_response('configurator/api/host.html', data)
 	elif ext == 'json':
-		string = json.dumps(data)
+		string = json.dumps(data, sort_keys=True, indent=4)
 		mime_type = 'application/json'
 	else:
 		return HttpResponseServerError("Invalid extension")
