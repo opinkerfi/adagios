@@ -1,8 +1,9 @@
-
-
-{% block title %}{{ object_type }}{% endblock %}
+{% extends "configurator/base.html" %}
+{% block title %}List of Objects{% endblock %}
 
 {% block content %}
+
+<h1>List of Objects</h1>
 
 {% if messages %}
 	<h1> Messages from the developers </h1>
@@ -15,13 +16,18 @@
 
 {% if objects %}
 	<table border=1>
-	<tr><th>Object Name</th><th>Object Type</th><th>Inherits from</th><th>Filename</th></tr>
+	<tr>
+		<th>Object Name</th>
+		<th>Object Type</th>
+		<th>Description</th>
+		<th>Filename</th>
+	</tr>
 	{% for o in objects %}
 		<tr>
-			<td><a href="{{ o.object_type }}/id={{ o.id }}">{{ o.name }} </a></td>
-			<td>{{ o.object_type }}</td>
-			<td>{{ o.use }}</td>
-			<td>{{ o.filename }}</td>
+			<td><a href="id={{ o.id }}">{{ o.name }} </a></td>
+			<td><a href="object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
+			<td>{{ o.description }}</td>
+			<td><a href="filename={{ o.filename }}">{{ o.filename }}</a></td>
 		</tr>
 	{% endfor %}
 	</ul>
