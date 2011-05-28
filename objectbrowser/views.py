@@ -30,7 +30,7 @@ def list_contacts(request):
         return render_to_response('configurator/list_contacts.html', c)
 
 
-def list_objects( request, object_type=None, attribute_name=None, attribute_value=None ):
+def list_objects( request, object_type=None, attribute_name=None, attribute_value=None, attribute2_name=None, attribute2_value=None, attribute3_name=None, attribute3_value=None ):
     c = {}
     c['messages'] = m = []
     c['objects'] = objects = []
@@ -48,9 +48,15 @@ def list_objects( request, object_type=None, attribute_name=None, attribute_valu
     if attribute_name is None:
         c['objects'] = myClass.objects.all
     else:
-        tmp = {attribute_name:attribute_value}
+        if attribute_name != None:
+            tmp = {attribute_name:attribute_value}
+        if attribute2_name != None:
+            tmp[attribute2_name]=attribute2_value
+        if attribute3_name != None:
+            tmp[attribute3_name]=attribute3_value
+
         c['objects'] = myClass.objects.filter(**tmp)
-        m.append("I used the filter %s=%s" % (attribute_name, attribute_value))
+        m.append("I used the filter %s=%s" % (tmp.keys(), tmp.values()))
     m.append( "Found %s objects of type %s" % (len(c['objects']), object_type))
     return render_to_response('objectbrowser/list_objects.html', c)
 
@@ -68,7 +74,18 @@ def view_object( request, object_id):
     c['my_object'] = o
     c['attr_val'] = o.get_attribute_tuple()
     return render_to_response('objectbrowser/view_object.html', c)
-    
+
+def get_services_without_service_description(self):
+    c = {}
+    s = Service.objects.filter(register=1, service_description=None)
+    return render_to_response('objectbrowser/list_objects.html', c)
+
+def get_services_without_host_name(self):
+    c = {}
+    s = Service.objects.filter(register=1, host_name=None)
+    return render_to_response('objectbrowser/list_objects.html', c)
+
+
 def view_objects( request, object_type,  attribute_name=None, attribute_value=None ):
     c = {}  
     c['messages'] = m = []

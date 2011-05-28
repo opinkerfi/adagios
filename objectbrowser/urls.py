@@ -9,10 +9,13 @@ urlpatterns = patterns('',
     
     #(r'/contact/+$', 'objectbrowser.views.list_contacts'),
     (r'/id=(?P<object_id>.+)$', 'objectbrowser.views.view_object'),
-    (r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)$', 'objectbrowser.views.list_objects'),
-    (r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)/$', 'objectbrowser.views.list_objects'),
-    (r'/+$', 'objectbrowser.views.list_object_types'),
-    (r'/(?P<object_type>.+)+$', 'objectbrowser.views.list_objects'),
+    (r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)/(?P<attribute2_name>.+)=(?P<attribute2_value>.+?)/(?P<attribute3_name>.+)=(?P<attribute3_value>.+?)/?$', 'objectbrowser.views.list_objects'),
+    #(r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)$', 'objectbrowser.views.list_objects'),
+    (r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)/(?P<attribute2_name>.+)=(?P<attribute2_value>.+?)$', 'objectbrowser.views.list_objects'),
+    (r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)/?$', 'objectbrowser.views.list_objects'),
+
+    (r'/$', 'objectbrowser.views.list_object_types'),
+    (r'/(?P<object_type>.+)/?$', 'objectbrowser.views.list_objects'),
     
     #(r'/contact/(?P<contact_name>.+)$', 'objectbrowser.views.get_contact'),
 
