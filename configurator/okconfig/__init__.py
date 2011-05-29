@@ -116,14 +116,33 @@ def findhost(host_name):
 def get_templates():
 	""" Returns a list of available templates """
 
-	
-	return [
-		{'id': "windows", 'name': "Microsoft Windows"},
-		{'id': "linux", 'name': 'Linux'},
-		{'id': "mysql", 'name': 'MySQL'},
-		{'id': "apache", 'name': 'Apache Webserver'},
-		{'id': "mssql", 'name': 'Microsoft SQL Server'}
-		]
+
+	return {
+		'windows': {
+            'parents': [],
+			'name': 'Microsoft Windows',
+		},
+		'linux': {
+            'parents': [],
+            'name': 'Linux'
+		},
+        'dnsregistration': {
+            'parents': ['linux', 'windows'],
+            'name': 'DNS Registration'
+        },
+        'mssql': {
+            'parents': ['windows'],
+            'name': 'Microsoft SQL Server',
+        },
+        'exchange': {
+            'parents': ['windows'],
+            'name': 'Microsoft Exchange Server',
+        },
+        'ssh': {
+            'parents': ['linux'],
+            'name': 'Secure Shell Service'
+        }
+	}
 
 
 def get_hosts():

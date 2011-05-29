@@ -118,3 +118,9 @@ fieldset {
 fieldset#subtemplates {
 	display: none;
 }
+
+
+
+fieldset .subtemplate {
+	display: none;
+}
