@@ -1,0 +1,36 @@
+{% extends "configurator/base.html" %}
+
+{% block title %}List of object Types{% endblock %}
+
+{% block content %}
+<h1>List of Available Object types</h1>
+
+{% if messages %}
+	<h1> Messages from the developers </h1>
+	<ul>
+	{% for message in messages %}
+		<li>{{ message }}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
+{% if object_types %}
+	<table border=1>
+	<tr>
+		<th>Object Type</th>
+		<th>Active</th>
+		<th>Inactive</th>
+	{% for i in object_types %}
+		<tr>
+			<td><a href="object_type={{ i.0 }}">{{ i.0 }}</a></td>
+			<td><a href="object_type={{ i.0 }}/register=1">{{ i.1 }}</a></td>
+			<td><a href="object_type={{ i.0 }}/register=0">{{ i.2 }}</a></td>
+			</tr>
+	{% endfor %}
+	</ul>
+
+{% else %}
+	<p>List of object types not found </p>
+{% endif %}
+
+{% endblock %}
