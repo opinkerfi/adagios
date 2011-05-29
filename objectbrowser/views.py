@@ -1,3 +1,20 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright 2010, Pall Sigurdsson <palli@opensource.is>
+#
+# This script is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This script is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from django.shortcuts import render_to_response, redirect
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
@@ -19,11 +36,12 @@ def home(request):
 def index(request):
 	return list_hosts(request)
 
+## DEPRECATED for list_objects
 def list_hosts(request):
         c = {}
 	c['hosts'] = Host.objects.all
         return render_to_response('configurator/index.html', c)
-
+## Deprecated for list_objects
 def list_contacts(request):
 	c = {}
 	c['contacts'] = Contact.objects.all
@@ -35,8 +53,19 @@ def list_objects( request, object_type=None, attribute_name=None, attribute_valu
     c['messages'] = m = []
     c['objects'] = objects = []
     
-    if attribute_name=='object_type':
-        object_type=attribute_value
+    search = tmp = {}
+    if attribute_name != None:
+        search = {attribute_name:attribute_value}
+    if attribute2_name != None:
+        search[attribute2_name]=attribute2_value
+    if attribute3_name != None:
+        search[attribute3_name]=attribute3_value
+    
+    for k,v in search.items():
+        if k == 'object_type':
+            object_type = v
+        elif v == 'None':
+            search[k] = None
     # If a non-existent object_type is requested, lets display a warning
     if not Model.string_to_class.has_key(object_type):
             m.append('Model does not have any objects of type %s, valid types are %s' % (object_type, Model.string_to_class.keys()))
@@ -48,42 +77,35 @@ def list_objects( request, object_type=None, attribute_name=None, attribute_valu
     if attribute_name is None:
         c['objects'] = myClass.objects.all
     else:
-        if attribute_name != None:
-            tmp = {attribute_name:attribute_value}
-        if attribute2_name != None:
-            tmp[attribute2_name]=attribute2_value
-        if attribute3_name != None:
-            tmp[attribute3_name]=attribute3_value
-
-        c['objects'] = myClass.objects.filter(**tmp)
-        m.append("I used the filter %s=%s" % (tmp.keys(), tmp.values()))
+        c['objects'] = myClass.objects.filter(**search)
+        m.append("I used the filter %s=%s" % (search.keys(), search.values()))
     m.append( "Found %s objects of type %s" % (len(c['objects']), object_type))
     return render_to_response('objectbrowser/list_objects.html', c)
 
 def list_object_types(request):
     c = {}
     c['object_types'] = t = []
-    for i in Model.string_to_class.keys():
-        t.append( i )
+    for name,Class in Model.string_to_class.items():
+        if name != None:
+            active = inactive = 0
+            all_instances = Class.objects.all
+            for i in all_instances:
+                if i['register'] == "0":
+                    inactive += 1
+                else:
+                    active += 1
+            c['object_types'].append( (name, active, inactive) )
     return render_to_response('objectbrowser/list_object_types.html', c)
 
 def view_object( request, object_id):
     c = {}
     c['messages'] = m = []
     o = ObjectDefinition.objects.filter(id=object_id)[0]
+    #o = ObjectDefinition.objects.get_by_id(id=object_id)
     c['my_object'] = o
     c['attr_val'] = o.get_attribute_tuple()
     return render_to_response('objectbrowser/view_object.html', c)
 
-def get_services_without_service_description(self):
-    c = {}
-    s = Service.objects.filter(register=1, service_description=None)
-    return render_to_response('objectbrowser/list_objects.html', c)
-
-def get_services_without_host_name(self):
-    c = {}
-    s = Service.objects.filter(register=1, host_name=None)
-    return render_to_response('objectbrowser/list_objects.html', c)
 
 
 def view_objects( request, object_type,  attribute_name=None, attribute_value=None ):
