@@ -23,6 +23,8 @@ urlpatterns = patterns('',
     (r'^adagios/configurator/contact$', 'configurator.views.list_contacts'),
     (r'^adagios/configurator/host/(?P<host_name>.+)/(?P<service_description>.+)$', 'configurator.views.service'),
     (r'^objectbrowser', include('objectbrowser.urls')),
+    (r'^rest/okconfig', include('rest.urls'), {'module_name':'configurator.okconfig'}),
+    (r'^rest/pynag', include('rest.urls'), {'module_name':'pynag'}),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:

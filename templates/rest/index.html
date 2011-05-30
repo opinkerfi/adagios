@@ -1,0 +1,38 @@
+<html>
+<body>
+<pre>
+This is a very basic rest interface on top of the {{ module_name }} module.
+
+GET = get variable contents
+POST = call a function (with named parameters in querystring)
+
+The following GET operations are supported:
+<table border=1>
+{% for i in gets %}
+	<tr>
+		<td> {{ i }} </td>
+		<td><a href="txt/{{ i }}">txt</a></td>
+		<td><a href="json/{{ i }}">json</a></td>
+		<td><a href="xml/{{ i }}">xml</a></td>
+	</tr>
+{% endfor %}
+</table>
+
+The following POST operations are supported:
+<table border=1>
+{% for i in puts %}
+	<tr>
+		<td><a href="help/{{ i }}">{{ i }}</a></td>
+		<td><a href="txt/{{ i }}">txt</a></td>
+		<td><a href="json/{{ i }}">json</a></td>
+		<td><a href="xml/{{ i }}">xml</a></td>
+	</tr>
+{% endfor %}
+</table>
+
+The following is the documentation for the module you requested:
+-----------------
+{{ module_documenation }}
+-----------------
+</pre>
+</body></html>
