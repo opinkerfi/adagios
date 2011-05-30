@@ -65,6 +65,7 @@ def addhost(host_name, ipaddress=None, group_name="default", templates=[], use=N
 	Returns:
 	 True if operation was successful.
 	"""
+	return True
 	pass
 
 def addtemplate(host_name, template_name, force=False):
@@ -186,5 +187,6 @@ def install_nrpe(remote_host, username, password=None):
 	"""
 	pass
 
+all_templates = get_templates()
 if __name__ == '__main__':
 	'This leaves room for some unit testing while being run from the command line'
