@@ -38,6 +38,11 @@ def handle_request(request, module_name, attribute, format):
     if format == 'json':
         import json
         result = json.dumps( result )
+    elif format == 'xml':
+            import xml.marshal.generic
+            result = xml.marshal.generic.dumps(result)
+    elif format == 'txt':
+        result = str(result)
     else:
         result = str(result)
     return HttpResponse(result, mimetype='application/javascript')
@@ -59,5 +64,4 @@ def index( request, module_name ):
     c['gets'] = gets
     c['puts'] = puts
     c['module_documenation'] = m.__doc__
-    print m.__doc__
     return render_to_response('rest/index.html', c)
