@@ -14,6 +14,7 @@ def _load(module_name):
     my_module = __import__(module_name, fromlist=[''])
     return my_module
 @csrf_exempt   
+
 def handle_request(request, module_name, attribute, format):
     m = _load(module_name)
     # TODO: Only allow function calls if method == POST
@@ -39,7 +40,7 @@ def handle_request(request, module_name, attribute, format):
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))
     if format == 'json':
-        import json
+        import json 
         result = json.dumps( result )
         mimetype='application/javascript'
     elif format == 'xml':
