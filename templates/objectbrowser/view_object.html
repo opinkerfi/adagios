@@ -51,7 +51,7 @@
 			d['attribute_name'] = id;
 			d['new_value'] = val;
 			d['id'] = {{ my_object.id }};
-			$.post("/rest/pynag/json/change_attribute/", d );
+			$.post("/rest/pynag/json/change_attribute", d );
 		});
 		
 	});
