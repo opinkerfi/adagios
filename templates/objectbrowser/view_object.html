@@ -36,6 +36,13 @@
 	
 	<script>
 	
+$('#close_overlay').click(function() {
+	$('.overlay').hide();
+});
+$(document).ajaxError(function(e, xhr, settings, exception) {
+	$('.overlay').html( xhr.responseText );
+	$('.overlay').show();
+}); 
 $(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;
@@ -83,7 +90,6 @@ $(document).ajaxSend(function(event, xhr, settings) {
 		newinput.blur(function(blurrer) {
 			val = newinput.val();
 			$('#key_' + id).html(val);
-			alert("Saving like the lion " + val);
 			d = {}
 			//d[id] = val;
 			d['attribute_name'] = id;
@@ -95,6 +101,12 @@ $(document).ajaxSend(function(event, xhr, settings) {
 	});
 	
 	</script>
+
+<div class="overlay">
+  <a id="close_overlay" href="#">Close Error</a><br/>
+  <div id="error">
+  </div>
+</div>
 	
 {% else %}
 	<p>Object not found </p>

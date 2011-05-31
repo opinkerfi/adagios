@@ -143,3 +143,16 @@ fieldset#subtemplates {
 fieldset .subtemplate {
 	display: none;
 }
+
+
+
+.overlay {
+	width: 800px;
+	height: 600px;
+	display: none;
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	border: 1px solid black;
+	background: #000;
+}
