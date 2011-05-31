@@ -19,6 +19,7 @@ from django.shortcuts import render_to_response, redirect
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
 from django.utils import simplejson
+from django.core.context_processors import csrf
 
 import sys
 sys.path.insert(1, '/opt/pynag')
@@ -104,6 +105,7 @@ def view_object( request, object_id):
     #o = ObjectDefinition.objects.get_by_id(id=object_id)
     c['my_object'] = o
     c['attr_val'] = o.get_attribute_tuple()
+    c.update(csrf(request))
     return render_to_response('objectbrowser/view_object.html', c)
 
 

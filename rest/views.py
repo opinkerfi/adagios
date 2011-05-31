@@ -29,15 +29,23 @@ def handle_request(request, module_name, attribute, format):
             arguments = request.GET
             result = item( **arguments )
     elif request.method == 'POST':
+        print "POST"
         #c.update(csrf(request))
         item = m.__dict__[attribute]
         item_type = str(type(item))
+        print "POST 1.5"
         if item_type != "<type 'function'>":
+            print "POST 1.6"
             result = m.__dict__[attribute]
         else:
-            arguments = request.POST
-            print arguments
+            print "POST 1.7"
+            arguments = {}
+            for k, v in request.POST.items():
+                print "%s = %s (%s)" % (k,v, type(v))
+                arguments[k] = v
             result = item( **arguments )
+            print "POST 1.7.1"
+        print "POST2"
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))
     if format == 'json':
@@ -53,9 +61,9 @@ def handle_request(request, module_name, attribute, format):
         mimetype='text/plain'
     else:
         result = str(result)
-        mimetype='text/plain'        
+        mimetype='text/plain'  
+    print "going to return stuff"      
     return HttpResponse(result, mimetype=mimetype)
-
 def index( request, module_name ):
     m = _load(module_name)
     gets,puts = [],[]

@@ -44,5 +44,5 @@ def change_attribute(id, attribute_name, new_value):
         new_value         -- new value (i.e. "host.example.com")
     '''
     o = Model.ObjectDefinition.objects.get_by_id(id)
-    o[field_name] = new_value
+    o[attribute_name] = new_value
     o.save()
