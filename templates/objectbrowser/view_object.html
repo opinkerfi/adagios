@@ -17,14 +17,46 @@
 {% if my_object %}
 <!--
 {{ my_object }}
+
+
 -->
-	<table border=1>
-	<tr><th>Attribute Name</th><th>Defined Value</th><th>Inherited Value</th></tr>
+	<fieldset id="attributelook" class="attributelook">
+	  <legend>Attribooty</legend>
+	  
 	{% for attr in attr_val %}
-		<tr>
-			<td>{{ attr.0 }}</td><td>{{ attr.1 }}</td><td> {{attr.2}}</td>
-		</tr>
+		<p>
+			<label>{{ attr.0 }}</label>
+			<span class="attributevalue" id="key_{{ attr.0 }}">{{ attr.1 }}</span>
+			<span class="inherited attributevalue">{{attr.2}}</span>
+			<a href="#" class=" attributevalue modify_button" id="modify_{{ attr.0 }}">TAKKI</a> 
+		</p>
 	{% endfor %} 
+	</fieldset>
+	
+	<script>
+	$('.modify_button').click(function() {
+		id = this.id.replace('modify_', '');
+		currentval = $('#key_' + id).text();
+
+		$('#key_' + id).html("<input id='input_" + id + "'/>");
+		newinput = $('#input_' + id)
+		newinput.val(currentval);
+		newinput.select();		
+		newinput.blur(function(blurrer) {
+			val = newinput.val();
+			$('#key_' + id).html(val);
+			alert("Saving like the lion " + val);
+			d = {}
+			//d[id] = val;
+			d['attribute_name'] = id;
+			d['new_value'] = val;
+			d['id'] = {{ my_object.id }};
+			$.post("/rest/pynag/json/change_attribute/", d );
+		});
+		
+	});
+	
+	</script>
 	
 {% else %}
 	<p>Object not found </p>

@@ -87,13 +87,32 @@ em {
 
 label
 {
-	width: 12em;
+	width: 200px;
 	height: 30px;
 	float: left;
 	text-align: left;
 	margin-right: 0.5em;
 	vertical-align: middle;
 	display: block;
+	font-size: 80%;
+	clear: both;
+}
+
+.attributelook .attributevalue {
+	font-size: 80%;
+	display: block;
+	width: 100px;
+	float: left;
+}
+
+
+.attributelook input {
+	width: 80px;
+	font-size: 80%;
+}
+
+.navi {
+	font-size: 70%;
 }
 
 legend

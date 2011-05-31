@@ -13,8 +13,8 @@ def _load(module_name):
     #if not my_module:
     my_module = __import__(module_name, fromlist=[''])
     return my_module
-@csrf_exempt   
 
+@csrf_exempt   
 def handle_request(request, module_name, attribute, format):
     m = _load(module_name)
     # TODO: Only allow function calls if method == POST
