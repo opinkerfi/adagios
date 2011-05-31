@@ -34,10 +34,10 @@ def handle_request(request, module_name, attribute, format):
         if item_type != "<type 'function'>":
             result = m.__dict__[attribute]
         else:
-            arguments = request.POST.items()
-            #for k, v in request.POST.items():
-            #    print "%s = %s (%s)" % (k,v, type(v))
-            #    arguments[k] = v
+            arguments = {} #request.POST.items()
+            for k, v in request.POST.items():
+                print "%s = %s (%s)" % (k,v, type(v))
+                arguments[k] = v
             result = item( **arguments )
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))

@@ -61,7 +61,7 @@ def host(request, host_name=None):
 
 def contact( request, contact_name=None):
         parse()
-        c = {}
+        c = {} 
         c['contact'] = get_contact( contact_name )
         c['template'] = items_from_template = {}
         c['not_template'] = items_not_from_template = {}
