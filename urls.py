@@ -24,7 +24,7 @@ urlpatterns = patterns('',
     (r'^adagios/configurator/host/(?P<host_name>.+)/(?P<service_description>.+)$', 'configurator.views.service'),
     (r'^objectbrowser', include('objectbrowser.urls')),
     (r'^rest/okconfig', include('rest.urls'), {'module_name':'configurator.okconfig'}),
-    (r'^rest/pynag', include('rest.urls'), {'module_name':'pynag'}),
+    (r'^rest/pynag', include('rest.urls'), {'module_name':'configurator.helpers'}),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:

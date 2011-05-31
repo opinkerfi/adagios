@@ -62,6 +62,8 @@ def index( request, module_name ):
         if k == '': continue
         item_type = str(type(v))
         #description = "%-30s\t%s\n" % (k, str(type(v)))
+        if item_type == "<type 'module'>":
+            continue
         if item_type == "<type 'function'>":
             puts.append( k )
         else:
