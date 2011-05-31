@@ -17,16 +17,16 @@
 {% if objects %}
 	<table border=1>
 	<tr>
-		<th>Object Name</th>
+		<th>Short Name</th>
 		<th>Object Type</th>
-		<th>Description</th>
+		<th>Object Name</th>
 		<th>Filename</th>
 	</tr>
 	{% for o in objects %}
 		<tr>
-			<td><a href="id={{ o.id }}">{{ o.name }} </a></td>
+			<td><a href="id={{ o.id }}">{{ o.description }}</a></td>
 			<td><a href="object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
-			<td>{{ o.description }}</td>
+			<td><a href="id={{ o.id }}">{{ o.name }} </a></td>
 			<td><a href="filename={{ o.filename }}">{{ o.filename }}</a></td>
 		</tr>
 	{% endfor %}

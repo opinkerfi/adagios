@@ -16,18 +16,18 @@ def _get_dict(x):
     return x.__dict__
 #_get_dict = lambda x: del (x.objects)
 ''' Fetch some objects '''
-timeperiods = map(_get_dict, Model.Timeperiod.objects.all) 
-hosts = map(_get_dict, Model.Host.objects.all )
-contacts = map(_get_dict, Model.Contact.objects.all )
-services = map(_get_dict, Model.Service.objects.all )
-contactgroups = map(_get_dict, Model.Contactgroup.objects.all )
-hostgroups = map(_get_dict, Model.Hostgroup.objects.all )
+#timeperiods = map(_get_dict, Model.Timeperiod.objects.all) 
+#hosts = map(_get_dict, Model.Host.objects.all )
+#contacts = map(_get_dict, Model.Contact.objects.all )
+#services = map(_get_dict, Model.Service.objects.all )
+#contactgroups = map(_get_dict, Model.Contactgroup.objects.all )
+#hostgroups = map(_get_dict, Model.Hostgroup.objects.all )
 
 ''' Get All hosts '''
-host_names = []
-for _h in hosts:
-    if _h.has_key('host_name'):
-        host_names.append( _h[host_name] )
+#host_names = []
+#for _h in hosts:
+#    if _h.has_key('host_name'):
+#        host_names.append( _h[host_name] )
 
 def get_object(id):
     '''Returns one specific ObjectDefinition'''

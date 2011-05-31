@@ -2,8 +2,9 @@
 {% block title %}{{ object_type }}{% endblock %}
 
 {% block content %}
+<!--
 <h1>We are viewing a beautiful {{ my_object.object_type }}</h1>
-
+-->
 {% if messages %}
 	<h1> Messages from the developers </h1>
 	<ul>
@@ -21,14 +22,14 @@
 
 -->
 	<fieldset id="attributelook" class="attributelook">
-	  <legend>Attribooty</legend>
+	  <legend>{{ my_object.object_type }} - {{ my_object.description }}</legend>
 	  
 	{% for attr in attr_val %}
 		<p>
 			<label>{{ attr.0 }}</label>
 			<span class="attributevalue" id="key_{{ attr.0 }}">{{ attr.1 }}</span>
 			<span class="inherited attributevalue">{{attr.2}}</span>
-			<a href="#" class=" attributevalue modify_button" id="modify_{{ attr.0 }}">TAKKI</a> 
+			<a href="#" class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</a> 
 		</p>
 	{% endfor %} 
 	</fieldset>
