@@ -1,5 +1,5 @@
 body {
-	font-face: helvetica, georgia, courier, arial;
+	font-family: helvetica, georgia, courier, arial;
 	background: #ccc;
 	margin: 0;
 	padding: 0;
@@ -24,7 +24,7 @@ p {
 #sidebar {
 	margin-top: 12px;
 	margin-left: 12px;
-	width:140px;
+	width:170px;
 }
 
 #content {
@@ -147,12 +147,13 @@ fieldset .subtemplate {
 
 
 .overlay {
-	width: 800px;
-	height: 600px;
+	width: 90%;
+	height: 60%;
 	display: none;
 	position: absolute;
-	top: 20px;
-	left: 20px;
+	top: 20%;
+	left: 5%;
 	border: 1px solid black;
-	background: #000;
+	background: #fff;
+	overflow: auto;
 }

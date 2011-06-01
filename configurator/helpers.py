@@ -13,7 +13,9 @@ def _get_dict(x):
     #print "deleted"
     #print type(x)
     x.__delattr__('objects')
-    return x.__dict__
+    del x._original_attributes['meta']
+    return x._original_attributes
+#__dict__
 #_get_dict = lambda x: del (x.objects)
 ''' Fetch some objects '''
 timeperiods = map(_get_dict, Model.Timeperiod.objects.all) 

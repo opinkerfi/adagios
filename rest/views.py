@@ -43,7 +43,7 @@ def handle_request(request, module_name, attribute, format):
         raise BaseException("Unsupported operation: %s" % (request.method))
     if format == 'json':
         import json 
-        result = json.dumps( result )
+        result = json.dumps( result, sort_keys=True, indent=4 )
         mimetype='application/javascript'
     elif format == 'xml':
             import xml.marshal.generic

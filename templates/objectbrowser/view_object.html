@@ -29,18 +29,24 @@
 			<label>{{ attr.0 }}</label>
 			<span class="attributevalue" id="key_{{ attr.0 }}">{{ attr.1 }}</span>
 			<span class="inherited attributevalue">{{attr.2}}</span>
-			<a href="#" class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</a> 
+			<button class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</button> 
 		</p>
 	{% endfor %} 
 	</fieldset>
+<div class="overlay">
+  <button id="close_overlay">Close Error</button><br/>
+  <div id="error">
+  </div>
+</div>
 	
 	<script>
 	
 $('#close_overlay').click(function() {
 	$('.overlay').hide();
+	return false;
 });
 $(document).ajaxError(function(e, xhr, settings, exception) {
-	$('.overlay').html( xhr.responseText );
+	$('#error').html( xhr.responseText );
 	$('.overlay').show();
 }); 
 $(document).ajaxSend(function(event, xhr, settings) {
@@ -83,10 +89,28 @@ $(document).ajaxSend(function(event, xhr, settings) {
 		id = this.id.replace('modify_', '');
 		currentval = $('#key_' + id).text();
 
-		$('#key_' + id).html("<input id='input_" + id + "'/>");
-		newinput = $('#input_' + id)
-		newinput.val(currentval);
-		newinput.select();		
+
+		if (id == 'contact_groups') {
+			/* top = $('#key_' + id).offset().top;
+			$('.overlay').show();
+			$('.overlay').offset({ left: 10, top: top });
+			$('.overlay').html('few'); */
+			$('#key_' + id).html("<select id='input_" + id + "'></select>");
+			
+			$.getJSON("/rest/pynag/json/contactgroups", function(json) {
+				$.each(json, function(k, v) {
+					//alert('<option value="' + v['contactgroup_name'] + '">' + v['contactgroup_name'] + "</option>");
+					$('#input_' + id).append('<option value="' + v['contactgroup_name'] + '">' + v['contactgroup_name'] + "</option>");
+				});
+			});
+			newinput = $('#input_' + id);
+			
+		} else {
+			$('#key_' + id).html("<input id='input_" + id + "'/>");
+			newinput = $('#input_' + id)
+			newinput.val(currentval);
+			newinput.select();
+		}		
 		newinput.blur(function(blurrer) {
 			val = newinput.val();
 			$('#key_' + id).html(val);
@@ -102,11 +126,6 @@ $(document).ajaxSend(function(event, xhr, settings) {
 	
 	</script>
 
-<div class="overlay">
-  <a id="close_overlay" href="#">Close Error</a><br/>
-  <div id="error">
-  </div>
-</div>
 	
 {% else %}
 	<p>Object not found </p>
