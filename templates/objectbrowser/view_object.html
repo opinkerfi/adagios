@@ -21,18 +21,30 @@
 
 
 -->
+<div class="attributelook">
 	<fieldset id="attributelook" class="attributelook">
 	  <legend>{{ my_object.object_type }} - {{ my_object.description }}</legend>
 	  
 	{% for attr in attr_val %}
 		<p>
 			<label>{{ attr.0 }}</label>
+			{% if attr.1 == "0" or attr.1 == "1" %}
+				{% if attr.1 == "0" %}
+			<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/off.png"></span>
+				
+				{% else %}
+			<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/on.png"></span>
+			
+				{% endif %}
+			{% else %}
 			<span class="attributevalue" id="key_{{ attr.0 }}">{{ attr.1 }}</span>
 			<span class="inherited attributevalue">{{attr.2}}</span>
-			<button class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</button> 
+			<button class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</button>
+			{% endif %} 
 		</p>
 	{% endfor %} 
 	</fieldset>
+</div>
 <div class="overlay">
   <button id="close_overlay">Close Error</button><br/>
   <div id="error">
@@ -91,10 +103,6 @@ $(document).ajaxSend(function(event, xhr, settings) {
 
 
 		if (id == 'contact_groups') {
-			/* top = $('#key_' + id).offset().top;
-			$('.overlay').show();
-			$('.overlay').offset({ left: 10, top: top });
-			$('.overlay').html('few'); */
 			$('#key_' + id).html("<select id='input_" + id + "'></select>");
 			
 			$.getJSON("/rest/pynag/json/contactgroups", function(json) {
@@ -103,8 +111,9 @@ $(document).ajaxSend(function(event, xhr, settings) {
 					$('#input_' + id).append('<option value="' + v['contactgroup_name'] + '">' + v['contactgroup_name'] + "</option>");
 				});
 			});
+						
 			newinput = $('#input_' + id);
-			
+			newinput.select();
 		} else {
 			$('#key_' + id).html("<input id='input_" + id + "'/>");
 			newinput = $('#input_' + id)

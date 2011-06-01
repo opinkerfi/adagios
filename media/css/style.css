@@ -29,7 +29,13 @@ p {
 
 #content {
 	padding-top: 12px;
-	width:800px;
+	width:600px;
+}
+
+button {
+	background: #000;
+	color: #fff;
+	
 }
 
 #container {
@@ -118,15 +124,18 @@ label
 legend
 {
 color: #fff;
-background: #aaa20c;
-border: 2px solid #781351;
+background: #33339c;
+border: 1px solid #000;
 padding: 2px 6px;
 font-weight: bold;
 } 
 
+div.attributelook  {
+	
+}
 fieldset {
+	margin: 8px 8px 8px 8px;
 	background: #fff;
-	border: 1px solid red;
 }
 .submit input
 {
@@ -155,5 +164,11 @@ fieldset .subtemplate {
 	left: 5%;
 	border: 1px solid black;
 	background: #fff;
+}
+
+#error {
+	position: relative;
+	width: 98%;
+	height: 92%;
 	overflow: auto;
 }
