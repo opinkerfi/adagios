@@ -41,11 +41,51 @@ template_directory="/etc/nagios/okconfig/examples"
 destination_directory="/etc/nagios/okconfig/hosts"
 
 
+from sys import exit
+from sys import argv
+from os import getenv,putenv,environ
+import os.path
+import subprocess
+
+required_gateways = []
+
+
+
+
 def verify():
 	"""Checks if okconfig is installed and properly configured.
 	
 	Returns True/False
+	
+	Check if:
+	1) cfg_file exists
+	2) template_directory exists
+	3) destination_directory exists (and is writable)
+	4) the following commands are in path:
+		addhost, addgroup, addtemplate
 	"""
+	
+	# 1)
+	if not os.path.isfile(cfg_file):
+		return False
+	# 2)
+	if not os.path.isdir(template_directory):
+		return False
+	# 3)
+	if not os.path.isdir(destination_directory):
+		return False
+	# 4)
+	my_path = os.environ['PATH'].split(':')
+	for command in ['addhost', 'addgroup', 'addtemplate']:
+		command_was_found = False
+		for possible_path in my_path:
+			full_path = "%s/%s" % (possible_path,command)
+			if os.path.isfile(full_path):
+				command_was_found = True
+				break 
+		if not command_was_found:
+			"command %s not found in path" % (command)
+			return False
 	pass
 
 def addhost(host_name, ipaddress=None, group_name="default", templates=[], use=None, force=False):
@@ -65,8 +105,21 @@ def addhost(host_name, ipaddress=None, group_name="default", templates=[], use=N
 	Returns:
 	 True if operation was successful.
 	"""
-	return True
-	pass
+	if ipaddress == None:
+		ipaddress = ''
+	else:
+		ipaddress = "--ip '%s'" % (ipaddess)
+	if force == True:
+		force = '--force'
+	else:
+		force = ''
+	group_name = "--group '%s'" % (group_name)
+	if use == None:
+		use = ''
+	else:
+		use = "--parent '%s'" % (use)
+	command = "addhost --host '%s' %s %s %s" % (host_name, ipaddress, use, force)
+	return runCommand(command)
 
 def addtemplate(host_name, template_name, force=False):
 	"""Adds a new template to existing host in Nagios.
@@ -82,11 +135,15 @@ def addtemplate(host_name, template_name, force=False):
 	Returns:
 	 True if operation is succesful.
 	"""
-	pass
+	if force == True:
+		force = '--force'
+	else:
+		force = ''
+	command = "addtemplate --host '%s' --template '%s' %s" % (host_name, template_name, force)
+	return runCommand(command)
 
 def addgroup(group_name, alias=None, force=False):
-	"""
-	Adds a new hostgroup/contactgroup/servicegroup combo to Nagios.
+	"""Adds a new hostgroup/contactgroup/servicegroup combo to Nagios.
 	
 	Args:
 	 group_name -- Name of the group to be added (i.e. "db-servers")
@@ -99,11 +156,16 @@ def addgroup(group_name, alias=None, force=False):
 	Returns:
 	 True if operation was successful
 	"""
-	pass
+	if alias == None: alias=group_name
+	if force == True:
+		force = '--force'
+	else:
+		force = ''
+	command = "addgroup --group '%s' --alias '%s' %s" % (group_name, alias, force)
+	return runCommand(command)
 
 def findhost(host_name):
-	"""
-	Returns the filename which defines a specied host. Returns None on failure.
+	"""Returns the filename which defines a specied host. Returns None on failure.
 	
 	Args:
 	 host_name -- Name of the host to find
@@ -116,9 +178,7 @@ def findhost(host_name):
 
 def get_templates():
 	""" Returns a list of available templates """
-
-
-	return {
+	dummy_templates = {
 		'windows': {
             'parents': [],
 			'name': 'Microsoft Windows',
@@ -144,6 +204,7 @@ def get_templates():
             'name': 'Secure Shell Service'
         }
 	}
+	return dummy_templates
 
 
 def get_hosts():
@@ -187,6 +248,34 @@ def install_nrpe(remote_host, username, password=None):
 	"""
 	pass
 
+
+def runCommand(command):
+	'''runCommand: Runs command from the shell prompt.
+	
+	Arguments:
+		command: string containing the command line to run
+	Returns:
+		stdout/stderr of the command run
+	Raises:
+		BaseException if returncode > 0
+	'''
+	proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE,)
+	stdout, stderr = proc.communicate('through stdin to stdout')
+	if proc.returncode > 0:
+		error_string = "Could not run command (return code= %s)\n" % (proc.returncode)
+		error_string += "Error: %s\n" % (stderr.strip())
+		error_string += "Command: %s\n" % (command)
+		if proc.returncode == 127: # File not found, lets print path
+			path=getenv("PATH")
+			error_string += "Check if your path is correct: %s" % (path)
+		raise BaseException( error_string )
+	else:
+		return stdout
+
+
 all_templates = get_templates()
 if __name__ == '__main__':
 	'This leaves room for some unit testing while being run from the command line'
+	result = verify()
+	print result
+	print "done"
