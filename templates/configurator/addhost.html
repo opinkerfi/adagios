@@ -6,6 +6,16 @@
 
 {% block javascript %}
 		$(document).ready(function() {
+				var progress = 0;
+			    $("#progressbar").progressbar({ value: 0 });
+				function updateProgress() {
+					if (progress < 100) {
+						progress = progress + 1;
+			    	$("#progressbar").progressbar({ value: progress });
+						setTimeout(updateProgress, 100);
+					}
+				}
+				updateProgress();
 			$('#hostname').focus();
 			$.getJSON("/adagios/api/get_templates.json", function(json) {
 				deferred = [];
@@ -36,77 +46,34 @@
 {% block head %}
 
 
-	<!-- tab styling -->
-	<link rel="stylesheet" type="text/css" href="/static/css/tabs-flowplayer-v2.css"/>
-
-	<style>
-	
-
-	/* override the root element to enable scrolling */
-	#flowpanes {
-		position:relative;
-		overflow:hidden;
-		clear:both;
-	}
-
-	/* override single pane */
-	#flowpanes div {
-		float:left;
-		display:block;
-		width:670px;
-		font-size:14px;
-	}
-
-	/* our additional wrapper element for the items */
-	#flowpanes .items {
-		width:20000em;
-		position:absolute;
-		clear:both;
-		margin:0;
-		padding:0;
-	}
-
-	#flowpanes .less, #flowpanes .less a {
-		color:#999 !important;
-		font-size:11px;
-	}
-	</style>
 {% endblock %}
 
 
 {% block content %}
 
 
-<!-- tabs work as navigator for scrollable -->
-<ul id="flowtabs" class="navi">
-	<li><a id="t1" href="#host">Host</a></li>
-	<li><a id="t2" href="#templates">Templates</a></li>
-	<li><a id="t3" href="#review">Review</a></li>
-	<li><a id="t4" href="#complete">Complete</a></li>
-
-</ul>
 
 <form action="#" method="POST">
-<!-- panes -->
-<div id="flowpanes">
-
 
 	<!-- wrapper for scrollable items -->
-	<div class="items">
+	<div id="tabs">
 
-		<div>
-			
+		<ul>
+			<li><a href="#host">Hostinfo</a></li>
+			<li><a href="#templates">Templates</a></li>
+		</ul>
+		<div id="host">
 			  <fieldset id="hostinfo">
 				<legend>Host Information</legend>
 
 			  		
+						<div id="warn_hostname"></div>
 						<p>
 							<label for="hostname">Hostname <em>*</em></label>
 							<input id="hostname" type="text" name="hostname" />
-							<span id="warn_hostname"></span>
 						</p>
 						<p>						<p>
-							<label for="hostname">Scan for Services?</label>
+							<label for="hostname">Allow Scanning?</label>
 							<input id="scan" type="checkbox" name="scan" CHECKED />
 							<span id="warn_scan"></span>
 						</p>
@@ -125,65 +92,47 @@
 				</fieldset>
 			
 		</div>	
-		
-		<div>
+		<div id="templates">
+						<div id="accordion" class="accordion">
+			<div>
+				<h4><a href="#">Suggested Templates</a></h4>
+				<div>Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.</div>
+			</div>
+			<div>
+				<h4><a href="#">Popular Templates</a></h4>
+				<div>Phasellus mattis tincidunt nibh.</div>
+			</div>
+			<div>
+				<h4><a href="#">All Templates</a></h4>
+				<div>Nam dui erat, auctor a, dignissim quis.</div>
+			</div>
 
-			<fieldset id="templateinfo">
-			  <legend>Select Relevant Templates</legend>
-			  			
-						<p>
-						    <select id="os">
-						      <option value="none">-- select --</option>
-						    </select>
-						</p>
-						<p id="subtemplates">
 						  
-						</p>
-			</fieldset>
+						</div>
 		</div>
 
-		<div>
-				<h2>Review</h2>
-		</div>
-		<div>
-				<h2>Complete</h2>
-		</div>
 
+		<div class="scan ui-tabs">
+			<p>Scan progress
+			<div style="height: 12px" id="progressbar"></div>
+			</p>
+		</div>
 	</div>
 
-</div>
 </form>		
-<p style="text-align:center;width:500px">
-	<button class="custom prev">&laquo; Previous</button>
-	<button class="custom next">Next &raquo;</button>
-</p>
 
 <!-- activate tabs with JavaScript -->
 <script>
-
-
 // wait until document is fully scriptable
+$('#accordion').accordion({ header: "h4" });
+$('#tabs').tabs();
+$('#tabs').tabs('add', '#cramp', "Ble");
 $(function() {
 
-	// select #flowplanes and make it scrollable. use circular and navigator plugins
-	$("#flowpanes").scrollable({ circular: true, mousewheel: true }).navigator({
-
-		// select #flowtabs to be used as navigator
-		navi: "#flowtabs",
-
-		// select A tags inside the navigator to work as items (not direct children)
-		naviItem: 'a',
-
-		// assign "current" class name for the active A tag inside navigator
-		activeClass: 'current',
-
-		// make browser's back button work
-		history: true
-
-	});
 });
 </script>
-		<script type="text/javascript">
+
+<script type="text/javascript">
 				$('#hostname').keypress(function() {
 					if ($('#warn_hostname').html() != "") {
 						$('#warn_hostname').html("");

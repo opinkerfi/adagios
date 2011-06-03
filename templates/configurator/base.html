@@ -6,6 +6,9 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 
     <script type="text/javascript" src="/static/js/jquery.tools.min.js"></script>
+  	<script type="text/javascript" src="/static/js/jquery-ui-1.8.13.custom.min.js"></script>
+	<link type="text/css" href="/static/css/ui-darkness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+
 
     <script type="text/javascript">                                         
 
@@ -22,21 +25,21 @@
 <h1 class="logo" id="logo"><a title="Adagios" href="/"></a></h1>
 </div>
 <div id=container>
-    <div id="sidebar" class="left navi">
+    <div id="sidebar" class="left navi ui-corner-all ui-state-default ui-tabs-nav">
         {% block sidebar %}
-        Wizards:
-        <ul>
+        <div class="ui-widget-header ui-corner-all ui-tabs navheader">Wizards</div>
+        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
 		<li><a href="/adagios/addhost">Add New Host</a></li>
 		<li><a href="/adagios/configurator/addnewtemplate">Add Template To Host</a></li>
         </ul>
-        Browse:
+        <div class="ui-widget-header ui-corner-all ui-tabs navheader">Browse</div>
         <ul>
         		<li><a href="/objectbrowser/">Configuration</a></li>
               	<li><a href="/objectbrowser/host">Hosts</a></li>
         		<li><a href="/objectbrowser/contact">Contacts</a></li>
         		<li><a href="/objectbrowser/hostgroup">Hostgroups</a></li>
         </ul>
-        Cool Searches:
+        <div class="ui-widget-header ui-corner-all ui-tabs navheader">Cool Searches</div>
         <ul>
         		<li><a href="/objectbrowser/object_type=service/register=1/service_description=None">Services With no service_description</a></li>
               	<li><a href="/objectbrowser/object_type=service/register=1/host_name=None">Services With no host_name</a></li>

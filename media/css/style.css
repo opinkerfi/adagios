@@ -1,8 +1,9 @@
 body {
 	font-family: helvetica, georgia, courier, arial;
-	background: #ccc;
+	background: #fff;
 	margin: 0;
 	padding: 0;
+	font-size: 70%;
 }
 
 hr {
@@ -21,15 +22,20 @@ p {
 	float:right;
 }
 
+.navheader {
+	text-align: center;
+}
+
 #sidebar {
 	margin-top: 12px;
-	margin-left: 12px;
+	padding: 2px;
 	width:170px;
+	background: #000;
 }
 
 #content {
 	padding-top: 12px;
-	width:600px;
+	width:800px;
 }
 
 button {
@@ -100,12 +106,10 @@ label
 	margin-right: 0.5em;
 	vertical-align: middle;
 	display: block;
-	font-size: 80%;
 	clear: both;
 }
 
 .attributelook .attributevalue {
-	font-size: 80%;
 	display: block;
 	width: 100px;
 	float: left;
@@ -114,28 +118,13 @@ label
 
 .attributelook input {
 	width: 80px;
-	font-size: 80%;
 }
 
 .navi {
-	font-size: 70%;
 }
-
-legend
-{
-color: #fff;
-background: #33339c;
-border: 1px solid #000;
-padding: 2px 6px;
-font-weight: bold;
-} 
 
 div.attributelook  {
 	
-}
-fieldset {
-	margin: 8px 8px 8px 8px;
-	background: #fff;
 }
 .submit input
 {
@@ -171,4 +160,18 @@ fieldset .subtemplate {
 	width: 98%;
 	height: 92%;
 	overflow: auto;
+}
+
+#accordion {
+	clear: both;
+	margin: 0;
+	padding: 0;
+}
+
+.scan {
+	//display: none;
+}
+
+#tabs {
+	height: 500px;
 }
