@@ -25,9 +25,9 @@
 	{% for o in objects %}
 		<tr>
 			<td><a href="id={{ o.id }}">{{ o.description }}</a></td>
-			<td><a href="object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
+			<td><a href="search?object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
 			<td><a href="id={{ o.id }}">{{ o.name }} </a></td>
-			<td><a href="filename={{ o.filename }}">{{ o.filename }}</a></td>
+			<td><a href="search?filename={{ o.filename }}">{{ o.filename }}</a></td>
 		</tr>
 	{% endfor %}
 	</ul>

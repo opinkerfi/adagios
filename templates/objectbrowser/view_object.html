@@ -18,9 +18,57 @@
 {% if my_object %}
 <!--
 {{ my_object }}
-
-
 -->
+	{% if my_object.object_type == 'contact' %}
+	<! -- Display a contact object --> 
+	<div class="attribute_contact">
+	<fieldset id="attribute_contact" class="attribute_contact">
+	  <legend>{{ my_object.object_type }} - {{ my_object.description }}</legend>
+		<p>
+			<label>Contact Name</label>
+			<span class="attributevalue" id="key_contact_name">{{ my_object.contact_name }}</span>
+			<button class=" attributevalue modify_button" id="modify_contact_name">Edit</button>
+		</p>
+		<p>			
+			<label>Alias</label>
+			<span class="attributevalue" id="key_alias">{{ my_object.alias }}</span>
+			<button class=" attributevalue modify_button" id="modify_alias">Edit</button>
+		</p>
+		<p>			
+			<label>E-mail</label>
+			<span class="attributevalue" id="key_email">{{ my_object.email }}</span>
+			<button class=" attributevalue modify_button" id="modify_email">Edit</button>
+		</p>
+		<p>			
+			<label>Inherits From</label>
+			<span class="attributevalue" id="key_use">{{ my_object.use }}</span>
+			<button class=" attributevalue modify_button" id="modify_use">Edit</button>
+		</p>
+		<p>			
+			<label>Contact Groups</label>
+			<span class="attributevalue" id="key_contactgroups">{{ my_object.contactgroups }}</span>
+			<button class=" attributevalue modify_button" id="modify_contactgroups">Edit</button>
+		</p>
+		<p>			
+			<label>Pager Number</label>
+			<span class="attributevalue" id="key_pager">{{ my_object.pager }}</span>
+			<button class=" attributevalue modify_button" id="modify_pager">Edit</button>
+		</p>
+		<p>			
+			<label>Host Notifications Enabled</label>
+			<span class="attributevalue" id="key_host_notifications_enabled">{{ my_object.host_notifications_enabled }}</span>
+			<button class=" attributevalue modify_button" id="modify_my_object.host_notifications_enabled">Edit</button>
+		</p>
+		<p>			
+			<label>Service Notifications Enabled</label>
+			<span class="attributevalue" id="key_service_notifications_enabled">{{ my_object.service_notifications_enabled }}</span>
+			<button class=" attributevalue modify_button" id="modify_service_notifications_enabled">Edit</button>
+		</p>
+	</fieldset>
+	</div>
+	{% endif %}
+
+
 <div class="attributelook">
 	<fieldset id="attributelook" class="attributelook">
 	  <legend>{{ my_object.object_type }} - {{ my_object.description }}</legend>
@@ -45,6 +93,8 @@
 	{% endfor %} 
 	</fieldset>
 </div>
+
+
 <div class="overlay">
   <button id="close_overlay">Close Error</button><br/>
   <div id="error">

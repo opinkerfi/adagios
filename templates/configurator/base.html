@@ -26,21 +26,23 @@
         {% block sidebar %}
         Wizards:
         <ul>
-		<li><a href="/adagios/configurator/addnewhost/">Add New Host</a></li>
-		<li><a href="/adagios/configurator/addnewtemplate">Add Template To Host</a></li>
+		<li><a href="/adagios/addhost/">Add New Host</a></li>
+		<li><a href="/adagios/addtemplate">Add Template To Host</a></li>
+		<li><a href="/adagios/addgroup">Add New Group</a></li>
+		<li><a href="/adagios/scannetwork">Scan Network for new Hosts</a></li>
         </ul>
         Browse:
         <ul>
         		<li><a href="/objectbrowser/">Configuration</a></li>
-              	<li><a href="/objectbrowser/host">Hosts</a></li>
-        		<li><a href="/objectbrowser/contact">Contacts</a></li>
-        		<li><a href="/objectbrowser/hostgroup">Hostgroups</a></li>
+              	<li><a href="/objectbrowser/search?object_type=host">Hosts</a></li>
+        		<li><a href="/objectbrowser/search?object_type=contact">Contacts</a></li>
+        		<li><a href="/objectbrowser/search?object_type=hostgroup">Hostgroups</a></li>
         </ul>
         Cool Searches:
         <ul>
-        		<li><a href="/objectbrowser/object_type=service/register=1/service_description=None">Services With no service_description</a></li>
-              	<li><a href="/objectbrowser/object_type=service/register=1/host_name=None">Services With no host_name</a></li>
-        		<li><a href="/objectbrowser/contact">Services that are not okconfig compatible</a></li>
+        		<li><a href="/objectbrowser/search?object_type=service&register=1&service_description=None">Services With no service_description</a></li>
+              	<li><a href="/objectbrowser/search?object_type=service&register=1&host_name=None">Services With no host_name</a></li>
+        		<li><a href="/objectbrowser/search?huh=asd">Services that are not okconfig compatible</a></li>
         </ul>
         
         {% endblock %}

@@ -22,9 +22,9 @@
 		<th>Inactive</th>
 	{% for i in object_types %}
 		<tr>
-			<td><a href="object_type={{ i.0 }}">{{ i.0 }}</a></td>
-			<td><a href="object_type={{ i.0 }}/register=1">{{ i.1 }}</a></td>
-			<td><a href="object_type={{ i.0 }}/register=0">{{ i.2 }}</a></td>
+			<td><a href="search/?object_type={{ i.0 }}">{{ i.0 }}</a></td>
+			<td><a href="search/?object_type={{ i.0 }}&register=1">{{ i.1 }}</a></td>
+			<td><a href="search/?object_type={{ i.0 }}&register=0">{{ i.2 }}</a></td>
 			</tr>
 	{% endfor %}
 	</ul>
