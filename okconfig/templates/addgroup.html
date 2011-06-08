@@ -1,0 +1,17 @@
+{% extends "configurator/base.html" %}
+{% block title %}Add Group{% endblock %}
+{% block content %}
+
+
+<div class="okconfig_add">
+	<form action="addgroup" method="post">{% csrf_token %}
+	<fieldset id="id_addgroup" class="okconfig_addgroup">
+	  <legend>Add Group</legend>
+		{{ form }}
+		<p>
+    	<INPUT type="submit" value="Submit">
+	</form>
+	</fieldset>
+</div>
+
+{% endblock %}

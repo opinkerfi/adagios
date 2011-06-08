@@ -1,0 +1,58 @@
+{% extends "configurator/base.html" %}
+{% block title %}Scan Network{% endblock %}
+{% block content %}
+
+
+<div class="okconfig_scan_network">
+	<form action="scan_network" method="post">{% csrf_token %}
+	<fieldset id="id_okconfig_scan_network" class="scan_network_form">
+	  <legend>Scan Network</legend>
+		{{ form }}
+    	<INPUT type="submit" value="Scan">
+	</form>
+	</fieldset>
+</div>
+
+
+
+
+<!-- display scan results -->
+
+{% if scan_results %}
+Scan Complete
+<table border=1>
+	<tr>
+	 <th>IP Address </th>
+	 <th>Host Name</th>
+	 <th>Is monitored</th>
+	 <th>DNS OK</th>
+	 <th>Agent Installed</th>
+	 <th>SNMP Access</th>
+	</tr>
+	<tr>
+	 <td>10.0.0.1</td>
+	 <td> host.example.com</td>
+	 <td> yes </td>
+	 <td> yes </td>
+	 <td> yes </td>
+	 <td> no </td>
+	</tr>
+	<tr>
+	 <td>10.0.0.2</td>
+	 <td> badhost</td>
+	 <td> no </td>
+	 <td> no </td>
+	 <td> no </td>
+	 <td> no </td>
+	</tr>
+	<tr>
+	 <td>10.0.0.3</td>
+	 <td> router</td>
+	 <td> no </td>
+	 <td> no </td>
+	 <td> no </td>
+	 <td> yes </td>
+	</tr>
+</table>
+{% endif %}
+{% endblock %}
