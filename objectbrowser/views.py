@@ -27,6 +27,7 @@ sys.path.insert(1, '/opt/pynag')
 
 from pynag.Model import *
 from pynag import Model
+from forms import PynagForm
 
 def test(request):
         return index(request)
@@ -77,7 +78,7 @@ def list_objects( request, object_type=None ):
         c['objects'] = myClass.objects.filter(**search)
         m.append("I used the filter %s=%s" % (search.keys(), search.values()))
     m.append( "Found %s objects of type %s" % (len(c['objects']), object_type))
-    return render_to_response('objectbrowser/list_objects.html', c)
+    return render_to_response('list_objects.html', c)
 
 def list_object_types(request):
     c = {}
@@ -92,17 +93,26 @@ def list_object_types(request):
                 else:
                     active += 1
             c['object_types'].append( (name, active, inactive) )
-    return render_to_response('objectbrowser/list_object_types.html', c)
+    return render_to_response('list_object_types.html', c)
 
 def view_object( request, object_id):
     c = {}
     c['messages'] = m = []
     o = ObjectDefinition.objects.filter(id=object_id)[0]
+    c['form'] = PynagForm(initial=o._original_attributes, extra=o._original_attributes)
     #o = ObjectDefinition.objects.get_by_id(id=object_id)
     c['my_object'] = o
+    #forms.CharField
     c['attr_val'] = o.get_attribute_tuple()
     c.update(csrf(request))
-    return render_to_response('objectbrowser/view_object.html', c)
+    c['command_line'] = o.get_effective_command_line()
+    c['object_macros'] = o.get_all_macros()
+    c['effective_hostgroups'] = o.get_effective_hostgroups()
+    try: c['effective_contacts'] = o.get_effective_contacts()
+    except: pass
+    try: c['effective_contactgroups'] = o.get_effective_contact_groups()
+    except: pass
+    return render_to_response('view_object.html', c)
 
 def suggestions( request ):
     c = {}
@@ -111,9 +121,7 @@ def suggestions( request ):
     # active_hosts_with_no_shortname
     services_no_description = Service.objects.filter(register="1", service_description=None)
     s['services_no_description'] = len(services_no_description)
-    return render_to_response('objectbrowser/suggestions.html', c)
+    return render_to_response('suggestions.html', c)
     
     
-    
-    
-    
+ 
