@@ -26,10 +26,10 @@
         {% block sidebar %}
         Wizards:
         <ul>
-		<li><a href="/adagios/addhost/">Add New Host</a></li>
-		<li><a href="/adagios/addtemplate">Add Template To Host</a></li>
-		<li><a href="/adagios/addgroup">Add New Group</a></li>
-		<li><a href="/adagios/scannetwork">Scan Network for new Hosts</a></li>
+		<li><a href="/okconfig/addhost/">Add New Host</a></li>
+		<li><a href="/okconfig/addtemplate">Add Template To Host</a></li>
+		<li><a href="/okconfig/addgroup">Add New Group</a></li>
+		<li><a href="/okconfig/scan_network">Scan Network for new Hosts</a></li>
         </ul>
         Browse:
         <ul>
@@ -44,7 +44,12 @@
               	<li><a href="/objectbrowser/search?object_type=service&register=1&host_name=None">Services With no host_name</a></li>
         		<li><a href="/objectbrowser/search?huh=asd">Services that are not okconfig compatible</a></li>
         </ul>
-        
+        Other:
+        <ul>
+        	<li><a href="/NotImplemented">View Nagios.cfg</a></li>
+        	<li><a href="/NotImplemented">Verify Configuration</a></li>
+        	<li><a href="/NotImplemented">Adagios Settings</a></li>
+        	<li><a href="/NotImplemented">Help</a></li>
         {% endblock %}
     </div>
 
