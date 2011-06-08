@@ -99,10 +99,24 @@
 	<div class="attribute_contact">
 	<fieldset id="attribute_contact" class="attribute_{{object_type}}">
 	  <legend>Django forms.Form test</legend>
-		{{ form }}
+		{{ form.as_p }}
 	</fieldset>
 	</div>
 {% endif %}
+
+{% if raw_edit %}
+<!-- Raw edit of this object -->
+<div class="objectbrowser_raw_edit">
+	<form action="view_object" method="post">{% csrf_token %}
+	<fieldset id="id_raw_edit" class="objectbrowser_raw_edit">
+	  <legend>Manual Edit</legend>
+		{{ raw_edit }}
+    	<INPUT type="submit" value="Save">
+	</form>
+	</fieldset>
+</div>
+{% endif %}
+
 
 
 <div class="overlay">

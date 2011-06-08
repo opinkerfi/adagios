@@ -27,7 +27,7 @@ sys.path.insert(1, '/opt/pynag')
 
 from pynag.Model import *
 from pynag import Model
-from forms import PynagForm
+from forms import *
 
 def test(request):
         return index(request)
@@ -99,12 +99,13 @@ def view_object( request, object_id):
     c = {}
     c['messages'] = m = []
     o = ObjectDefinition.objects.filter(id=object_id)[0]
-    c['form'] = PynagForm(initial=o._original_attributes, extra=o._original_attributes)
+    c['form'] = PynagForm(initial=o._original_attributes, extra=o)
     #o = ObjectDefinition.objects.get_by_id(id=object_id)
     c['my_object'] = o
     #forms.CharField
     c['attr_val'] = o.get_attribute_tuple()
     c.update(csrf(request))
+    c['raw_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'] })
     c['command_line'] = o.get_effective_command_line()
     c['object_macros'] = o.get_all_macros()
     c['effective_hostgroups'] = o.get_effective_hostgroups()
