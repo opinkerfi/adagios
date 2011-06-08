@@ -75,4 +75,4 @@ def index( request, module_name ):
     c['gets'] = gets
     c['puts'] = puts
     c['module_documenation'] = m.__doc__
-    return render_to_response('rest/index.html', c)
+    return render_to_response('index.html', c)
