@@ -209,7 +209,7 @@ def get_templates():
 
 def get_hosts():
 	""" Returns a list of available hosts """
-	#return ["host1","host2","host3"]
+	return ["host1","host2","host3"]
 	pass
 
 def install_nsclient(remote_host, username, password):

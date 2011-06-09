@@ -6,8 +6,8 @@
 <div class="okconfig_add">
 	<form action="addtemplate" method="post">{% csrf_token %}
 	<fieldset id="id_addhost" class="okconfig_add">
-	  <legend>Add Host</legend>
-		{{ form }}
+	  <legend>Add Template to Host</legend>
+		{{ form.as_p }}
 		<p>
     	<INPUT type="submit" value="Submit">
 	</form>

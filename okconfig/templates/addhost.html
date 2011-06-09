@@ -7,7 +7,7 @@
 	<form action="addhost" method="post">{% csrf_token %}
 	<fieldset id="id_addhost" class="okconfig_add">
 	  <legend>Add Host</legend>
-		{{ form }}
+		{{ form.as_p }}
 		<p>
     	<INPUT type="submit" value="Submit">
 	</form>

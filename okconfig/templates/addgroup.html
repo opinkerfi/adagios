@@ -7,7 +7,7 @@
 	<form action="addgroup" method="post">{% csrf_token %}
 	<fieldset id="id_addgroup" class="okconfig_addgroup">
 	  <legend>Add Group</legend>
-		{{ form }}
+		{{ form.as_p }}
 		<p>
     	<INPUT type="submit" value="Submit">
 	</form>
