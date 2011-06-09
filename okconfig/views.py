@@ -25,6 +25,8 @@ from django.template import RequestContext
 from okconfig import forms
 import okconfig.forms
 
+from configurator import okconfig
+
 def addgroup(request):
     c = {}
     form = c['form'] = okconfig.forms.AddGroupForm()

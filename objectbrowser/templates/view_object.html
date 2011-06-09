@@ -21,32 +21,18 @@
 	-->
 
 
-	
-<!-- Print all attributes -->
-<div class="attributelook">
-	<fieldset id="attributelook" class="attributelook">
-	  <legend>Advanced</legend>
-	  
-	{% for attr in attr_val %}
-		<p>
-			<label>{{ attr.0 }}</label>
-			{% if attr.1 == "0" or attr.1 == "1" %}
-				{% if attr.1 == "0" %}
-			<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/off.png"></span>
-				
-				{% else %}
-			<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/on.png"></span>
-			
-				{% endif %}
-			{% else %}
-			<span class="attributevalue" id="key_{{ attr.0 }}">{{ attr.1 }}</span>
-			<span class="inherited attributevalue">{{attr.2}}</span>
-			<button class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</button>
-			{% endif %} 
-		</p>
-	{% endfor %} 
+
+<!-- Testing Djang Form Object -->
+{% if form %}
+	<div class="attribute_contact">
+	<fieldset id="attribute_contact" class="attribute_{{object_type}}">
+	  <legend>{{my_object.object_type}} - {{ my_object.description }}</legend>
+		{{ form.as_p }}
 	</fieldset>
-</div>
+	</div>
+{% endif %}
+
+
 
 <!-- We only Display command_line if there is any -->
 {% if command_line %}
@@ -84,7 +70,7 @@
 {% if effective_contactgroups %}
 	<div class="effective_contactgroups">
 	<fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
-	  <legend>Effective Contactgroups</legend>
+	  <legend>Contactgroups</legend>
 		{% for group in effective_contactgroups %}
 		  <p>
 		    <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
@@ -94,15 +80,21 @@
 	</div>
 {% endif %}
 
-<!-- Testing Djang Form Object -->
-{% if form %}
-	<div class="attribute_contact">
-	<fieldset id="attribute_contact" class="attribute_{{object_type}}">
-	  <legend>Django forms.Form test</legend>
-		{{ form.as_p }}
+<!-- Display all members of a specific contactgroup -->
+{% if effective_members %}
+	<div class="effective_members">
+	<fieldset id="id_effective_members" class="attribute_{{object_type}}">
+	  <legend>Members</legend>
+		{% for m in effective_members %}
+		  <p>
+		    <label><a href="id={{ m.id }}">{{m.description}}</a></label>
+		  </p>
+		{% endfor %}
 	</fieldset>
 	</div>
 {% endif %}
+
+
 
 {% if raw_edit %}
 <!-- Raw edit of this object -->
@@ -116,6 +108,33 @@
 	</fieldset>
 </div>
 {% endif %}
+
+	
+<!-- Print all attributes -->
+<div class="attributelook">
+	<fieldset id="attributelook" class="attributelook">
+	  <legend>Advanced</legend>
+	  
+	{% for attr in attr_val %}
+		<p>
+			<label>{{ attr.0 }}</label>
+			{% if attr.1 == "0" or attr.1 == "1" %}
+				{% if attr.1 == "0" %}
+			<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/off.png"></span>
+				
+				{% else %}
+			<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/on.png"></span>
+			
+				{% endif %}
+			{% else %}
+			<span class="attributevalue" id="key_{{ attr.0 }}">{{ attr.1 }}</span>
+			<span class="inherited attributevalue">{{attr.2}}</span>
+			<button class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</button>
+			{% endif %} 
+		</p>
+	{% endfor %} 
+	</fieldset>
+</div>
 
 
 

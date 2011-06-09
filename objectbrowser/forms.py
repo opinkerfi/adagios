@@ -78,6 +78,8 @@ attribute_types = {
                     "sunday" : ("Sunday", forms.CharField),
                     "timeperiod_name" : ("Timeperiod Name", forms.ChoiceField),
                     "saturday" : ("Saturday", forms.CharField),
+                    "pager" : ("Pager", forms.CharField),
+                    "email" : ("E-mail", forms.EmailField),
                     }
 
 
@@ -128,10 +130,10 @@ class PynagForm(forms.Form):
                     templates.append( (obj['timeperiod_name'], obj['timeperiod_name'])  )
                 extra_arguments['choices'] = ( templates )
             # TODO: Multiple Choice field doesnt work good enough yet, lets change to charfield
-            if type(fieldClass) == type(forms.MultipleChoiceField):
-                fieldClass = forms.CharField
-                if extra_arguments.has_key('choices'):
-                    del extra_arguments['choices']
+            #if type(fieldClass) == type(forms.MultipleChoiceField):
+            #    fieldClass = forms.CharField
+            #    if extra_arguments.has_key('choices'):
+            #        del extra_arguments['choices']
             self.fields['id_%s' % k] = fieldClass(label=friendly_name, initial=v, **extra_arguments)
             
 class ManualEditObjectForm(forms.Form):
