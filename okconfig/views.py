@@ -29,7 +29,7 @@ from configurator import okconfig
 
 def addgroup(request):
     c = {}
-    form = c['form'] = okconfig.forms.AddGroupForm()
+    form = c['form'] = forms.AddGroupForm()
     if request.POST:
         # TODO: Do interesting submit stuff
         pass
@@ -37,7 +37,7 @@ def addgroup(request):
 
 def addhost(request):
     c = {}
-    form = c['form'] = okconfig.forms.AddHostForm()
+    form = c['form'] = forms.AddHostForm()
     if request.POST:
         # TODO: Do interesting submit stuff
         pass
@@ -46,7 +46,7 @@ def addhost(request):
 
 def addtemplate(request):
     c = {}
-    form = c['form'] = okconfig.forms.AddTemplateForm()
+    form = c['form'] = forms.AddTemplateForm()
     if request.POST:
         # TODO: Do interesting submit stuff
         pass
@@ -55,9 +55,9 @@ def addtemplate(request):
 
 def scan_network(request):
     c = {}
-    form = c['form'] = okconfig.forms.ScanNetworkForm(initial={'network_address':'Just click submit'})
+    form = c['form'] = forms.ScanNetworkForm(initial={'network_address':'Just click submit'})
     
     if request.POST:
-        form = c['form'] = okconfig.forms.ScanNetworkForm(initial=request.POST)
+        form = c['form'] = forms.ScanNetworkForm(initial=request.POST)
         c['scan_results'] = True
     return render_to_response('scan_network.html', c, context_instance=RequestContext(request))
