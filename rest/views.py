@@ -8,6 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 my_module = None
 
+# TODO: rewrite to use inspect module instead of my_module.__dict__. That is the correct approach.
+
+
 def _load(module_name):
     #global my_module
     #if not my_module:
@@ -46,6 +49,7 @@ def handle_request(request, module_name, attribute, format):
         result = json.dumps( result, sort_keys=True, indent=4 )
         mimetype='application/javascript'
     elif format == 'xml':
+            # TODO: For some reason Ubuntu does not have this module. Where is it? Should we use lxml instead ?
             import xml.marshal.generic
             result = xml.marshal.generic.dumps(result)
             mimetype='application/xml'
