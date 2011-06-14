@@ -3,14 +3,17 @@
 {% block content %}
 
 
-<div class="okconfig_add ui-widget">
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all">
 	<form action="addhost" method="post">{% csrf_token %}
-	<div class="ui-widget-header ui-state-active ui-corner-top"><h3>Add Host</h3></div>
-	<div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active">
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Add Host</a>
+		</li>
+	</ul>
 		{{ form.as_p }}
 		<p>
     	<INPUT id="zesubmit" type="submit" value="Submit">
-    </div>
+    
 	</form>
 </div>
 

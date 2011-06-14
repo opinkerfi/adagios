@@ -7,7 +7,7 @@
 
     <script type="text/javascript" src="/static/js/jquery.tools.min.js"></script>
   	<script type="text/javascript" src="/static/js/jquery-ui-1.8.13.custom.min.js"></script>
-	<link type="text/css" href="/static/css/ui-darkness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+	<link type="text/css" href="/static/css/sunny/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
 
 
     <script type="text/javascript">                                         
@@ -27,33 +27,49 @@
 <div id=container>
     <div id="sidebar" class="left navi ui-corner-all ui-state-default ui-tabs-nav">
         {% block sidebar %}
+
         <div class="ui-widget-header ui-corner-all ui-tabs navheader">Wizards</div>
-        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-		<li><a href="/okconfig/addhost">Add New Host</a></li>
-		<li><a href="/okconfig/addtemplate">Add Template To Host</a></li>
-		<li><a href="/okconfig/addgroup">Add New Group</a></li>
-		<li><a href="/okconfig/scan_network">Scan Network for new Hosts</a></li>
-        </ul>
+        <div class="naventries">
+        	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
+				<li><a href="/okconfig/addhost">New Host</a></li>
+				<li><a href="/okconfig/addtemplate">Host Templates</a></li>
+				<li><a href="/okconfig/addgroup">Add New Group</a></li>
+				<li><a href="/okconfig/scan_network">Network Scan</a></li>
+        	</ul>
+        </div>
+        
+        
         <div class="ui-widget-header ui-corner-all ui-tabs navheader">Browse</div>
-        <ul>
+        <div class="naventries">
+        	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
         		<li><a href="/objectbrowser/">Configuration</a></li>
-              	<li><a href="/objectbrowser/search?object_type=host">Hosts</a></li>
+           	  	<li><a href="/objectbrowser/search?object_type=host">Hosts</a></li>
         		<li><a href="/objectbrowser/search?object_type=contact">Contacts</a></li>
         		<li><a href="/objectbrowser/search?object_type=hostgroup">Hostgroups</a></li>
-        </ul>
+        	</ul>
+        </div>
+
+
         <div class="ui-widget-header ui-corner-all ui-tabs navheader">Cool Searches</div>
-        <ul>
+		<div class="naventries">
+	        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
         		<li><a href="/objectbrowser/search?object_type=service&register=1&service_description=None">Services With no service_description</a></li>
               	<li><a href="/objectbrowser/search?object_type=service&register=1&host_name=None">Services With no host_name</a></li>
         		<li><a href="/objectbrowser/search?huh=asd">Services that are not okconfig compatible</a></li>
-        </ul>
+	        </ul>
+	    </div>
+	    
+	    
         <div class="ui-widget-header ui-corner-all ui-tabs navheader">Other</div>
-        <ul>
-        	<li><a href="/NotImplemented">View Nagios.cfg</a></li>
-        	<li><a href="/NotImplemented">Verify Configuration</a></li>
-        	<li><a href="/NotImplemented">Adagios Settings</a></li>
-        	<li><a href="/NotImplemented">Help</a></li>
-        {% endblock %}
+        <div class="naventries">
+        	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
+        		<li><a href="/NotImplemented">View Nagios.cfg</a></li>
+        		<li><a href="/NotImplemented">Verify Configuration</a></li>
+        		<li><a href="/NotImplemented">Adagios Settings</a></li>
+        		<li><a href="/NotImplemented">Help</a></li>
+        	</ul>
+        </div>
+        	{% endblock %}
     </div>
 
     <div id="content" class="left">

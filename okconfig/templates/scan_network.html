@@ -3,16 +3,21 @@
 {% block content %}
 
 
-<div class="okconfig_scan_network">
+<div class="okconfig_scan_network ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Scan Network</a>
+		</li>
+	</ul>
 	<form action="scan_network" method="post">{% csrf_token %}
-	<fieldset id="id_okconfig_scan_network" class="scan_network_form">
-	  <legend>Scan Network</legend>
-		{{ form }}
-    	<INPUT type="submit" value="Scan">
+		{{ form.as_p }}
+    	<INPUT id="zesubmit" type="submit" value="Scan">
 	</form>
-	</fieldset>
 </div>
 
+<script>
+$('#zesubmit').button();
+</script>
 
 
 

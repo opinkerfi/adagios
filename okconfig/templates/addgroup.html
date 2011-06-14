@@ -3,15 +3,22 @@
 {% block content %}
 
 
-<div class="okconfig_add">
-	<form action="addgroup" method="post">{% csrf_token %}
-	<fieldset id="id_addgroup" class="okconfig_addgroup">
-	  <legend>Add Group</legend>
-		{{ form.as_p }}
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Add Group</a>
+		</li>
+	</ul>
+	{{ form.as_p }}
 		<p>
-    	<INPUT type="submit" value="Submit">
+    	<INPUT id="zesubmit" type="submit" value="Submit">
 	</form>
 	</fieldset>
 </div>
+
+<script>
+$('#zesubmit').button();
+</script>
+
 
 {% endblock %}
