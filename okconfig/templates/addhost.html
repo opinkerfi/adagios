@@ -1,17 +1,21 @@
 {% extends "configurator/base.html" %}
-{% block title %}Add Group{% endblock %}
+{% block title %}Add Host{% endblock %}
 {% block content %}
 
 
-<div class="okconfig_add">
+<div class="okconfig_add ui-widget">
 	<form action="addhost" method="post">{% csrf_token %}
-	<fieldset id="id_addhost" class="okconfig_add">
-	  <legend>Add Host</legend>
+	<div class="ui-widget-header ui-state-active ui-corner-top"><h3>Add Host</h3></div>
+	<div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active">
 		{{ form.as_p }}
 		<p>
-    	<INPUT type="submit" value="Submit">
+    	<INPUT id="zesubmit" type="submit" value="Submit">
+    </div>
 	</form>
-	</fieldset>
 </div>
+
+<script>
+$('#zesubmit').button();
+</script>
 
 {% endblock %}

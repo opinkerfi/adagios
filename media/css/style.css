@@ -1,6 +1,6 @@
 body {
 	font-family: helvetica, georgia, courier, arial;
-	background: #fff;
+	background: #000;
 	margin: 0;
 	padding: 0;
 	font-size: 70%;
@@ -36,6 +36,7 @@ p {
 #content {
 	padding-top: 12px;
 	width:800px;
+	padding-left: 20px;
 }
 
 button {
@@ -57,7 +58,7 @@ button {
 }
 
 #logo {
-	background: url("/static/adagios-logo.png") no-repeat scroll 10px 10px #fff;
+	background: url("/static/adagios-logo-white.png") no-repeat scroll 10px 10px #000000;
 	display: block;
 	height: 72px;
 	padding: 0;
@@ -100,6 +101,7 @@ em {
 label
 {
 	width: 200px;
+	font-size: 110%;
 	height: 30px;
 	float: left;
 	text-align: left;
