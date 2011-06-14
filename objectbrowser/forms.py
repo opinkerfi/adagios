@@ -80,6 +80,8 @@ attribute_types = {
                     "saturday" : ("Saturday", forms.CharField),
                     "pager" : ("Pager", forms.CharField),
                     "email" : ("E-mail", forms.EmailField),
+                    
+                    "hostgroups" : ("Host Groups", forms.CharField)
                     }
 
 

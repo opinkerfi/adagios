@@ -1,0 +1,30 @@
+{% extends "configurator/base.html" %}
+{% block title %}{{ object_type }}{% endblock %}
+
+{% block content %}
+
+<!--
+{{ my_object }}
+-->
+
+
+
+{% if messages %}
+	<h1> Messages from the developers </h1>
+	<ul>
+	{% for message in messages %}
+		<li>{{ message }}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
+
+
+
+
+	
+{% else %}
+	<p>Object not found </p>
+{% endif %}
+
+{% endblock %}

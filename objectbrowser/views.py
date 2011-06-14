@@ -98,14 +98,16 @@ def list_object_types(request):
 def view_object( request, object_id):
     c = {}
     c['messages'] = m = []
-    #o = ObjectDefinition.objects.filter(id=object_id)[0]
+    if request.POST:
+        print "i am posting, yay!"
     o = ObjectDefinition.objects.get_by_id(id=object_id)
     c['form'] = PynagForm(initial=o._original_attributes, extra=o)
     c['my_object'] = o
-    #forms.CharField
     c['attr_val'] = o.get_attribute_tuple()
     c.update(csrf(request))
     c['raw_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'] })
+    if o['object_type'] == 'host':
+        return _view_host(request, c)
     try: c['command_line'] = o.get_effective_command_line()
     except: pass
     try: c['object_macros'] = o.get_all_macros()
@@ -118,6 +120,16 @@ def view_object( request, object_id):
     try: c['effective_members'] = o.get_effective_members()
     except: pass
     return render_to_response('view_object.html', c)
+
+def _view_host( request, c):
+    ''' This is a helper function to view_object '''
+    host = c['my_object']
+    c['related_services'] = host.get_effective_services()
+    c['command_line'] = host.get_effective_command_line()
+    c['effective_hostgroups'] = host.get_effective_hostgroups()
+    c['effective_contacts'] = host.get_effective_contacts()
+    c['effective_contactgroups'] = host.get_effective_contact_groups()
+    return render_to_response('view_host.html', c)
 
 def suggestions( request ):
     c = {}

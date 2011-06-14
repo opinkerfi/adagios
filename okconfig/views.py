@@ -39,6 +39,7 @@ def addhost(request):
     c = {}
     form = c['form'] = forms.AddHostForm()
     if request.POST:
+        print okconfig.get_templates()  
         # TODO: Do interesting submit stuff
         pass
     return render_to_response('addhost.html', c, context_instance=RequestContext(request))
