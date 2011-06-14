@@ -136,7 +136,7 @@ class PynagForm(forms.Form):
             #    fieldClass = forms.CharField
             #    if extra_arguments.has_key('choices'):
             #        del extra_arguments['choices']
-            self.fields['id_%s' % k] = fieldClass(label=friendly_name, initial=v, **extra_arguments)
+            self.fields['%s' % k] = fieldClass(label=friendly_name, initial=v, **extra_arguments)
             
 class ManualEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )

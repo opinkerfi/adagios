@@ -37,16 +37,15 @@
 			<li><a href="#manual_edit">Manual edit</a></li>
 		</ul>
 		<div id="host">
-			 TODO: How can we automatically split a django form into different fieldsets ?
-			 <pre>
-			 host_name:
-			 ip_address:
-			 alias:
-			 
-			 hostgroups:
-			 use
+			<div>
+			 <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
+			 <label>{{ form.address.label }}</label><p>{{ form.address }}</p>
+			 <label>{{ form.alias.label }}</label><p>{{ form.alias }}</p> 
+			
+			 <label>{{ form.hostgroups.label }}</label><p>{{ form.hostgroups }}</p>
+			 <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
+			 </div>
 			 SNMP Community & Version
-			 </pre>
 				<!-- Display All Hostgroups if this is that kind of an object -->
 				{% if effective_hostgroups %}
 					<div class="effective_hostgroups">
@@ -62,17 +61,13 @@
 				{% endif %} 
 		</div>	
 		<div id="monitoring">
-			TODO: How can we automatically split a django form into different fieldsets ?
-			<pre>
-			check_period
-			check_command
-			max_check_attempts
-			normal_check_interval
-			retry_check_interval
-			active_checks_enabled
-			passive_checks_enabled
-			</pre>
-			
+			<label>{{ form.check_period.label }}</label><p>{{ form.check_period }}</p>
+			<label>{{ form.check_command.label }}</label><p>{{ form.check_command }}</p>
+			<label>{{ form.max_check_attempts.label }}</label><p>{{ form.max_check_attempts }}</p>
+			<label>{{ form.check_interval.label }}</label><p>{{ form.normal_check_interval }}</p>
+			<label>{{ form.retry_interval.label }}</label><p>{{ form.retry_check_interval }}</p>
+			<label>{{ form.active_checks_enabled.label }}</label><p>{{ form.active_checks_enabled }}</p>
+			<label>{{ form.passive_checks_enabled.label }}</label><p>{{ form.passive_checks_enabled }}</p>
 			{% if command_line %}
 				<div class="command_line_box">
 				<fieldset id="id_command_line" class="attribute_{{object_type}}">
@@ -94,15 +89,12 @@
 
 		
 		<div id="notifications">
-			TODO: How can we automatically split a django form into different fieldsets ?
-			<pre>
-			notifications_enabled
-			contact_groups/contacts
-			notification_interval
-			notification_period
-			notification_options
-			first notification_delay
-			</pre>
+			<label>{{ form.notifications_enabled.label }}</label><p>{{ form.notifications_enabled }}</p>
+			<label>{{ form.contactgroups.label }}</label><p>{{ form.contactgroups }}</p>
+			<label>{{ form.contacts.label }}</label><p>{{ form.contacts }}</p>
+			<label>{{ form.notification_interval.label }}</label><p>{{ form.notification_interval }}</p>
+			<label>{{ form.notification_period.label }}</label><p>{{ form.notification_period }}</p>
+			<label>{{ form.notification_options.label }}</label><p>{{ form.notification_options }}</p>
 			
 			<!-- Display All Contacts if this is that kind of an object -->
 			{% if effective_contacts %}
