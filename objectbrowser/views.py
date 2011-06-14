@@ -105,7 +105,7 @@ def view_object( request, object_id):
     c['my_object'] = o
     c['attr_val'] = o.get_attribute_tuple()
     c.update(csrf(request))
-    c['raw_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'] })
+    c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'] })
     if o['object_type'] == 'host':
         return _view_host(request, c)
     try: c['command_line'] = o.get_effective_command_line()
@@ -124,11 +124,12 @@ def view_object( request, object_id):
 def _view_host( request, c):
     ''' This is a helper function to view_object '''
     host = c['my_object']
-    c['related_services'] = host.get_effective_services()
+    c['effective_services'] = host.get_effective_services()
     c['command_line'] = host.get_effective_command_line()
     c['effective_hostgroups'] = host.get_effective_hostgroups()
     c['effective_contacts'] = host.get_effective_contacts()
     c['effective_contactgroups'] = host.get_effective_contact_groups()
+    c['object_macros'] = host.get_all_macros()
     return render_to_response('view_host.html', c)
 
 def suggestions( request ):

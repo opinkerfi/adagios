@@ -96,13 +96,13 @@
 
 
 
-{% if raw_edit %}
+{% if manual_edit %}
 <!-- Raw edit of this object -->
-<div class="objectbrowser_raw_edit">
+<div class="objectbrowser_manual_edit">
 	<form action="view_object" method="post">{% csrf_token %}
-	<fieldset id="id_raw_edit" class="objectbrowser_raw_edit">
+	<fieldset id="id_manual_edit" class="objectbrowser_manual_edit">
 	  <legend>Manual Edit</legend>
-		{{ raw_edit }}
+		{{ manual_edit }}
     	<INPUT type="submit" value="Save">
 	</form>
 	</fieldset>

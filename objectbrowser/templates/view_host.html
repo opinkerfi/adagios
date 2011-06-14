@@ -3,6 +3,8 @@
 
 {% block content %}
 
+
+
 <!--
 {{ my_object }}
 -->
@@ -19,12 +21,174 @@
 {% endif %}
 
 
+{% if my_object %}
+
+<form action="#" method="POST">
+
+	<!-- wrapper for scrollable items -->
+	<div id="tabs">
+
+		<ul>
+			<li><a href="#host">Host</a></li>
+			<li><a href="#monitoring">Monitoring</a></li>
+			<li><a href="#services">Services</a></li>
+			<li><a href="#notifications">Notifications</a></li>
+			<li><a href="#advanced">Advanced</a></li>
+			<li><a href="#manual_edit">Manual edit</a></li>
+		</ul>
+		<div id="host">
+			 TODO: How can we automatically split a django form into different fieldsets ?
+			 <pre>
+			 host_name:
+			 ip_address:
+			 alias:
+			 
+			 hostgroups:
+			 use
+			 SNMP Community & Version
+			 </pre>
+				<!-- Display All Hostgroups if this is that kind of an object -->
+				{% if effective_hostgroups %}
+					<div class="effective_hostgroups">
+					<fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
+					  <legend>Hostgroups</legend>
+						{% for group in effective_hostgroups %}
+						  <p>
+						    <label><a href="id={{ group.id }}">{{group.hostgroup_name}}</a></label>
+						  </p>
+						{% endfor %}
+					</fieldset>
+					</div>
+				{% endif %} 
+		</div>	
+		<div id="monitoring">
+			TODO: How can we automatically split a django form into different fieldsets ?
+			<pre>
+			check_period
+			check_command
+			max_check_attempts
+			normal_check_interval
+			retry_check_interval
+			active_checks_enabled
+			passive_checks_enabled
+			</pre>
+			
+			{% if command_line %}
+				<div class="command_line_box">
+				<fieldset id="id_command_line" class="attribute_{{object_type}}">
+				  <legend>Check Command: {{ my_object.check_command }}</legend>
+					{{ command_line }}
+					<hr>
+					{% for macro,value in object_macros.items %}
+					  <p>
+					    <label> {{ macro }} </label> =
+					    <span >{{ value }}</span>
+					  </p>
+					{% endfor %}
+				</fieldset>
+				</div>
+			{% endif %}
+			
+		</div>
 
 
+		
+		<div id="notifications">
+			TODO: How can we automatically split a django form into different fieldsets ?
+			<pre>
+			notifications_enabled
+			contact_groups/contacts
+			notification_interval
+			notification_period
+			notification_options
+			first notification_delay
+			</pre>
+			
+			<!-- Display All Contacts if this is that kind of an object -->
+			{% if effective_contacts %}
+				<div class="effective_contacts">
+				<fieldset id="id_effective_contacts" class="attribute_{{object_type}}">
+				  <legend>Effective Contactgroups</legend>
+					{% for contact in effective_contacts %}
+					  <p>
+					    <label><a href="id={{ contact.id }}">{{contact.contact_name}}</a></label>
+					  </p>
+					{% endfor %}
+				</fieldset>
+				</div>
+			{% endif %}
+			
+			<!-- Display All Contactgroups if this is that kind of an object -->
+			{% if effective_contactgroups %}
+				<div class="effective_contactgroups">
+				<fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
+				  <legend>Contactgroups</legend>
+					{% for group in effective_contactgroups %}
+					  <p>
+					    <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
+					  </p>
+					{% endfor %}
+				</fieldset>
+				</div>
+			{% endif %}
+		</div>
+		<div id="advanced">
+			<!-- Testing Djang Form Object -->
+			{% if form %}
+				<div class="attribute_contact">
+				 <legend>{{my_object.object_type}} - {{ my_object.description }}</legend>
+					{{ form.as_p }}
+				</div>
+			{% endif %}
+		</div>
+		<div id="services">
+			<legend>Services of this Host</legend>
+			{% if effective_services %}
+				<div class="effective_services">
+				<ul>
+				 {% for service in effective_services %}
+				 	<li><a href="id={{service.id}}">{{ service.service_description }}</a></li>
+				 {% endfor %}
+				</ul>
+				</div>
+			{% endif %}
+		</div>
+		<div id="manual_edit">
+			{% if manual_edit %}
+			<!-- Manual edit of this object -->
+			<div class="objectbrowser_manual_edit">
+				<form action="view_object" method="post">{% csrf_token %}
+				<fieldset id="id_manual_edit" class="objectbrowser_manual_edit">
+				  <legend>Manual Edit</legend>
+					{{ manual_edit }}
+			    	<INPUT type="submit" value="Save">
+				</form>
+				</fieldset>
+			</div>
+			{% endif %}
+		</div>
+		
+
+	</div>
+
+</form>		
 
 	
 {% else %}
 	<p>Object not found </p>
 {% endif %}
+
+
+<script>
+// wait until document is fully scriptable
+$('#accordion').accordion({ header: "h4" });
+$('#tabs').tabs();
+//$('#tabs').tabs('add', '#cramp', "Ble");
+//$(function() {
+//
+//});
+</script>
+
+
 
 {% endblock %}
