@@ -43,17 +43,7 @@ def index(request):
 def list_hosts(request):
     c = {}
     #c['hosts'] = Host.objects.all
-
-    templates = []
-    hosts = []
-    for host in Host.objects.all:
-        print "\"%s\"" % (host['id'])
-        hosts.append({'id': host['id'], 'host_name': host.host_name, 'alias': host.alias, 'register': host.register})
-        
-    # List hosts seperately from templates
-    hosttable = tables.HostTable(hosts)
-    hosttable.order_by = ('host_name')
-    c['hosttable'] = hosttable
+      
 
     return render_to_response('hosts.html', c)
 
