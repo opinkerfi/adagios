@@ -18,6 +18,12 @@ from django import forms
 #from django.forms import *
 from pynag import Model
 
+class UseField(forms.ChoiceField):
+    def __init__(self, *args,**kwargs):
+        if not kwargs.has_key('choices'):
+            pass
+        forms.ChoiceField.__init__(self, *args, **kwargs)
+
 attribute_types = {
                     'host_name':('Host Name',forms.CharField),
                     'active_checks_enabled':('Enable Active Checks', forms.BooleanField),
@@ -45,7 +51,7 @@ attribute_types = {
                     "max_check_attempts":("Max Check Attempts", forms.CharField),
                     "check_freshness":("Check Freshness", forms.BooleanField),
 
-                    "use":("Inherit Settings from", forms.MultipleChoiceField),
+                    "use":("Inherit Settings from", UseField),
                     "check_command":("Check Command", forms.ChoiceField),
                     "check_interval":("Check Interval", forms.IntegerField),
                     "retry_interval":("Retry Interval", forms.IntegerField),
@@ -86,11 +92,21 @@ attribute_types = {
 
 
 class PynagForm(forms.Form):
+    test = forms.CharField()
     def __init__(self, *args, **kwargs):
         extra = kwargs.pop('extra')
-        super(forms.Form, self).__init__(*args, **kwargs)
-        if extra['object_type'] == 'service':
-            fields_to_display = "host_name,service_description,command_line,"
+        initial = {}
+        if kwargs.has_key("initial"):
+            for k,v in kwargs['initial'].items():
+                if k == 'check_command':
+                    initial[k] = v.split('!',1)[0]
+                elif attribute_types.has_key(k) and attribute_types[k][1] == forms.MultipleChoiceField:
+                    initial[k] = v.split(',')
+                else:
+                    initial[k] = v
+            kwargs.pop('initial')
+            kwargs['initial'] = initial
+        super(forms.Form,self).__init__(*args, **kwargs)
         for k,v  in extra._original_attributes.items():
             if k == 'meta': continue
             extra_arguments = {}
@@ -102,7 +118,8 @@ class PynagForm(forms.Form):
             if k == 'check_command':
                 commands = Model.Command.objects.all
                 commands = map(lambda x: (x.command_name, x.command_name), commands)
-                extra_arguments['choices'] = ( commands )
+                extra_arguments['choices'] = commands
+                extra_arguments['initial'] = 'check-host-alive'
             if k == 'contact_groups':
                 # TODO: Make sure already initial values are selected
                 contact_groups = []
@@ -127,16 +144,20 @@ class PynagForm(forms.Form):
             if k == 'timeperiod_name':
                 # TODO: Make sure already initial values are selected
                 templates = []
-                for obj in Timeperiod.objects.all:
+                for obj in Model.Timeperiod.objects.all:
                     if not obj['timeperiod_name']: continue
                     templates.append( (obj['timeperiod_name'], obj['timeperiod_name'])  )
                 extra_arguments['choices'] = ( templates )
-            # TODO: Multiple Choice field doesnt work good enough yet, lets change to charfield
-            #if type(fieldClass) == type(forms.MultipleChoiceField):
-            #    fieldClass = forms.CharField
-            #    if extra_arguments.has_key('choices'):
-            #        del extra_arguments['choices']
-            self.fields['%s' % k] = fieldClass(label=friendly_name, initial=v, **extra_arguments)
-            
+            self.fields['%s' % k] = fieldClass(label=friendly_name, **extra_arguments)
+                
+                
+class DynamicForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        extra_fields = kwargs.pop('extra')
+        super(forms.Form, self).__init__(*args, **kwargs)
+        choices = ( ('value1','value1'), ('value2','value2')   ) 
+        for k,v in extra_fields.items():
+            self.fields[k] = forms.MultipleChoiceField(choices=choices )
+        
 class ManualEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )

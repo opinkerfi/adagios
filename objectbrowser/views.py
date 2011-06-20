@@ -22,6 +22,7 @@ from django.utils import simplejson
 from django.core.context_processors import csrf
 
 import sys
+from adagios.okconfig.forms import AddHostForm
 sys.path.insert(1, '/opt/pynag')
 
 
@@ -95,17 +96,34 @@ def list_object_types(request):
             c['object_types'].append( (name, active, inactive) )
     return render_to_response('list_object_types.html', c)
 
-def view_object( request, object_id):
+def view_object( request, object_id=None, object_type=None, shortname=None):
     c = {}
     c['messages'] = m = []
-    if request.POST:
-        print "i am posting, yay!"
-    o = ObjectDefinition.objects.get_by_id(id=object_id)
-    c['form'] = PynagForm(initial=o._original_attributes, extra=o)
+    if object_id != None:
+        o = ObjectDefinition.objects.get_by_id(id=object_id)
+    elif object_type != None and shortname != None:
+        otype = Model.string_to_class[object_type]
+        o = otype.objects.get_by_shortname(shortname)
+    else:
+        raise ValueError("Object not found")
+    if request.method == 'POST':
+        if request.POST.has_key('definition'):
+            'Manual edit of the form'
+        else:
+            "this is the 'advanced_edit' form "
+            c['form'] = PynagForm( initial=request.POST, extra=o )
+            for k,v in request.POST.items():
+                if k == "csrfmiddlewaretoken": continue
+                if o[k] != v:
+                    o[k] = v
+            #o.save()
+    
+    if not c.has_key('form'):        
+        c['form'] = PynagForm(initial=o._original_attributes, extra=o)
     c['my_object'] = o
     c['attr_val'] = o.get_attribute_tuple()
     c.update(csrf(request))
-    c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'] })
+    c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     if o['object_type'] == 'host':
         return _view_host(request, c)
     try: c['command_line'] = o.get_effective_command_line()
