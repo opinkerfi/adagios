@@ -41,14 +41,28 @@ def index(request):
 
 ## DEPRECATED for list_objects
 def list_hosts(request):
-        c = {}
-	c['hosts'] = Host.objects.all
-        return render_to_response('configurator/index.html', c)
+    c = {}
+    #c['hosts'] = Host.objects.all
+
+    templates = []
+    hosts = []
+    for host in Host.objects.all:
+        print "\"%s\"" % (host['id'])
+        hosts.append({'id': host['id'], 'host_name': host.host_name, 'alias': host.alias, 'register': host.register})
+        
+    # List hosts seperately from templates
+    hosttable = tables.HostTable(hosts)
+    hosttable.order_by = ('host_name')
+    c['hosttable'] = hosttable
+
+    return render_to_response('hosts.html', c)
+
 ## Deprecated for list_objects
 def list_contacts(request):
-	c = {}
-	c['contacts'] = Contact.objects.all
-        return render_to_response('configurator/list_contacts.html', c)
+    c = {}
+    c['contacts'] = Contact.objects.all
+    
+    return render_to_response('configurator/list_contacts.html', c)
 
 
 def list_objects( request, object_type=None, display_these_objects=None ):
@@ -81,6 +95,7 @@ def list_objects( request, object_type=None, display_these_objects=None ):
         c['objects'] = myClass.objects.filter(**search)
         m.append("I used the filter %s=%s" % (search.keys(), search.values()))
     m.append( "Found %s objects of type %s" % (len(c['objects']), object_type))
+    c['object_type'] = object_type
     return render_to_response('list_objects.html', c)
 
 def list_object_types(request):
