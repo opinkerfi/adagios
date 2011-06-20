@@ -36,7 +36,16 @@ def get_object(id):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     del o.objects
     return o
-
+def get_host_names(invalidate_cache=False):
+    """ Returns a list of all hosts """
+    if invalidate_cache is True:
+        raise NotImplementedError()
+    all_hosts = Model.Host.objects.all
+    hostnames = []
+    for i in all_hosts:
+        if not i['host_name'] is None:
+            hostnames.append( i['host_name'])
+    return hostnames
 def change_attribute(id, attribute_name, new_value):
     '''Changes object with the designated ID to file
     

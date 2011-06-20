@@ -88,12 +88,12 @@ def verify():
 			return False
 	pass
 
-def addhost(host_name, ipaddress=None, group_name="default", templates=[], use=None, force=False):
+def addhost(host_name, address=None, group_name="default", templates=[], use=None, force=False):
 	"""Adds a new host to Nagios. Returns true if operation is successful.
 	
 	Args:
 	 host_name -- Hostname of the host to be added
-	 ipaddress -- IP Address of the host (if None, it will be looked up in DNS)
+	 address -- IP Address of the host (if None, it will be looked up in DNS)
 	 group_name -- Primary host/contactgroup for this host. (if none, use "default")
 	 templates -- List of template names to be added to this host
 	 use -- if this host inherits another host (i.e. "windows-server")
@@ -103,12 +103,12 @@ def addhost(host_name, ipaddress=None, group_name="default", templates=[], use=N
 	 addhost(host_name="example_host",group="database_servers")
 
 	Returns:
-	 True if operation was successful.
+	 String message with result of addhost
 	"""
-	if ipaddress == None:
-		ipaddress = ''
+	if address == None:
+		address = ''
 	else:
-		ipaddress = "--ip '%s'" % (ipaddess)
+		address = "--ip '%s'" % (address)
 	if force == True:
 		force = '--force'
 	else:
@@ -118,8 +118,9 @@ def addhost(host_name, ipaddress=None, group_name="default", templates=[], use=N
 		use = ''
 	else:
 		use = "--parent '%s'" % (use)
-	command = "addhost --host '%s' %s %s %s" % (host_name, ipaddress, use, force)
-	return runCommand(command)
+	command = "addhost --host '%s' %s %s %s" % (host_name, address, use, force)
+	result = runCommand(command)
+	return result
 
 def addtemplate(host_name, template_name, force=False):
 	"""Adds a new template to existing host in Nagios.
