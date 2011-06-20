@@ -23,34 +23,85 @@ from django.core.context_processors import csrf
 from django.template import RequestContext
 
 from okconfig import forms
-import okconfig.forms
+#import okconfig.forms
 
 from configurator import okconfig
 
+def addcomplete(request, c={}):
+    return render_to_response('addcomplete.html', c)
+
 def addgroup(request):
     c = {}
-    form = c['form'] = forms.AddGroupForm()
-    if request.POST:
-        # TODO: Do interesting submit stuff
-        pass
+    c['messages'] = []
+    c['errors'] = []
+    if request.method == 'GET':
+        f = forms.AddGroupForm(initial=request.GET)
+    elif request.method == 'POST':
+        f = forms.AddGroupForm(request.POST)
+        if f.is_valid():
+            group_name = f.cleaned_data['group_name']
+            alias = f.cleaned_data['alias']
+            #description = f.cleaned_data['description']
+            force = f.cleaned_data['force']
+            try:
+                msg = okconfig.addgroup(group_name=group_name,alias=alias,force=force)
+                c['messages'].append( msg  )
+                c['group_name'] = group_name
+                return addcomplete(request, c)
+            except BaseException, e:
+                c['errors'].append( "error adding group: %s" % e ) 
+        else:
+            c['errors'].append( 'Could not validate input')
+    c['form'] = f
     return render_to_response('addgroup.html', c, context_instance=RequestContext(request))
 
 def addhost(request):
     c = {}
-    form = c['form'] = forms.AddHostForm()
-    if request.POST:
-        print okconfig.get_templates()  
-        # TODO: Do interesting submit stuff
-        pass
+    c['messages'] = []
+    c['errors'] = []
+    if request.method == 'GET':
+        f = forms.AddHostForm(initial=request.GET)
+    elif request.method == 'POST':
+        f = forms.AddHostForm(request.POST)
+        if f.is_valid():
+            host_name = f.cleaned_data['host_name']
+            group_name = f.cleaned_data['group_name']
+            address = f.cleaned_data['address']
+            #description = f.cleaned_data['description']
+            force = f.cleaned_data['force']
+            try:
+                msg = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force)
+                c['messages'].append( msg  )
+                c['host_name'] = host_name
+                return addcomplete(request, c)
+            except BaseException, e:
+                c['errors'].append( "error adding host: %s" % e ) 
+        else:
+            c['errors'].append( 'Could not validate input')
+    c['form'] = f
     return render_to_response('addhost.html', c, context_instance=RequestContext(request))
 
 
-def addtemplate(request):
+def addtemplate(request, host_name=None):
     c = {}
-    form = c['form'] = forms.AddTemplateForm()
-    if request.POST:
-        # TODO: Do interesting submit stuff
-        pass
+    c['messages'] = []
+    c['errors'] = []
+    c['form'] = forms.AddTemplateForm(initial=request.GET )
+    if request.method == 'POST':
+        f = forms.AddTemplateForm(request.POST)
+        if f.is_valid():
+            host_name = f.cleaned_data['host_name']
+            template_name = f.cleaned_data['template_name']
+            force =f.cleaned_data['force']
+            try:
+                msg = okconfig.addtemplate(host_name=host_name, template_name=template_name,force=force)
+                c['messages'].append( msg )
+                c['host_name'] = host_name
+                return addcomplete(request, c)
+            except BaseException, e:
+                c['errors'] = e
+        else:
+            c['errors'].append( 'Could not validate input' ) 
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
 
