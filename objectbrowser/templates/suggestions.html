@@ -13,7 +13,7 @@
 {% for k,v in booleans.items %}
 	<tr>
 		<td>{{ k }}</td>
-		<td class="{% if v %}warning{% else %}ok{% endif %}">{{ v }}</td>
+		<td class="{% if v %}ok{% else %}warning{% endif %}">{{ v }}</td>
 	</tr>
 {% endfor %}
 {% endif %}

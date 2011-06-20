@@ -24,7 +24,7 @@ from django.core.context_processors import csrf
 import sys
 from adagios.okconfig.forms import AddHostForm
 sys.path.insert(1, '/opt/pynag')
-
+import configurator.okconfig
 
 from pynag.Model import *
 from pynag import Model
@@ -183,9 +183,9 @@ def confighealth( request  ):
                 services_using_hostgroups.append(i)
             if i['icon_image'] is None:
                 services_without_icon_image.append(i)
-    c['booleans']['Nagios Service needs reload'] = Model.config.needs_reload()
-    c['booleans']['Adagios configuration cache is outdated'] = Model.config.needs_reparse()
-    
+    c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
+    c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
+    c['booleans']['OKConfig is installed and working'] = configurator.okconfig.verify()
     s['Services with no "service_description"'] = services_no_description            
     s['Hosts without any contacts'] = hosts_without_contacts
     s['Services without any contacts'] = services_without_contacts

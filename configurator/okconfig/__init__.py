@@ -69,6 +69,7 @@ def verify():
 	4) the following commands are in path:
 		addhost, addgroup, addtemplate
 	"""
+	# TODO: Check if okconfig is writeable
 	
 	# 1)
 	if not os.path.isfile(cfg_file):
@@ -91,7 +92,7 @@ def verify():
 		if not command_was_found:
 			"command %s not found in path" % (command)
 			return False
-	pass
+	return True
 
 def addhost(host_name, address=None, group_name="default", templates=[], use=None, force=False):
 	"""Adds a new host to Nagios. Returns true if operation is successful.
