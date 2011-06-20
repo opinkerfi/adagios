@@ -51,7 +51,7 @@ def list_contacts(request):
         return render_to_response('configurator/list_contacts.html', c)
 
 
-def list_objects( request, object_type=None ):
+def list_objects( request, object_type=None, display_these_objects=None ):
     c = {}
     c['messages'] = m = []
     c['objects'] = objects = []
@@ -73,7 +73,9 @@ def list_objects( request, object_type=None ):
     else:
         myClass = Model.string_to_class[object_type]
     # Lets decide if we want to get everything or apply a filter
-    if len(search) == 0:
+    if display_these_objects is not None:
+        c['objects'] = display_these_objects
+    elif len(search) == 0:
         c['objects'] = myClass.objects.all
     else:
         c['objects'] = myClass.objects.filter(**search)
@@ -150,14 +152,53 @@ def _view_host( request, c):
     c['object_macros'] = host.get_all_macros()
     return render_to_response('view_host.html', c)
 
-def suggestions( request ):
+def confighealth( request  ):
     c = {}
     c['messages'] = m = []
-    c['suggestions'] = s = {}
-    # active_hosts_with_no_shortname
+    c['objecthealth'] = s = {}
+    c['booleans'] = {}
     services_no_description = Service.objects.filter(register="1", service_description=None)
-    s['services_no_description'] = len(services_no_description)
-    return render_to_response('suggestions.html', c)
+    hosts_without_contacts = []
+    hosts_with_invalid_contacts = []
+    hosts_without_services =[]
+    objects_with_invalid_parents = []
+    services_without_contacts = []
+    services_using_hostgroups = []
+    services_without_icon_image = []
+    for i in ObjectDefinition.objects.all:
+        continue
+        try:
+            i.get_parents()
+        except ValueError:
+            objects_with_invalid_parents.append(i)
+    for i in Host.objects.filter(register="1"):
+            if i['contacts'] is None and i['contact_groups'] is None:
+                hosts_without_contacts.append(i)
+            if i.get_effective_services() == []:
+                hosts_without_services.append(i)
+    for i in Service.objects.filter(register="1"):
+            if i['contacts'] is None and i['contact_groups'] is None:
+                services_without_contacts.append(i)
+            if i['hostgroups'] is not None:
+                services_using_hostgroups.append(i)
+            if i['icon_image'] is None:
+                services_without_icon_image.append(i)
+    c['booleans']['Nagios Service needs reload'] = Model.config.needs_reload()
+    c['booleans']['Adagios configuration cache is outdated'] = Model.config.needs_reparse()
+    
+    s['Services with no "service_description"'] = services_no_description            
+    s['Hosts without any contacts'] = hosts_without_contacts
+    s['Services without any contacts'] = services_without_contacts
+    s['Objects with invalid "use" attribute'] = objects_with_invalid_parents
+    s['Services applied to hostgroups'] = services_using_hostgroups
+    s['Services without a logo'] = services_without_icon_image
+    s['Hosts without Service Checks'] = hosts_without_services
+    if request.GET.has_key('show') and s.has_key( request.GET['show'] ):
+        objects =  s[request.GET['show']]
+        print len(objects)
+        return list_objects(request,display_these_objects=objects )
+    else:
+        return render_to_response('suggestions.html', c)
     
     
  

@@ -18,11 +18,15 @@ from django import forms
 #from django.forms import *
 from pynag import Model
 
-class UseField(forms.ChoiceField):
-    def __init__(self, *args,**kwargs):
-        if not kwargs.has_key('choices'):
-            pass
-        forms.ChoiceField.__init__(self, *args, **kwargs)
+class UseField(forms.CharField):
+    def __init__(self, object, *args,**kwargs):
+        kwargs.pop('choices')
+        forms.CharField.__init__(self, *args, **kwargs)
+    def clean(self, **kwargs):
+        print "CLEAN"
+        if self.cleaned_data.has_key('use'):
+            print self.cleaned_data.get('use')
+
 
 attribute_types = {
                     'host_name':('Host Name',forms.CharField),
@@ -92,7 +96,6 @@ attribute_types = {
 
 
 class PynagForm(forms.Form):
-    test = forms.CharField()
     def __init__(self, *args, **kwargs):
         extra = kwargs.pop('extra')
         initial = {}
@@ -139,7 +142,7 @@ class PynagForm(forms.Form):
                 templates = []
                 for obj in extra.objects.all:
                     if not obj['name']: continue
-                    templates.append( (obj['name'], obj['name'])  )
+                    #templates.append( (obj['name'], obj['name'])  )
                 extra_arguments['choices'] = ( templates )
             if k == 'timeperiod_name':
                 # TODO: Make sure already initial values are selected
@@ -148,6 +151,11 @@ class PynagForm(forms.Form):
                     if not obj['timeperiod_name']: continue
                     templates.append( (obj['timeperiod_name'], obj['timeperiod_name'])  )
                 extra_arguments['choices'] = ( templates )
+            
+            # 
+            if fieldClass is UseField:
+                extra_arguments['object'] = extra 
+                extra_arguments['initial'] = ['windows-server']
             self.fields['%s' % k] = fieldClass(label=friendly_name, **extra_arguments)
                 
                 

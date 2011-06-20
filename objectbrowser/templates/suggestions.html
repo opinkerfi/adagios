@@ -1,0 +1,38 @@
+{% extends "configurator/base.html" %}
+{% block title %}List of Objects{% endblock %}
+
+{% block content %}
+
+
+{% if booleans %}
+<table border=1>
+	<tr>
+		<th>Check</th>
+		<th>Status</th>
+	</tr>
+{% for k,v in booleans.items %}
+	<tr>
+		<td>{{ k }}</td>
+		<td class="{% if v %}warning{% else %}ok{% endif %}">{{ v }}</td>
+	</tr>
+{% endfor %}
+{% endif %}
+</table>
+
+{% if objecthealth %}
+	<h1>Object Health</h1>
+	<table border=1>
+	<tr>
+		<th>Description</th>
+		<th>Count</th>
+	</tr>
+	{% for k,v in objecthealth.items %}
+		<tr>
+			<td><a href="?show={{ k }}">{{ k }}</a></td>
+			<td>{{ v|length }}</td>
+		</tr>
+	{% endfor %}
+	</ul>
+{% endif %}
+
+{% endblock %}

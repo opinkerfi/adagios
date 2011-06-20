@@ -34,9 +34,11 @@ class AddTemplateForm(forms.Form):
     templates = map( lambda x: (x, x), templates )
     hosts = helpers.get_host_names()
     host_list = map(lambda x: (x, x), hosts)
+    templates.sort()
+    host_list.sort()
     # Attributes
     host_name = forms.ChoiceField(choices=host_list)
-    template_name = forms.ChoiceField(choices=templates)
+    template_name = forms.ChoiceField(choices=templates )
     force = forms.BooleanField(required=False)
     def clean(self):
         cleaned_data = self.cleaned_data
