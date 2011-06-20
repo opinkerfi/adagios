@@ -21,7 +21,6 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.utils import simplejson
 from django.core.context_processors import csrf
 
-import tables
 import sys
 sys.path.insert(1, '/opt/pynag')
 
@@ -48,20 +47,12 @@ def list_hosts(request):
     hosts = []
     for host in Host.objects.all:
         print "\"%s\"" % (host['id'])
-        if host.register != "0":
-            hosts.append({'id': host['id'], 'host_name': host.host_name, 'register': host.register})
-        else:
-            templates.append({'id': host['id'], 'name': host.name})
-
+        hosts.append({'id': host['id'], 'host_name': host.host_name, 'alias': host.alias, 'register': host.register})
+        
     # List hosts seperately from templates
     hosttable = tables.HostTable(hosts)
     hosttable.order_by = ('host_name')
     c['hosttable'] = hosttable
-    
-    # Template table
-    templatetable = tables.HostTemplateTable(templates)
-    templatetable.order_by = ('name')
-    c['templatetable'] = templatetable
 
     return render_to_response('hosts.html', c)
 
