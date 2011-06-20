@@ -88,7 +88,6 @@ def index( request, module_name ):
     c['gets'] = gets
     c['puts'] = puts
     c['module_documenation'] = inspect.getdoc(m)
-    c['form'] = CallFunctionForm(function=m.addhost)
     return render_to_response('index.html', c)
 
 class CallFunctionForm(forms.Form):
