@@ -1,0 +1,16 @@
+
+
+<!-- Generic Object Editor Form -->
+{% if form %}
+	<form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}	
+	<div class="attribute_contact">
+	<fieldset id="attribute_contact" class="attribute_{{object_type}}">
+	  <legend>{{my_object.object_type}} - {{ my_object.description }}</legend>
+		{{ form.as_p }}
+		<INPUT type="submit" value="Save">
+	</fieldset>
+	</div>
+	</form>
+{% endif %}
+
+<!-- End of Generic Object Editor Form -->

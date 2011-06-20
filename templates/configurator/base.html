@@ -43,9 +43,9 @@
         <div class="naventries">
         	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
         		<li><a href="/objectbrowser/">Configuration</a></li>
-           	  	<li><a href="/objectbrowser/search?object_type=host">Hosts</a></li>
-        		<li><a href="/objectbrowser/search?object_type=contact">Contacts</a></li>
-        		<li><a href="/objectbrowser/search?object_type=hostgroup">Hostgroups</a></li>
+           	  	<li><a href="/objectbrowser/search?object_type=host&register=1">Hosts</a></li>
+        		<li><a href="/objectbrowser/search?object_type=contact&register=1">Contacts</a></li>
+        		<li><a href="/objectbrowser/search?object_type=hostgroup&register=1">Hostgroups</a></li>
         	</ul>
         </div>
 
@@ -73,6 +73,22 @@
     </div>
 
     <div id="content" class="left">
+
+{% if messages %}<div class="debugmessages">
+	<h1> Messages from the developers </h1>
+	<ul>
+		{% for message in messages %}<li>{{ message }}</li>{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if errors %}<div class="error">
+	<h1> Error: </h1>
+	<ul>
+		{% for error in errors %}<li>{{ error }}</li>{% endfor %}
+	</ul>
+</div>
+{% endif %}
         {% block content %}{% endblock %}
     </div>
 </div>
