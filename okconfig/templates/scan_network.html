@@ -3,6 +3,15 @@
 {% block content %}
 
 
+{% if errors %}
+	<h1> ERROR </h1>
+	<ul>
+	{% for message in errors %}
+		<li>{{ message }}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
 <div class="okconfig_scan_network ui-tabs ui-widget ui-widget-content ui-corner-all">
 	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">

@@ -6,9 +6,10 @@ from django.utils import simplejson
 #from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 
-my_module = None
+import inspect
+from django import forms
 
-# TODO: rewrite to use inspect module instead of my_module.__dict__. That is the correct approach.
+my_module = None
 
 
 def _load(module_name):
@@ -21,21 +22,29 @@ def _load(module_name):
 def handle_request(request, module_name, attribute, format):
     m = _load(module_name)
     # TODO: Only allow function calls if method == POST
+    members = {}
+    for k,v in inspect.getmembers(m):
+        members[k] = v
+    item = members[attribute]
+    docstring = inspect.getdoc(item)
     if request.method == 'GET':
-        item = m.__dict__[attribute]
         item_type = str(type(item))
         if format == 'help':
-            result = item.__doc__
-        elif item_type != "<type 'function'>":
-            result = m.__dict__[attribute]
+            result = inspect.getdoc(item)
+        elif not inspect.isfunction(item):
+            result = item
         else:
             arguments = request.GET
-            result = item( **arguments )
+            c = {}
+            c['function_name'] = attribute
+            c['form'] = CallFunctionForm(function=item, initial=request.GET)
+            c['docstring'] = docstring
+            return render_to_response('function_form.html', c)
+            #result = item( **arguments )
     elif request.method == 'POST':
-        item = m.__dict__[attribute]
-        item_type = str(type(item))
-        if item_type != "<type 'function'>":
-            result = m.__dict__[attribute]
+        item = members[attribute]
+        if not inspect.isfunction(item):
+            result = item
         else:
             arguments = {} #request.POST.items()
             for k, v in request.POST.items():
@@ -44,6 +53,7 @@ def handle_request(request, module_name, attribute, format):
             result = item( **arguments )
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))
+    # Everything below is just about formatting the results
     if format == 'json':
         import json 
         result = json.dumps( result, sort_keys=True, indent=4 )
@@ -63,14 +73,13 @@ def handle_request(request, module_name, attribute, format):
 def index( request, module_name ):
     m = _load(module_name)
     gets,puts = [],[]
-    for k,v in m.__dict__.items():
+    blacklist = ( 'argv', 'environ', 'exit', 'path', 'putenv', 'getenv', )
+    for k,v in inspect.getmembers(m):
         if k.startswith('_'): continue
-        if k == '': continue
-        item_type = str(type(v))
-        #description = "%-30s\t%s\n" % (k, str(type(v)))
-        if item_type == "<type 'module'>":
+        if k in blacklist: continue
+        if inspect.ismodule(v):
             continue
-        if item_type == "<type 'function'>":
+        elif inspect.isfunction(v):
             puts.append( k )
         else:
             gets.append( k )
@@ -78,5 +87,25 @@ def index( request, module_name ):
     c['module_name'] = module_name
     c['gets'] = gets
     c['puts'] = puts
-    c['module_documenation'] = m.__doc__
+    c['module_documenation'] = inspect.getdoc(m)
+    c['form'] = CallFunctionForm(function=m.addhost)
     return render_to_response('index.html', c)
+
+class CallFunctionForm(forms.Form):
+    def __init__(self, function, *args, **kwargs):
+        super(forms.Form,self).__init__( *args, **kwargs)
+        argspec = inspect.getargspec( function )
+        args = argspec.args
+        defaults = argspec.defaults
+        if defaults is None:
+            defaults = []
+        else:
+            defaults = list(defaults)
+        
+        for i in argspec.args:
+            self.fields[i] = forms.CharField( label=i )
+        while len(defaults) > 0:
+            value = defaults.pop()
+            field = args.pop()
+            self.fields[field].initial = value 
+        

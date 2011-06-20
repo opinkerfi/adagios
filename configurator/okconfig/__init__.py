@@ -37,13 +37,18 @@ __status__ = "Development"
 
 
 cfg_file="/etc/nagios/nagios.cfg"
-template_directory="/etc/nagios/okconfig/examples"
+template_directory="/etc/nagios/okconfig/templates"
+examples_directory="/etc/nagios/okconfig/examples"
 destination_directory="/etc/nagios/okconfig/hosts"
 
 
 from sys import exit
 from sys import argv
+from sys import path
+path.insert(0, "/opt/pynag")
+from pynag import Model
 from os import getenv,putenv,environ
+
 import os.path
 import subprocess
 
@@ -156,7 +161,7 @@ def addgroup(group_name, alias=None, force=False):
 
 	Returns:
 	 True if operation was successful
-	"""
+	""" 
 	if alias == None: alias=group_name
 	if force == True:
 		force = '--force'
@@ -179,6 +184,17 @@ def findhost(host_name):
 
 def get_templates():
 	""" Returns a list of available templates """
+	result = {}
+	if not os.path.isdir(examples_directory):
+		raise IOError("Examples directory does not exist: %s" % examples_directory)
+	filelist = os.listdir(examples_directory)
+	for file in filelist:
+		if os.path.isfile(examples_directory + "/" + file) and file.endswith('.cfg-example'):
+			template_name = file[:-12]
+			template_parents = []
+			template_friendly_name = ''
+			result[template_name] = {'parents':template_parents, 'name':template_friendly_name}
+	return result
 	dummy_templates = {
 		'windows': {
             'parents': [],
@@ -210,9 +226,28 @@ def get_templates():
 
 def get_hosts():
 	""" Returns a list of available hosts """
-	return ["host1","host2","host3"]
-	pass
+	result = []
+	hosts = Model.Host.objects.all
+	for host in hosts:
+		if host.get_shortname() not in result and host.get_shortname() is not None:
+			result.append(host.get_shortname())
+	return result
 
+def get_groups():
+	""" Returns a list of okconfig compatible groups """
+	result = []
+	servicegroups = Model.Servicegroup.objects.all
+	for s in servicegroups:
+		name = s.get_shortname()
+		if name == None: continue
+		try:
+			Model.Contactgroup.objects.get_by_shortname(name)
+			Model.Hostgroup.objects.get_by_shortname(name)
+			result.append( name )
+		except ValueError:
+			continue
+	return result
+		
 def install_nsclient(remote_host, username, password):
 	""" Logs into remote (windows) host and installs NSClient.
 	
@@ -277,6 +312,6 @@ def runCommand(command):
 all_templates = get_templates()
 if __name__ == '__main__':
 	'This leaves room for some unit testing while being run from the command line'
-	result = verify()
+	result = get_groups()
 	print result
 	print "done"
