@@ -5,14 +5,6 @@
 
 <h1>List of Objects</h1>
 
-{% if messages %}
-	<h1> Messages from the developers </h1>
-	<ul>
-	{% for message in messages %}
-		<li>{{ message }}</li>
-	{% endfor %}
-	</ul>
-{% endif %}
 
 {% if objects %}
 	<table border=1>
@@ -30,9 +22,19 @@
 			<td><a href="search?filename={{ o.filename }}">{{ o.filename }}</a></td>
 		</tr>
 	{% endfor %}
+	</table
 	</ul>
 {% else %}
 	<p>No objects found. </p>
+{% endif %}
+
+{% if messages %}
+	<h1> Messages from the developers </h1>
+	<ul>
+	{% for message in messages %}
+		<li>{{ message }}</li>
+	{% endfor %}
+	</ul>
 {% endif %}
 
 {% endblock %}

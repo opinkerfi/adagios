@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     (r'^/?$', 'objectbrowser.views.list_object_types'),
     (r'^/search/?$', 'objectbrowser.views.list_objects'),
     (r'/id=(?P<object_id>.+)$', 'objectbrowser.views.view_object'),
+    (r'/hosts$', 'objectbrowser.views.list_hosts'),
     # 
     #(r'/(?P<object_type>.+)/?$', 'objectbrowser.views.list_objects'),
     

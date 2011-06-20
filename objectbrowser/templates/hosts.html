@@ -1,0 +1,44 @@
+{% extends "configurator/base.html" %}
+{% block content %}
+
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all" style="width: 100px;text-align: center">
+<h3>View</h3><select>
+<option>Hosts</option>
+<option>Services</option>
+</select>
+</div>
+<br/>
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all left">
+<table style="width: 200px">
+<tr>
+    {% for column in hosttable.columns %}
+    <th class="ui-widget-header ui-corner-all ui-tabs"><a href="?sort={{ column.name_toggled }}">{{ column }}</a></th>
+    {% endfor %}
+</tr>
+{% for row in hosttable.rows %}
+    <tr>
+    {% for value in row %}
+        <td><a href="/objectbrowser/id={{ row.id }}">{{ value }}</a></td>
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all left" style="margin-left: 8px">
+<table style="width: 300px">
+<tr>
+    {% for column in templatetable.columns %}
+    <th class="ui-widget-header ui-corner-all ui-tabs"><a href="?sort={{ column.name_toggled }}">{{ column }}</a></th>
+    {% endfor %}
+</tr>
+{% for row in templatetable.rows %}
+    <tr>
+    {% for value in row %}
+        <td>{{ value }}</td>
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

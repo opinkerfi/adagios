@@ -21,6 +21,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.utils import simplejson
 from django.core.context_processors import csrf
 
+import tables
 import sys
 sys.path.insert(1, '/opt/pynag')
 
@@ -40,14 +41,36 @@ def index(request):
 
 ## DEPRECATED for list_objects
 def list_hosts(request):
-        c = {}
-	c['hosts'] = Host.objects.all
-        return render_to_response('configurator/index.html', c)
+    c = {}
+    #c['hosts'] = Host.objects.all
+
+    templates = []
+    hosts = []
+    for host in Host.objects.all:
+        print "\"%s\"" % (host['id'])
+        if host.register != "0":
+            hosts.append({'id': host['id'], 'host_name': host.host_name, 'register': host.register})
+        else:
+            templates.append({'id': host['id'], 'name': host.name})
+
+    # List hosts seperately from templates
+    hosttable = tables.HostTable(hosts)
+    hosttable.order_by = ('host_name')
+    c['hosttable'] = hosttable
+    
+    # Template table
+    templatetable = tables.HostTemplateTable(templates)
+    templatetable.order_by = ('name')
+    c['templatetable'] = templatetable
+
+    return render_to_response('hosts.html', c)
+
 ## Deprecated for list_objects
 def list_contacts(request):
-	c = {}
-	c['contacts'] = Contact.objects.all
-        return render_to_response('configurator/list_contacts.html', c)
+    c = {}
+    c['contacts'] = Contact.objects.all
+    
+    return render_to_response('configurator/list_contacts.html', c)
 
 
 def list_objects( request, object_type=None ):
@@ -78,6 +101,7 @@ def list_objects( request, object_type=None ):
         c['objects'] = myClass.objects.filter(**search)
         m.append("I used the filter %s=%s" % (search.keys(), search.values()))
     m.append( "Found %s objects of type %s" % (len(c['objects']), object_type))
+    c['object_type'] = object_type
     return render_to_response('list_objects.html', c)
 
 def list_object_types(request):
