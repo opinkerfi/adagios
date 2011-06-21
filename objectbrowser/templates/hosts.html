@@ -61,7 +61,8 @@ function populateListTable() {
 		lvTable = $('#listtable-' + listtype).dataTable( {
 			"bJQueryUI": true,
 			"bAutoWidth": true,
-			"iDisplayLength": 10
+			"sScrollY": "200px",
+			"bPaginate": false,
 		});
 
 		// Fetch the table data
@@ -103,9 +104,9 @@ function populateListTable() {
 
 
 <div class="tablecontainer">
-	<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all" style="width: 160px;text-align: center">
-		<h3 style="margin-left: 12px;float: left">View</h3>
-		<div style="margin-top: 6%;margin-left: 12px;float: left">
+	<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all" style="width: 220px;text-align: center">
+		<h3 style="margin-left: 12px;float: left;display: inline">View</h3>
+		<div style="margin-top: 6%;margin-left: 12px;float: left;display: inline">
 			<select id="listtype">
 				<option value="contactgroups">Contactgroups</option>
 				<option value="contacts">Contacts</option>
