@@ -59,36 +59,44 @@ function populateListTable() {
 	
 		// Activate the dataTable plugin
 		lvTable = $('#listtable-' + listtype).dataTable( {
-			"bJQueryUI": true,
-			"bAutoWidth": true,
-			"sScrollY": "200px",
-			"bPaginate": false,
+					"sScrollY": "200px",
+		"bScrollCollapse": true,
+		"bPaginate": false,
+		"bJQueryUI": true,
 		});
 
-		// Fetch the table data
-		$.getJSON('/rest/pynag/json/' + $('#listtype').val(), function(data) {
-			var allrows = [];
-			$.each(data, function(key, val) {
-				var row = [];
-				if (val[columns[0]] == undefined) {
-					row.push('<strong>' + val['name'] + '</strong>');
-				} else {
-					row.push(val[columns[0]]);
-				}
-				for (var i=1; i<columns.length; i++) {
-					// Put a space into empty
-					if (val[columns[i]] == undefined) {
-						row.push('&nbsp;');
-					// The actual data
+		var allrows = [];
+		
+		$.ajax({
+			url: '/rest/pynag/json/get_objects',
+			data: {  object_type: listtype, with_fields: columns.join(",") + ',id,name' },
+			dataType: 'json',
+			type: 'POST',
+			success: function(data) {	
+				$.each(data, function(key, val) {
+					var row = [];
+					if (val[columns[0]] == undefined) {
+						row.push('<strong>' + val['name'] + '</strong>');
 					} else {
-						row.push('' + val[columns[i]]);
+						row.push('<a href="/objectbrowser/id=' + val['id'] + '">' + val[columns[0]] + '</a>');
 					}
-				}
-				// Push on my 2 dimensional array
-				allrows.push(row);
-			});
-			// Finally add the rows to the DataTable
-			lvTable.fnAddData(allrows);
+					for (var i=1; i<columns.length; i++) {
+						// Put a space into empty
+						if (val[columns[i]] == undefined) {
+							row.push('&nbsp;');
+						// The actual data
+						} else {
+							row.push('<a href="/objectbrowser/id=' + val['id'] + '">' + val[columns[i]] + '</a>');
+						}
+					}
+					// Push on my 2 dimensional array
+					allrows.push(row);
+					
+				});
+				// Finally add the rows to the DataTable
+				lvTable.fnAddData(allrows);
+				
+			}
 		});
 	}
 	
