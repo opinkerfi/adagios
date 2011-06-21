@@ -9,67 +9,131 @@
 
 
 $(document).ready(function() {
-	$('#namestuff').dataTable();
-} );
+	populateListTable();
+});
+
+function populateListTable() {
+
+	// Chosen value from pulldown
+	var listtype = $('#listtype').val();
+	
+	// Hide all listtables if we have any 
+	$('.dataTables_wrapper').each(function(index){
+		$(this).hide();
+	});
+	
+	// Table does not exist, create it and fetch data
+	if ($('#listtable-' + listtype).length == 0) {
+		$('#listtables').append('<table class="listtable" id="listtable-' + listtype + '"><thead></thead><tbody></tbody></table>');
+
+		// Different columns for different object types
+		var columns = [];
+		var columnheadings = [];
+		
+		if ($('#listtype').val() == 'hosts') {
+			columns = ['host_name', 'address', 'alias'];
+			columnheadings = ['Hostname', 'IP Address', 'Description'];
+		} else if ($('#listtype').val() == 'services') {
+			columns = ['host_name', 'service_description'];
+			columnheadings = ['Hostname', 'Service'];
+		} else if ($('#listtype').val() == 'contacts') {
+			columns = ['contact_name', 'email', 'alias'];
+			columnheadings = ['Contact Name', 'E-Mail', 'Description'];
+		}
+
+		// Create the heading row
+		$('#listtable-' + listtype + ' > thead').append('<tr></tr>');
+		for (var i=0; i<columns.length; i++) {
+			$('#listtable-' + listtype + ' > thead > tr').append('<th>' + columnheadings[i] + '</td>');
+		}
+	
+		// Activate the dataTable plugin
+		lvTable = $('#listtable-' + listtype).dataTable( {
+			"bJQueryUI": true,
+			"bAutoWidth": true,
+			"iDisplayLength": 10
+		});
+
+		// Fetch the table data
+		$.getJSON('/rest/pynag/json/' + $('#listtype').val(), function(data) {
+			var allrows = [];
+			$.each(data, function(key, val) {
+				var row = [];
+				for (var i=0; i<columns.length; i++) {
+					// TODO ONLY host_name ??? should be able to work with all object types
+					if (columns[i] == 'host_name' && val[columns[i]] == undefined) {
+						val[columns[i]] = '<strong>' + val['name'] + '</strong>';
+					}
+					// Put a space into empty
+					if (val[columns[i]] == undefined) {
+						row.push('&nbsp;');
+					// The actual data
+					} else {
+						row.push('' + val[columns[i]]);
+					}
+				}
+				// Push on my 2 dimensional array
+				allrows.push(row);
+			});
+			// Finally add the rows to the DataTable
+			lvTable.fnAddData(allrows);
+		});
+	}
+	
+	// Show the correct table
+	$('#listtable-' + listtype + '_wrapper').show();
+	$('#listtable-' + listtype).show();
+}
 
 {% endblock %}
 {% block content %}
 
 
-<table id="namestuff">
-<thead>
-<tr><th>Name</th></tr>
-</thead>
-<tbody>
-<tr><td>Tombone</td></tr>
-<tr><td>Pallbone</td></tr>
-</tbody>
-</table>
 
+
+<div class="tablecontainer">
+	<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all" style="width: 160px;text-align: center">
+		<h3 style="margin-left: 12px;float: left">View</h3>
+		<div style="margin-top: 6%;margin-left: 12px;float: left">
+			<select id="listtype">
+				<option value="contacts">Contacts</option>
+				<option value="hosts" SELECTED>Hosts</option>
+				<option value="services">Services</option>
+			</select>
+		</div>
+		<div style="clear: both"></div>
+
+	</div>
+
+	<div id="loadingDiv">
+	</div>
+
+	
+	<div id="listtables" class="listtablewrapper">
+	</div>
+</div>
+
+
+<div style="clear: both"></div>
+</div>
 <script>
+
+$('#loadingDiv')
+    .hide()  // hide it initially
+    .ajaxStart(function() {
+    	$(this).html('<h3>Loading ' + $('#listtype').val() + '</h3>');
+        $(this).show();
+        $('#listtables').hide();
+    })
+    .ajaxStop(function() {
+        $(this).hide();
+        $('#listtables').show();
+    });
+
+$('#listtype').change(function() {
+	populateListTable();
+});
 </script>
 
-
-<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all" style="width: 100px;text-align: center">
-<h3>View</h3><select>
-<option>Hosts</option>
-<option>Services</option>
-</select>
-</div>
-<br/>
-<table>
-</table>
-<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all left">
-<table style="width: 200px">
-<tr>
-    {% for column in hosttable.columns %}
-    <th class="ui-widget-header ui-corner-all ui-tabs"><a href="?sort={{ column.name_toggled }}">{{ column }}</a></th>
-    {% endfor %}
-</tr>
-{% for row in hosttable.rows %}
-    <tr>
-    {% for value in row %}
-        <td><a href="/objectbrowser/id={{ row.id }}">{{ value }}</a></td>
-    {% endfor %}
-    </tr>
-{% endfor %}
-</table>
-</div>
-
-<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all left" style="margin-left: 8px">
-<table style="width: 300px">
-<tr>
-    {% for column in templatetable.columns %}
-    <th class="ui-widget-header ui-corner-all ui-tabs"><a href="?sort={{ column.name_toggled }}">{{ column }}</a></th>
-    {% endfor %}
-</tr>
-{% for row in templatetable.rows %}
-    <tr>
-    {% for value in row %}
-        <td>{{ value }}</td>
-    {% endfor %}
-    </tr>
-{% endfor %}
-</table>
 
 {% endblock %}
