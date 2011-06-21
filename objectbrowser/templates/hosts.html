@@ -31,22 +31,22 @@ function populateListTable() {
 		var columnheadings = [];
 	
 		// The first column should always be the distinct name, host_name, contactgroup_name...
-		if ($('#listtype').val() == 'hosts') {
+		if ($('#listtype').val() == 'host') {
 			columns = ['host_name', 'address', 'alias'];
 			columnheadings = ['Hostname', 'IP Address', 'Description'];
-		} else if ($('#listtype').val() == 'services') {
+		} else if ($('#listtype').val() == 'service') {
 			columns = ['host_name', 'service_description'];
 			columnheadings = ['Hostname', 'Service'];
-		} else if ($('#listtype').val() == 'contacts') {
+		} else if ($('#listtype').val() == 'contact') {
 			columns = ['contact_name', 'email', 'alias'];
 			columnheadings = ['Contact Name', 'E-Mail', 'Description'];
-		} else if ($('#listtype').val() == 'hostgroups') {
+		} else if ($('#listtype').val() == 'hostgroup') {
 			columns = ['hostgroup_name', 'alias'];
 			columnheadings = ['Hostgroup Name', 'Description'];
-		} else if ($('#listtype').val() == 'servicegroups') {
+		} else if ($('#listtype').val() == 'servicegroup') {
 			columns = ['servicegroup_name', 'alias'];
 			columnheadings = ['Servicegroup Name', 'Description'];
-		} else if ($('#listtype').val() == 'contactgroups') {
+		} else if ($('#listtype').val() == 'contactgroup') {
 			columns = ['contactgroup_name', 'alias'];
 			columnheadings = ['Contactgroup Name', 'Description'];
 		}
@@ -108,12 +108,12 @@ function populateListTable() {
 		<h3 style="margin-left: 12px;float: left;display: inline">View</h3>
 		<div style="margin-top: 6%;margin-left: 12px;float: left;display: inline">
 			<select id="listtype">
-				<option value="contactgroups">Contactgroups</option>
-				<option value="contacts">Contacts</option>
-				<option value="hostgroups">Hostgroups</option>
-				<option value="hosts" SELECTED>Hosts</option>
-				<option value="servicegroups">Servicegroups</option>
-				<option value="services">Services</option>
+				<option value="contactgroup">Contactgroups</option>
+				<option value="contact">Contacts</option>
+				<option value="hostgroup">Hostgroups</option>
+				<option value="host" SELECTED>Hosts</option>
+				<option value="servicegroup">Servicegroups</option>
+				<option value="service">Services</option>
 			</select>
 		</div>
 		<div style="clear: both"></div>
