@@ -1,16 +1,10 @@
 {% extends "configurator/base.html" %}
 {% block title %}Scan Network{% endblock %}
+{% block head %}
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
 {% block content %}
-
-
-{% if errors %}
-	<h1> ERROR </h1>
-	<ul>
-	{% for message in errors %}
-		<li>{{ message }}</li>
-	{% endfor %}
-	</ul>
-{% endif %}
 
 <div class="okconfig_scan_network ui-tabs ui-widget ui-widget-content ui-corner-all">
 	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
@@ -34,15 +28,18 @@ $('#zesubmit').button();
 
 {% if scan_results %}
 Scan Complete
-<table border=1>
+<table border=1 id="scan_results">
+  <thead>
 	<tr>
-	 <th>IP Address </th>
+	 <th>IP Address</th>
 	 <th>Host Name</th>
 	 <th>Is monitored</th>
 	 <th>DNS OK</th>
 	 <th>Agent Installed</th>
 	 <th>SNMP Access</th>
 	</tr>
+  </thead>
+  <tbody>
 	<tr>
 	 <td>10.0.0.1</td>
 	 <td> host.example.com</td>
@@ -67,6 +64,19 @@ Scan Complete
 	 <td> no </td>
 	 <td> yes </td>
 	</tr>
+  </tbody>
 </table>
+
+<script>
+$('#scan_results').dataTable({
+		"bSearch": false,
+		"sScrollY": "200px",
+		"bScrollCollapse": true,
+		"bPaginate": false,
+		"bJQueryUI": true,
+});
+</script>
+
+
 {% endif %}
 {% endblock %}
