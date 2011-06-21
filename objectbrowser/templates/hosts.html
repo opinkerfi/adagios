@@ -29,7 +29,8 @@ function populateListTable() {
 		// Different columns for different object types
 		var columns = [];
 		var columnheadings = [];
-		
+	
+		// The first column should always be the distinct name, host_name, contactgroup_name...
 		if ($('#listtype').val() == 'hosts') {
 			columns = ['host_name', 'address', 'alias'];
 			columnheadings = ['Hostname', 'IP Address', 'Description'];
@@ -39,6 +40,15 @@ function populateListTable() {
 		} else if ($('#listtype').val() == 'contacts') {
 			columns = ['contact_name', 'email', 'alias'];
 			columnheadings = ['Contact Name', 'E-Mail', 'Description'];
+		} else if ($('#listtype').val() == 'hostgroups') {
+			columns = ['hostgroup_name', 'alias'];
+			columnheadings = ['Hostgroup Name', 'Description'];
+		} else if ($('#listtype').val() == 'servicegroups') {
+			columns = ['servicegroup_name', 'alias'];
+			columnheadings = ['Servicegroup Name', 'Description'];
+		} else if ($('#listtype').val() == 'contactgroups') {
+			columns = ['contactgroup_name', 'alias'];
+			columnheadings = ['Contactgroup Name', 'Description'];
 		}
 
 		// Create the heading row
@@ -59,11 +69,12 @@ function populateListTable() {
 			var allrows = [];
 			$.each(data, function(key, val) {
 				var row = [];
-				for (var i=0; i<columns.length; i++) {
-					// TODO ONLY host_name ??? should be able to work with all object types
-					if (columns[i] == 'host_name' && val[columns[i]] == undefined) {
-						val[columns[i]] = '<strong>' + val['name'] + '</strong>';
-					}
+				if (val[columns[0]] == undefined) {
+					row.push('<strong>' + val['name'] + '</strong>');
+				} else {
+					row.push(val[columns[0]]);
+				}
+				for (var i=1; i<columns.length; i++) {
 					// Put a space into empty
 					if (val[columns[i]] == undefined) {
 						row.push('&nbsp;');
@@ -96,8 +107,11 @@ function populateListTable() {
 		<h3 style="margin-left: 12px;float: left">View</h3>
 		<div style="margin-top: 6%;margin-left: 12px;float: left">
 			<select id="listtype">
+				<option value="contactgroups">Contactgroups</option>
 				<option value="contacts">Contacts</option>
+				<option value="hostgroups">Hostgroups</option>
 				<option value="hosts" SELECTED>Hosts</option>
+				<option value="servicegroups">Servicegroups</option>
 				<option value="services">Services</option>
 			</select>
 		</div>
