@@ -28,7 +28,6 @@ def handle_request(request, module_name, attribute, format):
     item = members[attribute]
     docstring = inspect.getdoc(item)
     if request.method == 'GET':
-        item_type = str(type(item))
         if format == 'help':
             result = inspect.getdoc(item)
         elif not inspect.isfunction(item):
@@ -48,7 +47,9 @@ def handle_request(request, module_name, attribute, format):
         else:
             arguments = {} #request.POST.items()
             for k, v in request.POST.items():
-                print "%s = %s (%s)" % (k,v, type(v))
+                #print "%s = %s (%s)" % (k,v, type(v))
+                # TODO: Is it safe to turn all digits to int ?
+                #if str(v).isdigit(): v = int(float(v))
                 arguments[k] = v
             result = item( **arguments )
     else:
