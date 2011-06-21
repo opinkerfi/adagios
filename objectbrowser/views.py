@@ -42,9 +42,7 @@ def index(request):
 ## DEPRECATED for list_objects
 def list_hosts(request):
     c = {}
-    #c['hosts'] = Host.objects.all
-      
-
+    c['hosts'] = Host.objects.all
     return render_to_response('hosts.html', c)
 
 ## Deprecated for list_objects
@@ -204,6 +202,12 @@ def confighealth( request  ):
         return list_objects(request,display_these_objects=objects )
     else:
         return render_to_response('suggestions.html', c)
-    
+
+def view_nagioscfg(request):
+    c = {}
+    c['filename'] = Model.config.cfg_file
+    c['content'] = Model.config.maincfg_values
+    c['content'].sort()
+    return render_to_response('view_configfile.html', c)
     
  

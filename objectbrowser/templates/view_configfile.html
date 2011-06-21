@@ -1,0 +1,26 @@
+{% extends "configurator/base.html" %}
+{% block title %}{{ filename }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ filename }}</h1>
+
+
+{% if content %}
+	<table border=1>
+	<tr>
+		<th >Attribute</th>
+		<th align="left">Value</th>
+	</tr>
+	{% for k,v in content %}
+		<tr>
+			<td ">{{k}}</td>
+			<td align="left">{{v}}</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% else %}
+	<p>Config File not found </p>
+{% endif %}
+
+{% endblock %}
