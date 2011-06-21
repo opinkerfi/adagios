@@ -6,8 +6,10 @@ Convenient stateless functions for pynag
 
 import sys
 
+
 sys.path.insert(1,'/opt/pynag')
 from pynag import Model
+
 
 def _get_dict(x):
     #print "deleted"
@@ -25,12 +27,28 @@ services = map(_get_dict, Model.Service.objects.all )
 contactgroups = map(_get_dict, Model.Contactgroup.objects.all )
 hostgroups = map(_get_dict, Model.Hostgroup.objects.all )
 
+def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwargs):
+    ''' Get any type of object definition in a dict-compatible fashion
+        
+        Examples:
+            get_objects(object_type="host", register="1")
+        Returns:
+            List of ObjectDefinition
+    '''
+    tmp = Model.ObjectDefinition.objects.filter(object_type=object_type, **kwargs)
+    return map( lambda x: object_to_dict(x, attributes=with_fields), tmp)
 ''' Get All hosts '''
 #host_names = []
 #for _h in hosts:
 #    if _h.has_key('host_name'):
 #        host_names.append( _h[host_name] )
 
+def object_to_dict(object, attributes="id,shortname,object_type"):
+    """ Takes in a specific object definition, returns a hash maps with "attributes" as keys"""
+    result = {}
+    for k in attributes.split(','):
+        result[k] = object[k]
+    return result
 def get_object(id):
     '''Returns one specific ObjectDefinition'''
     o = Model.ObjectDefinition.objects.get_by_id(id)
