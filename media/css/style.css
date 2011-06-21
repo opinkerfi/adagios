@@ -55,13 +55,12 @@ button {
 }
 
 .even {
-	background: url("images/ui-bg_gloss-wave_60_fece2f_500x100.png") repeat-x scroll 50% 50% #FECE2F;
+	background-color:#eeeecc;
 }
 
 .listtable {
-	float: left;
-	width: 100%;
-	display: none;
+	
+
 }
 
 .tablecontainer {
@@ -72,6 +71,14 @@ button {
 	width: 400px;
 	display: none;
 	margin-top: 8px;
+}
+
+.console {
+	;
+}
+
+#id_definition {
+	font-family: courier;
 }
 
 #logo {
