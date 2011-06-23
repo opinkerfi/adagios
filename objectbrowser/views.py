@@ -101,33 +101,46 @@ def list_object_types(request):
             c['object_types'].append( (name, active, inactive) )
     return render_to_response('list_object_types.html', c)
 
+
 def view_object( request, object_id=None, object_type=None, shortname=None):
+    ''' Allows one to one specific object definition '''
     c = {}
+    c.update(csrf(request))
     c['messages'] = m = []
+    c['errors'] = []
+    # Get our object
     if object_id != None:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
     elif object_type != None and shortname != None:
+        # TODO: if multiple objects are found, display a list
         otype = Model.string_to_class[object_type]
         o = otype.objects.get_by_shortname(shortname)
     else:
         raise ValueError("Object not found")
+    
+    if request.method == 'GET' or request.POST.has_key('definition'):
+        c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
+        c['defined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_undefined_attributes=False)
+        c['undefined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False, show_inherited_attributes=False)
+    
     if request.method == 'POST':
         if request.POST.has_key('definition'):
             'Manual edit of the form'
+            o.rewrite( str_new_definition=request.POST.get('definition')  )
+            m.append("Object Saved manually to '%s'" % o['filename'])
         else:
             "this is the 'advanced_edit' form "
-            c['form'] = PynagForm( initial=request.POST, extra=o )
-            for k,v in request.POST.items():
-                if k == "csrfmiddlewaretoken": continue
-                if o[k] != v:
-                    o[k] = v
-            #o.save()
-    
-    if not c.has_key('form'):        
-        c['form'] = PynagForm(initial=o._original_attributes, extra=o)
+            c['form'] = PynagForm( pynag_object=o, data=request.POST )
+            if c['form'].is_valid():
+                c['form'].save()
+                m.append("Object Saved to %s" % o['filename'])
+            else:
+                c['errors'].append( "Problem reading form input")
+            #c['defined_attributes'] = PynagForm(pynag_object=o, data=o._original_attributes, show_undefined_attributes=False)
+            #c['undefined_attributes'] = PynagForm(pynag_object=o, data=o._original_attributes, show_defined_attributes=False, show_inherited_attributes=False)
+
     c['my_object'] = o
     c['attr_val'] = o.get_attribute_tuple()
-    c.update(csrf(request))
     c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     if o['object_type'] == 'host':
         return _view_host(request, c)
@@ -147,12 +160,26 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
 def _view_host( request, c):
     ''' This is a helper function to view_object '''
     host = c['my_object']
-    c['effective_services'] = host.get_effective_services()
-    c['command_line'] = host.get_effective_command_line()
-    c['effective_hostgroups'] = host.get_effective_hostgroups()
-    c['effective_contacts'] = host.get_effective_contacts()
-    c['effective_contactgroups'] = host.get_effective_contact_groups()
-    c['object_macros'] = host.get_all_macros()
+    if not c.has_key('errors'): c['errors'] = []
+    
+    try: c['effective_services'] = host.get_effective_services()
+    except: c['errors'].append( "Configuration error while looking up services")
+    
+    try: c['command_line'] = host.get_effective_command_line()
+    except: c['errors'].append( "Configuration error while looking up command_line")
+    
+    try: c['effective_hostgroups'] = host.get_effective_hostgroups()
+    except: c['errors'].append( "Configuration error while looking up hostgroups")
+    
+    try: c['effective_contacts'] = host.get_effective_contacts()
+    except: c['errors'].append( "Configuration error while looking up contacts")
+    
+    try: c['effective_contactgroups'] = host.get_effective_contact_groups()
+    except: c['errors'].append( "Configuration error while looking up contact_groups")
+    
+    try: c['object_macros'] = host.get_all_macros()
+    except: c['errors'].append( "Configuration error while looking up macros")
+    
     return render_to_response('view_host.html', c)
 
 def confighealth( request  ):

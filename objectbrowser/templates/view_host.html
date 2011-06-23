@@ -26,6 +26,13 @@
 			<li><a href="#advanced">Advanced</a></li>
 			<li><a href="#manual_edit">Manual edit</a></li>
 		</ul>
+		<div id="advanced">
+			{% include "advanced_edit_form.html" %} 	
+		</div>
+		<div id="manual_edit">
+			{% include "manual_edit_form.html" %}
+		</div>
+
 		<div id="host">
 			<div>
 			 <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
@@ -35,8 +42,9 @@
 			 <label>{{ form.hostgroups.label }}</label><p>{{ form.hostgroups }}</p>
 			 <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
 			 </div>
-			 SNMP Community & Version
-				<!-- Display All Hostgroups if this is that kind of an object -->
+			 
+			 
+			 <!-- Display All Hostgroups if this is that kind of an object -->
 				{% if effective_hostgroups %}
 					<div class="effective_hostgroups">
 					<fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
@@ -54,8 +62,8 @@
 			<label>{{ form.check_period.label }}</label><p>{{ form.check_period }}</p>
 			<label>{{ form.check_command.label }}</label><p>{{ form.check_command }}</p>
 			<label>{{ form.max_check_attempts.label }}</label><p>{{ form.max_check_attempts }}</p>
-			<label>{{ form.check_interval.label }}</label><p>{{ form.normal_check_interval }}</p>
-			<label>{{ form.retry_interval.label }}</label><p>{{ form.retry_check_interval }}</p>
+			<label>{{ form.check_interval.label }}</label><p>{{ form.check_interval }}</p>
+			<label>{{ form.retry_interval.label }}</label><p>{{ form.retry_interval }}</p>
 			<label>{{ form.active_checks_enabled.label }}</label><p>{{ form.active_checks_enabled }}</p>
 			<label>{{ form.passive_checks_enabled.label }}</label><p>{{ form.passive_checks_enabled }}</p>
 			{% if command_line %}
@@ -79,12 +87,12 @@
 
 		
 		<div id="notifications">
-			<label>{{ form.notifications_enabled.label }}</label><p>{{ form.notifications_enabled }}</p>
-			<label>{{ form.contactgroups.label }}</label><p>{{ form.contactgroups }}</p>
-			<label>{{ form.contacts.label }}</label><p>{{ form.contacts }}</p>
-			<label>{{ form.notification_interval.label }}</label><p>{{ form.notification_interval }}</p>
-			<label>{{ form.notification_period.label }}</label><p>{{ form.notification_period }}</p>
-			<label>{{ form.notification_options.label }}</label><p>{{ form.notification_options }}</p>
+			<p><label>{{ form.notifications_enabled.label }}</label>{{ form.notifications_enabled }}</p>
+			<p><label>{{ form.contact_groups.label }}</label>{{ form.contact_groups }}</p>
+			<p><label>{{ form.contacts.label }}</label>{{ form.contacts }}</p>
+			<p><label>{{ form.notification_interval.label }}</label>{{ form.notification_interval }}</p>
+			<p><label>{{ form.notification_period.label }}</label>{{ form.notification_period }}</p>
+			<p><label>{{ form.notification_options.label }}</label>{{ form.notification_options }}</p>
 			
 			<!-- Display All Contacts if this is that kind of an object -->
 			{% if effective_contacts %}
@@ -114,15 +122,8 @@
 				</div>
 			{% endif %}
 		</div>
-		<div id="advanced">
-			<!-- Testing Djang Form Object -->
-			{% if form %}
-				<div class="attribute_contact">
-				 <legend>{{my_object.object_type}} - {{ my_object.description }}</legend>
-					{{ form.as_p }}
-				</div>
-			{% endif %}
-		</div>
+
+
 		<div id="services">
 			<legend>Services of this Host</legend>
 			{% if effective_services %}
@@ -133,20 +134,6 @@
 				 {% endfor %}
 				</ul>
 				</div>
-			{% endif %}
-		</div>
-		<div id="manual_edit">
-			{% if manual_edit %}
-			<!-- Manual edit of this object -->
-			<div class="objectbrowser_manual_edit">
-				<form action="view_object" method="post">{% csrf_token %}
-				<fieldset id="id_manual_edit" class="objectbrowser_manual_edit">
-				  <legend>Manual Edit</legend>
-					{{ manual_edit }}
-			    	<INPUT type="submit" value="Save">
-				</form>
-				</fieldset>
-			</div>
 			{% endif %}
 		</div>
 		

@@ -17,6 +17,7 @@
 from django import forms
 #from django.forms import *
 from pynag import Model
+from adagios.objectbrowser.all_attributes import object_definitions
 
 class UseField(forms.CharField):
     def __init__(self, object, *args,**kwargs):
@@ -26,6 +27,7 @@ class UseField(forms.CharField):
         print "CLEAN"
         if self.cleaned_data.has_key('use'):
             print self.cleaned_data.get('use')
+
 
 
 attribute_types = {
@@ -93,23 +95,110 @@ attribute_types = {
                     
                     "hostgroups" : ("Host Groups", forms.CharField)
                     }
+class ZeroOneField(forms.BooleanField):
+    def clean(self):
+        cleaned = self.cleaned_data
+        if cleaned == True:
+            return "1"
+        else:
+            return "0"
 
-
+        
 class PynagForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        extra = kwargs.pop('extra')
-        initial = {}
-        if kwargs.has_key("initial"):
-            for k,v in kwargs['initial'].items():
-                if k == 'check_command':
-                    initial[k] = v.split('!',1)[0]
-                elif attribute_types.has_key(k) and attribute_types[k][1] == forms.MultipleChoiceField:
-                    initial[k] = v.split(',')
+    def create_fields(self):
+        "Populate form with all fields that are normally seen in this type of an object"
+        object_type = self.extra['object_type']
+        inherited = self.extra._inherited_attributes.keys()
+        defined = self.extra._defined_attributes.keys()
+        if object_definitions.has_key(object_type):
+            for name,hash in object_definitions[object_type].items():
+                fieldClass = forms.CharField
+                if hash['value'] == '[0/1]':
+                    fieldClass = ZeroOneField
+                elif hash['value'] == '#':
+                    fieldClass = forms.IntegerField
+                # Create a radiobutton go with it
+                if name in self.extra._defined_attributes.keys():
+                    initial="defined"
+                elif name in self.extra._inherited_attributes.keys():
+                    initial='inherited'
                 else:
-                    initial[k] = v
-            kwargs.pop('initial')
-            kwargs['initial'] = initial
+                    initial='undefined'
+                self.fields['defined_%s' % name] = DefinitionStatusField(initial=initial)
+                self.fields['defined_%s' % name].widget.attrs['class'] = "definiton_choices"
+                
+                # Here the field is created
+                self.fields['%s' % name] = fieldClass()
+                self.fields[name].widget.attrs['class'] = "definition_field is_%s" % initial
+    def clean(self):
+        for k,v in self.cleaned_data.items():
+            if k in self.undefined_attributes and v == '': self.cleaned_data.pop(k)
+            elif v == self.pynag_object[k]: self.cleaned_data.pop(k)
+            elif v == '' and self.pynag_object[k] is None: self.cleaned_data.pop(k)
+            else: pass
+        return self.cleaned_data
+    def save(self):
+        for k,v in self.cleaned_data.items():
+            print "saving, %s=%s" % (k,v)
+            self.pynag_object[k] = v
+            #self.pynag_object.save()
+                #for k,v in request.POST.items():
+            #    if k == "csrfmiddlewaretoken": continue
+            #    if o[k] != v:
+            #        o[k] = v
+            #o.save()
+    def __init__(self, pynag_object, show_defined_attributes=True,show_inherited_attributes=True,show_undefined_attributes=True, show_radiobuttons=True,*args, **kwargs):
+        self.pynag_object = pynag_object
         super(forms.Form,self).__init__(*args, **kwargs)
+        # Lets find out what attributes to create
+        object_type = pynag_object['object_type']
+        defined_attributes = sorted( self.pynag_object._defined_attributes.keys() )
+        inherited_attributes = sorted( self.pynag_object._inherited_attributes.keys() )
+        all_attributes = sorted( object_definitions.get(object_type).keys() )
+        undefined_attributes = []
+        for i in all_attributes:
+            if i in defined_attributes: continue
+            if i in inherited_attributes: continue
+            undefined_attributes.append( i )
+        if show_defined_attributes:
+            for field_name in defined_attributes:
+                self.fields[field_name] = self.get_pynagField(field_name, css_tag="defined_attribute")
+        if show_inherited_attributes:
+            for field_name in inherited_attributes:
+                if field_name in defined_attributes: continue
+                self.fields[field_name] = self.get_pynagField(field_name, css_tag="inherited_attribute")
+        if show_undefined_attributes:
+            for field_name in undefined_attributes:
+                self.fields[field_name] = self.get_pynagField(field_name, css_tag="undefined_attribute")
+        self.undefined_attributes = undefined_attributes
+        return
+    def get_pynagField(self, field_name, css_tag=""):
+        """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
+        field = forms.CharField()
+        
+        if css_tag == 'inherited_attribute':
+            field.help_text = "Inherited from template"
+        elif css_tag == 'undefined_attribute':
+            field.help_text = 'Undefined'
+        try:
+            options = object_definitions[ self.pynag_object['object_type'] ][field_name]
+        except: options = {}
+        if options.has_key('required'):
+            css_tag = css_tag + " " + options['required']
+            field.required = options['required'] == 'required'
+        else:
+            field.required = False
+        # At the moment, our required database is incorrect
+        field.required = False
+        
+        if css_tag:
+            field.widget.attrs['class'] = css_tag
+            field.css_tag = css_tag
+        return field
+        
+    def __old_init__(self):
+        'Just a placeholder for deprecated __init__'
+        # TODO: Remove this function
         for k,v  in extra._original_attributes.items():
             if k == 'meta': continue
             extra_arguments = {}
