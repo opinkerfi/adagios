@@ -58,6 +58,19 @@ button {
 	background-color:#eeeecc;
 }
 
+.inherited_attribute {
+	 color:#777777;
+}
+
+.undefined_attribute {
+	color:#777777;
+}
+
+.definiton_choices {
+	visibility:hidden;
+}
+
+
 .listtable {
 	
 

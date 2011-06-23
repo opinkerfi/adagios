@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     (r'^okconfig', include('okconfig.urls')),
     (r'^rest/okconfig', include('rest.urls'), {'module_name':'configurator.okconfig'}),
     (r'^rest/pynag', include('rest.urls'), {'module_name':'configurator.helpers'}),
+    (r'^rest/re', include('rest.urls'), {'module_name':'re'}),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:
