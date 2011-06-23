@@ -31,42 +31,35 @@ Scan Complete
 <table border=1 id="scan_results">
   <thead>
 	<tr>
+	 <th>Add</th>
 	 <th>IP Address</th>
 	 <th>Host Name</th>
 	 <th>Is monitored</th>
-	 <th>DNS OK</th>
-	 <th>Agent Installed</th>
-	 <th>SNMP Access</th>
+	 <th>Operating System</th>
+	 <th>Agent</th>
+	 <th>Webserver</th>
 	</tr>
   </thead>
   <tbody>
+  {% for host in scan_results %}
 	<tr>
-	 <td>10.0.0.1</td>
-	 <td> host.example.com</td>
-	 <td> yes </td>
-	 <td> yes </td>
-	 <td> yes </td>
-	 <td> no </td>
+	 {% if not host.ismonitored %}
+	 <td><a href="/okconfig/addhost?host_name={{ host.hostname }}&address={{ host.ipaddress }}">Add</a></td>
+	 {% else %}
+	 <td></td>
+	 {% endif %}
+	 <td>{{ host.ipaddress }}</td>
+	 <td>{{ host.hostname }} </td>
+	 <td>{{ host.ismonitored }}</td>
+	 <td>{{ host.platform }}</td>
+	 <td>{{ host.nrpe }}</td>
+	 <td>{{ host.port80 }} </td>
 	</tr>
-	<tr>
-	 <td>10.0.0.2</td>
-	 <td> badhost</td>
-	 <td> no </td>
-	 <td> no </td>
-	 <td> no </td>
-	 <td> no </td>
-	</tr>
-	<tr>
-	 <td>10.0.0.3</td>
-	 <td> router</td>
-	 <td> no </td>
-	 <td> no </td>
-	 <td> no </td>
-	 <td> yes </td>
-	</tr>
+  {% endfor %}
   </tbody>
 </table>
 
+{% endif %}
 <script>
 $('#scan_results').dataTable({
 		"bSearch": false,
@@ -78,5 +71,5 @@ $('#scan_results').dataTable({
 </script>
 
 
-{% endif %}
+
 {% endblock %}

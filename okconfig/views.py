@@ -26,6 +26,7 @@ from okconfig import forms
 #import okconfig.forms
 
 from configurator import okconfig
+import configurator.okconfig.network_scan
 
 def addcomplete(request, c={}):
     return render_to_response('addcomplete.html', c)
@@ -107,9 +108,21 @@ def addtemplate(request, host_name=None):
 
 def scan_network(request):
     c = {}
-    form = c['form'] = forms.ScanNetworkForm(initial={'network_address':'Just click submit'})
-    
-    if request.POST:
-        form = c['form'] = forms.ScanNetworkForm(initial=request.POST)
-        c['scan_results'] = True
+    c['errors'] = []
+    if request.method == 'GET':
+            if request.GET.has_key('network_address'):
+                initial = request.GET
+            else:
+                my_ip = configurator.okconfig.network_scan.get_my_ip_address()
+                network_address = "%s/29" % my_ip
+                initial = { 'network_address':network_address }
+            c['form'] = forms.ScanNetworkForm(initial=initial)
+    elif request.method == 'POST':
+        c['form'] = forms.ScanNetworkForm(request.POST)
+        if not c['form'].is_valid():
+            c['errors'].append( "could not validate form")
+        else:
+            network = c['form'].cleaned_data['network_address']
+            c['scan_results'] =  configurator.okconfig.network_scan.get_all_hosts(network)
+            for i in c['scan_results']: i.check()
     return render_to_response('scan_network.html', c, context_instance=RequestContext(request))
