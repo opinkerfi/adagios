@@ -7,7 +7,7 @@
 {% endblock %}
 {% block javascript %}
 
-
+var currentTable = '';
 $(document).ready(function() {
 	populateListTable();
 });
@@ -58,7 +58,7 @@ function populateListTable() {
 		}
 	
 		// Activate the dataTable plugin
-		lvTable = $('#listtable-' + listtype).dataTable( {
+		currentTable = lvTable = $('#listtable-' + listtype).dataTable( {
 					"sScrollY": "200px",
 		"bScrollCollapse": true,
 		"bPaginate": false,
@@ -95,7 +95,8 @@ function populateListTable() {
 				});
 				// Finally add the rows to the DataTable
 				lvTable.fnAddData(allrows);
-				
+				$('#listtables').show();
+        		currentTable.fnAdjustColumnSizing();
 			}
 		});
 	}
@@ -150,7 +151,7 @@ $('#loadingDiv')
     })
     .ajaxStop(function() {
         $(this).hide();
-        $('#listtables').show();
+        
     });
 
 $('#listtype').change(function() {
