@@ -7,7 +7,8 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     # Example:
-    (r'^$', 'configurator.views.home'),
+    (r'^$', 'misc.views.index'),
+    (r'^contact_us$', 'misc.views.contact_us'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^adagios/api/host/(?P<host_name>.*)\.(?P<ext>.+)$', 'configurator.views.api_host'),
     (r'^adagios/api/get_templates\.(?P<ext>.+)$', 'configurator.views.api_get_templates'),
@@ -16,9 +17,9 @@ urlpatterns = patterns('',
     (r'^adagios/addhost$', 'configurator.views.addhost'),
     (r'^objectbrowser', include('objectbrowser.urls')),
     (r'^okconfig', include('okconfig.urls')),
+    (r'^misc', include('misc.urls')),
     (r'^rest/okconfig', include('rest.urls'), {'module_name':'configurator.okconfig'}),
     (r'^rest/pynag', include('rest.urls'), {'module_name':'configurator.helpers'}),
-    (r'^rest/re', include('rest.urls'), {'module_name':'re'}),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:
