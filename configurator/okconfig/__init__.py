@@ -49,18 +49,44 @@ path.insert(0, "/opt/pynag")
 from pynag import Model
 from os import getenv,putenv,environ
 
-import os.path
+import os
 import subprocess
 
 required_gateways = []
 
 
 
+def is_valid():
+	"""Checks if okconfig is installed and properly configured.
+	
+	Returns True/False
+	
+	See verify() for more details
+	"""	
+	checks = verify()
+	for result in checks.values():
+		if result is False: return False
+	return True
+
+def _is_in_path(command):
+	''' Searches $PATH and returns true if command is found, and in path '''
+	
+	
+	is_executable = lambda x: os.path.isfile(x) and os.access(x, os.X_OK)
+	
+	if command.startswith('/'):
+		return is_executable(command)
+	
+	my_path = os.environ['PATH'].split(':')
+	for possible_path in my_path:
+		full_path = "%s/%s" % (possible_path,command)
+		if is_executable(full_path): return True
+	return False
 
 def verify():
 	"""Checks if okconfig is installed and properly configured.
 	
-	Returns True/False
+	Returns dict of {'check_name':Boolean}
 	
 	Check if:
 	1) cfg_file exists
@@ -69,30 +95,27 @@ def verify():
 	4) the following commands are in path:
 		addhost, addgroup, addtemplate
 	"""
-	# TODO: Check if okconfig is writeable
+	results = {}
 	
-	# 1)
-	if not os.path.isfile(cfg_file):
-		return False
-	# 2)
-	if not os.path.isdir(template_directory):
-		return False
-	# 3)
-	if not os.path.isdir(destination_directory):
-		return False
+	# 1) cfg_file exists
+	check = "Main configuration file %s is readable" % (cfg_file)
+	results[check] = os.access(cfg_file, os.R_OK)
+
+	# 2) template_directory exists
+	check = "template_directory %s exists" % (template_directory)
+	results[check] = os.access(template_directory, os.R_OK) and os.path.isdir(template_directory)
+	
+	# 3) destination_directory exists (and is writable)
+	check = "destination_directory %s is writable" % (destination_directory)
+	results[check] = os.access(destination_directory, os.W_OK + os.R_OK) and os.path.isdir(destination_directory)
+	
 	# 4)
-	my_path = os.environ['PATH'].split(':')
-	for command in ['addhost', 'addgroup', 'addtemplate']:
-		command_was_found = False
-		for possible_path in my_path:
-			full_path = "%s/%s" % (possible_path,command)
-			if os.path.isfile(full_path):
-				command_was_found = True
-				break 
-		if not command_was_found:
-			"command %s not found in path" % (command)
-			return False
-	return True
+	okconfig_binaries = ('addhost','findhost','addgroup','addtemplate')
+	for command in okconfig_binaries:
+		check = "'%s' command is in path" % command
+		results[check] = _is_in_path(command)
+	
+	return results
 
 def addhost(host_name, address=None, group_name="default", templates=[], use=None, force=False):
 	"""Adds a new host to Nagios. Returns true if operation is successful.
@@ -187,7 +210,7 @@ def get_templates():
 	""" Returns a list of available templates """
 	result = {}
 	if not os.path.isdir(examples_directory):
-		raise IOError("Examples directory does not exist: %s" % examples_directory)
+		raise OKConfigError("Examples directory does not exist: %s" % examples_directory)
 	filelist = os.listdir(examples_directory)
 	for file in filelist:
 		if os.path.isfile(examples_directory + "/" + file) and file.endswith('.cfg-example'):
@@ -195,7 +218,7 @@ def get_templates():
 			template_parents = []
 			template_friendly_name = ''
 			result[template_name] = {'parents':template_parents, 'name':template_friendly_name}
-	return result
+	return sorted( result )
 	dummy_templates = {
 		'windows': {
             'parents': [],
@@ -309,8 +332,10 @@ def runCommand(command):
 	else:
 		return stdout
 
+class OKConfigError(Exception):
+	pass
 
-all_templates = get_templates()
+#all_templates = get_templates()
 if __name__ == '__main__':
 	'This leaves room for some unit testing while being run from the command line'
 	result = get_groups()

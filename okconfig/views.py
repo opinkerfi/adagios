@@ -35,6 +35,10 @@ def addgroup(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
+    # If there is a problem with the okconfig setup, lets display an error
+    if not okconfig.is_valid():
+        return verify_okconfig(request)
+    
     if request.method == 'GET':
         f = forms.AddGroupForm(initial=request.GET)
     elif request.method == 'POST':
@@ -60,6 +64,10 @@ def addhost(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
+    # If there is a problem with the okconfig setup, lets display an error
+    if not okconfig.is_valid():
+        return verify_okconfig(request)
+    
     if request.method == 'GET':
         f = forms.AddHostForm(initial=request.GET)
     elif request.method == 'POST':
@@ -87,6 +95,10 @@ def addtemplate(request, host_name=None):
     c = {}
     c['messages'] = []
     c['errors'] = []
+    # If there is a problem with the okconfig setup, lets display an error
+    if not okconfig.is_valid():
+        return verify_okconfig(request)
+
     c['form'] = forms.AddTemplateForm(initial=request.GET )
     if request.method == 'POST':
         f = forms.AddTemplateForm(request.POST)
@@ -105,10 +117,22 @@ def addtemplate(request, host_name=None):
             c['errors'].append( 'Could not validate input' ) 
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
+def verify_okconfig(request):
+    ''' Checks if okconfig is properly set up. '''
+    c = {}
+    c['errors'] = []
+    c['okconfig_checks'] = okconfig.verify()
+    for i in c['okconfig_checks'].values():
+        if i == False:
+            c['errors'].append('There seems to be a problem with your okconfig installation')
+            break
+    return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
 
 def scan_network(request):
     c = {}
     c['errors'] = []
+    if not okconfig.is_valid():
+        return verify_okconfig(request)
     if request.method == 'GET':
             if request.GET.has_key('network_address'):
                 initial = request.GET

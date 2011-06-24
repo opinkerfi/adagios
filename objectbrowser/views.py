@@ -22,9 +22,7 @@ from django.utils import simplejson
 from django.core.context_processors import csrf
 
 import sys
-from adagios.okconfig.forms import AddHostForm
 sys.path.insert(1, '/opt/pynag')
-import configurator.okconfig
 
 from pynag.Model import *
 from pynag import Model
@@ -54,11 +52,19 @@ def list_contacts(request):
 
 
 def list_objects( request, object_type=None, display_these_objects=None ):
-    c = {}
-    c['messages'] = m = []
-    c['objects'] = objects = []
+    """ Finds Pynag objects and returns them in a pretty list. search filter can be applied via querystring
     
-    search = tmp = {}
+    Arguments:
+        object_type(str) : Only find pynag object of this type
+        display_these_objects([ObjectDefinition]) : Instead of searching, simply return these objects
+        
+    """ 
+    c = {}                      # This hash is sent to our template
+    c['messages'] = m = []      # If we want to get any messages or errors accross
+    c['objects'] = [] # Our pynag objects are collected in here
+    c['object_type'] = object_type
+    # Validate any potential search terms sent via querystring
+    search = {}
     for k,v in request.GET.items():
         k,v = str(k), str(v)
         if k == 'object_type':
@@ -67,28 +73,28 @@ def list_objects( request, object_type=None, display_these_objects=None ):
             search[k] = None
         else:
             search[k] = v
+    
     # If a non-existent object_type is requested, lets display a warning
+    # Model.string_to_class contains a hash map that convert string value to its respective class definition
     if not Model.string_to_class.has_key(object_type):
             m.append('Model does not have any objects of type %s, valid types are %s' % (object_type, Model.string_to_class.keys()))
-            #return list_object_types(request)
-            #return render_to_response('objectbrowser/list_object_types.html', c)
     else:
-        myClass = Model.string_to_class[object_type]
+        Pynag = Model.string_to_class[object_type]
+    
     # Lets decide if we want to get everything or apply a filter
     if display_these_objects is not None:
         c['objects'] = display_these_objects
     elif len(search) == 0:
-        c['objects'] = myClass.objects.all
+        c['objects'] = Pynag.objects.all
     else:
-        c['objects'] = myClass.objects.filter(**search)
-        m.append("I used the filter %s=%s" % (search.keys(), search.values()))
-    m.append( "Found %s objects of type %s" % (len(c['objects']), object_type))
-    c['object_type'] = object_type
+        c['objects'] = Pynag.objects.filter(**search)
+    
     return render_to_response('list_objects.html', c)
 
 def list_object_types(request):
+    ''' Collects statistics about pynag objects and returns to template '''
     c = {}
-    c['object_types'] = t = []
+    c['object_types'] = []
     for name,Class in Model.string_to_class.items():
         if name != None:
             active = inactive = 0
@@ -103,7 +109,7 @@ def list_object_types(request):
 
 
 def view_object( request, object_id=None, object_type=None, shortname=None):
-    ''' Allows one to one specific object definition '''
+    ''' View details about one specific pynag object '''
     c = {}
     c.update(csrf(request))
     c['messages'] = m = []
@@ -218,6 +224,7 @@ def confighealth( request  ):
                 services_without_icon_image.append(i)
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
+    import configurator.okconfig
     c['booleans']['OKConfig is installed and working'] = configurator.okconfig.verify()
     s['Services with no "service_description"'] = services_no_description            
     s['Hosts without any contacts'] = hosts_without_contacts

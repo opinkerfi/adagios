@@ -8,5 +8,6 @@ urlpatterns = patterns('',
     (r'^/addgroup/?', 'okconfig.views.addgroup'),
     (r'^/addtemplate/?', 'okconfig.views.addtemplate'),
     (r'^/addhost/?', 'okconfig.views.addhost'),
+    (r'^/verify_okconfig/?', 'okconfig.views.verify_okconfig'),
 )
  

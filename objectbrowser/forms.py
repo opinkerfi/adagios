@@ -262,10 +262,11 @@ class ManualEditObjectForm(forms.Form):
         self.pynag_object = pynag_object
         super(ManualEditObjectForm, self).__init__(*args,**kwargs)
     def clean_definition(self, value=None):
-        print "cleaning definition %s" % self.cleaned_data['definition']
         definition = self.cleaned_data['definition']
         definition = definition.replace('\r\n', '\n')
         definition = definition.replace('\r', '\n')
+        if not definition.endswith('\n'):
+            definition += '\n'
         return definition
     def save(self):
         definition = self.cleaned_data['definition']

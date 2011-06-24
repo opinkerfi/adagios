@@ -18,8 +18,7 @@ class AddHostForm(forms.Form):
     host_name = forms.CharField()
     address = forms.CharField()
     #description = forms.CharField()
-    groups = map( lambda x: (x,x), okconfig.get_groups() )
-    group_name = forms.ChoiceField(initial="default",choices=groups)
+    group_name = forms.ChoiceField()
     force = forms.BooleanField(required=False)
     def clean(self):
         if self.cleaned_data.has_key('host_name'):
@@ -28,18 +27,32 @@ class AddHostForm(forms.Form):
             if not force and host_name in helpers.get_host_names():
                 raise forms.ValidationError("Host name %s already exists, use force to overwrite" % host_name)
         return forms.Form.clean(self)
+    def __init__(self, *args, **kwargs):
+        super(AddHostForm, self).__init__(*args,**kwargs)
+        
+        # Set choices and initial values for the groups field
+        groups = map( lambda x: (x,x), okconfig.get_groups() )
+        self.fields['group_name'].initial = "default"
+        self.fields['group_name'].choices = groups
 
 class AddTemplateForm(forms.Form):
-    templates = okconfig.get_templates()
-    templates = map( lambda x: (x, x), templates )
-    hosts = helpers.get_host_names()
-    host_list = map(lambda x: (x, x), hosts)
-    templates.sort()
-    host_list.sort()
     # Attributes
-    host_name = forms.ChoiceField(choices=host_list)
-    template_name = forms.ChoiceField(choices=templates )
+    host_name = forms.ChoiceField()
+    template_name = forms.ChoiceField()
     force = forms.BooleanField(required=False)
+    def __init__(self,*args,**kwargs):
+        super(AddTemplateForm, self).__init__(*args, **kwargs)
+        
+        # Create choices for our hosts and templates
+        hosts = helpers.get_host_names()
+        hosts = map(lambda x: (x, x), hosts)
+        
+        templates = okconfig.get_templates()
+        templates = map( lambda x: (x, x), templates )        
+        
+        self.fields['host_name'].choices = hosts
+        self.fields['template_name'].choices = templates
+        
     def clean(self):
         cleaned_data = self.cleaned_data
         result = forms.Form.clean(self)
