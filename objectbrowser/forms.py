@@ -258,3 +258,16 @@ class DynamicForm(forms.Form):
         
 class ManualEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
+    def __init__(self,pynag_object=None, *args,**kwargs):
+        self.pynag_object = pynag_object
+        super(ManualEditObjectForm, self).__init__(*args,**kwargs)
+    def clean_definition(self, value=None):
+        print "cleaning definition %s" % self.cleaned_data['definition']
+        definition = self.cleaned_data['definition']
+        definition = definition.replace('\r\n', '\n')
+        definition = definition.replace('\r', '\n')
+        return definition
+    def save(self):
+        definition = self.cleaned_data['definition']
+        print [definition]
+        self.pynag_object.rewrite( str_new_definition=definition )

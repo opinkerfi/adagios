@@ -108,6 +108,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     c.update(csrf(request))
     c['messages'] = m = []
     c['errors'] = []
+    
     # Get our object
     if object_id != None:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
@@ -126,7 +127,9 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     if request.method == 'POST':
         if request.POST.has_key('definition'):
             'Manual edit of the form'
-            o.rewrite( str_new_definition=request.POST.get('definition')  )
+            form = ManualEditObjectForm(data=request.POST, pynag_object=o)
+            if form.is_valid():
+                form.save()
             m.append("Object Saved manually to '%s'" % o['filename'])
         else:
             "this is the 'advanced_edit' form "
