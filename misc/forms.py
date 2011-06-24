@@ -17,6 +17,8 @@
 
 from django import forms
 
+from django.core.mail import send_mail
+
 TOPIC_CHOICES = (
 	('general', 'General Suggestion'),
 	('bug', 'I think i have found a bug'),
@@ -34,4 +36,19 @@ class ContactUsForm(forms.Form):
 							widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
 							help_text="See below for examples of good suggestions",
 							)
-	
+	def save(self):
+		from_address = 'adagios@adagios.opensource.is'
+		to_address = ["palli@ok.is"]
+		subject = "Suggestion from Adagios"
+		
+		sender = self.cleaned_data['sender']
+		topic = self.cleaned_data['topic']
+		message = self.cleaned_data['message']
+		
+		msg = """
+		topic: %s
+		from: %s
+		
+		%s
+		""" % (topic,sender,message)
+		send_mail(subject, msg, from_address, to_address, fail_silently=False)
