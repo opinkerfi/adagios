@@ -1,13 +1,30 @@
 from django import forms
 from configurator import okconfig
 from configurator import helpers
-
+import re
+from django.core.exceptions import ValidationError
 
 
 
 class ScanNetworkForm(forms.Form):
     network_address = forms.CharField()
-
+    def clean_network_address(self):
+        addr = self.cleaned_data['network_address']
+        if addr.find('/') > -1:
+            addr,mask = addr.split('/',1)
+            if not mask.isdigit(): raise ValidationError("not a valid netmask")
+            if not self.isValidHostname(addr): raise ValidationError("not a valid network address")
+        else:
+            if not self.isValidHostname(addr):raise ValidationError("not a valid network address")
+        return self.cleaned_data['network_address']
+    def isValidHostname(self,hostname):
+        print hostname
+        if len(hostname) > 255:
+            return False
+        if hostname[-1:] == ".":
+            hostname = hostname[:-1] # strip exactly one dot from the right, if present
+        allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+        return all(allowed.match(x) for x in hostname.split("."))
 
 class AddGroupForm(forms.Form):
     group_name = forms.CharField()

@@ -225,7 +225,7 @@ def confighealth( request  ):
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
     import configurator.okconfig
-    c['booleans']['OKConfig is installed and working'] = configurator.okconfig.verify()
+    c['booleans']['OKConfig is installed and working'] = configurator.okconfig.is_valid()
     s['Services with no "service_description"'] = services_no_description            
     s['Hosts without any contacts'] = hosts_without_contacts
     s['Services without any contacts'] = services_without_contacts

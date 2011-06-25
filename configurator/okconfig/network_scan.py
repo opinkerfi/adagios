@@ -119,9 +119,10 @@ def get_my_ip_address():
 	
 def pingscan(network='192.168.1.0/24'):
 	'scans a specific network, returns a list of all ip that respond'
-	r,stdout,stderr = runCommand("fping -t 50 -i 10 -a -g %s" % network)
+	command =  "fping -t 50 -i 10 -a -g %s" % network
+	r,stdout,stderr = runCommand(command)
 	if r > 1:
-		raise Exception("Error running fping: %s" % stderr)
+		raise Exception("Error running %s: %s" % (command,stderr) )
 	ip_list = []
 	for i in stdout.split('\n'):
 		try: socket.inet_aton(i)

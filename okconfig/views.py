@@ -147,6 +147,10 @@ def scan_network(request):
             c['errors'].append( "could not validate form")
         else:
             network = c['form'].cleaned_data['network_address']
-            c['scan_results'] =  configurator.okconfig.network_scan.get_all_hosts(network)
-            for i in c['scan_results']: i.check()
+            try:
+                c['scan_results'] =  configurator.okconfig.network_scan.get_all_hosts(network)
+                for i in c['scan_results']: i.check()
+            except Exception, e:
+                raise e
+                c['errors'].append("Error running scan")
     return render_to_response('scan_network.html', c, context_instance=RequestContext(request))
