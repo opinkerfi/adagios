@@ -15,7 +15,15 @@
 	{% for k,v in content %}
 		<tr>
 			<td ">{{k}}</td>
-			<td align="left">{{v}}</td>
+			{% if k == 'cfg_file' %}
+				<td align="left"><a href="search?filename={{v}}">{{v}}</a></td>
+			{% else %}
+				{% if k == 'cfg_dir' %}
+					<td align="left"><a href="search?filename__startswith={{v}}">{{v}}</a></td>
+				{% else %}
+					<td align="left">{{v}}</td>
+				{% endif %}
+			{% endif %}
 		</tr>
 	{% endfor %}
 	</table>

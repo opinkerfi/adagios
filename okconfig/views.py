@@ -138,7 +138,7 @@ def scan_network(request):
                 initial = request.GET
             else:
                 my_ip = configurator.okconfig.network_scan.get_my_ip_address()
-                network_address = "%s/29" % my_ip
+                network_address = "%s/28" % my_ip
                 initial = { 'network_address':network_address }
             c['form'] = forms.ScanNetworkForm(initial=initial)
     elif request.method == 'POST':
