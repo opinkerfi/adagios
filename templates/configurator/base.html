@@ -31,53 +31,7 @@
 <div id=container>
     <div id="sidebar" class="left navi ui-corner-all ui-state-default ui-tabs-nav">
         {% block sidebar %}
-
-        <div class="ui-widget-header ui-corner-all ui-tabs navheader">Wizards</div>
-        <div class="naventries">
-        	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-				<li><a href="/okconfig/addhost">New Host</a></li>
-				<li><a href="/okconfig/addtemplate">Add Templates to host</a></li>
-				<li><a href="/okconfig/addgroup">Add New Group</a></li>
-				<li><a href="/okconfig/scan_network">Network Scan</a></li>
-				<li><a href="/okconfig/verify_okconfig">Verify okconfig</a></li>
-				
-        	</ul>
-        </div>
-        
-        
-        <div class="ui-widget-header ui-corner-all ui-tabs navheader">Browse</div>
-        <div class="naventries">
-        	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-        		<li><a href="/objectbrowser/">Configuration</a></li>
-           	  	<li><a href="/objectbrowser/hosts">Hosts</a></li>
-        		<li><a href="/objectbrowser/search?object_type=contact">Contacts</a></li>
-        		<li><a href="/objectbrowser/search?object_type=hostgroup">Hostgroups</a></li>
-        	</ul>
-        </div>
-
-		<!--
-        <div class="ui-widget-header ui-corner-all ui-tabs navheader">Cool Searches</div>
-		<div class="naventries">
-	        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-        		<li><a href="/objectbrowser/search?object_type=service&register=1&service_description=None">Services With no service_description</a></li>
-              	<li><a href="/objectbrowser/search?object_type=service&register=1&host_name=None">Services With no host_name</a></li>
-        		<li><a href="/objectbrowser/search?huh=asd">Services that are not okconfig compatible</a></li>
-	        </ul>
-	    </div>
-	    -->
-	    
-        <div class="ui-widget-header ui-corner-all ui-tabs navheader">Other</div>
-        <div class="naventries">
-        	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-        		<li><a href="/objectbrowser/nagios.cfg">View Nagios.cfg</a></li>
-        		<li><a href="/objectbrowser/confighealth">Configuration Health</a></li>
-        		<li><a href="/NotImplemented">Adagios Settings</a></li>
-        		
-        		<li><a href="/NotImplemented">Help</a></li>
-        		<li>--------</li>
-        		<li><a href="/misc/contact_us">Suggestions</a></li>
-        	</ul>
-        </div>
+        {% include "configurator/menubar.html" %}
         	{% endblock %}
     </div>
 
