@@ -96,8 +96,8 @@ attribute_types = {
                     "hostgroups" : ("Host Groups", forms.CharField)
                     }
 class ZeroOneField(forms.BooleanField):
-    def clean(self):
-        cleaned = self.cleaned_data
+    def clean(self, value):
+        cleaned = value
         if cleaned == True:
             return "1"
         else:
@@ -139,9 +139,9 @@ class PynagForm(forms.Form):
         return self.cleaned_data
     def save(self):
         for k,v in self.cleaned_data.items():
-            print "saving, %s=%s" % (k,v)
+            #print "saving, %s=%s" % (k,v)
             self.pynag_object[k] = v
-            #self.pynag_object.save()
+            self.pynag_object.save()
                 #for k,v in request.POST.items():
             #    if k == "csrfmiddlewaretoken": continue
             #    if o[k] != v:
@@ -155,11 +155,14 @@ class PynagForm(forms.Form):
         defined_attributes = sorted( self.pynag_object._defined_attributes.keys() )
         inherited_attributes = sorted( self.pynag_object._inherited_attributes.keys() )
         all_attributes = sorted( object_definitions.get(object_type).keys() )
-        undefined_attributes = []
+        # Calculate what attributes are "undefined"
+        self.undefined_attributes = []
         for i in all_attributes:
             if i in defined_attributes: continue
             if i in inherited_attributes: continue
-            undefined_attributes.append( i )
+            self.undefined_attributes.append( i )
+        
+        # Find out which attributes to show
         if show_defined_attributes:
             for field_name in defined_attributes:
                 self.fields[field_name] = self.get_pynagField(field_name, css_tag="defined_attribute")
@@ -168,13 +171,23 @@ class PynagForm(forms.Form):
                 if field_name in defined_attributes: continue
                 self.fields[field_name] = self.get_pynagField(field_name, css_tag="inherited_attribute")
         if show_undefined_attributes:
-            for field_name in undefined_attributes:
+            for field_name in self.undefined_attributes:
                 self.fields[field_name] = self.get_pynagField(field_name, css_tag="undefined_attribute")
-        self.undefined_attributes = undefined_attributes
         return
     def get_pynagField(self, field_name, css_tag=""):
         """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
-        field = forms.CharField()
+        # Lets figure out what type of field this is, default to charfield
+        try:
+            object_type = self.pynag_object['object_type']
+            options = object_definitions[ object_type ][field_name]
+            if options['value'] == '#':
+                field = forms.IntegerField()
+            elif options['value'] == '[0/1]':
+                field = forms.IntegerField()
+            else:
+                field = forms.CharField()
+        except:
+            field = forms.CharField()
         
         if css_tag == 'inherited_attribute':
             field.help_text = "Inherited from template"
