@@ -13,8 +13,10 @@
 		</li>
 	</ul>
 	<form action="scan_network" method="post">{% csrf_token %}
-		{{ form.as_p }}
-    	<INPUT id="zesubmit" type="submit" value="Scan">
+		<div class="left">{{ form }}</div>
+    	<div >
+    		<INPUT id="zesubmit" type="submit" value="Scan">
+    	</div>
 	</form>
 </div>
 
@@ -27,7 +29,8 @@ $('#zesubmit').button();
 <!-- display scan results -->
 
 {% if scan_results %}
-Scan Complete
+
+<h1>Scan Complete</h1>
 <table border=1 id="scan_results">
   <thead>
 	<tr>

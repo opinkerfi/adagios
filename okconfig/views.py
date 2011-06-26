@@ -53,7 +53,7 @@ def addgroup(request):
                 c['messages'].append( msg  )
                 c['group_name'] = group_name
                 return addcomplete(request, c)
-            except BaseException, e:
+            except Exception, e:
                 c['errors'].append( "error adding group: %s" % e ) 
         else:
             c['errors'].append( 'Could not validate input')

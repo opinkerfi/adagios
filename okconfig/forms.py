@@ -51,7 +51,8 @@ class AddHostForm(forms.Form):
         
         # Set choices and initial values for the groups field
         groups = map( lambda x: (x,x), okconfig.get_groups() )
-        self.fields['group_name'].initial = "default"
+        if self.fields['group_name'].initial is None:
+            self.fields['group_name'].initial = "default"
         self.fields['group_name'].choices = groups
 
 class AddTemplateForm(forms.Form):
