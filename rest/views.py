@@ -56,8 +56,7 @@ def handle_request(request, module_name, attribute, format):
         raise BaseException("Unsupported operation: %s" % (request.method))
     # Everything below is just about formatting the results
     if format == 'json':
-        import json 
-        result = json.dumps( result, sort_keys=True, indent=4 )
+        result = simplejson.dumps( result, sort_keys=True,skipkeys=True, indent=4 )
         mimetype='application/javascript'
     elif format == 'xml':
             # TODO: For some reason Ubuntu does not have this module. Where is it? Should we use lxml instead ?
@@ -94,15 +93,22 @@ def index( request, module_name ):
 class CallFunctionForm(forms.Form):
     def __init__(self, function, *args, **kwargs):
         super(forms.Form,self).__init__( *args, **kwargs)
+        function_paramaters = {} # We will create a field for every function_paramater
+        # If any paramaters were past via querystring, lets generate fields for them
+        if kwargs.has_key('initial'):
+            for k,v in kwargs['initial'].items():
+                function_paramaters[k] = v
+        # Generate fields which resemble our functions default arguments
         argspec = inspect.getargspec( function )
-        args,varargs,varkw,defaults = argspec.args
+        args,varargs,varkw,defaults = argspec
         if defaults is None:
             defaults = []
         else:
             defaults = list(defaults)
-        
         for i in args:
             self.fields[i] = forms.CharField( label=i )
+        for k,v in function_paramaters.items():
+            self.fields[k] = forms.CharField( label=k, initial=v) 
         while len(defaults) > 0:
             value = defaults.pop()
             field = args.pop()
