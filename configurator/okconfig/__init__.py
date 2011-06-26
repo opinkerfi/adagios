@@ -45,7 +45,7 @@ destination_directory="/etc/nagios/okconfig/hosts"
 from sys import exit
 from sys import argv
 from sys import path
-path.insert(0, "/opt/pynag")
+#path.insert(0, "/opt/pynag")
 from pynag import Model
 from os import getenv,putenv,environ
 
@@ -204,7 +204,12 @@ def findhost(host_name):
 	>>> print findhost("host.example.com")
 	"/etc/okconfig/hosts/default/host.example.com-host.cfg"
 	"""
-	pass
+	try:
+		my_host = Model.Host.objects.get_by_shortname(host_name)
+		filename = my_host['meta']['filename']
+		return filename
+	except ValueError:
+		return None
 
 def get_templates():
 	""" Returns a list of available templates """
@@ -218,7 +223,7 @@ def get_templates():
 			template_parents = []
 			template_friendly_name = ''
 			result[template_name] = {'parents':template_parents, 'name':template_friendly_name}
-	return sorted( result )
+	return result
 	dummy_templates = {
 		'windows': {
             'parents': [],
