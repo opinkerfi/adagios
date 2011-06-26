@@ -15,7 +15,7 @@ my_module = None
 def _load(module_name):
     #global my_module
     #if not my_module:
-    my_module = __import__(module_name, fromlist=[''])
+    my_module = __import__(module_name, None, None, [''])
     return my_module
 
 @csrf_exempt   
@@ -95,14 +95,13 @@ class CallFunctionForm(forms.Form):
     def __init__(self, function, *args, **kwargs):
         super(forms.Form,self).__init__( *args, **kwargs)
         argspec = inspect.getargspec( function )
-        args = argspec.args
-        defaults = argspec.defaults
+        args,varargs,varkw,defaults = argspec.args
         if defaults is None:
             defaults = []
         else:
             defaults = list(defaults)
         
-        for i in argspec.args:
+        for i in args:
             self.fields[i] = forms.CharField( label=i )
         while len(defaults) > 0:
             value = defaults.pop()
