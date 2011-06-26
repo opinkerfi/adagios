@@ -1,12 +1,20 @@
 {% extends "configurator/base.html" %}
-{% block title %}List of Objects{% endblock %}
+{% block title %}List Objects{% endblock %}
+{% block head %}
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+{% endblock %}
 
 {% block content %}
 
-<h1>List of Objects</h1>
-
-
 {% if objects %}
+
+
+<div class="objectbrowser_list_objects ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Object List</a>
+		</li>
+	</ul>
 	<table border=1>
 	<tr>
 		<th>Short Name</th>
@@ -15,7 +23,7 @@
 		<th>Filename</th>
 	</tr>
 	{% for o in objects %}
-		<tr>
+		<tr class="{% cycle 'even' 'odd' %}">
 			<td><a href="id={{ o.id }}">{{ o.description }}</a></td>
 			<td><a href="search?object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
 			<td><a href="id={{ o.id }}">{{ o.name }} </a></td>
@@ -26,5 +34,9 @@
 {% else %}
 	<p>No objects found. </p>
 {% endif %}
+	
+</div>
+
+
 
 {% endblock %}
