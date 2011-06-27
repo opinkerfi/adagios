@@ -63,36 +63,42 @@ var tabs = [
 // Creates the tabs from array map defined above
 function createTabs(tabs) {
 	for (var i=0; i < tabs.length; i++) {
+		if (tabs[i]['id'] == currentTable) {
+			$tabid = i;
+		}
 		// Add tab name
 		$('#objecttabs > ul').append('<li><a href="#' + tabs[i]['id'] + '">' + tabs[i]['title'] + '</a></li>');
 		$('#objecttabs').append('<div id="' + tabs[i]['id'] + '">HAHA</div>');	
 	}
-	$('#objecttabs').tabs({
+	$tabs = $('#objecttabs').tabs({
 		select: function(e, ui) {
 			currentTable = ui.panel.id;
 			populateListTable();
+			return true;
 		}
 	});
+	$tabs.tabs('select', $tabid);
 }
 
 
 function populateListTable() {
 
 	listtype = currentTable
+
+
 	// Table does not exist, create it and fetch data
 	if ($('#listtable-' + listtype).length == 0) {
-		$('#' + listtype).html('<div id="loading-' + listtype + '"></div><table class="listtable" id="listtable-' + listtype + '"><thead></thead><tbody></tbody></table>');
-
-	$('#loading-' + listtype)
+		$('#' + listtype).html('<div id="container-' + listtype + '"><table class="listtable" id="listtable-' + listtype + '"><thead></thead><tbody></tbody></table></div>');
+		$('#container-' + currentTable).hide();
+		
+	$('#container-' + listtype)
     	.hide()  // hide it initially
     	.ajaxStart(function() {
-    		$('.listtablecontainer').hide();
-    		$(this).html('<h3>Loading ' + listtype + '</h3>');
-        	$(this).show();
+        	$(this).hide();
     	})
     	.ajaxStop(function() {
-    		$('.listtablecontainr').show();
-    	    $(this).hide();
+    	    $(this).show();
+       		currentTable.fnAdjustColumnSizing();
 	});
 
 
@@ -138,7 +144,7 @@ function populateListTable() {
 	
 		// Activate the dataTable plugin
 		currentTable = lvTable = $('#listtable-' + listtype).dataTable( {
-					"sScrollY": "200px",
+					"sScrollY": "400px",
 		"bScrollCollapse": true,
 		"bPaginate": false,
 		"bJQueryUI": true,
@@ -175,15 +181,12 @@ function populateListTable() {
 				});
 				// Finally add the rows to the DataTable
 				lvTable.fnAddData(allrows);
-				$('#listtables').show();
         		currentTable.fnAdjustColumnSizing();
 			}
 		});
 	}
 	
-	// Show the correct table
-	$('#listtable-' + listtype + '_wrapper').show();
-	$('#listtable-' + listtype).show();
+
 }
 
 {% endblock %}
