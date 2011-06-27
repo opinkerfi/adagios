@@ -1,8 +1,8 @@
 {% extends "configurator/base.html" %}
 {% block head %}
 
-    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.url.packed.js"></script>
+		<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="/static/js/jquery.url.packed.js"></script>
 
 
 {% endblock %}
@@ -10,42 +10,60 @@
 
 
 var currentTable = '';
+var currentTabId = 0;
 
 
 $(document).ready(function() {
 
-var tabs = [
+
+tabs = [
 	{ 
 		'title': 'Contacts', 
-		'id': 'contact'
+		'id': 'contact',
+		'columns': ['contact_name', 'email', 'alias'],
+		'columnheadings': ['Contact Name', 'E-Mail', 'Description'],
 		},
 	{
 		'title': 'Hosts',
-		'id': 'host'
+		'id': 'host',
+		'columns': ['host_name', 'address', 'alias'],
+		'columnheadings': ['Hostname', 'IP Address', 'Description']
 		},
 	{
 		'title': 'Services',
-		'id': 'service'
+		'id': 'service',
+		'columns': ['host_name', 'service_description'],
+		'columnheadings': ['Hostname', 'Service']
 		},
 	{
 		'title': 'Timeperiods',
-		'id': 'timeperiod'
+		'id': 'timeperiod',
+		'columns': ['timeperiod_name', 'alias'],
+		'columnheadings': ['Timeperiod', 'Description']
 		},
 	{
 		'title': 'Commands',
-		'id': 'command'
+		'id': 'command',
+		'columns': ['command_name'],
+		'columnheadings': ['Command Name']
 		},
 	{
 		'title': 'Contactgroups',
-		'id': 'contactgroup'
+		'id': 'contactgroup',
+		'columns': ['contactgroup_name', 'alias'],
+		'columnheadings': ['Contactgroup Name', 'Description']
 		},
 	{
 		'title': 'Hostgroups',
-		'id': 'hostgroup'
+		'id': 'hostgroup',
+		'columns': ['hostgroup_name', 'alias'],
+		'columnheadings': ['Hostgroup Name', 'Description']
 		},
 	{
 		'title': 'Servicegroups',
-		'id': 'servicegroup'
+		'id': 'servicegroup',
+		'columns': ['servicegroup_name', 'alias'],
+		'columnheadings': ['Servicegroup Name', 'Description']
 		},
 ];
 
@@ -55,16 +73,16 @@ var tabs = [
 	if (jQuery.url.segment(1) != null) {
 		currentTable = jQuery.url.segment(1);
 	}
-	createTabs(tabs);
+	createTabs();
 	populateListTable();
 });
 
 
 // Creates the tabs from array map defined above
-function createTabs(tabs) {
+function createTabs() {
 	for (var i=0; i < tabs.length; i++) {
 		if (tabs[i]['id'] == currentTable) {
-			$tabid = i;
+			currentTabId = i;
 		}
 		// Add tab name
 		$('#objecttabs > ul').append('<li><a href="#' + tabs[i]['id'] + '">' + tabs[i]['title'] + '</a></li>');
@@ -73,105 +91,69 @@ function createTabs(tabs) {
 	$tabs = $('#objecttabs').tabs({
 		select: function(e, ui) {
 			currentTable = ui.panel.id;
+			currentTabId = ui.index;
 			populateListTable();
-			return true;
 		}
 	});
-	$tabs.tabs('select', $tabid);
+	$tabs.tabs('select', currentTabId);
 }
 
 
 function populateListTable() {
-
 	listtype = currentTable
-
-
+	
 	// Table does not exist, create it and fetch data
 	if ($('#listtable-' + listtype).length == 0) {
 		$('#' + listtype).html('<div id="container-' + listtype + '"><table class="listtable" id="listtable-' + listtype + '"><thead></thead><tbody></tbody></table></div>');
 		$('#container-' + currentTable).hide();
-		
-	$('#container-' + listtype)
-    	.hide()  // hide it initially
-    	.ajaxStart(function() {
-        	$(this).hide();
-    	})
-    	.ajaxStop(function() {
-    	    $(this).show();
-       		currentTable.fnAdjustColumnSizing();
-	});
-
-
-
-
-
-		// Different columns for different object types
-		var columns = [];
-		var columnheadings = [];
-	
-		// The first column should always be the distinct name, host_name, contactgroup_name...
-		if (currentTable == 'host') {
-			columns = ['host_name', 'address', 'alias'];
-			columnheadings = ['Hostname', 'IP Address', 'Description'];
-		} else if (currentTable == 'service') {
-			columns = ['host_name', 'service_description'];
-			columnheadings = ['Hostname', 'Service'];
-		} else if (currentTable == 'contact') {
-			columns = ['contact_name', 'email', 'alias'];
-			columnheadings = ['Contact Name', 'E-Mail', 'Description'];
-		} else if (currentTable == 'hostgroup') {
-			columns = ['hostgroup_name', 'alias'];
-			columnheadings = ['Hostgroup Name', 'Description'];
-		} else if (currentTable == 'servicegroup') {
-			columns = ['servicegroup_name', 'alias'];
-			columnheadings = ['Servicegroup Name', 'Description'];
-		} else if (currentTable == 'contactgroup') {
-			columns = ['contactgroup_name', 'alias'];
-			columnheadings = ['Contactgroup Name', 'Description'];
-		} else if (currentTable == 'timeperiod') {
-			columns = ['timeperiod_name', 'alias'];
-			columnheadings = ['Timeperiod', 'Description'];
-		} else if (currentTable == 'command') {
-			columns = ['command_name'];
-			columnheadings = ['Command Name'];
-		}
+		tabProps = tabs[currentTabId];
+		$('#container-' + listtype)
+    		.hide()  // hide it initially
+    		.ajaxStart(function() {
+    	    	$(this).hide();
+    		})
+    		.ajaxStop(function() {
+    		    $(this).show();
+    	   		currentTable.fnAdjustColumnSizing();
+			});
 
 		// Create the heading row
 		$('#listtable-' + listtype + ' > thead').append('<tr></tr>');
-		for (var i=0; i<columns.length; i++) {
-			$('#listtable-' + listtype + ' > thead > tr').append('<th>' + columnheadings[i] + '</td>');
+		for (var i=0; i<tabProps['columns'].length; i++) {
+			$('#listtable-' + listtype + ' > thead > tr').append('<th>' + tabProps['columnheadings'][i] + '</td>');
 		}
+
 	
 		// Activate the dataTable plugin
 		currentTable = lvTable = $('#listtable-' + listtype).dataTable( {
-					"sScrollY": "400px",
-		"bScrollCollapse": true,
-		"bPaginate": false,
-		"bJQueryUI": true,
+			"sScrollY": "400px",
+			"bScrollCollapse": true,
+			"bPaginate": false,
+			"bJQueryUI": true,
 		});
-
 		var allrows = [];
 		
 		$.ajax({
 			url: '/rest/pynag/json/get_objects',
-			data: {  object_type: listtype, with_fields: columns.join(",") + ',id,name' },
+			data: {  object_type: listtype, with_fields: tabProps['columns'].join(",") + ',id,name' },
 			dataType: 'json',
 			type: 'POST',
-			success: function(data) {	
+			success: function(data) {
+				tabProps = tabs[currentTabId];	
 				$.each(data, function(key, val) {
 					var row = [];
-					if (val[columns[0]] == undefined) {
+					if (val[tabProps['columns'][0]] == undefined) {
 						row.push('<strong>' + val['name'] + '</strong>');
 					} else {
-						row.push('<a href="/objectbrowser/id=' + val['id'] + '">' + val[columns[0]] + '</a>');
+						row.push('<a href="/objectbrowser/id=' + val['id'] + '">' + val[tabProps['columns'][0]] + '</a>');
 					}
-					for (var i=1; i<columns.length; i++) {
+					for (var i=1; i<tabProps['columns'].length; i++) {
 						// Put a space into empty
-						if (val[columns[i]] == undefined) {
+						if (val[tabProps['columns'][i]] == undefined) {
 							row.push('&nbsp;');
 						// The actual data
 						} else {
-							var value = val[columns[i]];
+							var value = val[tabProps['columns'][i]];
 							row.push('<a href="/objectbrowser/id=' + val['id'] + '">' + value + '</a>');
 						}
 					}
@@ -185,52 +167,12 @@ function populateListTable() {
 			}
 		});
 	}
-	
-
 }
 
 {% endblock %}
 {% block content %}
-
-
-<!--
-
-<div class="tablecontainer">
-	<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all" style="width: 220px;text-align: center">
-		<h3 style="margin-left: 12px;float: left;display: inline">View</h3>
-		<div style="margin-top: 6%;margin-left: 12px;float: left;display: inline">
-			<select id="listtype">
-				<option value="command">Commands</option>
-				<option value="contactgroup">Contactgroups</option>
-				<option value="contact">Contacts</option>
-				<option value="hostgroup">Hostgroups</option>
-				<option value="host" SELECTED>Hosts</option>
-				<option value="servicegroup">Servicegroups</option>
-				<option value="service">Services</option>
-				<option value="timeperiod">Timeperiods</option>
-			</select>
-		</div>
-		<div style="clear: both"></div>
-
-	</div>
--->
-
-	
-	
 	<div id="objecttabs">
 		<ul>
 		</ul>
 	</div>
-</div>
-
-
-<div style="clear: both"></div>
-</div>
-<script>
-
-
-
-</script>
-
-
 {% endblock %}

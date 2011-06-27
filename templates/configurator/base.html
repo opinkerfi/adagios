@@ -1,59 +1,56 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <title>{% block title %}My title{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+	<head>
+		<title>{% block title %}My title{% endblock %}</title>
+		<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 
-
-    <script type="text/javascript" src="/static/js/jquery.tools.min.js"></script>
-  	<script type="text/javascript" src="/static/js/jquery-ui-1.8.13.custom.min.js"></script>
-	<link type="text/css" href="/static/css/sunny-light/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="/static/js/jquery.tools.min.js"></script>
+		<script type="text/javascript" src="/static/js/jquery-ui-1.8.13.custom.min.js"></script>
+		<link type="text/css" href="/static/css/sunny-light/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
 
 {% block head %}{% endblock %}
-
-
-    <script type="text/javascript">                                         
-
+		<script type="text/javascript">
 {% block javascript %}{% endblock %}
-                                 
-    </script>      
-                                                          
+		</script>
+	</head>
 
+	<body>
+		<div id="head">
+			<h1 class="logo" id="logo"><a title="Adagios" href="/"></a></h1>
+		</div>
+		<div id=container>
+			<div id="sidebar" class="left navi ui-corner-all ui-state-default ui-tabs-nav">
+		{% block sidebar %}
+		{% include "configurator/menubar.html" %}
+		{% endblock %}
+			</div>
 
+			<div id="content" class="left">
 
-</head>
-
-<body>
-<div id="head">
-<h1 class="logo" id="logo"><a title="Adagios" href="/"></a></h1>
-</div>
-<div id=container>
-    <div id="sidebar" class="left navi ui-corner-all ui-state-default ui-tabs-nav">
-        {% block sidebar %}
-        {% include "configurator/menubar.html" %}
-        	{% endblock %}
-    </div>
-
-    <div id="content" class="left">
-
-{% if messages %}<div class="debugmessages">
-	<h1> Messages from the developers </h1>
-	<ul>
-		{% for message in messages %}<li>{{ message }}</li>{% endfor %}
-	</ul>
-</div>
+{% if messages %}
+				<div class="debugmessages">
+					<h1> Messages from the developers </h1>
+					<ul>
+		{% for message in messages %}
+						<li>{{ message }}</li>
+		{% endfor %}
+					</ul>
+				</div>
 {% endif %}
 
-{% if errors %}<div class="error">
-	<h1> Error: </h1>
-	<ul>
-		{% for error in errors %}<li>{{ error }}</li>{% endfor %}
-	</ul>
-</div>
+{% if errors %}
+				<div class="error">
+					<h1> Error: </h1>
+					<ul>
+		{% for error in errors %}
+						<li>{{ error }}</li>
+		{% endfor %}
+					</ul>
+				</div>
 {% endif %}
-        {% block content %}{% endblock %}
-    </div>
-</div>
-</body>
+{% block content %}{% endblock %}
+			</div>
+		</div>
+	</body>
 </html>
