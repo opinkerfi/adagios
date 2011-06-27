@@ -22,7 +22,7 @@ from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
 
-from okconfig import forms
+import forms
 #import okconfig.forms
 
 from configurator import okconfig
@@ -49,8 +49,7 @@ def addgroup(request):
             #description = f.cleaned_data['description']
             force = f.cleaned_data['force']
             try:
-                msg = okconfig.addgroup(group_name=group_name,alias=alias,force=force)
-                c['messages'].append( msg  )
+                c['filelist'] = okconfig.addgroup(group_name=group_name,alias=alias,force=force)
                 c['group_name'] = group_name
                 return addcomplete(request, c)
             except Exception, e:
@@ -79,8 +78,7 @@ def addhost(request):
             #description = f.cleaned_data['description']
             force = f.cleaned_data['force']
             try:
-                msg = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force)
-                c['messages'].append( msg  )
+                c['filelist'] = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force)
                 c['host_name'] = host_name
                 return addcomplete(request, c)
             except BaseException, e:
@@ -107,8 +105,7 @@ def addtemplate(request, host_name=None):
             template_name = f.cleaned_data['template_name']
             force =f.cleaned_data['force']
             try:
-                msg = okconfig.addtemplate(host_name=host_name, template_name=template_name,force=force)
-                c['messages'].append( msg )
+                c['filelist'] = okconfig.addtemplate(host_name=host_name, template_name=template_name,force=force)
                 c['host_name'] = host_name
                 return addcomplete(request, c)
             except BaseException, e:

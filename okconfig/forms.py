@@ -3,7 +3,7 @@ from configurator import okconfig
 from configurator import helpers
 import re
 from django.core.exceptions import ValidationError
-
+import socket
 
 
 class ScanNetworkForm(forms.Form):
@@ -13,9 +13,9 @@ class ScanNetworkForm(forms.Form):
         if addr.find('/') > -1:
             addr,mask = addr.split('/',1)
             if not mask.isdigit(): raise ValidationError("not a valid netmask")
-            if not self.isValidHostname(addr): raise ValidationError("not a valid network address")
+            if not self.isValidIPAddress(addr): raise ValidationError("not a valid ip address")
         else:
-            if not self.isValidHostname(addr):raise ValidationError("not a valid network address")
+            if not self.isValidIPAddress(addr):raise ValidationError("not a valid ip address")
         return self.cleaned_data['network_address']
     def isValidHostname(self,hostname):
         print hostname
@@ -26,6 +26,10 @@ class ScanNetworkForm(forms.Form):
         allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
         for x in hostname.split("."):
             if allowed.match(x) is False: return False
+        return True
+    def isValidIPAddress(self, ipaddress):
+        try: socket.inet_aton(ipaddress)
+        except: return False
         return True
 
 class AddGroupForm(forms.Form):
@@ -74,8 +78,8 @@ class AddTemplateForm(forms.Form):
         self.fields['template_name'].choices = templates
         
     def clean(self):
+        result = super(AddTemplateForm, self).clean()
         cleaned_data = self.cleaned_data
-        result = forms.Form.clean(self)
         host_name = cleaned_data['host_name']
         template_name = cleaned_data['template_name']
         force = cleaned_data['force']
