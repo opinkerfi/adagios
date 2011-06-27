@@ -38,9 +38,8 @@ def index(request):
 	return list_hosts(request)
 
 ## DEPRECATED for list_objects
-def list_hosts(request):
+def list_object(request, object_type):
     c = {}
-    c['hosts'] = Host.objects.all
     return render_to_response('hosts.html', c)
 
 ## Deprecated for list_objects

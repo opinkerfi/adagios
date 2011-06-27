@@ -2,6 +2,7 @@
 {% block head %}
 
     <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.url.packed.js"></script>
 
 
 {% endblock %}
@@ -9,7 +10,12 @@
 
 var currentTable = '';
 $(document).ready(function() {
+	if (jQuery.url.segment(1) != null) {
+		var objecttype = jQuery.url.segment(1);
+		$('#listtype').val(objecttype);
+	}
 	populateListTable();
+	
 });
 
 function populateListTable() {
@@ -49,6 +55,12 @@ function populateListTable() {
 		} else if ($('#listtype').val() == 'contactgroup') {
 			columns = ['contactgroup_name', 'alias'];
 			columnheadings = ['Contactgroup Name', 'Description'];
+		} else if ($('#listtype').val() == 'timeperiod') {
+			columns = ['timeperiod_name', 'alias'];
+			columnheadings = ['Timeperiod', 'Description'];
+		} else if ($('#listtype').val() == 'command') {
+			columns = ['command_name'];
+			columnheadings = ['Command Name'];
 		}
 
 		// Create the heading row
@@ -86,7 +98,8 @@ function populateListTable() {
 							row.push('&nbsp;');
 						// The actual data
 						} else {
-							row.push('<a href="/objectbrowser/id=' + val['id'] + '">' + val[columns[i]] + '</a>');
+							var value = val[columns[i]];
+							row.push('<a href="/objectbrowser/id=' + val['id'] + '">' + value + '</a>');
 						}
 					}
 					// Push on my 2 dimensional array
@@ -117,12 +130,14 @@ function populateListTable() {
 		<h3 style="margin-left: 12px;float: left;display: inline">View</h3>
 		<div style="margin-top: 6%;margin-left: 12px;float: left;display: inline">
 			<select id="listtype">
+				<option value="command">Commands</option>
 				<option value="contactgroup">Contactgroups</option>
 				<option value="contact">Contacts</option>
 				<option value="hostgroup">Hostgroups</option>
 				<option value="host" SELECTED>Hosts</option>
 				<option value="servicegroup">Servicegroups</option>
 				<option value="service">Services</option>
+				<option value="timeperiod">Timeperiods</option>
 			</select>
 		</div>
 		<div style="clear: both"></div>
