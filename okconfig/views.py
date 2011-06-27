@@ -81,7 +81,7 @@ def addhost(request):
                 c['filelist'] = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force)
                 c['host_name'] = host_name
                 return addcomplete(request, c)
-            except BaseException, e:
+            except Exception, e:
                 c['errors'].append( "error adding host: %s" % e ) 
         else:
             c['errors'].append( 'Could not validate input')
@@ -108,7 +108,7 @@ def addtemplate(request, host_name=None):
                 c['filelist'] = okconfig.addtemplate(host_name=host_name, template_name=template_name,force=force)
                 c['host_name'] = host_name
                 return addcomplete(request, c)
-            except BaseException, e:
+            except Exception, e:
                 c['errors'] = e
         else:
             c['errors'].append( 'Could not validate input' ) 
