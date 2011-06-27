@@ -76,12 +76,16 @@ button {
 
 }
 
+.css_right {
+	float: right;
+}
+
 .tablecontainer {
 	margin-left: 12px;
 }
 .listtablewrapper {
 	float: left;
-	width: 400px;
+	width: 600px;
 	display: none;
 	margin-top: 8px;
 }
