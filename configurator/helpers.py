@@ -7,7 +7,7 @@ Convenient stateless functions for pynag
 import sys
 
 
-sys.path.insert(1,'/opt/pynag')
+#sys.path.insert(1,'/opt/pynag')
 from pynag import Model
 
 
@@ -63,7 +63,7 @@ def get_host_names(invalidate_cache=False):
     for i in all_hosts:
         if not i['host_name'] is None:
             hostnames.append( i['host_name'])
-    return hostnames
+    return sorted( hostnames )
 def change_attribute(id, attribute_name, new_value):
     '''Changes object with the designated ID to file
     

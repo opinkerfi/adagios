@@ -102,4 +102,5 @@ INSTALLED_APPS = (
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.configurator',
+    'adagios.misc',
 )

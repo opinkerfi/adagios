@@ -1,13 +1,36 @@
 from django import forms
 from configurator import okconfig
 from configurator import helpers
-
-
+import re
+from django.core.exceptions import ValidationError
+import socket
 
 
 class ScanNetworkForm(forms.Form):
     network_address = forms.CharField()
-
+    def clean_network_address(self):
+        addr = self.cleaned_data['network_address']
+        if addr.find('/') > -1:
+            addr,mask = addr.split('/',1)
+            if not mask.isdigit(): raise ValidationError("not a valid netmask")
+            if not self.isValidIPAddress(addr): raise ValidationError("not a valid ip address")
+        else:
+            if not self.isValidIPAddress(addr):raise ValidationError("not a valid ip address")
+        return self.cleaned_data['network_address']
+    def isValidHostname(self,hostname):
+        print hostname
+        if len(hostname) > 255:
+            return False
+        if hostname[-1:] == ".":
+            hostname = hostname[:-1] # strip exactly one dot from the right, if present
+        allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+        for x in hostname.split("."):
+            if allowed.match(x) is False: return False
+        return True
+    def isValidIPAddress(self, ipaddress):
+        try: socket.inet_aton(ipaddress)
+        except: return False
+        return True
 
 class AddGroupForm(forms.Form):
     group_name = forms.CharField()
@@ -18,8 +41,7 @@ class AddHostForm(forms.Form):
     host_name = forms.CharField()
     address = forms.CharField()
     #description = forms.CharField()
-    groups = map( lambda x: (x,x), okconfig.get_groups() )
-    group_name = forms.ChoiceField(initial="default",choices=groups)
+    group_name = forms.ChoiceField()
     force = forms.BooleanField(required=False)
     def clean(self):
         if self.cleaned_data.has_key('host_name'):
@@ -28,21 +50,36 @@ class AddHostForm(forms.Form):
             if not force and host_name in helpers.get_host_names():
                 raise forms.ValidationError("Host name %s already exists, use force to overwrite" % host_name)
         return forms.Form.clean(self)
+    def __init__(self, *args, **kwargs):
+        super(AddHostForm, self).__init__(*args,**kwargs)
+        
+        # Set choices and initial values for the groups field
+        groups = map( lambda x: (x,x), okconfig.get_groups() )
+        if self.fields['group_name'].initial is None:
+            self.fields['group_name'].initial = "default"
+        self.fields['group_name'].choices = groups
 
 class AddTemplateForm(forms.Form):
-    templates = okconfig.get_templates()
-    templates = map( lambda x: (x, x), templates )
-    hosts = helpers.get_host_names()
-    host_list = map(lambda x: (x, x), hosts)
-    templates.sort()
-    host_list.sort()
     # Attributes
-    host_name = forms.ChoiceField(choices=host_list)
-    template_name = forms.ChoiceField(choices=templates )
+    host_name = forms.ChoiceField()
+    template_name = forms.ChoiceField()
     force = forms.BooleanField(required=False)
+    def __init__(self,*args,**kwargs):
+        super(AddTemplateForm, self).__init__(*args, **kwargs)
+        
+        # Create choices for our hosts and templates
+        hosts = helpers.get_host_names()
+        hosts = map(lambda x: (x, x), hosts)
+        
+        templates = okconfig.get_templates()
+        templates = map( lambda x: (x, x), templates )        
+        
+        self.fields['host_name'].choices = hosts
+        self.fields['template_name'].choices = templates
+        
     def clean(self):
+        result = super(AddTemplateForm, self).clean()
         cleaned_data = self.cleaned_data
-        result = forms.Form.clean(self)
         host_name = cleaned_data['host_name']
         template_name = cleaned_data['template_name']
         force = cleaned_data['force']

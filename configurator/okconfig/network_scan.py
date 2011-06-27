@@ -2,7 +2,7 @@
 import subprocess
 import socket
 import sys
-sys.path.insert(0,'/opt/pynag')
+#sys.path.insert(0,'/opt/pynag')
 from pynag import Model
 
 class ScannedHost:
@@ -119,9 +119,13 @@ def get_my_ip_address():
 	
 def pingscan(network='192.168.1.0/24'):
 	'scans a specific network, returns a list of all ip that respond'
-	r,stdout,stderr = runCommand("fping -t 50 -i 10 -a -g %s" % network)
+	command =  "fping -t 50 -i 10 -a "
+	if network.find('/') > 0: command += " -g " 
+	command += network
+	print command
+	r,stdout,stderr = runCommand(command)
 	if r > 1:
-		raise Exception("Error running fping: %s" % stderr)
+		raise Exception("Error running %s: %s" % (command,stderr) )
 	ip_list = []
 	for i in stdout.split('\n'):
 		try: socket.inet_aton(i)

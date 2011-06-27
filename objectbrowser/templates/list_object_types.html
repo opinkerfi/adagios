@@ -1,5 +1,7 @@
 {% extends "configurator/base.html" %}
-
+{% block head %}
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+{% endblock %}
 {% block title %}List of object Types{% endblock %}
 
 {% block content %}
@@ -7,20 +9,32 @@
 
 
 {% if object_types %}
-	<table border=1>
-	<tr>
+
+<div class="objectbrowser_list_objects ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Object List</a>
+		</li>
+	</ul>
+
+	<table width="100%">
+	<thead>
+	 <tr>
 		<th>Object Type</th>
 		<th>Active</th>
 		<th>Inactive</th>
+	 </tr>
+	</thead>
+	<tbody>
 	{% for i in object_types %}
-		<tr>
+		<tr class="{% cycle 'even' 'odd' %}">
 			<td><a href="search?object_type={{ i.0 }}">{{ i.0 }}</a></td>
 			<td><a href="search?object_type={{ i.0 }}&register=1">{{ i.1 }}</a></td>
 			<td><a href="search?object_type={{ i.0 }}&register=0">{{ i.2 }}</a></td>
-			</tr>
+		</tr>
 	{% endfor %}
-	</ul>
-
+	</tbody></table>
+</div>
 {% else %}
 	<p>List of object types not found </p>
 {% endif %}
