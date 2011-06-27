@@ -8,57 +8,124 @@
 {% endblock %}
 {% block javascript %}
 
+
 var currentTable = '';
+
+
 $(document).ready(function() {
+
+var tabs = [
+	{ 
+		'title': 'Contacts', 
+		'id': 'contact'
+		},
+	{
+		'title': 'Hosts',
+		'id': 'host'
+		},
+	{
+		'title': 'Services',
+		'id': 'service'
+		},
+	{
+		'title': 'Timeperiods',
+		'id': 'timeperiod'
+		},
+	{
+		'title': 'Commands',
+		'id': 'command'
+		},
+	{
+		'title': 'Contactgroups',
+		'id': 'contactgroup'
+		},
+	{
+		'title': 'Hostgroups',
+		'id': 'hostgroup'
+		},
+	{
+		'title': 'Servicegroups',
+		'id': 'servicegroup'
+		},
+];
+
+
+
+	// Get the second URI parameter (eg host, service...)
 	if (jQuery.url.segment(1) != null) {
-		var objecttype = jQuery.url.segment(1);
-		$('#listtype').val(objecttype);
+		currentTable = jQuery.url.segment(1);
 	}
+	createTabs(tabs);
 	populateListTable();
-	
 });
+
+
+// Creates the tabs from array map defined above
+function createTabs(tabs) {
+	for (var i=0; i < tabs.length; i++) {
+		// Add tab name
+		$('#objecttabs > ul').append('<li><a href="#' + tabs[i]['id'] + '">' + tabs[i]['title'] + '</a></li>');
+		$('#objecttabs').append('<div id="' + tabs[i]['id'] + '">HAHA</div>');	
+	}
+	$('#objecttabs').tabs({
+		select: function(e, ui) {
+			currentTable = ui.panel.id;
+			populateListTable();
+		}
+	});
+}
+
 
 function populateListTable() {
 
-	// Chosen value from pulldown
-	var listtype = $('#listtype').val();
-	
-	// Hide all listtables if we have any 
-	$('.dataTables_wrapper').each(function(index){
-		$(this).hide();
-	});
-	
+	listtype = currentTable
 	// Table does not exist, create it and fetch data
 	if ($('#listtable-' + listtype).length == 0) {
-		$('#listtables').append('<table class="listtable" id="listtable-' + listtype + '"><thead></thead><tbody></tbody></table>');
+		$('#' + listtype).html('<div id="loading-' + listtype + '"></div><table class="listtable" id="listtable-' + listtype + '"><thead></thead><tbody></tbody></table>');
+
+	$('#loading-' + listtype)
+    	.hide()  // hide it initially
+    	.ajaxStart(function() {
+    		$('.listtablecontainer').hide();
+    		$(this).html('<h3>Loading ' + listtype + '</h3>');
+        	$(this).show();
+    	})
+    	.ajaxStop(function() {
+    		$('.listtablecontainr').show();
+    	    $(this).hide();
+	});
+
+
+
+
 
 		// Different columns for different object types
 		var columns = [];
 		var columnheadings = [];
 	
 		// The first column should always be the distinct name, host_name, contactgroup_name...
-		if ($('#listtype').val() == 'host') {
+		if (currentTable == 'host') {
 			columns = ['host_name', 'address', 'alias'];
 			columnheadings = ['Hostname', 'IP Address', 'Description'];
-		} else if ($('#listtype').val() == 'service') {
+		} else if (currentTable == 'service') {
 			columns = ['host_name', 'service_description'];
 			columnheadings = ['Hostname', 'Service'];
-		} else if ($('#listtype').val() == 'contact') {
+		} else if (currentTable == 'contact') {
 			columns = ['contact_name', 'email', 'alias'];
 			columnheadings = ['Contact Name', 'E-Mail', 'Description'];
-		} else if ($('#listtype').val() == 'hostgroup') {
+		} else if (currentTable == 'hostgroup') {
 			columns = ['hostgroup_name', 'alias'];
 			columnheadings = ['Hostgroup Name', 'Description'];
-		} else if ($('#listtype').val() == 'servicegroup') {
+		} else if (currentTable == 'servicegroup') {
 			columns = ['servicegroup_name', 'alias'];
 			columnheadings = ['Servicegroup Name', 'Description'];
-		} else if ($('#listtype').val() == 'contactgroup') {
+		} else if (currentTable == 'contactgroup') {
 			columns = ['contactgroup_name', 'alias'];
 			columnheadings = ['Contactgroup Name', 'Description'];
-		} else if ($('#listtype').val() == 'timeperiod') {
+		} else if (currentTable == 'timeperiod') {
 			columns = ['timeperiod_name', 'alias'];
 			columnheadings = ['Timeperiod', 'Description'];
-		} else if ($('#listtype').val() == 'command') {
+		} else if (currentTable == 'command') {
 			columns = ['command_name'];
 			columnheadings = ['Command Name'];
 		}
@@ -123,7 +190,7 @@ function populateListTable() {
 {% block content %}
 
 
-
+<!--
 
 <div class="tablecontainer">
 	<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all" style="width: 220px;text-align: center">
@@ -143,12 +210,13 @@ function populateListTable() {
 		<div style="clear: both"></div>
 
 	</div>
-
-	<div id="loadingDiv">
-	</div>
+-->
 
 	
-	<div id="listtables" class="listtablewrapper">
+	
+	<div id="objecttabs">
+		<ul>
+		</ul>
 	</div>
 </div>
 
@@ -157,21 +225,8 @@ function populateListTable() {
 </div>
 <script>
 
-$('#loadingDiv')
-    .hide()  // hide it initially
-    .ajaxStart(function() {
-    	$(this).html('<h3>Loading ' + $('#listtype').val() + '</h3>');
-        $(this).show();
-        $('#listtables').hide();
-    })
-    .ajaxStop(function() {
-        $(this).hide();
-        
-    });
 
-$('#listtype').change(function() {
-	populateListTable();
-});
+
 </script>
 
 
