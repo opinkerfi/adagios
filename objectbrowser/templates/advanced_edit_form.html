@@ -1,9 +1,11 @@
 
 
 <!-- Generic Object Editor Form -->
-{% if form %}
+{% if form_not_used %}
 
-<form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}	
+<form action="#" method="post"> 
+
+{% csrf_token %}	
 	<div class="attribute_contact">
 	<fieldset id="attribute_contact" class="attribute_{{object_type}}">
 	  <legend>{{my_object.object_type}} - {{ my_object.description }}</legend>
@@ -17,7 +19,9 @@
 
 		<INPUT type="submit" value="Save">	  	
 	</div>
-</form>
+
+ </form> 
+
 
 {% else %}
 <form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}	
@@ -25,6 +29,17 @@
 	<fieldset id="attribute_contact" class="attribute_{{object_type}}">
 	  <legend>{{my_object.object_type}} - {{ my_object.description }}</legend>
 	  {% for field in defined_attributes %}	  	
+	  <div class="{{ field.field.widget.attrs.class }}">
+	  	<p><label> {{ field.label }} </label>
+	  	{{ field }} {{ field.errors}} {{ field.help_text }} </p>
+	  </div>
+	  {% endfor %}
+	 </fieldset>
+
+
+	<fieldset id="inherited_attributes" class="attribute_{{object_type}}">
+	  <legend>Inherited Attributes	</legend>
+	  {% for field in inherited_attributes %}	  	
 	  <div class="{{ field.field.widget.attrs.class }}">
 	  	<p><label> {{ field.label }} </label>
 	  	{{ field }} {{ field.errors}} {{ field.help_text }} </p>
