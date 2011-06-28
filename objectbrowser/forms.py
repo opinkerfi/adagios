@@ -105,48 +105,22 @@ class ZeroOneField(forms.BooleanField):
 
         
 class PynagForm(forms.Form):
-    def create_fields(self):
-        "Populate form with all fields that are normally seen in this type of an object"
-        object_type = self.extra['object_type']
-        inherited = self.extra._inherited_attributes.keys()
-        defined = self.extra._defined_attributes.keys()
-        if object_definitions.has_key(object_type):
-            for name,hash in object_definitions[object_type].items():
-                fieldClass = forms.CharField
-                if hash['value'] == '[0/1]':
-                    fieldClass = ZeroOneField
-                elif hash['value'] == '#':
-                    fieldClass = forms.IntegerField
-                # Create a radiobutton go with it
-                if name in self.extra._defined_attributes.keys():
-                    initial="defined"
-                elif name in self.extra._inherited_attributes.keys():
-                    initial='inherited'
-                else:
-                    initial='undefined'
-                self.fields['defined_%s' % name] = DefinitionStatusField(initial=initial)
-                self.fields['defined_%s' % name].widget.attrs['class'] = "definiton_choices"
-                
-                # Here the field is created
-                self.fields['%s' % name] = fieldClass()
-                self.fields[name].widget.attrs['class'] = "definition_field is_%s" % initial
     def clean(self):
         for k,v in self.cleaned_data.items():
-            if k in self.undefined_attributes and v == '': self.cleaned_data.pop(k)
+            if k not in self.data.keys(): self.cleaned_data.pop(k)
+            elif k in self.undefined_attributes and v == '': self.cleaned_data.pop(k)
             elif v == self.pynag_object[k]: self.cleaned_data.pop(k)
             elif v == '' and self.pynag_object[k] is None: self.cleaned_data.pop(k)
             else: pass
         return self.cleaned_data
     def save(self):
         for k,v in self.cleaned_data.items():
-            #print "saving, %s=%s" % (k,v)
-            self.pynag_object[k] = v
-            self.pynag_object.save()
-                #for k,v in request.POST.items():
-            #    if k == "csrfmiddlewaretoken": continue
-            #    if o[k] != v:
-            #        o[k] = v
-            #o.save()
+            k,v = str(k), str(v)
+            if self.pynag_object[k] != v:
+                self.pynag_object[k] = v
+                self.fields[k] = self.get_pynagField(k, css_tag="defined_attribute")
+                self.fields[k].value = v
+        self.pynag_object.save()
     def __init__(self, pynag_object, show_defined_attributes=True,show_inherited_attributes=True,show_undefined_attributes=True, show_radiobuttons=True,*args, **kwargs):
         self.pynag_object = pynag_object
         super(forms.Form,self).__init__(*args, **kwargs)
@@ -178,6 +152,7 @@ class PynagForm(forms.Form):
         """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
         # Lets figure out what type of field this is, default to charfield
         try:
+            asdasd
             object_type = self.pynag_object['object_type']
             options = object_definitions[ object_type ][field_name]
             if options['value'] == '#':
@@ -188,11 +163,12 @@ class PynagForm(forms.Form):
                 field = forms.CharField()
         except:
             field = forms.CharField()
-        
-        if css_tag == 'inherited_attribute':
-            field.help_text = "Inherited from template"
-        elif css_tag == 'undefined_attribute':
-            field.help_text = 'Undefined'
+        if field_name.startswith('_'):
+            field.label = field_name
+        #if css_tag == 'inherited_attribute':
+        #    field.help_text = "Inherited from template"
+        #elif css_tag == 'undefined_attribute':
+        #    field.help_text = 'Undefined'
         try:
             options = object_definitions[ self.pynag_object['object_type'] ][field_name]
         except: options = {}
@@ -208,57 +184,6 @@ class PynagForm(forms.Form):
             field.widget.attrs['class'] = css_tag
             field.css_tag = css_tag
         return field
-        
-    def __old_init__(self):
-        'Just a placeholder for deprecated __init__'
-        # TODO: Remove this function
-        for k,v  in extra._original_attributes.items():
-            if k == 'meta': continue
-            extra_arguments = {}
-            if attribute_types.has_key(k):
-                friendly_name,fieldClass = attribute_types[k]
-            else:
-                friendly_name,fieldClass = k, forms.CharField
-                print "not recognized:", k
-            if k == 'check_command':
-                commands = Model.Command.objects.all
-                commands = map(lambda x: (x.command_name, x.command_name), commands)
-                extra_arguments['choices'] = commands
-                extra_arguments['initial'] = 'check-host-alive'
-            if k == 'contact_groups':
-                # TODO: Make sure already initial values are selected
-                contact_groups = []
-                for cg in Model.Contactgroup.objects.all:
-                    if not cg['contactgroup_name']: continue
-                    contact_groups.append( (cg.get_shortname(), cg.get_shortname() )  )
-                extra_arguments['choices'] = ( contact_groups )
-            if k == 'servicegroups':
-                # TODO: Make sure already initial values are selected
-                groups = []
-                for i in Model.Servicegroup.objects.all:
-                    if not i['servicegroup_name']: continue
-                    groups.append( (i.get_shortname(), i.get_shortname() )  )
-                extra_arguments['choices'] = ( groups )
-            if k == 'use':
-                # TODO: Make sure already initial values are selected
-                templates = []
-                for obj in extra.objects.all:
-                    if not obj['name']: continue
-                    #templates.append( (obj['name'], obj['name'])  )
-                extra_arguments['choices'] = ( templates )
-            if k == 'timeperiod_name':
-                # TODO: Make sure already initial values are selected
-                templates = []
-                for obj in Model.Timeperiod.objects.all:
-                    if not obj['timeperiod_name']: continue
-                    templates.append( (obj['timeperiod_name'], obj['timeperiod_name'])  )
-                extra_arguments['choices'] = ( templates )
-            
-            # 
-            if fieldClass is UseField:
-                extra_arguments['object'] = extra 
-                extra_arguments['initial'] = ['windows-server']
-            self.fields['%s' % k] = fieldClass(label=friendly_name, **extra_arguments)
                 
                 
 class DynamicForm(forms.Form):
