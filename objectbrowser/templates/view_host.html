@@ -13,7 +13,6 @@
 
 {% if my_object %}
 
-<form action="#" method="POST">
 
 	<!-- wrapper for scrollable items -->
 	<div id="tabs">
@@ -32,6 +31,9 @@
 		<div id="manual_edit">
 			{% include "manual_edit_form.html" %}
 		</div>
+
+<form action="#" method="POST">
+		{% csrf_token %}
 
 		<div id="host">
 			<div>
@@ -139,6 +141,7 @@
 		
 
 	</div>
+		<INPUT type="submit" value="Save">	  	
 
 </form>		
 
