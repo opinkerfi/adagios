@@ -72,9 +72,13 @@ button {
 }
 
 
-.listtable {
+.dataTables_wrapper {
 }
 
+
+#servicetemplate {
+	width: 200px;
+}
 
 a:link, a:visited {
     color: #4C3000;
@@ -99,16 +103,6 @@ a:link, a:visited {
 	height: 16px;
 	width: 120px;
 	font-size: 80%;
-}
-
-.tablecontainer {
-	margin-left: 12px;
-}
-.listtablewrapper {
-	float: left;
-	width: 600px;
-	display: none;
-	margin-top: 8px;
 }
 
 .console {

@@ -32,10 +32,10 @@ def test(request):
         return index(request)
 
 def home(request):
-        return redirect('adagios')
+    return redirect('adagios')
 
 def index(request):
-	return list_hosts(request)
+    return list_hosts(request)
 
 ## DEPRECATED for list_objects
 def list_object(request, object_type):
