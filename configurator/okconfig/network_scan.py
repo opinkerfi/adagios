@@ -2,7 +2,6 @@
 import subprocess
 import socket
 import sys
-#sys.path.insert(0,'/opt/pynag')
 from pynag import Model
 
 class ScannedHost:

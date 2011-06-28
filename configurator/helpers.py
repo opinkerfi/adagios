@@ -7,7 +7,6 @@ Convenient stateless functions for pynag
 import sys
 
 
-#sys.path.insert(1,'/opt/pynag')
 from pynag import Model
 
 

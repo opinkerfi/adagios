@@ -45,7 +45,6 @@ import socket
 from sys import exit
 from sys import argv
 from sys import path
-#path.insert(0, "/opt/pynag")
 from pynag import Model
 from os import getenv,putenv,environ
 

@@ -1,6 +1,5 @@
 import sys
 
-#sys.path.insert(1, '/opt/pynag')
 from pynag.Parsers import config
 nc = config('/etc/nagios/nagios.cfg')
 nc.parse()

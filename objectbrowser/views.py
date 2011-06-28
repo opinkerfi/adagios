@@ -22,7 +22,6 @@ from django.utils import simplejson
 from django.core.context_processors import csrf
 
 import sys
-#sys.path.insert(1, '/opt/pynag')
 
 from pynag.Model import *
 from pynag import Model
