@@ -35,6 +35,7 @@ p {
 }
 
 #content {
+	padding-left: 4px;
 	padding-top: 4px;
 	width:800px;
 	
@@ -71,19 +72,37 @@ button {
 }
 
 
-.listtable {
-	
-
+.dataTables_wrapper {
 }
 
-.tablecontainer {
-	margin-left: 12px;
+
+#servicetemplate {
+	width: 200px;
 }
-.listtablewrapper {
-	float: left;
-	width: 400px;
-	display: none;
-	margin-top: 8px;
+
+a:link, a:visited {
+    color: #4C3000;
+    text-decoration: none;
+}
+
+
+.css_right {
+	float: right;
+}
+
+.DataTables_sort_wrapper {
+	cursor: pointer;
+}
+
+.dataTables_filter {
+	float: right;
+	padding: 2px;
+}
+
+.dataTables_filter input {
+	height: 16px;
+	width: 120px;
+	font-size: 80%;
 }
 
 .console {
