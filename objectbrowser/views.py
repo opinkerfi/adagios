@@ -122,32 +122,32 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         o = otype.objects.get_by_shortname(shortname)
     else:
         raise ValueError("Object not found")
-    
-    if request.method == 'GET' or request.POST.has_key('definition'):
-        c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
-        c['defined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_undefined_attributes=False)
-        c['undefined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False, show_inherited_attributes=False)
+
     
     if request.method == 'POST':
         if request.POST.has_key('definition'):
             'Manual edit of the form'
-            form = ManualEditObjectForm(data=request.POST, pynag_object=o)
-            if form.is_valid():
-                form.save()
-            m.append("Object Saved manually to '%s'" % o['filename'])
+            manual_edit = ManualEditObjectForm(data=request.POST, pynag_object=o)
+            if manual_edit.is_valid():
+                manual_edit.save()
+                m.append("Object Saved manually to '%s'" % o['filename'])
+            else:
+                m.append( "Failed to save object")
         else:
             "this is the 'advanced_edit' form "
-            c['form'] = PynagForm( pynag_object=o, data=request.POST )
+            c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
             if c['form'].is_valid():
                 c['form'].save()
                 m.append("Object Saved to %s" % o['filename'])
             else:
                 c['errors'].append( "Problem reading form input")
-            #c['defined_attributes'] = PynagForm(pynag_object=o, data=o._original_attributes, show_undefined_attributes=False)
-            #c['undefined_attributes'] = PynagForm(pynag_object=o, data=o._original_attributes, show_defined_attributes=False, show_inherited_attributes=False)
+
+    c['inherited_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False,   show_inherited_attributes=True, show_undefined_attributes=False)
+    c['defined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes,   show_undefined_attributes=False, show_inherited_attributes=False)
+    c['undefined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False,   show_inherited_attributes=False)
+    c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
 
     c['my_object'] = o
-    c['attr_val'] = o.get_attribute_tuple()
     c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     if o['object_type'] == 'host':
         return _view_host(request, c)
@@ -233,7 +233,6 @@ def confighealth( request  ):
     s['Hosts without Service Checks'] = hosts_without_services
     if request.GET.has_key('show') and s.has_key( request.GET['show'] ):
         objects =  s[request.GET['show']]
-        print len(objects)
         return list_objects(request,display_these_objects=objects )
     else:
         return render_to_response('suggestions.html', c)
