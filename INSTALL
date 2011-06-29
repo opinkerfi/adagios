@@ -1,0 +1,47 @@
+#
+# At this point, you should only install adagios if you are a tester or a developer
+# It is an extremely good idea to change your /etc/nagios/ into a git repository
+# So you can track any changes made to configuration files
+
+# Installation instructions for RHEL 5.x
+
+
+# Install version control utilities
+yum install -y git subversion
+
+
+# Create a home for adagios
+mkdir -p /opt/adagios
+cd /opt/adagios
+
+
+# Install adagios from repository
+git clone http://opensource.is/git/adagios.git
+
+# Install pynag from repository
+svn checkout http://pynag.googlecode.com/svn/trunk/ pynag
+echo 'export PYTHONPATH="/opt/pynag:/opt/okconfig"' > /etc/profile.d/pythonpath.sh
+
+# Make sure new environment variables are set
+source /etc/profile
+
+
+# Install nagios so adagios has at least some configuration files to play with
+yum install -i nagios
+
+
+# Install dependencies
+yum install -y python-json pip-python fping
+pip-python install django
+
+
+# If you run adagios as a user, make sure it can read (and possibly write) to all nagios config files, error handling is lacking in cases where it doesnt have required permissions
+
+useradd adagios -G nagios -d /opt/adagios/adagios
+chown -R adagios /opt/adagios
+su - adagios
+python manage.py runserver
+
+
+# Now try to access http://yourhost:8000
+
