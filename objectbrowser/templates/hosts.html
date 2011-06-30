@@ -4,7 +4,6 @@
 		<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
 		<script type="text/javascript" src="/static/js/jquery.url.packed.js"></script>
 
-
 {% endblock %}
 {% block javascript %}
 
@@ -68,9 +67,15 @@ tabs = [
 
 
 $(document).ready(function() {
-	// Get the second URI parameter (eg host, service...)
-	if (jQuery.url.segment(1) != null) {
+
+	// Get the anchor URI parameter (eg host, service...)
+	if (document.location.href.split('#')[1] != null) {
+		currentTable = document.location.href.split('#')[1];
+	// Get the  URL parameter (eg host, service...)
+	} else if (jQuery.url.segment(1) != null) {
 		currentTable = jQuery.url.segment(1);
+	} else {
+		currentTable = 'hostgroup';
 	}
 	createTabs();
 	populateListTable();
@@ -88,6 +93,7 @@ function createTabs() {
 		$('#objecttabs').append('<div id="' + tabs[i]['id'] + '"></div>');	
 	}
 	$tabs = $('#objecttabs').tabs();
+	$('#objecttabs ul li a').click(function () {location.hash = $(this).attr('href');}); 
 	$tabs.tabs('select', currentTabId);
 	$('#objecttabs').bind( "tabsselect", function(e, ui) {
 		currentTable = ui.panel.id;

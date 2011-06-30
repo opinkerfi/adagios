@@ -8,14 +8,15 @@ urlpatterns = patterns('',
     #(r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)/?$', 'objectbrowser.views.list_objects'),
 
     # By default, lets just display a list of object_types available
-    (r'^/?$', 'objectbrowser.views.list_object_types'),
+    (r'^/overview$', 'objectbrowser.views.list_object_types'),
     (r'^/search/?$', 'objectbrowser.views.list_objects'),
     (r'/id=(?P<object_id>.+)$', 'objectbrowser.views.view_object'),
-    (r'/(host|service|timeperiod|contact|contactgroup|servicegroup|command|hostgroup)$', 'objectbrowser.views.list_object'),
     (r'/view_object/id=(?P<object_id>.+)$', 'objectbrowser.views.view_object'),
     (r'/view_object/object_type=(?P<object_type>.+)/shortname=(?P<shortname>.+)$', 'objectbrowser.views.view_object'),
     (r'/confighealth/?$', 'objectbrowser.views.confighealth'),
     (r'/nagios.cfg/?$', 'objectbrowser.views.view_nagioscfg'),
+    (r'^$', 'objectbrowser.views.list_object', { 'object_type':"None" } ),
+    (r'^/(contact|host|service|timeperiod|command|contactgroup|hostgroup|servicegroup)', 'objectbrowser.views.list_object'),
     
     # 
     #(r'/(?P<object_type>.+)/?$', 'objectbrowser.views.list_objects'),
