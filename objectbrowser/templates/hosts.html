@@ -105,18 +105,14 @@ function populateListTable() {
 		// Create the object table
 		$('#' + listtype).html('<div id="container-' + listtype + '"></div>');
 		$('#container-' + listtype).html('<table id="listtable-' + listtype + '"><thead></thead><tbody></tbody></table><table id="listtable-template-' + listtype + '" class="listtable_template"><thead></thead><tbody></tbody></table>');
-		// Hide the empty tables
-		$('#container-' + currentTable).hide();
 
 		// Record the current tabproperties from the tabs array
 		tabProps = tabs[currentTabId];
 		$('#container-' + listtype)
-			.hide()  // hide it initially
+			.hide()
 			.ajaxStart(function() {
-				$(this).hide();
 			})
 			.ajaxStop(function() {
-				$(this).show();
 				currentTable.fnAdjustColumnSizing();
 			});
 		
