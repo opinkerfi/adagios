@@ -1,0 +1,235 @@
+{% extends "configurator/base.html" %}
+{% block title %}{{ object_type }}{% endblock %}
+
+{% block content %}
+<!--
+<h1>We are viewing a beautiful {{ my_object.object_type }}</h1>
+-->
+
+
+{% if my_object %}
+	<!--
+	{{ my_object }}
+	-->
+
+
+
+
+	<!-- wrapper for scrollable items -->
+	<div id="tabs">
+
+		<ul>
+			<li><a href="#contact">Contact</a></li>
+			<li><a href="#notifications">Notifications</a></li>
+			<li><a href="#advanced">Advanced</a></li>
+			<li><a href="#manual_edit">Manual edit</a></li>
+			<!-- <li><a href="#misc">Misc</a></li> -->
+			<!-- <li><a href="#old_edit_form">Old Ajaxy Edit Form</a></li> -->
+		</ul>
+
+
+		<div id="advanced">
+			{% include "snippets/advanced_edit_form.html" %} 	
+		</div>
+
+		<div id="manual_edit">
+			{% include "snippets/manual_edit_form.html" %}
+		</div>
+		
+		<div id="contact">
+
+			<div class="{{ form.contact_name.field.widget.attrs.class }}">
+			<p><label> {{ form.contact_name.label }} </label>{{ form.contact_name }} {{ form.contact_name.errors}} {{ form.contact_name.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.alias.field.widget.attrs.class }}">
+			<p><label> {{ form.alias.label }} </label>{{ form.alias }} {{ form.alias.errors}} {{ form.alias.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.use.field.widget.attrs.class }}">
+			<p><label> {{ form.use.label }} </label>{{ form.use }} {{ form.use.errors}} {{ form.use.help_text }} </p>
+			</div>
+			
+			
+			<div class="{{ form.contactgroups.field.widget.attrs.class }}">
+			<p><label> {{ form.contactgroups.label }} </label>{{ form.contactgroups }} {{ form.contactgroups.errors}} {{ form.contactgroups.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.email.field.widget.attrs.class }}">
+			<p><label> {{ form.email.label }} </label>{{ form.email }} {{ form.email.errors}} {{ form.email.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.pager.field.widget.attrs.class }}">
+			<p><label> {{ form.pager.label }} </label>{{ form.pager }} {{ form.pager.errors}} {{ form.pager.help_text }} </p>
+			</div>
+			
+			<!-- Display All Contactgroups if this is that kind of an object -->
+				<div class="effective_contactgroups">
+				<fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
+				  <legend>Contactgroups</legend>
+				  	{% if effective_contactgroups %}
+					{% for group in effective_contactgroups %}
+					  <p>
+					    <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
+					  </p>
+					{% endfor %}
+					{% endif %}
+				</fieldset>
+				</div>
+			
+
+		</div>
+		<div id="notifications">
+
+			<div class="{{ form.host_notifications_enabled.field.widget.attrs.class }}">
+			<p><label> {{ form.host_notifications_enabled.label }} </label>{{ form.host_notifications_enabled }} {{ form.host_notifications_enabled.errors}} {{ form.host_notifications_enabled.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.host_notification_commands.field.widget.attrs.class }}">
+			<p><label> {{ form.host_notification_commands.label }} </label>{{ form.host_notification_commands }} {{ form.host_notification_commands.errors}} {{ form.host_notification_commands.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.host_notification_period.field.widget.attrs.class }}">
+			<p><label> {{ form.host_notification_period.label }} </label>{{ form.host_notification_period }} {{ form.host_notification_period.errors}} {{ form.host_notification_period.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.host_notification_options.field.widget.attrs.class }}">
+			<p><label> {{ form.host_notification_options.label }} </label>{{ form.host_notification_options }} {{ form.host_notification_options.errors}} {{ form.host_notification_options.help_text }} </p>
+			</div>
+			---
+			
+			<div class="{{ form.service_notifications_enabled.field.widget.attrs.class }}">
+			<p><label> {{ form.service_notifications_enabled.label }} </label>{{ form.service_notifications_enabled }} {{ form.service_notifications_enabled.errors}} {{ form.service_notifications_enabled.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.service_notification_commands.field.widget.attrs.class }}">
+			<p><label> {{ form.service_notification_commands.label }} </label>{{ form.service_notification_commands }} {{ form.service_notification_commands.errors}} {{ form.service_notification_commands.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.service_notification_period.field.widget.attrs.class }}">
+			<p><label> {{ form.service_notification_period.label }} </label>{{ form.service_notification_period }} {{ form.service_notification_period.errors}} {{ form.service_notification_period.help_text }} </p>
+			</div>
+			
+			<div class="{{ form.service_notification_options.field.widget.attrs.class }}">
+			<p><label> {{ form.service_notification_options.label }} </label>{{ form.service_notification_options }} {{ form.service_notification_options.errors}} {{ form.service_notification_options.help_text }} </p>
+			</div>
+
+
+
+		</div>
+
+
+			
+
+		</div>		
+			
+
+
+
+<div class="overlay">
+  <button id="close_overlay">Close Error</button><br/>
+  <div id="error">
+  </div>
+</div>
+	
+	<script>
+	
+$('#close_overlay').click(function() {
+	$('.overlay').hide();
+	return false;
+});
+$(document).ajaxError(function(e, xhr, settings, exception) {
+	$('#error').html( xhr.responseText );
+	$('.overlay').show();
+}); 
+$(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+	    function safeMethod(method) {
+	        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	    }
+
+	    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+	        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+	    }
+	});
+	$('.modify_button').click(function() {
+		id = this.id.replace('modify_', '');
+		currentval = $('#key_' + id).text();
+
+
+		if (id == 'contact_groups') {
+			$('#key_' + id).html("<select id='input_" + id + "'></select>");
+			
+			$.getJSON("/rest/pynag/json/contactgroups", function(json) {
+				$.each(json, function(k, v) {
+					//alert('<option value="' + v['contactgroup_name'] + '">' + v['contactgroup_name'] + "</option>");
+					$('#input_' + id).append('<option value="' + v['contactgroup_name'] + '">' + v['contactgroup_name'] + "</option>");
+				});
+			});
+						
+			newinput = $('#input_' + id);
+			newinput.select();
+		} else {
+			$('#key_' + id).html("<input id='input_" + id + "'/>");
+			newinput = $('#input_' + id)
+			newinput.val(currentval);
+			newinput.select();
+		}		
+		newinput.blur(function(blurrer) {
+			val = newinput.val();
+			$('#key_' + id).html(val);
+			d = {}
+			//d[id] = val;
+			d['attribute_name'] = id;
+			d['new_value'] = val;
+			d['id'] = "{{ my_object.id }}";
+			$.post("/rest/pynag/json/change_attribute", d );
+		});
+		
+	});
+	
+	</script>
+
+	
+<script>
+// wait until document is fully scriptable
+$('#accordion').accordion({ header: "h4" });
+$('#tabs').tabs();
+//$('#tabs').tabs('add', '#cramp', "Ble");
+//$(function() {
+//
+//});
+</script>
+	
+	
+{% else %}
+	<p>Object not found </p>
+{% endif %}
+
+{% endblock %}

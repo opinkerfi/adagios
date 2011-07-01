@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'/view_object/id=(?P<object_id>.+)$', 'objectbrowser.views.view_object'),
     (r'/view_object/object_type=(?P<object_type>.+)/shortname=(?P<shortname>.+)$', 'objectbrowser.views.view_object'),
     (r'/confighealth/?$', 'objectbrowser.views.confighealth'),
+    (r'/parents/?$', 'objectbrowser.views.view_parents'),
     (r'/nagios.cfg/?$', 'objectbrowser.views.view_nagioscfg'),
     
     # 

@@ -103,10 +103,31 @@ class ZeroOneField(forms.BooleanField):
         else:
             return "0"
 
-        
+# These fields are special, they are a comma seperated list, and may or may not have +/- in front of them.
+MULTICHOICE_FIELDS = ('servicegroups','hostgroups','contacts','contact_groups', 'contactgroups', 'use')
+
+class PynagChoiceField(forms.MultipleChoiceField):
+    ''' multichoicefields that accepts comma seperated input as values '''
+    def __init__(self, *args, **kwargs):
+        self.__prefix = ''
+        self.data = kwargs.get('data')
+        super(PynagChoiceField, self).__init__(*args, **kwargs)
+    def clean(self,value):
+        print "test: '%s' '%s' '%s' 's' "% ( self.__prefix, self.initial, self.data)
+        return self.__prefix + ','.join(value)
+    def prepare_value(self, value):
+        if type(value) == type(''):
+            if value.startswith('+'): self.__prefix = '+'
+            value = value.strip('+')
+            return value.split(',')
+        return value
+
 class PynagForm(forms.Form):
     def clean(self):
         for k,v in self.cleaned_data.items():
+            if k in MULTICHOICE_FIELDS:
+                if self.pynag_object.get(k,'').startswith('+'):
+                    v = self.cleaned_data[k] = "+%s"%(v)
             if k not in self.data.keys(): self.cleaned_data.pop(k)
             elif k in self.undefined_attributes and v == '': self.cleaned_data.pop(k)
             elif v == self.pynag_object[k]: self.cleaned_data.pop(k)
@@ -135,11 +156,10 @@ class PynagForm(forms.Form):
             if i in defined_attributes: continue
             if i in inherited_attributes: continue
             self.undefined_attributes.append( i )
-        
         # Find out which attributes to show
         if show_defined_attributes:
             for field_name in defined_attributes:
-                self.fields[field_name] = self.get_pynagField(field_name, css_tag="defined_attribute")
+                self.fields[field_name] = self.get_pynagField(field_name,css_tag="defined_attribute")
         if show_inherited_attributes:
             for field_name in inherited_attributes:
                 if field_name in defined_attributes: continue
@@ -151,35 +171,50 @@ class PynagForm(forms.Form):
     def get_pynagField(self, field_name, css_tag=""):
         """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
         # Lets figure out what type of field this is, default to charfield
-        try:
-            asdasd
-            object_type = self.pynag_object['object_type']
-            options = object_definitions[ object_type ][field_name]
-            if options['value'] == '#':
-                field = forms.IntegerField()
-            elif options['value'] == '[0/1]':
-                field = forms.IntegerField()
-            else:
+        object_type = self.pynag_object['object_type']
+        definitions = object_definitions.get( object_type ) or {}
+        options = definitions.get(field_name) or {}
+        # Some fields get special treatment
+        if field_name == 'contact_groups' or field_name == 'contactgroups':
+                all_groups = Model.Contactgroup.objects.filter(contactgroup_name__contains="")
+                choices = map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups)
+                field = PynagChoiceField(choices=choices)
+        elif field_name == 'use':
+            all_objects = self.pynag_object.objects.filter(name__contains='')
+            choices = map(lambda x: (x.name, x.name), all_objects)
+            field = PynagChoiceField(choices=choices)
+        elif field_name == 'servicegroups':
+            all_groups = Model.Servicegroup.objects.filter(servicegroup_name__contains='')
+            choices = map(lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
+            field = PynagChoiceField(choices=choices)
+        elif field_name == 'hostgroups':
+            all_groups = Model.Hostgroup.objects.filter(hostgroup_name__contains='')
+            choices = map(lambda x: (x.hostgroup_name, x.hostgroup_name), all_groups)
+            field = PynagChoiceField(choices=choices)
+        elif field_name == 'contacts':
+            all = Model.Contact.objects.filter(contact_name__contains='')
+            choices = map(lambda x: (x.contact_name, x.contact_name), all)
+            field = PynagChoiceField(choices=choices)
+        elif options.get('value') == '[0/1]':
+            choices = ( ('1','1'),('0','0'))
+            field = forms.ChoiceField(choices=choices, widget=forms.RadioSelect)
+        
+            #if options['value'] == '#':
+            #    field = forms.IntegerField()
+            #elif options['value'] == '[0/1]':
+            #    field = forms.IntegerField()
+
+        else:
                 field = forms.CharField()
-        except:
-            field = forms.CharField()
         if field_name.startswith('_'):
             field.label = field_name
-        #if css_tag == 'inherited_attribute':
-        #    field.help_text = "Inherited from template"
-        #elif css_tag == 'undefined_attribute':
-        #    field.help_text = 'Undefined'
-        try:
-            options = object_definitions[ self.pynag_object['object_type'] ][field_name]
-        except: options = {}
         if options.has_key('required'):
             css_tag = css_tag + " " + options['required']
             field.required = options['required'] == 'required'
         else:
             field.required = False
-        # At the moment, our required database is incorrect
+        # At the moment, our database of required objects is incorrect
         field.required = False
-        
         if css_tag:
             field.widget.attrs['class'] = css_tag
             field.css_tag = css_tag
@@ -208,5 +243,4 @@ class ManualEditObjectForm(forms.Form):
         return definition
     def save(self):
         definition = self.cleaned_data['definition']
-        print [definition]
         self.pynag_object.rewrite( str_new_definition=definition )

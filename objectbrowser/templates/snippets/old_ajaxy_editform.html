@@ -1,0 +1,27 @@
+		<div id="old_edit_form">				
+			<!-- Print all attributes -->
+			<div class="attributelook">
+				<fieldset id="attributelook" class="attributelook">
+				  <legend>Advanced</legend>
+				  
+				{% for attr in attr_val %}
+					<p>
+						<label>{{ attr.0 }}</label>
+						{% if attr.1 == "0" or attr.1 == "1" %}
+							{% if attr.1 == "0" %}
+						<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/off.png"></span>
+							
+							{% else %}
+						<span class="attributevalue" id="key_{{ attr.0 }}"><img src="/static/on.png"></span>
+						
+							{% endif %}
+						{% else %}
+						<span class="attributevalue" id="key_{{ attr.0 }}">{{ attr.1 }}</span>
+						<span class="inherited attributevalue">{{attr.2}}</span>
+						<button class=" attributevalue modify_button" id="modify_{{ attr.0 }}">Edit</button>
+						{% endif %} 
+					</p>
+				{% endfor %} 
+				</fieldset>
+			</div>
+		<div>

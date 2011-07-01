@@ -27,14 +27,10 @@ from pynag.Model import *
 from pynag import Model
 from forms import *
 
-def test(request):
-        return index(request)
 
 def home(request):
     return redirect('adagios')
 
-def index(request):
-    return list_hosts(request)
 
 ## DEPRECATED for list_objects
 def list_object(request, object_type):
@@ -74,10 +70,7 @@ def list_objects( request, object_type=None, display_these_objects=None ):
     
     # If a non-existent object_type is requested, lets display a warning
     # Model.string_to_class contains a hash map that convert string value to its respective class definition
-    if not Model.string_to_class.has_key(object_type):
-            m.append('Model does not have any objects of type %s, valid types are %s' % (object_type, Model.string_to_class.keys()))
-    else:
-        Pynag = Model.string_to_class[object_type]
+    Pynag = Model.string_to_class.get(object_type, Model.ObjectDefinition)
     
     # Lets decide if we want to get everything or apply a filter
     if display_these_objects is not None:
@@ -118,7 +111,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         o = ObjectDefinition.objects.get_by_id(id=object_id)
     elif object_type != None and shortname != None:
         # TODO: if multiple objects are found, display a list
-        otype = Model.string_to_class[object_type]
+        otype = Model.string_to_class.get(object_type, Model.ObjectDefiniton)
         o = otype.objects.get_by_shortname(shortname)
     else:
         raise ValueError("Object not found")
@@ -151,6 +144,10 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     if o['object_type'] == 'host':
         return _view_host(request, c)
+    elif o['object_type'] == 'service':
+        return _view_service(request, c)
+    elif o['object_type'] == 'contact':
+        return _view_contact(request, c)
     try: c['command_line'] = o.get_effective_command_line()
     except: pass
     try: c['object_macros'] = o.get_all_macros()
@@ -159,11 +156,37 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     except: pass
     try: c['effective_contacts'] = o.get_effective_contacts()
     except: pass
-    c['effective_contactgroups'] = o.get_effective_contact_groups()
+    try: c['effective_contactgroups'] = o.get_effective_contact_groups()
+    except: pass
+    try: c['effective_contactgroups'] = o.get_effective_contactgroups()
+    except: pass
     try: c['effective_members'] = o.get_effective_members()
     except: pass
     return render_to_response('view_object.html', c)
 
+def _view_contact( request, c):
+    ''' This is a helper function to view_object '''
+    return render_to_response('view_contact.html', c)
+
+def _view_service( request, c):
+    ''' This is a helper function to view_object '''
+    service = c['my_object']
+    try: c['command_line'] = service.get_effective_command_line()
+    except: c['errors'].append( "Configuration error while looking up command_line")
+
+    try: c['effective_servicegroups'] = service.get_effective_servicegroups()
+    except: c['errors'].append( "Configuration error while looking up servicegroups")
+    
+    try: c['effective_contacts'] = service.get_effective_contacts()
+    except: c['errors'].append( "Configuration error while looking up contacts")
+    
+    try: c['effective_contactgroups'] = service.get_effective_contact_groups()
+    except: c['errors'].append( "Configuration error while looking up contact_groups")
+    
+    try: c['object_macros'] = service.get_all_macros()
+    except: c['errors'].append( "Configuration error while looking up macros")
+
+    return render_to_response('view_service.html', c)
 def _view_host( request, c):
     ''' This is a helper function to view_object '''
     host = c['my_object']
@@ -237,6 +260,22 @@ def confighealth( request  ):
     else:
         return render_to_response('suggestions.html', c)
 
+def view_parents(request):
+    c = {}
+    parents = {}
+    hosts = Host.objects.all
+    for h in hosts:
+        for parent in h.get_parents():
+            name = parent.name
+            if not parents.has_key( name ):
+                parents[ name ] = {'children':[], 'num_children':0, 'name':name}
+                parents[ name ] 
+            parents[name]['children'].append ( h )
+            parents[name]['num_children'] += 1
+    c['parents'] = []
+    for i in parents.keys():
+        c['parents'].append( parents[i] )
+    return render_to_response('parents.html', c)
 def view_nagioscfg(request):
     c = {}
     c['filename'] = Model.config.cfg_file

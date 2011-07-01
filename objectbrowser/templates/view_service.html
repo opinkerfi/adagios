@@ -18,9 +18,8 @@
 	<div id="tabs">
 
 		<ul>
-			<li><a href="#host">Host</a></li>
+			<li><a href="#service">Service</a></li>
 			<li><a href="#monitoring">Monitoring</a></li>
-			<li><a href="#services">Services</a></li>
 			<li><a href="#notifications">Notifications</a></li>
 			<li><a href="#advanced">Advanced</a></li>
 			<li><a href="#manual_edit">Manual edit</a></li>
@@ -35,15 +34,14 @@
 <form action="#" method="POST">
 		{% csrf_token %}
 
-		<div id="host">
+		<div id="service">
 			<div>
 			 <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
-			 <label>{{ form.address.label }}</label><p>{{ form.address }}</p>
-			 <label>{{ form.alias.label }}</label><p>{{ form.alias }}</p> 
+			 <label>{{ form.service_description.label }}</label><p>{{ form.service_description }}</p>
 			
-			 <label>{{ form.hostgroups.label }}</label><p>{{ form.hostgroups }}</p>
+			 <label>{{ form.servicegroups.label }}</label><p>{{ form.servicegroups }}</p>
 			 <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
-			 </div>
+		</div>
 			 
 			 
 			 <!-- Display All Hostgroups if this is that kind of an object -->
@@ -59,31 +57,16 @@
 					</fieldset>
 					</div>
 				{% endif %} 
-		</div>	
+		</div>
+		
 		<div id="monitoring">
 			{% include "snippets/monitoring_settings.html" %}
 		</div>
-
 
 		
 		<div id="notifications">
 			{% include "snippets/notification_settings.html" %}
 		</div>
-
-
-		<div id="services">
-			<legend>Services of this Host</legend>
-			{% if effective_services %}
-				<div class="effective_services">
-				<ul>
-				 {% for service in effective_services %}
-				 	<li><a href="id={{service.id}}">{{ service.service_description }}</a></li>
-				 {% endfor %}
-				</ul>
-				</div>
-			{% endif %}
-		</div>
-		
 
 	</div>
 		<INPUT type="submit" value="Save">	  	

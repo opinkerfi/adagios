@@ -1,0 +1,38 @@
+
+
+<!-- Display all fields related to notifications for a host/service -->
+
+			<p><label>{{ form.notifications_enabled.label }}</label>{{ form.notifications_enabled }}</p>
+			<p><label>{{ form.contact_groups.label }}</label>{{ form.contact_groups }}</p>
+			<p><label>{{ form.contacts.label }}</label>{{ form.contacts }}</p>
+			<p><label>{{ form.notification_interval.label }}</label>{{ form.notification_interval }}</p>
+			<p><label>{{ form.notification_period.label }}</label>{{ form.notification_period }}</p>
+			<p><label>{{ form.notification_options.label }}</label>{{ form.notification_options }}</p>
+			
+			<!-- Display All Contacts if this is that kind of an object -->
+			{% if effective_contacts %}
+				<div class="effective_contacts">
+				<fieldset id="id_effective_contacts" class="attribute_{{object_type}}">
+				  <legend>Effective Contactgroups</legend>
+					{% for contact in effective_contacts %}
+					  <p>
+					    <label><a href="id={{ contact.id }}">{{contact.contact_name}}</a></label>
+					  </p>
+					{% endfor %}
+				</fieldset>
+				</div>
+			{% endif %}
+			
+			<!-- Display All Contactgroups if this is that kind of an object -->
+			{% if effective_contactgroups %}
+				<div class="effective_contactgroups">
+				<fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
+				  <legend>Contactgroups</legend>
+					{% for group in effective_contactgroups %}
+					  <p>
+					    <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
+					  </p>
+					{% endfor %}
+				</fieldset>
+				</div>
+			{% endif %}
