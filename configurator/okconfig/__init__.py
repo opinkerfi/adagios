@@ -104,9 +104,12 @@ def verify():
 	check = "template_directory %s exists" % (template_directory)
 	results[check] = os.access(template_directory, os.R_OK) and os.path.isdir(template_directory)
 	
-	# 3) destination_directory exists (and is writable)
-	check = "destination_directory %s is writable" % (destination_directory)
-	results[check] = os.access(destination_directory, os.W_OK + os.R_OK) and os.path.isdir(destination_directory)
+	# 3) destination_directory or parent exists (and is writable)
+	for ddir in [destination_directory, "%s/.." % (destination_directory)]:
+		ddir = os.path.dirname(ddir)
+		check = "destination_directory %s is writable" % (ddir)
+		results[check] = os.access(ddir, os.W_OK + os.R_OK) and os.path.isdir(ddir)
+		if results[check] == True: break	
 	
 	# 4)
 	okconfig_binaries = ('addhost','findhost','addgroup','addtemplate')
