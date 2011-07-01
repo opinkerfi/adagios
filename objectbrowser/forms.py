@@ -195,16 +195,15 @@ class PynagForm(forms.Form):
             all = Model.Contact.objects.filter(contact_name__contains='')
             choices = map(lambda x: (x.contact_name, x.contact_name), all)
             field = PynagChoiceField(choices=choices)
+        elif field_name == 'check_period' or field_name == 'notification_period':
+            all = Model.Timeperiod.objects.filter(timeperiod_name__contains='')
+            choices = map(lambda x: (x.timeperiod_name, x.timeperiod_name), all)
+            field = forms.ChoiceField(choices=choices)
         elif options.get('value') == '[0/1]':
-            choices = ( ('1','1'),('0','0'))
-            field = forms.ChoiceField(choices=choices, widget=forms.RadioSelect)
-        
-            #if options['value'] == '#':
-            #    field = forms.IntegerField()
-            #elif options['value'] == '[0/1]':
-            #    field = forms.IntegerField()
-
+            choices = ( ('', 'not set'),('1','1'),('0','0'))
+            field = forms.ChoiceField(choices=choices)
         else:
+            ''' Fallback to a default charfield '''
                 field = forms.CharField()
         if field_name.startswith('_'):
             field.label = field_name
