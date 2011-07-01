@@ -9,13 +9,8 @@
 # Install version control utilities
 yum install -y git subversion
 
-
-# Create a home for adagios
-mkdir -p /opt/adagios
-cd /opt/adagios
-
-
 # Install adagios from repository
+cd /opt
 git clone http://opensource.is/git/adagios.git
 
 # Install pynag from repository
