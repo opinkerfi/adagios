@@ -1,0 +1,29 @@
+{% extends "configurator/base.html" %}
+{% block title %}Configuration Suggestions{% endblock %}
+
+{% block content %}
+
+
+{% if parents %}
+
+<div id="accordion">
+  {% for parent in parents|dictsortreversed:'num_children' %}
+	<h3><a href="#">{{ parent.name }}</a> has <a href="search?use__has_field={{parent.name}}">{{ parent.num_children }} children</a></h3>
+	<div>
+	{% for child in parent.children %}<a href="id={{child.id}}">{{ child.host_name }}</a>, {% endfor %}
+	<div>
+  {% endfor %}
+</div>
+
+{% endif %}
+
+<script>
+jQuery(document).ready(function(){
+	$('.accordion .head').click(function() {
+		$(this).next().toggle();
+		return false;
+	}).next().hide();
+});
+</script>
+
+{% endblock %}

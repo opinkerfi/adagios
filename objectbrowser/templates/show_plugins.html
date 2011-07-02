@@ -1,0 +1,39 @@
+{% extends "configurator/base.html" %}
+{% block title %}Configuration Suggestions{% endblock %}
+
+{% block content %}
+
+
+
+<div id="accordion">
+	<h3><a href="#">Missing plugins ({{ missing_plugins|length}})</a></h3>
+	{% if missing_plugins %}
+	<table border="1">
+	{% for check_command, command_line in missing_plugins %}
+	<tr><td>{{ check_command }} </td><td> {{ command_line }}</td></tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+
+	<h3><a href="#">Existing plugins ({{ existing_plugins|length}})</a></h3>	
+	{% if existing_plugins %}
+	<table border="1">
+	{% for check_command, command_line in existing_plugins %}
+	<tr><td>{{ check_command }} </td><td> {{ command_line }}</td></tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+</div>
+
+
+
+<script>
+jQuery(document).ready(function(){
+	$('.accordion .head').click(function() {
+		$(this).next().toggle();
+		return false;
+	}).next().hide();
+});
+</script>
+
+{% endblock %}

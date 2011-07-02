@@ -18,6 +18,7 @@ from django import forms
 #from django.forms import *
 from pynag import Model
 from adagios.objectbrowser.all_attributes import object_definitions
+from django.utils.encoding import smart_str, smart_unicode
 
 class UseField(forms.CharField):
     def __init__(self, object, *args,**kwargs):
@@ -132,7 +133,8 @@ class PynagForm(forms.Form):
             elif k in self.undefined_attributes and v == '': self.cleaned_data.pop(k)
             elif v == self.pynag_object[k]: self.cleaned_data.pop(k)
             elif v == '' and self.pynag_object[k] is None: self.cleaned_data.pop(k)
-            else: pass
+            else:
+                self.cleaned_data[k] = smart_str(v)
         return self.cleaned_data
     def save(self):
         for k,v in self.cleaned_data.items():
@@ -204,7 +206,8 @@ class PynagForm(forms.Form):
             field = forms.ChoiceField(choices=choices)
         else:
             ''' Fallback to a default charfield '''
-                field = forms.CharField()
+            field = forms.CharField()
+        'no prettyprint for macros'
         if field_name.startswith('_'):
             field.label = field_name
         if options.has_key('required'):

@@ -166,6 +166,8 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
 
 def _view_contact( request, c):
     ''' This is a helper function to view_object '''
+    try: c['effective_contactgroups'] = c['my_object'].get_effective_contactgroups()
+    except: pass
     return render_to_response('view_contact.html', c)
 
 def _view_service( request, c):
@@ -259,6 +261,29 @@ def confighealth( request  ):
         return list_objects(request,display_these_objects=objects )
     else:
         return render_to_response('suggestions.html', c)
+
+def show_plugins(request):
+    ''' Finds all command_line arguments, and shows missing plugins '''
+    c = {}
+    missing_plugins = []
+    existing_plugins = []
+    finished = []
+    services = Service.objects.all
+    for s in services:
+        if not 'check_command' in s._defined_attributes: continue
+        check_command = s.check_command.split('!')[0]
+        if check_command in finished: continue
+        finished.append( check_command )
+        command_line = s.get_effective_command_line()
+        if command_line is None: continue
+        command_line = command_line.split()[0]
+        if os.path.exists(command_line):
+            existing_plugins.append( (check_command, command_line) )
+        else:
+            missing_plugins.append( (check_command, command_line) )
+    c['missing_plugins'] = missing_plugins
+    c['existing_plugins'] = existing_plugins
+    return render_to_response('show_plugins.html', c)
 
 def view_parents(request):
     c = {}
