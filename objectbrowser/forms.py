@@ -20,82 +20,6 @@ from pynag import Model
 from adagios.objectbrowser.all_attributes import object_definitions
 from django.utils.encoding import smart_str, smart_unicode
 
-class UseField(forms.CharField):
-    def __init__(self, object, *args,**kwargs):
-        kwargs.pop('choices')
-        forms.CharField.__init__(self, *args, **kwargs)
-    def clean(self, **kwargs):
-        print "CLEAN"
-        if self.cleaned_data.has_key('use'):
-            print self.cleaned_data.get('use')
-
-
-
-attribute_types = {
-                    'host_name':('Host Name',forms.CharField),
-                    'active_checks_enabled':('Enable Active Checks', forms.BooleanField),
-                    "obsess_over_service":("Obsess Over Service", forms.BooleanField),
-                    "action_url":("Action URL", forms.CharField),
-                    "is_volatile":("Is Volatile", forms.BooleanField),
-                    "process_perf_data":("Process Perf Data", forms.BooleanField),
-                    "check_period":("Check Period", forms.CharField),
-                    "notification_interval":("Notification Interval", forms.IntegerField),
-                    "notification_period":("Notification Period", forms.CharField),
-                    "failure_prediction_enabled":("Enable Failure Prediction", forms.BooleanField),
-                    "retain_status_information":("Retain Status Information", forms.BooleanField),
-                    "event_handler_enabled":("Enable Event Handler", forms.BooleanField),
-                    "flap_detection_enabled":("Enable Flap Detection", forms.BooleanField),
-                    "notification_options":("Notification Options", forms.CharField),
-                    "retry_check_interval":("Retry Check Interval", forms.IntegerField),
-                    "retain_nonstatus_information":("Retain Nonstatus Information", forms.BooleanField),
-                    "notifications_enabled":("Enable Notifications", forms.BooleanField),
-                    "contact_groups":("Contact Groups", forms.MultipleChoiceField),
-                    "name":("Name", forms.CharField),
-                    "register":("Register", forms.BooleanField),
-                    "parallelize_check":("Parallelize Check", forms.BooleanField),
-                    "passive_checks_enabled":("Enable Passive Checks", forms.BooleanField),
-                    "normal_check_interval":("Normal Check Interval", forms.IntegerField),
-                    "max_check_attempts":("Max Check Attempts", forms.CharField),
-                    "check_freshness":("Check Freshness", forms.BooleanField),
-
-                    "use":("Inherit Settings from", UseField),
-                    "check_command":("Check Command", forms.ChoiceField),
-                    "check_interval":("Check Interval", forms.IntegerField),
-                    "retry_interval":("Retry Interval", forms.IntegerField),
-                    "alias":("Alias", forms.CharField),
-                    "address":("IP Address", forms.IPAddressField),
-                    
-                    "servicegroup_name": ("Servicegroup Name", forms.CharField),
-                    "hostgroup_name": ("Hostgroup Name", forms.CharField),
-                    "members": ("Members", forms.CharField),
-                    "host_notification_period": ("Host Notification Period", forms.CharField),
-                    "service_notification_options": ("Service Notification Options", forms.CharField),
-                    "host_notification_commands": ("Host Notification Commands", forms.CharField),
-                    "service_notification_period": ("Service Notification Period", forms.CharField),
-                    "contact_name": ("Contact Name", forms.CharField),
-                    "service_notification_commands": ("Service Notification Commands", forms.CharField),
-                    "host_notification_options": ("Host Notification Options", forms.CharField),
-
-                    "freshness_threshold": ("Freshness Threshold", forms.CharField),
-                    "service_description": ("Service Description", forms.CharField),
-                    "servicegroups": ("Service Groups", forms.MultipleChoiceField),
-                    
-                    "contactgroup_name": ("Contactgroup Name", forms.CharField),
-                    "command_name": ("Command Name", forms.CharField),
-                    "command_line": ("Command Line", forms.CharField),
-                    "monday" : ("Monday", forms.CharField),
-                    "tuesday" : ("Tuesday", forms.CharField),
-                    "friday" : ("Friday", forms.CharField),
-                    "wednesday" : ("Wednesday", forms.CharField),
-                    "thursday" : ("Thursday", forms.CharField),
-                    "sunday" : ("Sunday", forms.CharField),
-                    "timeperiod_name" : ("Timeperiod Name", forms.ChoiceField),
-                    "saturday" : ("Saturday", forms.CharField),
-                    "pager" : ("Pager", forms.CharField),
-                    "email" : ("E-mail", forms.EmailField),
-                    
-                    "hostgroups" : ("Host Groups", forms.CharField)
-                    }
 class ZeroOneField(forms.BooleanField):
     def clean(self, value):
         cleaned = value
@@ -114,7 +38,6 @@ class PynagChoiceField(forms.MultipleChoiceField):
         self.data = kwargs.get('data')
         super(PynagChoiceField, self).__init__(*args, **kwargs)
     def clean(self,value):
-        print "test: '%s' '%s' '%s' 's' "% ( self.__prefix, self.initial, self.data)
         return self.__prefix + ','.join(value)
     def prepare_value(self, value):
         if type(value) == type(''):
@@ -177,7 +100,7 @@ class PynagForm(forms.Form):
         definitions = object_definitions.get( object_type ) or {}
         options = definitions.get(field_name) or {}
         # Some fields get special treatment
-        if field_name == 'contact_groups' or field_name == 'contactgroups':
+        if field_name in ('contact_groups','contactgroups','contactgroup_members'):
                 all_groups = Model.Contactgroup.objects.filter(contactgroup_name__contains="")
                 choices = map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups)
                 field = PynagChoiceField(choices=choices)

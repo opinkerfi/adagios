@@ -269,6 +269,7 @@ def show_plugins(request):
     existing_plugins = []
     finished = []
     services = Service.objects.all
+    common_interpreters = ['perl','python','sh','bash']
     for s in services:
         if not 'check_command' in s._defined_attributes: continue
         check_command = s.check_command.split('!')[0]
@@ -276,11 +277,13 @@ def show_plugins(request):
         finished.append( check_command )
         command_line = s.get_effective_command_line()
         if command_line is None: continue
-        command_line = command_line.split()[0]
-        if os.path.exists(command_line):
-            existing_plugins.append( (check_command, command_line) )
+        command_line = command_line.split()
+        command_name = command_line.pop(0)
+        if command_name in common_interpreters: command_name = command_line.pop(0)
+        if os.path.exists(command_name):
+            existing_plugins.append( (check_command, command_name) )
         else:
-            missing_plugins.append( (check_command, command_line) )
+            missing_plugins.append( (check_command, command_name) )
     c['missing_plugins'] = missing_plugins
     c['existing_plugins'] = existing_plugins
     return render_to_response('show_plugins.html', c)
