@@ -57,10 +57,13 @@
 	  </div>
 	  {% endfor %}
 	 </fieldset>
-
-		<INPUT type="submit" value="Save">	  	
+	<INPUT id="advanced_submit" type="submit" value="Save">
 	</div>
 </form>
+<script>
+$('#advanced_submit').button();
+</script>
 {% endif %}
+
 
 <!-- End of Generic Object Editor Form -->

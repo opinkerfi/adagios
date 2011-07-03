@@ -6,10 +6,14 @@
 	<fieldset id="id_manual_edit" class="objectbrowser_manual_edit">
 	  <legend>Manual Edit</legend>
 		{{ manual_edit }}
-    	<INPUT type="submit" value="Save">
+	<INPUT id="manual_submit" type="submit" value="Save">
 	</form>
 	</fieldset>
 </div>
+<script>
+$('#manual_submit').button();
+</script>
 {% else %} Where is my object
 {% endif %}
 <!-- End of Manual Edit Form -->
+
