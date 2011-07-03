@@ -18,18 +18,22 @@ from django import forms
 #from django.forms import *
 from pynag import Model
 from adagios.objectbrowser.all_attributes import object_definitions
-from django.utils.encoding import smart_str, smart_unicode
+from django.utils.encoding import smart_str
 
-class ZeroOneField(forms.BooleanField):
-    def clean(self, value):
-        cleaned = value
-        if cleaned == True:
-            return "1"
-        else:
-            return "0"
 
 # These fields are special, they are a comma seperated list, and may or may not have +/- in front of them.
 MULTICHOICE_FIELDS = ('servicegroups','hostgroups','contacts','contact_groups', 'contactgroups', 'use')
+
+NOTIFICATION_OPTIONS = (
+                        ('w','warning'),
+                        ('c','critical'),
+                        ('r','recovery'),
+                        ('u','unreachable'),
+                        ('d','downtime'),
+                        ('f','flapping'),
+                        )
+
+BOOLEAN_CHOICES = ( ('', 'not set'),('1','1'),('0','0'))
 
 class PynagChoiceField(forms.MultipleChoiceField):
     ''' multichoicefields that accepts comma seperated input as values '''
@@ -116,17 +120,22 @@ class PynagForm(forms.Form):
             all_groups = Model.Hostgroup.objects.filter(hostgroup_name__contains='')
             choices = map(lambda x: (x.hostgroup_name, x.hostgroup_name), all_groups)
             field = PynagChoiceField(choices=choices)
-        elif field_name == 'contacts':
+        elif field_name in ('contacts','members'):
             all = Model.Contact.objects.filter(contact_name__contains='')
             choices = map(lambda x: (x.contact_name, x.contact_name), all)
             field = PynagChoiceField(choices=choices)
-        elif field_name == 'check_period' or field_name == 'notification_period':
+        elif field_name.endswith('_period'):
             all = Model.Timeperiod.objects.filter(timeperiod_name__contains='')
             choices = map(lambda x: (x.timeperiod_name, x.timeperiod_name), all)
             field = forms.ChoiceField(choices=choices)
+        elif field_name.endswith('notification_commands'):
+            all = Model.Command.objects.filter(command_name__contains='')
+            choices = map(lambda x: (x.command_name, x.command_name), all)
+            field = forms.ChoiceField(choices=choices)            
+        elif field_name.endswith('notification_options'):
+            field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':
-            choices = ( ('', 'not set'),('1','1'),('0','0'))
-            field = forms.ChoiceField(choices=choices)
+            field = forms.ChoiceField(choices=BOOLEAN_CHOICES)
         else:
             ''' Fallback to a default charfield '''
             field = forms.CharField()
@@ -145,14 +154,6 @@ class PynagForm(forms.Form):
             field.css_tag = css_tag
         return field
                 
-                
-class DynamicForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        extra_fields = kwargs.pop('extra')
-        super(forms.Form, self).__init__(*args, **kwargs)
-        choices = ( ('value1','value1'), ('value2','value2')   ) 
-        for k,v in extra_fields.items():
-            self.fields[k] = forms.MultipleChoiceField(choices=choices )
         
 class ManualEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
