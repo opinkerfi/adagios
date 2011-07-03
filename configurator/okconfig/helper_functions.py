@@ -17,10 +17,38 @@
 
 ''' This module provides helper functions for okconfig '''
 
+import okconfig
 from pynag import Model
 import os
+import re
 
-
+def add_defaultservice_to_host(host_name):
+    ''' Given a specific hostname, add default service to it '''
+    # Get our host
+    try: my_host = Model.Host.objects.get_by_shortname(host_name)
+    except ValueError: raise okconfig.OKConfigError("Host %s not found." % (host_name)) 
+    
+    # Dont do anything if file already exists
+    service = Model.Service.objects.filter(name=host_name)
+    if len(service) != 0:
+        return False
+    
+    # Make sure that host belongs to a okconfig-compatible group
+    hostgroup_name = my_host['hostgroups'] or "default"
+    hostgroup_name = hostgroup_name.strip('+')
+    if hostgroup_name in okconfig.get_groups():
+        GROUP=hostgroup_name
+    else:
+        GROUP='default'
+    
+    template = default_service_template
+    template = re.sub("HOSTNAME", host_name, template)
+    template = re.sub("GROUP", GROUP, template)
+    file = open( my_host['filename'], 'a')
+    file.write(template)
+    file.close()
+    return True
+    
 
 def group_exists(group_name):
     ''' Check if a servicegroup,contactgroup or hostgroups exist with shortname == group_name
@@ -35,3 +63,22 @@ def group_exists(group_name):
     if result == ([]):
         return False
     return result
+
+
+
+default_service_template = '''
+# This is a template service for HOSTNAME
+# Services that belong to this host should use this as a template
+define service {
+        name                            HOSTNAME
+        use                             GROUP-default_service
+        host_name                       HOSTNAME
+        contact_groups                  +GROUP
+        service_groups                  +GROUP
+        service_description             Default Service for HOSTNAME
+        register                        0
+}
+'''
+
+if __name__ == '__main__':
+    print add_defaultservice_to_host('host1')

@@ -91,8 +91,6 @@ def verify():
 	1) cfg_file exists
 	2) template_directory exists
 	3) destination_directory exists (and is writable)
-	4) the following commands are in path:
-		addhost, addgroup, addtemplate
 	"""
 	results = {}
 	
@@ -112,10 +110,12 @@ def verify():
 		if results[check] == True: break	
 	
 	# 4)
-	okconfig_binaries = ('addhost','findhost','addgroup','addtemplate')
-	for command in okconfig_binaries:
-		check = "'%s' command is in path" % command
-		results[check] = _is_in_path(command)
+	# Should no longer be need
+	# TODO: Remove this commented codeblock
+	#okconfig_binaries = ('addhost','findhost','addgroup','addtemplate')
+	#for command in okconfig_binaries:
+	#	check = "'%s' command is in path" % command
+	#	results[check] = _is_in_path(command)
 	
 	return results
 
@@ -142,7 +142,7 @@ def addhost(host_name, address=None, group_name=None, templates=[], use=None, fo
 		try:
 			address = socket.gethostbyname(host_name)
 		except:
-			raise OKConfigError("Could not resolve host %s" % (host_name))
+			raise OKConfigError("Could not resolve hostname '%s'" % (host_name))
 	if use is None:
 		if 'windows' in templates:
 			use = 'windows-server'
@@ -152,7 +152,9 @@ def addhost(host_name, address=None, group_name=None, templates=[], use=None, fo
 			use = 'generic-switch'		
 		else:
 			use = 'default-host'
-	
+	okconfig_groups = get_groups()
+	if len(okconfig_groups) == 0:
+		addgroup(group_name='default',alias='OKconfig default group')
 	arguments = {}
 	arguments['PARENTHOST'] = use
 	arguments['GROUP'] = group_name
@@ -192,12 +194,16 @@ def addtemplate(host_name, template_name, group_name=None,force=False):
 	 True if operation is succesful.
 	"""
 	hostfile = findhost(host_name)
-	hostdir = os.path.dirname(hostfile)
 	if group_name is None: group_name="default"
 	if hostfile is None:
 		raise OKConfigError("Host '%s' was not found" % host_name)
 	if template_name not in get_templates().keys():
 		raise OKConfigError("Template '%s' was not found" % template_name)
+	hostdir = os.path.dirname(hostfile)	
+	# Check if host has the required "default service"
+	helper_functions.add_defaultservice_to_host(host_name)
+	
+	# Lets do some templating
 	newfile = "%s/%s-%s.cfg" % (hostdir, host_name,template_name)
 	if not force:
 		'Do some basic sanity checking'
@@ -310,6 +316,8 @@ def get_groups():
 		name = s.get_shortname()
 		if name == None: continue
 		try:
+			Model.Contactgroup.objects.reload_cache()
+			Model.Hostgroup.objects.reload_cache()
 			Model.Contactgroup.objects.get_by_shortname(name)
 			Model.Hostgroup.objects.get_by_shortname(name)
 			result.append( name )
