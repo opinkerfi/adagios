@@ -15,17 +15,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from django.core import serializers
-#from django.http import HttpResponse, HttpResponseServerError
-#from django.utils import simplejson
 from django.core.context_processors import csrf
-#from django.template import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response
 import forms
 
 def index(request):
 	c = {}
 	return render_to_response('frontpage.html', c)
+
+def settings(request):
+	c = {}
+	c.update(csrf(request))
+	if request.method == 'GET':
+		c['form'] = forms.AdagiosSettingsForm(initial=request.GET)
+	else:
+		c['form'] = forms.AdagiosSettingsForm(data=request.POST)
+		if c['form'].is_valid():
+			c['form'].save()
+	return render_to_response('settings.html', c)
 
 def contact_us( request ):
 	''' Bring a small form that has a "contact us" form on it '''
@@ -44,3 +51,4 @@ def contact_us( request ):
 	return render_to_response('contact_us.html', c)
 		
 	
+

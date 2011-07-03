@@ -1,0 +1,39 @@
+    
+    
+{% extends "configurator/base.html" %}
+{% block title %}Adagios Settings{% endblock %}
+{% block content %}
+
+
+{% if thank_you %}
+<h1>Thank you!</h1>
+Thank you for submitting your suggestion. We very much appreciate it. feel free to <a href="contact_us?sender={{sender}}"> make another suggestion.</a>
+
+{% endif %}
+
+
+
+
+{% if form %}
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<form action="contact_us" method="post">{% csrf_token %}
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#settings">Settings</a>
+		</li>
+	</ul>
+	{{ form.as_p }}
+		<p>
+    	<INPUT id="zesubmit" type="submit" value="Submit">
+	</form>
+	</fieldset>
+</div>
+
+<script>
+$('#zesubmit').button();
+</script>
+
+{% endif %}
+
+{% endblock %}
+    

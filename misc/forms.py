@@ -52,3 +52,9 @@ class ContactUsForm(forms.Form):
 		%s
 		""" % (topic,sender,message)
 		send_mail(subject, msg, from_address, to_address, fail_silently=False)
+class AdagiosSettingsForm(forms.Form):
+	configuration_file = forms.CharField(initial='/etc/nagios/nagios.cfg')
+	configuration_host = forms.CharField(initial='localhost')
+	git_commit_on_changes = forms.BooleanField(initial=True)
+	log_to_file_on_changes = forms.BooleanField(initial=True)
+	
