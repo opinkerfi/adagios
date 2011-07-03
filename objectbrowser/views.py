@@ -148,20 +148,28 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         return _view_service(request, c)
     elif o['object_type'] == 'contact':
         return _view_contact(request, c)
+    print "1"
     try: c['command_line'] = o.get_effective_command_line()
     except: pass
+    print "1"
     try: c['object_macros'] = o.get_all_macros()
     except: pass
+    print "1"
     try: c['effective_hostgroups'] = o.get_effective_hostgroups()
     except: pass
+    print "1"
     try: c['effective_contacts'] = o.get_effective_contacts()
     except: pass
+    print "1"
     try: c['effective_contactgroups'] = o.get_effective_contact_groups()
     except: pass
+    print "1"
     try: c['effective_contactgroups'] = o.get_effective_contactgroups()
     except: pass
+    print "1"
     try: c['effective_members'] = o.get_effective_members()
     except: pass
+    print "#"
     return render_to_response('view_object.html', c)
 
 def _view_contact( request, c):
