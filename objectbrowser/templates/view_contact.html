@@ -19,7 +19,8 @@
 	<div id="tabs">
 
 		<ul>
-			<li><a href="#contact">Contact</a></li>
+			<li><a href="#contact">General</a></li>
+			<li><a href="#contactgroups">Member of</a></li>
 			<li><a href="#notifications">Notifications</a></li>
 			<li><a href="#advanced">Advanced</a></li>
 			<li><a href="#manual_edit">Manual edit</a></li>
@@ -52,11 +53,7 @@
 			<p><label> {{ form.use.label }} </label>{{ form.use }} {{ form.use.errors}} {{ form.use.help_text }} </p>
 			</div>
 			
-			
-			<div class="{{ form.contactgroups.field.widget.attrs.class }}">
-			<p><label> {{ form.contactgroups.label }} </label>{{ form.contactgroups }} {{ form.contactgroups.errors}} {{ form.contactgroups.help_text }} </p>
-			</div>
-			
+						
 			<div class="{{ form.email.field.widget.attrs.class }}">
 			<p><label> {{ form.email.label }} </label>{{ form.email }} {{ form.email.errors}} {{ form.email.help_text }} </p>
 			</div>
@@ -64,17 +61,23 @@
 			<div class="{{ form.pager.field.widget.attrs.class }}">
 			<p><label> {{ form.pager.label }} </label>{{ form.pager }} {{ form.pager.errors}} {{ form.pager.help_text }} </p>
 			</div>
-			
+
+		</div>
+		<div id="contactgroups">
+			<div class="{{ form.contactgroups.field.widget.attrs.class }}">
+			<p><label> {{ form.contactgroups.label }} </label>{{ form.contactgroups }} {{ form.contactgroups.errors}} {{ form.contactgroups.help_text }} </p>
+			</div>
+
 			<!-- Display All Contactgroups if this is that kind of an object -->
 				<div class="effective_contactgroups">
 				<fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
-				  <legend>Contactgroups</legend>
+				  <legend>Current Contactgroups</legend>
 				  	{% if effective_contactgroups %}
-					{% for group in effective_contactgroups %}
 					  <p>
-					    <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
-					  </p>
+					{% for group in effective_contactgroups %}
+					    <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label> 
 					{% endfor %}
+					  </p>
 					{% endif %}
 				</fieldset>
 				</div>

@@ -19,7 +19,6 @@
 
 import okconfig
 from pynag import Model
-import os
 import re
 
 def add_defaultservice_to_host(host_name):
