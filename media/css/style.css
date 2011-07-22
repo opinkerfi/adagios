@@ -37,7 +37,7 @@ p {
 #content {
 	padding-left: 4px;
 	padding-top: 4px;
-	width:800px;
+	width:70%;
 	
 }
 
@@ -148,14 +148,13 @@ em {
 }
 
 
-
-
-
-
+.object_attribute {
+	margin-top: 8px;
+}
 
 label
 {
-	width: 200px;
+	width: 150px;
 	font-size: 110%;
 	height: 30px;
 	float: left;
