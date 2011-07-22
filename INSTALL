@@ -32,7 +32,7 @@ pip-python install django
 
 # If you run adagios as a user, make sure it can read (and possibly write) to all nagios config files, error handling is lacking in cases where it doesnt have required permissions
 
-useradd adagios -G nagios -d /opt/adagios/adagios
+useradd adagios -G nagios -d /opt/adagios
 chown -R adagios /opt/adagios
 su - adagios
 python manage.py runserver
