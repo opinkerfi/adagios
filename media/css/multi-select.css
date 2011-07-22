@@ -1,0 +1,57 @@
+.ms-container{
+  background: transparent url('../img/arrow.png') no-repeat 175px 40px;
+}
+
+.ms-container:after{
+  content: "."; display: block; height: 0; line-height: 0; font-size: 0; clear: both; min-height: 0; visibility: hidden;
+}
+
+.ms-container .ms-selectable, .ms-container .ms-selection{
+  background: #fff;
+  border: 1px #ccc solid;
+  float: left;
+  border-radius:         4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius:    4px;
+  -khtml-border-radius:  4px;
+}
+
+.ms-container .ms-selectable{
+  margin-right: 40px;
+}
+
+.ms-container ul{
+  width: 170px;
+  height: 80px;
+  margin: 0;
+  padding: 1px 0px;
+  list-style-type: none;
+  overflow-y: auto;
+
+}
+
+.ms-container .ms-selectable li, .ms-container .ms-selection li{
+  border-bottom: 1px #eee solid;
+  padding: 1px 10px;
+  color: #555;
+}
+
+.ms-container .ms-selection li{
+  padding-left: 22px;
+  color: #101010;
+}
+
+.ms-container .ms-selectable li.disabled{
+  background-color: #eee;
+  color: #aaa;
+}
+
+.ms-container li:hover{
+  cursor: pointer;
+  background-color: #eee;
+  color: #000;
+}
+
+.ms-container .ms-selection li:hover{
+  background: #eee url('../img/delete.png') no-repeat 3px 3px;
+}
