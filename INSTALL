@@ -39,3 +39,5 @@ python manage.py runserver
 
 
 # Now try to access http://yourhost:8000
+#
+#
