@@ -8,10 +8,11 @@
 
 <div id="accordion">
   {% for parent in parents|dictsortreversed:'num_children' %}
-	<h3><a href="#">{{ parent.name }}</a> has <a href="search?use__has_field={{parent.name}}">{{ parent.num_children }} children</a></h3>
+	<h3><a href="#">{{ parent.name }}</a> </h3>
 	<div>
-	{% for child in parent.children %}<a href="id={{child.id}}">{{ child.host_name }}</a>, {% endfor %}
-	<div>
+	<strong><a href="search?use__has_field={{parent.name}}">{{ parent.num_children }} children</a></strong><br/><br/>
+	{% for child in parent.children %}<a href="id={{child.id}}">{{ child.host_name }}</a><br/> {% endfor %}
+	</div>
   {% endfor %}
 </div>
 
@@ -24,6 +25,7 @@ jQuery(document).ready(function(){
 		return false;
 	}).next().hide();
 });
+$('#accordion').accordion();
 </script>
 
 {% endblock %}
