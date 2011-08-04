@@ -16,9 +16,9 @@ urlpatterns = patterns('',
     (r'^adagios/$', 'configurator.views.index'),
     (r'^adagios/addhost$', 'configurator.views.addhost'),
     (r'^objectbrowser', include('objectbrowser.urls')),
-    (r'^okconfig', include('okconfig.urls')),
+    (r'^okconfig', include('okconfig_.urls')),
     (r'^misc', include('misc.urls')),
-    (r'^rest/okconfig', include('rest.urls'), {'module_name':'configurator.okconfig'}),
+    (r'^rest/okconfig', include('rest.urls'), {'module_name':'okconfig'}),
     (r'^rest/pynag', include('rest.urls'), {'module_name':'configurator.helpers'}),
 
 
