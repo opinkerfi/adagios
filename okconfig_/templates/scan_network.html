@@ -1,0 +1,78 @@
+{% extends "configurator/base.html" %}
+{% block title %}Scan Network{% endblock %}
+{% block head %}
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="okconfig_scan_network ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Scan Network</a>
+		</li>
+	</ul>
+	<form action="scan_network" method="post">{% csrf_token %}
+		<div class="left">{{ form }}</div>
+    	<div >
+    		<INPUT id="zesubmit" type="submit" value="Scan">
+    	</div>
+	</form>
+</div>
+
+<script>
+$('#zesubmit').button();
+</script>
+
+
+
+<!-- display scan results -->
+
+{% if scan_results %}
+
+<h1>Scan Complete</h1>
+<table border=1 id="scan_results">
+  <thead>
+	<tr>
+	 <th>Add</th>
+	 <th>IP Address</th>
+	 <th>Host Name</th>
+	 <th>Is monitored</th>
+	 <th>Operating System</th>
+	 <th>Agent</th>
+	 <th>Webserver</th>
+	</tr>
+  </thead>
+  <tbody>
+  {% for host in scan_results %}
+	<tr>
+	 {% if not host.ismonitored %}
+	 <td><a href="/okconfig/addhost?host_name={{ host.hostname }}&address={{ host.ipaddress }}">Add</a></td>
+	 {% else %}
+	 <td></td>
+	 {% endif %}
+	 <td>{{ host.ipaddress }}</td>
+	 <td>{{ host.hostname }} </td>
+	 <td>{{ host.ismonitored }}</td>
+	 <td>{{ host.platform }}</td>
+	 <td>{{ host.nrpe }}</td>
+	 <td>{{ host.port80 }} </td>
+	</tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endif %}
+<script>
+$('#scan_results').dataTable({
+		"bSearch": false,
+		"sScrollY": "200px",
+		"bScrollCollapse": true,
+		"bPaginate": false,
+		"bJQueryUI": true,
+});
+</script>
+
+
+
+{% endblock %}
