@@ -1,5 +1,5 @@
 from django import forms
-from configurator import okconfig
+import okconfig
 from configurator import helpers
 import re
 from django.core.exceptions import ValidationError
