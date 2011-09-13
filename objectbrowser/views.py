@@ -148,29 +148,30 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         return _view_service(request, c)
     elif o['object_type'] == 'contact':
         return _view_contact(request, c)
-    elif o['object_type'] == 'contactgroup':
-        return _view_contactgroup(request, c)
+    print "1"
     try: c['command_line'] = o.get_effective_command_line()
     except: pass
+    print "1"
     try: c['object_macros'] = o.get_all_macros()
     except: pass
+    print "1"
     try: c['effective_hostgroups'] = o.get_effective_hostgroups()
     except: pass
+    print "1"
     try: c['effective_contacts'] = o.get_effective_contacts()
     except: pass
+    print "1"
     try: c['effective_contactgroups'] = o.get_effective_contact_groups()
     except: pass
+    print "1"
     try: c['effective_contactgroups'] = o.get_effective_contactgroups()
     except: pass
+    print "1"
     try: c['effective_members'] = o.get_effective_members()
     except: pass
+    print "#"
     return render_to_response('view_object.html', c)
 
-def _view_contactgroup( request, c):
-    ''' This is a helper function to view_object '''
-    try: c['effective_members'] = c['my_object'].get_effective_members()
-    except: pass
-    return render_to_response('view_contactgroup.html', c)
 def _view_contact( request, c):
     ''' This is a helper function to view_object '''
     try: c['effective_contactgroups'] = c['my_object'].get_effective_contactgroups()
@@ -213,8 +214,8 @@ def _view_host( request, c):
     try: c['effective_contacts'] = host.get_effective_contacts()
     except: c['errors'].append( "Configuration error while looking up contacts")
     
-    c['effective_contactgroups'] = host.get_effective_contact_groups()
-    c['errors'].append( "Configuration error while looking up contact_groups")
+    try: c['effective_contactgroups'] = host.get_effective_contact_groups()
+    except: c['errors'].append( "Configuration error while looking up contact_groups")
     
     try: c['object_macros'] = host.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")

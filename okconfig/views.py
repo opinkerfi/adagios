@@ -25,8 +25,8 @@ from django.template import RequestContext
 import forms
 #import okconfig.forms
 
-import okconfig
-import okconfig.network_scan
+from configurator import okconfig
+import configurator.okconfig.network_scan
 
 def addcomplete(request, c={}):
     return render_to_response('addcomplete.html', c)
@@ -134,7 +134,7 @@ def scan_network(request):
             if request.GET.has_key('network_address'):
                 initial = request.GET
             else:
-                my_ip = okconfig.network_scan.get_my_ip_address()
+                my_ip = configurator.okconfig.network_scan.get_my_ip_address()
                 network_address = "%s/28" % my_ip
                 initial = { 'network_address':network_address }
             c['form'] = forms.ScanNetworkForm(initial=initial)
@@ -145,7 +145,7 @@ def scan_network(request):
         else:
             network = c['form'].cleaned_data['network_address']
             try:
-                c['scan_results'] =  okconfig.network_scan.get_all_hosts(network)
+                c['scan_results'] =  configurator.okconfig.network_scan.get_all_hosts(network)
                 for i in c['scan_results']: i.check()
             except Exception, e:
                 raise e

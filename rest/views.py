@@ -50,7 +50,7 @@ def handle_request(request, module_name, attribute, format):
                 #print "%s = %s (%s)" % (k,v, type(v))
                 # TODO: Is it safe to turn all digits to int ?
                 #if str(v).isdigit(): v = int(float(v))
-                arguments[str(k)] = str(v)
+                arguments[k] = v
             result = item( **arguments )
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))
