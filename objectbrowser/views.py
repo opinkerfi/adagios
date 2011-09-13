@@ -213,8 +213,8 @@ def _view_host( request, c):
     try: c['effective_contacts'] = host.get_effective_contacts()
     except: c['errors'].append( "Configuration error while looking up contacts")
     
-    c['effective_contactgroups'] = host.get_effective_contact_groups()
-    c['errors'].append( "Configuration error while looking up contact_groups")
+    try: c['effective_contactgroups'] = host.get_effective_contact_groups()
+    except: c['errors'].append( "Configuration error while looking up contact_groups")
     
     try: c['object_macros'] = host.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
