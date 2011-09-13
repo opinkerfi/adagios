@@ -111,7 +111,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         o = ObjectDefinition.objects.get_by_id(id=object_id)
     elif object_type != None and shortname != None:
         # TODO: if multiple objects are found, display a list
-        otype = Model.string_to_class.get(object_type, Model.ObjectDefiniton)
+        otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
         o = otype.objects.get_by_shortname(shortname)
     else:
         raise ValueError("Object not found")
@@ -254,7 +254,6 @@ def confighealth( request  ):
                 services_without_icon_image.append(i)
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
-    import configurator.okconfig
     c['booleans']['OKConfig is installed and working'] = configurator.okconfig.is_valid()
     s['Services with no "service_description"'] = services_no_description            
     s['Hosts without any contacts'] = hosts_without_contacts
