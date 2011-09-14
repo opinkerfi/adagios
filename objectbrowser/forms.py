@@ -110,7 +110,7 @@ class PynagForm(forms.Form):
                 field = PynagChoiceField(choices=choices)
         elif field_name == 'use':
             all_objects = self.pynag_object.objects.filter(name__contains='')
-            choices = map(lambda x: (x.name, x.name), all_objects)
+            choices = sorted( map(lambda x: (x.name, x.name), all_objects) )
             field = PynagChoiceField(choices=choices)
         elif field_name == 'servicegroups':
             all_groups = Model.Servicegroup.objects.filter(servicegroup_name__contains='')
@@ -122,7 +122,7 @@ class PynagForm(forms.Form):
             field = PynagChoiceField(choices=choices)
         elif field_name in ('contacts','members'):
             all = Model.Contact.objects.filter(contact_name__contains='')
-            choices = map(lambda x: (x.contact_name, x.contact_name), all)
+            choices = sorted( map(lambda x: (x.contact_name, x.contact_name), all) )
             field = PynagChoiceField(choices=choices)
         elif field_name.endswith('_period'):
             all = Model.Timeperiod.objects.filter(timeperiod_name__contains='')

@@ -19,12 +19,11 @@
 	<div id="tabs">
 
 		<ul>
-			<li><a href="#contact">General</a></li>
+			<li><a href="#general">General</a></li>
+			<li><a href="#members">Members</a></li>
 			<li><a href="#contactgroups">Member of</a></li>
-			<li><a href="#notifications">Notifications</a></li>
 			<li><a href="#advanced">Advanced</a></li>
 			<li><a href="#manual_edit">Manual edit</a></li>
-			<!-- <li><a href="#misc">Misc</a></li> -->
 			<!-- <li><a href="#old_edit_form">Old Ajaxy Edit Form</a></li> -->
 		</ul>
 
@@ -39,10 +38,10 @@
 
 
 		<form action="#" method="POST">{% csrf_token %}
-			<div id="contact">
+			<div id="general">
 
-			<div class="{{ form.contact_name.field.widget.attrs.class }}">
-			<p><label> {{ form.contact_name.label }} </label>{{ form.contact_name }} {{ form.contact_name.errors}} {{ form.contact_name.help_text }} </p>
+			<div class="{{ form.contactgroup_name.field.widget.attrs.class }}">
+			<p><label> {{ form.contactgroup_name.label }} </label>{{ form.contactgroup_name }} {{ form.contactgroup_name.errors}} {{ form.contactgroup_name.help_text }} </p>
 			</div>
 			
 			<div class="{{ form.alias.field.widget.attrs.class }}">
@@ -53,19 +52,30 @@
 			<p><label> {{ form.use.label }} </label>{{ form.use }} {{ form.use.errors}} {{ form.use.help_text }} </p>
 			</div>
 			
-						
-			<div class="{{ form.email.field.widget.attrs.class }}">
-			<p><label> {{ form.email.label }} </label>{{ form.email }} {{ form.email.errors}} {{ form.email.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.pager.field.widget.attrs.class }}">
-			<p><label> {{ form.pager.label }} </label>{{ form.pager }} {{ form.pager.errors}} {{ form.pager.help_text }} </p>
-			</div>
 
 		</div>
+		<div id="members">
+			<div class="{{ form.members.field.widget.attrs.class }}">
+			<p><label> {{ form.members.label }} </label>{{ form.members }} {{ form.members.errors}} {{ form.members.help_text }} </p>
+			</div>
+
+			<!-- Display all members of a specific contactgroup -->
+			{% if effective_members %}
+				<div class="effective_members">
+				<fieldset id="id_effective_members" class="attribute_{{object_type}}">
+				  <legend>Effective Members</legend>
+					{% for m in effective_members %}
+					  <p>
+					    <label><a href="id={{ m.id }}">{{m.description}}</a></label>
+					  </p>
+					{% endfor %}
+				</fieldset>
+				</div>
+			{% endif %}
+		</div>
 		<div id="contactgroups">
-			<div class="{{ form.contactgroups.field.widget.attrs.class }}">
-			<p><label> {{ form.contactgroups.label }} </label>{{ form.contactgroups }} {{ form.contactgroups.errors}} {{ form.contactgroups.help_text }} </p>
+			<div class="{{ form.contactgroup_members.field.widget.attrs.class }}">
+			<p><label> {{ form.contactgroup_members.label }} </label>{{ form.contactgroup_members }} {{ form.contactgroup_members.errors}} {{ form.contactgroup_members.help_text }} </p>
 			</div>
 
 			<!-- Display All Contactgroups if this is that kind of an object -->
@@ -84,44 +94,8 @@
 			
 
 		</div>
-		<div id="notifications">
+		
 
-			<div class="{{ form.host_notifications_enabled.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notifications_enabled.label }} </label>{{ form.host_notifications_enabled }} {{ form.host_notifications_enabled.errors}} {{ form.host_notifications_enabled.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.host_notification_commands.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notification_commands.label }} </label>{{ form.host_notification_commands }} {{ form.host_notification_commands.errors}} {{ form.host_notification_commands.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.host_notification_period.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notification_period.label }} </label>{{ form.host_notification_period }} {{ form.host_notification_period.errors}} {{ form.host_notification_period.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.host_notification_options.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notification_options.label }} </label>{{ form.host_notification_options }} {{ form.host_notification_options.errors}} {{ form.host_notification_options.help_text }} </p>
-			</div>
-			---
-			
-			<div class="{{ form.service_notifications_enabled.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notifications_enabled.label }} </label>{{ form.service_notifications_enabled }} {{ form.service_notifications_enabled.errors}} {{ form.service_notifications_enabled.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.service_notification_commands.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notification_commands.label }} </label>{{ form.service_notification_commands }} {{ form.service_notification_commands.errors}} {{ form.service_notification_commands.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.service_notification_period.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notification_period.label }} </label>{{ form.service_notification_period }} {{ form.service_notification_period.errors}} {{ form.service_notification_period.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.service_notification_options.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notification_options.label }} </label>{{ form.service_notification_options }} {{ form.service_notification_options.errors}} {{ form.service_notification_options.help_text }} </p>
-			</div>
-
-
-
-		</div>
 		<INPUT type="submit" value="Save">	  	
 </form>
 
