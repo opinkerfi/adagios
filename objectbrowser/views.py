@@ -22,11 +22,18 @@ from django.utils import simplejson
 from django.core.context_processors import csrf
 
 import sys
+from os.path import dirname
 
 from pynag.Model import *
 from pynag import Model
+from pynag.Model import EventHandlers
 from forms import *
 
+try:
+    # Hook up git event handler
+    Model.eventhandlers.append(Model.EventHandlers.GitEventHandler(dirname(Model.cfg_file), 'adagios', 'tommi'))
+except:
+    pass
 
 def home(request):
     return redirect('adagios')
