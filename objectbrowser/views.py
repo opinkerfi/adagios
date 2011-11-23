@@ -118,7 +118,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         o = ObjectDefinition.objects.get_by_id(id=object_id)
     elif object_type != None and shortname != None:
         # TODO: if multiple objects are found, display a list
-        otype = Model.string_to_class.get(object_type, Model.ObjectDefiniton)
+        otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
         o = otype.objects.get_by_shortname(shortname)
     else:
         raise ValueError("Object not found")
