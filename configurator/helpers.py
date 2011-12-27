@@ -8,7 +8,11 @@ import sys
 
 
 from pynag import Model
-
+from pynag import Parsers
+_config = Parsers.config()
+_config.parse()
+maincfg_values = _config.maincfg_values
+cfg_file = _config.cfg_file
 
 def _get_dict(x):
     #print "deleted"
@@ -18,7 +22,6 @@ def _get_dict(x):
     return x._original_attributes
 #__dict__
 #_get_dict = lambda x: del (x.objects)
-''' Fetch some objects '''
 #timeperiods = map(_get_dict, Model.Timeperiod.objects.all) 
 #hosts = map(_get_dict, Model.Host.objects.all )
 #contacts = map(_get_dict, Model.Contact.objects.all )
@@ -74,3 +77,26 @@ def change_attribute(id, attribute_name, new_value):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
+
+def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None', append=False):
+	""" Sets specific configuration values of nagios.cfg
+	
+	Required Arguments:
+		attribute   -- Attribute to change (i.e. process_performance_data)
+		new_value   -- New value for the attribute (i.e. "1")
+
+	Optional Arguments:
+		old_value   -- Specify this to change specific value
+		filename    -- Configuration file to modify (i.e. /etc/nagios/nagios.cfg)
+		append      -- Set to 'True' to append a new configuration attribute
+	Returns:
+		True	-- If any changes were made
+		False	-- If no changes were made
+	"""
+	if old_value.lower() == 'none': old_value=None
+	if new_value.lower() == 'none': new_value=None
+	if filename.lower() == 'none': filename=None
+	if append.lower() == 'false': append=False
+	elif append.lower() == 'true': append=True
+	elif append.lower() == 'none': append=None
+	return _config._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
