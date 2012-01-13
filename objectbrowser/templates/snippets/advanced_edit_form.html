@@ -4,7 +4,6 @@
 
 <!-- Generic Object Editor Form -->
 {% if form_not_used %}
-
 <form action="#" method="post"> 
 
 {% csrf_token %}	
@@ -26,6 +25,13 @@
 
 
 {% else %}
+
+Temp. disabled.
+
+{% endif %}
+
+{% if form_not_used %}
+
 <form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}
 	<div class="attribute_contact">
 
@@ -35,14 +41,14 @@
 
 			<div class="object_attribute {{ field.field.widget.attrs.class }}">
 				<label> {{ field.label }} </label>
-				<div class="left">{{ field }} {{ field.errors}} {{ field.help_text }}</div>
+				{{ field }} {{ field.errors}} {{ field.help_text }} </p>
 				<div style="clear: both"></div>
 			</div>
 			{% endfor %}
 			{% for field in undefined_attributes %}
 			<div class="object_attribute {{ field.field.widget.attrs.class }}" id="container_{{ field.name }}" style="display: none">
 				<label> {{ field.label }} </label>
-				<div class="left">{{ field }} {{ field.errors}} {{ field.help_text }}</div>
+				{{ field }} {{ field.errors}} {{ field.help_text }} </p>
 				<div style="clear: both"></div>
 			</div>
 			{% endfor %}
@@ -55,7 +61,7 @@
 
 			<div class="{{ field.field.widget.attrs.class }}">
 				<label> {{ field.label }} </label>
-				<div class="left">{{ field }} {{ field.errors}} {{ field.help_text }}</div>
+				{{ field }} {{ field.errors}} {{ field.help_text }} </p>
 				<div style="clear: both"></div>
 			</div>
 			{% endfor %}
@@ -91,6 +97,5 @@ $(document).ready(function() {
 });	
 </script>
 {% endif %}
-
 
 <!-- End of Generic Object Editor Form -->

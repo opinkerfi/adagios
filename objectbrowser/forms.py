@@ -22,7 +22,7 @@ from django.utils.encoding import smart_str
 
 
 # These fields are special, they are a comma seperated list, and may or may not have +/- in front of them.
-MULTICHOICE_FIELDS = ('servicegroups','hostgroups','contacts','contact_groups', 'contactgroups', 'use')
+MULTICHOICE_FIELDS = ('servicegroups','hostgroups','contacts','contact_groups', 'contactgroups', 'use', 'notification_options')
 
 NOTIFICATION_OPTIONS = (
                         ('w','warning'),
@@ -149,6 +149,8 @@ class PynagForm(forms.Form):
             field.required = False
         # At the moment, our database of required objects is incorrect
         field.required = False
+	if field_name in MULTICHOICE_FIELDS:
+		css_tag += " multichoice"
         if css_tag:
             field.widget.attrs['class'] = css_tag
             field.css_tag = css_tag

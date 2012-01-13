@@ -26,7 +26,7 @@
 			<li><a href="#manual_edit">Manual edit</a></li>
 		</ul>
 		<div id="advanced">
-			{% include "snippets/advanced_edit_form.html" %} 	
+			{% include "snippets/advanced_edit_form.html" %}
 		</div>
 		<div id="manual_edit">
 			{% include "snippets/manual_edit_form.html" %}
@@ -37,12 +37,15 @@
 
 		<div id="host">
 			<div>
+
 			 <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
 			 <label>{{ form.address.label }}</label><p>{{ form.address }}</p>
 			 <label>{{ form.alias.label }}</label><p>{{ form.alias }}</p> 
 			
 			 <label>{{ form.hostgroups.label }}</label><p>{{ form.hostgroups }}</p>
-			 <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
+			 <label>{{ form.use.label }}</label><p>{{ form.use }}</p> 
+</select>
+
 			 </div>
 			 
 			 
@@ -59,6 +62,7 @@
 					</fieldset>
 					</div>
 				{% endif %} 
+	
 		</div>	
 		<div id="monitoring">
 			{% include "snippets/monitoring_settings.html" %}

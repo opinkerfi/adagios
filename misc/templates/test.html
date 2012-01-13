@@ -7,6 +7,27 @@
 
 This page is a placeholder for various testing
 
+
+
+<form>
+  <link rel="stylesheet" href="/static/chosen/chosen.css" />
+    <h2>Standard Select</h2>
+    <div class="side-by-side clearfix">
+      <div>
+        <em>This is it</em>        
+	<select multiple="multiple" id="id_use" class="chzn-select" name="use">
+          <option value="United States">United States</option> 
+          <option value="United Kingdom">United Kingdom</option> 
+          <option value="Afghanistan">Afghanistan</option> 
+        </select>
+      </div>
+    </div>
+    
+  <script src="/static/chosen/chosen.jquery.js" type="text/javascript"></script>
+  <script type="text/javascript"> $("select.chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); </script>
+  </form>
+</body>
+
 {{ form.as_p }}
 
 
