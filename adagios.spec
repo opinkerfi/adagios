@@ -38,7 +38,7 @@ python setup.py build
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
-chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
+#chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
 sed -i 's|#python_path#|%{python_sitelib}|g' %{buildroot}%{python_sitelib}/adagios/conf/adagios.conf
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
 mv %{buildroot}%{python_sitelib}/adagios/conf/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
