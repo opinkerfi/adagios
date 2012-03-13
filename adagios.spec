@@ -53,6 +53,30 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 
 %changelog
+* Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is>
+- copied wsgi configuration from fpaste.wsgi (palli@opensource.is)
+- conf/ renamed to apache/ (palli@opensource.is)
+- apache wsgi configuration added (palli@opensource.is)
+- setup.py modified to take recursive copy of source directory
+  (palli@opensource.is)
+- manage.py no longer executable in site-lib (palli@opensource.is)
+
+* Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is>
+- copied wsgi configuration from fpaste.wsgi (palli@opensource.is)
+- conf/ renamed to apache/ (palli@opensource.is)
+- apache wsgi configuration added (palli@opensource.is)
+- setup.py modified to take recursive copy of source directory
+  (palli@opensource.is)
+- manage.py no longer executable in site-lib (palli@opensource.is)
+
+* Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is>
+- copied wsgi configuration from fpaste.wsgi (palli@opensource.is)
+- conf/ renamed to apache/ (palli@opensource.is)
+- apache wsgi configuration added (palli@opensource.is)
+- setup.py modified to take recursive copy of source directory
+  (palli@opensource.is)
+- manage.py no longer executable in site-lib (palli@opensource.is)
+
 * Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is> 1.0-1
 - new package built with tito
 
