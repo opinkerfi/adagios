@@ -26,7 +26,7 @@ template_files = get_filelist('adagios')
 data_files = map(lambda x: ("/" + os.path.dirname(x),[x]), template_files)
 
 setup(name=app_name,
-    version='0.1',
+    version='1.0',
     description='Adagios web-configuration front-end to NAgios',
     author='Pall Sigurdsson, Tomas Edwardsson',
     author_email='palli@opensource.is',

@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 
 %changelog
+* Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is> 1.0-1
+- new package built with tito
+
 
 * Mon Aug 10 2011 Clint Savage <herlo@fedoraproject.org> 0.2-1
 - Cleaned up pathing and config files
