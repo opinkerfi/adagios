@@ -7,6 +7,7 @@ from distutils.sysconfig import get_python_lib
 
 pkgs_path = get_python_lib()
 app_name = 'adagios'
+version = '1.0.0'
 
 def get_filelist(path):
 	"""Returns a list of all files in a given directory"""
@@ -26,7 +27,7 @@ template_files = get_filelist('adagios')
 data_files = map(lambda x: x.replace('adagios/',''), template_files)
 
 setup(name=app_name,
-    version='1.0',
+    version=version,
     description='Adagios web-configuration front-end to NAgios',
     author='Pall Sigurdsson, Tomas Edwardsson',
     author_email='palli@opensource.is',
