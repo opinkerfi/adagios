@@ -23,7 +23,7 @@ def get_filelist(path):
 	return files
 
 template_files = get_filelist('adagios')
-data_files = map(lambda x: ("/" + os.path.dirname(x),[x]), template_files)
+data_files = map(lambda x: x.replace('adagios/',''), template_files)
 
 setup(name=app_name,
     version='1.0',
@@ -31,8 +31,7 @@ setup(name=app_name,
     author='Pall Sigurdsson, Tomas Edwardsson',
     author_email='palli@opensource.is',
     url='https://adagios.opensource.is/',
-    #packages=['adagios', ],
-    #package_data={'adagios': [data_files] },
-    data_files=data_files
+    packages=['adagios'],
+    package_data={'adagios': data_files }
 
 )
