@@ -3,7 +3,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
 
-    (r'^/?$', 'okconfig_.views.index'),
+    #(r'^/?$', 'okconfig_.views.index'),
     (r'^/scan_network/?', 'okconfig_.views.scan_network'),
     (r'^/addgroup/?', 'okconfig_.views.addgroup'),
     (r'^/addtemplate/?', 'okconfig_.views.addtemplate'),
