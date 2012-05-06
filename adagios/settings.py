@@ -5,7 +5,7 @@ TEMPLATE_DEBUG = DEBUG
 
 # Hack to allow relative template paths
 import os
-djangopath = os.path.dirname(__file__)
+djangopath = '/home/tommi/coding/adagios/adagios'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -59,7 +59,7 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+#ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'kq_4#kcvpb3oen80nsu&xb1+4)ep33u1l37x37y9_k-^aic5s6'

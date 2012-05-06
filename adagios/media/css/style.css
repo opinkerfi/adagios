@@ -1,0 +1,33 @@
+
+@import url(bootstrap.css);
+@import url(bootstrap-responsive.css);
+
+
+body {
+	background: url('../img/bak.jpg');
+}
+
+.content {
+  //background: #fff;
+}
+
+.control-label {
+  font-weight: bold;
+}
+
+.row > [class*="span"] {
+  background: #fff;
+  margin: 8px;
+  padding: 8px;
+  -moz-box-shadow:    2px 2px 4px 5px #ccc;
+  -webkit-box-shadow: 2px 2px 4px 5px #ccc;
+  box-shadow:         2px 2px 4px 5px #ccc;
+}
+
+.shadow {
+}
+
+.main {
+  background: white;
+}
+

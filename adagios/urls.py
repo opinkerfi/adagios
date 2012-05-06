@@ -1,6 +1,8 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
+from django.views.static import serve
+
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
@@ -19,6 +21,7 @@ urlpatterns = patterns('',
     (r'^okconfig', include('okconfig_.urls')),
     (r'^misc', include('misc.urls')),
     (r'^rest/okconfig', include('rest.urls'), {'module_name':'okconfig'}),
+    (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
     (r'^rest/pynag', include('rest.urls'), {'module_name':'configurator.helpers'}),
 
 

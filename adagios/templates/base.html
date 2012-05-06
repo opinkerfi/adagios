@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Adagios - where am I?{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Adagios - Nagios Configuration Made Easy">
+    <meta name="author" content="Tomas Edwardsson, Pall Sigurdsson">
+
+    <!-- Le styles -->
+    <link href="{{ MEDIA_URL }}css/style.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 50px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="{{ MEDIA_URL }}ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114"
+           href="{{ MEDIA_URL }}ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72"
+          href="{{ MEDIA_URL }}ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed"
+          href="{{ MEDIA_URL }}ico/apple-touch-icon-57-precomposed.png">
+
+
+    {%  block head %}{% endblock %}
+  </head>
+
+  <body>
+
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+
+          <!-- Logo in top nav -->
+          <a class="brand" href="{% url misc.views.index %}">Adagios</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active">
+                <a href="{% url misc.views.index %}"><i class="icon-home icon-white"></i> Home</a>
+              </li>
+
+
+              <!-- Wizards drop down -->
+              <li class="dropdown">
+                <a class="dropdown-toggle"
+                   data-toggle="dropdown"
+                   href="#"><i class="icon-edit icon-white"></i> Wizards <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="#addhost">Add Host</a></li>
+                  <li><a href="#addhost">Add Template to Host</a></li>
+                </ul>
+              </li>
+
+
+
+
+              <!-- Object Browser -->
+              <li>
+                <a href="{% url objectbrowser.views.list_object_types %}"><i class="icon-list icon-white"></i> Object Browser</a>
+              </li>
+
+            </ul>
+
+
+
+            <!-- Right aligned navbar - MISC -->
+            <ul class="nav pull-right">
+              <li class="dropdown">
+                <a class="dropdown-toggle"
+                   data-toggle="dropdown"
+                   href="#"><i class="icon-barcode icon-white"></i> Misc <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="#bug">Report Bug</a></li>
+                  <li><a href="#donate">Donate</a></li>
+                </ul>
+              </li>
+            </ul>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Here we start the main view -->
+    <div class="container content">
+
+{% block content %}{% endblock %}
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-transition.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-alert.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-modal.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-dropdown.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-scrollspy.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-tab.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-tooltip.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-popover.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-button.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-collapse.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-carousel.js"></script>
+    <script src="{{ MEDIA_URL }}js/bootstrap-typeahead.js"></script>
+
+    <script src="{{ MEDIA_URL }}js/jquery.dataTables.min.js"></script>
+
+
+    {% block footer %}{% endblock %}
+
+  </body>
+</html>

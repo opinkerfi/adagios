@@ -1,10 +1,43 @@
 object_definitions = {}
-object_definitions["host"] = {}
-object_definitions["host"]["host_name"] = { "name":"host_name", "required":"required", "value":"host_name" }
-object_definitions["host"]["alias"] = { "name":"alias", "required":"required", "value":"alias" }
-object_definitions["host"]["display_name"] = { "name":"display_name", "required":"optional", "value":"display_name" }
-object_definitions["host"]["address"] = { "name":"address", "required":"required", "value":"address" }
-object_definitions["host"]["parents"] = { "name":"parents", "required":"optional", "value":"host_names" }
+object_definitions["host"] = {
+	"host_name": {
+		"name":"host_name",
+		"required":"required",
+		"value":"host_name",
+		"tip": "eg web01.example.com",
+		"type": "string", 
+	},
+	"alias": { 
+		"name":"alias", 
+		"required":"required", 
+		"value":"alias",
+		"tip": "Textual description of host", 
+		"type": "string"
+	},
+	
+	"display_name": {
+		"name":"display_name", 
+		"required":"optional", 
+		"value":"display_name",
+		"tip": "Alternate hostname displayed in nagios",
+		"type": "string",
+	},
+	"address": {
+		"name":"address", 
+		"required":"required", 
+		"value":"address",
+		"tip": "Usually IP address but can also be hostname",
+		"type": [ "hostname", "ip" ],
+	},
+	"parents": { 
+		"name":"parents", 
+		"required":"optional", 
+		"value":"host_names",
+		"tip": "Logical device your host is connected to",
+		"type": "ext",
+		"exttype": [ "host", "host_name" ],
+	},
+}
 object_definitions["host"]["hostgroups"] = { "name":"hostgroups", "required":"optional", "value":"hostgroup_names" }
 object_definitions["host"]["check_command"] = { "name":"check_command", "required":"optional", "value":"command_name" }
 object_definitions["host"]["initial_state"] = { "name":"initial_state", "required":"optional", "value":"[o,d,u]" }
