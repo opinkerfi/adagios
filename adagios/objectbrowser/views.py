@@ -30,6 +30,8 @@ from pynag import Model
 from pynag.Model import EventHandlers
 from forms import *
 
+from log import *
+
 try:
     # Hook up git event handler
     Model.eventhandlers.append(Model.EventHandlers.GitEventHandler(dirname(Model.cfg_file), 'adagios', 'tommi'))
@@ -103,7 +105,8 @@ def list_object_types(request):
                     inactive += 1
                 else:
                     active += 1
-            c['object_types'].append( (name, active, inactive) )
+            c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
+    c['gitlog'] = gitlog()
     return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
 

@@ -3,13 +3,13 @@
 {% block title %}List of object Types{% endblock %}
 {% block footer %}
       <script type="text/javascript">
-        $("#objectoverview").dataTable();
+        //$("#objectoverview").dataTable();
       </script>
 {% endblock %}
 {% block content %}
 
       <div class="row">
-        <div class="span12">
+        <div class="span4">
           <div class="">
             <h2 style="text-align: center">
               <i class="icon-th-large"></i> Object Overview
@@ -32,9 +32,9 @@
 	        <tbody>
 	{% for i in object_types %}
 		      <tr class="{% cycle 'even' 'odd' %}">
-			    <td><a href="search?object_type={{ i.0 }}">{{ i.0 }}</a></td>
-			    <td><a href="search?object_type={{ i.0 }}&register=1">{{ i.1 }}</a></td>
-			    <td><a href="search?object_type={{ i.0 }}&register=0">{{ i.2 }}</a></td>
+			    <td><a href="search?object_type=a{{ i.name }}">{{ i.name }}</a></td>
+			    <td><a href="search?object_type={{ i.name }}&register=1">{{ i.active }}</a></td>
+			    <td><a href="search?object_type={{ i.name }}&register=0">{{ i.inactive }}</a></td>
 		      </tr>
 	{% endfor %}
 	        </tbody>
@@ -45,4 +45,26 @@
 {% else %}
 	  <p>List of object types not found </p>
 {% endif %}
+
+    <div class="row">
+      <div class="span12">
+        <table class="log">
+          <thead>
+            <th>Time</th>
+            <th>User</th>
+            <th>What</th>
+          </thead>
+          <tbody>
+
+{% for logentry in gitlog %}
+            <tr>
+              <td>{{ logentry.authortime|date }}</td>
+              <td>{{ logentry.author }} &lt;{{ logentry.authoremail }}&gt;</td>
+              <td>{{ logentry.comment }}</td>
+            </tr>
+{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
 {% endblock %}

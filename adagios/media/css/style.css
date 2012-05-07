@@ -7,6 +7,7 @@ body {
 	background: url('../img/bak.jpg');
 }
 
+
 .content {
   //background: #fff;
 }
@@ -19,9 +20,12 @@ body {
   background: #fff;
   margin: 8px;
   padding: 8px;
-  -moz-box-shadow:    2px 2px 4px 5px #ccc;
-  -webkit-box-shadow: 2px 2px 4px 5px #ccc;
-  box-shadow:         2px 2px 4px 5px #ccc;
+  -moz-box-shadow:    1px 1px 2px 3px #666;
+  -webkit-box-shadow: 1px 1px 2px 3px #666;
+  box-shadow:         1px 1px 2px 3px #666;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
 }
 
 .shadow {
@@ -31,3 +35,9 @@ body {
   background: white;
 }
 
+table.log {
+  width: 100%;
+}
+.log td {
+  font-size: 90%;
+}
