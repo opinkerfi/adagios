@@ -106,7 +106,7 @@ def list_object_types(request):
                 else:
                     active += 1
             c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
-    c['gitlog'] = gitlog()
+    c['gitlog'] = gitlog(dirname(Model.cfg_file))
     return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
 

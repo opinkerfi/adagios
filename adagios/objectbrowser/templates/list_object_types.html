@@ -32,7 +32,7 @@
 	        <tbody>
 	{% for i in object_types %}
 		      <tr class="{% cycle 'even' 'odd' %}">
-			    <td><a href="search?object_type=a{{ i.name }}">{{ i.name }}</a></td>
+			    <td><a href="search?object_type={{ i.name }}">{{ i.name }}</a></td>
 			    <td><a href="search?object_type={{ i.name }}&register=1">{{ i.active }}</a></td>
 			    <td><a href="search?object_type={{ i.name }}&register=0">{{ i.inactive }}</a></td>
 		      </tr>
