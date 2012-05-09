@@ -48,6 +48,7 @@
 
     <div class="row">
       <div class="span12">
+        <h5>Most Recent Changes</h5>
         <table class="log">
           <thead>
             <th>Time</th>
@@ -58,7 +59,7 @@
 
 {% for logentry in gitlog %}
             <tr>
-              <td>{{ logentry.authortime|date }}</td>
+              <td>{{ logentry.authortime|date:"j M Y, H:i" }}</td>
               <td>{{ logentry.author }} &lt;{{ logentry.authoremail }}&gt;</td>
               <td>{{ logentry.comment }}</td>
             </tr>

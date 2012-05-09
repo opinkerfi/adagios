@@ -38,6 +38,11 @@ body {
 table.log {
   width: 100%;
 }
+
+.log th {
+  background: #eee;
+  color: #33f;
+}
 .log td {
   font-size: 90%;
 }
