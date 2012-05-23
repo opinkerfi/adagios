@@ -2,15 +2,15 @@
 
 {% block title %}List of object Types{% endblock %}
 {% block footer %}
-      <script type="text/javascript">
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         //$("#objectoverview").dataTable();
       </script>
 {% endblock %}
 {% block content %}
 
       <div class="row">
-        <div class="span4">
-          <div class="">
+        <div class="span12">
+          <div class="block">
             <h2 style="text-align: center">
               <i class="icon-th-large"></i> Object Overview
             </h2>
@@ -20,25 +20,50 @@
 {% if object_types %}
 
       <div class="row">
-        <div class="span5">
-	      <table class="span4" id="objectoverview">
-	        <thead>
-	          <tr>
-		        <th>Object Type</th>
-		        <th>Active</th>
-		        <th>Inactive</th>
-	          </tr>
-	        </thead>
-	        <tbody>
+        <div class="span3">
+          <div class="block">
+	        <table style="width: 100%" id="objectoverview">
+	          <thead>
+	            <tr>
+		          <th>Type</th>
+		          <th>Active</th>
+		          <th>Inactive</th>
+	            </tr>
+	          </thead>
+	          <tbody>
 	{% for i in object_types %}
-		      <tr class="{% cycle 'even' 'odd' %}">
-			    <td><a href="search?object_type={{ i.name }}">{{ i.name }}</a></td>
-			    <td><a href="search?object_type={{ i.name }}&register=1">{{ i.active }}</a></td>
-			    <td><a href="search?object_type={{ i.name }}&register=0">{{ i.inactive }}</a></td>
-		      </tr>
+		        <tr class="{% cycle 'even' 'odd' %}">
+			      <td><a href="search?object_type={{ i.name }}">{{ i.name }}</a></td>
+			      <td class="center"><a href="search?object_type={{ i.name }}&register=1">{{ i.active }}</a></td>
+			      <td class="center"><a href="search?object_type={{ i.name }}&register=0">{{ i.inactive }}</a></td>
+		        </tr>
 	{% endfor %}
-	        </tbody>
-          </table>
+	          </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="span9">
+            <div class="block">
+                <ul class="nav nav-tabs" id="myTab">
+                  <li><a href="#profile" data-toggle="tab">Commands</a></li>
+                  <li class="active"><a href="#home" data-toggle="tab">Contacts</a></li>
+                  <li><a href="#messages" data-toggle="tab">Hosts</a></li>
+                  <li><a href="#settings" data-toggle="tab">Services</a></li>
+                  <li><a href="#settings" data-toggle="tab">Timeperiods</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div class="tab-pane active" id="home">FLELFE</div>
+                  <div class="tab-pane" id="profile"></div>
+                  <div class="tab-pane" id="messages">...</div>
+                  <div class="tab-pane" id="settings">...</div>
+                </div>
+            </div>
+            <script>
+            $(function () {
+                $('#myTab a:last').tab('show');
+            })
+            </script>
         </div>
       </div>
 
@@ -48,24 +73,26 @@
 
     <div class="row">
       <div class="span12">
-        <h5>Most Recent Changes</h5>
-        <table class="log">
-          <thead>
-            <th>Time</th>
-            <th>User</th>
-            <th>What</th>
-          </thead>
-          <tbody>
+        <div class="block">
+          <h5 style="border-bottom: 1px solid #ccc">Most Recent Changes</h5>
+          <table class="log">
+            <thead>
+              <th>Time</th>
+              <th>User</th>
+              <th>What</th>
+            </thead>
+            <tbody>
 
 {% for logentry in gitlog %}
-            <tr>
-              <td>{{ logentry.authortime|date:"j M Y, H:i" }}</td>
-              <td>{{ logentry.author }} &lt;{{ logentry.authoremail }}&gt;</td>
-              <td>{{ logentry.comment }}</td>
-            </tr>
+              <tr>
+                <td>{{ logentry.authortime|date:"j M Y, H:i" }}</td>
+                <td>{{ logentry.author }} &lt;{{ logentry.authoremail }}&gt;</td>
+                <td>{{ logentry.comment }}</td>
+              </tr>
 {% endfor %}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 {% endblock %}

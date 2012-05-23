@@ -5,6 +5,7 @@
 
 body {
 	background: url('../img/bak.jpg');
+    font-size: 12px;
 }
 
 
@@ -16,19 +17,30 @@ body {
   font-weight: bold;
 }
 
-.row > [class*="span"] {
+
+.block {
   background: #fff;
-  margin: 8px;
-  padding: 8px;
+  width: 100%;
+  margin: 6px;
+  padding: 6px;
   -moz-box-shadow:    1px 1px 2px 3px #666;
   -webkit-box-shadow: 1px 1px 2px 3px #666;
   box-shadow:         1px 1px 2px 3px #666;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
+
 }
 
+thead {
+  border-bottom: solid 1px #ccc;
+}
 .shadow {
+}
+
+.center {
+    text-align: center;
+
 }
 
 .main {
@@ -37,12 +49,22 @@ body {
 
 table.log {
   width: 100%;
+
 }
 
-.log th {
-  background: #eee;
-  color: #33f;
+
+a {
+    color: #ff0000;
+    text-decoration: none;
+    font-weight: bold;
 }
-.log td {
-  font-size: 90%;
+
+td {
+    font-size: 11px;
+}
+th {
+    font-size: 11px;
+}
+p {
+  font-size: 12px;
 }
