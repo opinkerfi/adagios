@@ -1,6 +1,8 @@
 
 @import url(bootstrap.css);
 @import url(bootstrap-responsive.css);
+@import url(glyph-free.css);
+
 
 
 body {
@@ -54,7 +56,7 @@ table.log {
 
 
 a {
-    color: #ff0000;
+    color: #b70000;
     text-decoration: none;
     font-weight: bold;
 }
@@ -109,8 +111,12 @@ table.table thead .sorting_desc_disabled {
 	*cursor: hand;
 }
 
+
+
+
+
 table.table thead .sorting { background: url('images/sort_both.png') no-repeat center right; }
-table.table thead .sorting_asc { background: url('images/sort_asc.png') no-repeat center right; }
+table.table thead .headerSortUp { background: url('images/sort_asc.png') no-repeat center right; }
 table.table thead .sorting_desc { background: url('images/sort_desc.png') no-repeat center right; }
 
 table.table thead .sorting_asc_disabled { background: url('images/sort_asc_disabled.png') no-repeat center right; }
@@ -122,5 +128,5 @@ table.dataTable th:active {
 
 
 table.table th, table.table td {
-    line-height: 8px;
+    line-height: 12px;
 }
