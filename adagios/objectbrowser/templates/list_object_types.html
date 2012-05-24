@@ -3,7 +3,49 @@
 {% block title %}List of object Types{% endblock %}
 {% block footer %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-        //$("#objectoverview").dataTable();
+        $(document).ready(function() {
+            			/* Default class modification */
+			$.extend( $.fn.dataTableExt.oStdClasses, {
+				"sSortAsc": "header headerSortDown",
+				"sSortDesc": "header headerSortUp",
+				"sSortable": "header"
+			} );
+            commands = [];
+            $.getJSON("/rest/pynag/json/get_objects",
+                {
+                    object_type: "command",
+                    with_fields: "id,command_name,name,command_line",
+                },
+                function(data) {
+                    $.each(data, function(i,item){
+                        commands.push(["f", "" + item.command_name, "" + item.command_line.substr(0, 40)])
+
+
+
+
+                    });
+                    var t = $('#testtable').dataTable( {
+                        "aaData": commands,
+                        "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                        "sPaginationType": "bootstrap",
+                        "sScrollY": "160px",
+                        "bPaginate": false,
+                        "bScrollCollapse": true,
+                        "oLanguage": {
+                            "sLengthMenu": "_MENU_ records per page"
+                        }
+                    } );
+                }
+            );
+
+            $(function () {
+                $('#myTab a:first').tab('show');
+                t.fnAdjustColumnSizing();
+            });
+
+
+        } );
+
       </script>
 {% endblock %}
 {% block content %}
@@ -46,26 +88,40 @@
         <div class="span9">
             <div class="block">
                 <ul class="nav nav-tabs" id="myTab">
-                  <li><a href="#profile" data-toggle="tab">Commands</a></li>
-                  <li class="active"><a href="#home" data-toggle="tab">Contacts</a></li>
-                  <li><a href="#messages" data-toggle="tab">Hosts</a></li>
-                  <li><a href="#settings" data-toggle="tab">Services</a></li>
-                  <li><a href="#settings" data-toggle="tab">Timeperiods</a></li>
+                  <li><a href="#command" data-toggle="tab">Commands</a></li>
+                  <li><a href="#contact" data-toggle="tab">Contacts</a></li>
+                  <li><a href="#host" data-toggle="tab">Hosts</a></li>
+                  <li><a href="#service" data-toggle="tab">Services</a></li>
+                  <li><a href="#timeperiod" data-toggle="tab">Timeperiods</a></li>
                 </ul>
                 <div class="tab-content">
-                  <div class="tab-pane active" id="home">FLELFE</div>
-                  <div class="tab-pane" id="profile"></div>
-                  <div class="tab-pane" id="messages">...</div>
-                  <div class="tab-pane" id="settings">...</div>
+                  <div class="tab-pane" id="command">
+                      <table id="testtable" style="width: 100%" class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th class="span1"></th>
+                              <th>Command Name</th>
+                              <th>Command Line</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                        </tbody>
+                      </table>
+                  </div>
+                  <div class="tab-pane" id="contact"></div>
+                  <div class="tab-pane active" id="host"></div>
+                  <div class="tab-pane" id="service"></div>
+                  <div class="tab-pane" id="timeperiod"></div>
                 </div>
             </div>
             <script>
-            $(function () {
-                $('#myTab a:last').tab('show');
-            })
+
+
             </script>
         </div>
       </div>
+
 
 {% else %}
 	  <p>List of object types not found </p>

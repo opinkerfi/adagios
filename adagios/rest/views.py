@@ -38,8 +38,16 @@ def handle_request(request, module_name, attribute, format):
             c['function_name'] = attribute
             c['form'] = CallFunctionForm(function=item, initial=request.GET)
             c['docstring'] = docstring
-            return render_to_response('function_form.html', c)
-            #result = item( **arguments )
+            if not request.GET.items():
+            	return render_to_response('function_form.html', c)
+            # Handle get parameters
+	    arguments = {}
+            for k, v in request.GET.items():
+                #print "%s = %s (%s)" % (k,v, type(v))
+                # TODO: Is it safe to turn all digits to int ?
+                #if str(v).isdigit(): v = int(float(v))
+                arguments[str(k)] = str(v)
+            result = item( **arguments )
     elif request.method == 'POST':
         item = members[attribute]
         if not inspect.isfunction(item):
