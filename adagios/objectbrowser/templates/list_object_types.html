@@ -10,7 +10,9 @@
 				"sSortDesc": "header headerSortUp",
 				"sSortable": "header"
 			} );
+            /* Fetch the commands */
             commands = [];
+
             $.getJSON("/rest/pynag/json/get_objects",
                 {
                     object_type: "command",
@@ -19,30 +21,62 @@
                 function(data) {
                     $.each(data, function(i,item){
                         commands.push(["f", "" + item.command_name, "" + item.command_line.substr(0, 40)])
-
-
-
-
                     });
-                    var t = $('#testtable').dataTable( {
+                    var t = $('#commandtable').dataTable( {
+                        "aoColumns": [
+                            { "sTitle": "" },
+                            { "sTitle": "Command Name" },
+                            { "sTitle": "Command Line" },
+                        ],
                         "aaData": commands,
                         "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
                         "sPaginationType": "bootstrap",
                         "sScrollY": "160px",
                         "bPaginate": false,
-                        "bScrollCollapse": true,
-                        "oLanguage": {
-                            "sLengthMenu": "_MENU_ records per page"
-                        }
+                        "bScrollCollapse": true
+                    } );
+                }
+            );
+
+            /* Fetch the commands */
+            contacts = [];
+
+            $.getJSON("/rest/pynag/json/get_objects",
+                {
+                    object_type: "contact",
+                    with_fields: "id,contact_name,alias,email",
+                },
+                function(data) {
+                    $.each(data, function(i,item){
+                        contacts.push(["f", "" + item.contact_name, "" + item.email, "" + item.alias])
+                    });
+                    var car = $('#contacttable').dataTable( {
+                        "aoColumns": [
+                            { "sTitle": "f" },
+                            { "sTitle": "Contact Name" },
+                            { "sTitle": "E-Mail" },
+                            { "sTitle": "Alias" },
+                        ],
+                        "aaData": contacts,
+                        "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                        "sPaginationType": "bootstrap",
+                        "sScrollY": "160px",
+                        "bPaginate": false,
+                        "bScrollCollapse": true
                     } );
                 }
             );
 
             $(function () {
                 $('#myTab a:first').tab('show');
-                t.fnAdjustColumnSizing();
             });
+            $('a[data-toggle="tab"]').on('shown', function (e) {
+                t.fnAdjustColumnSizing();
+                car.fnAdjustColumnSizing();
 
+            // e.target // activated tab
+            // e.relatedTarget // previous tab
+            });
 
         } );
 
@@ -96,21 +130,22 @@
                 </ul>
                 <div class="tab-content">
                   <div class="tab-pane" id="command">
-                      <table id="testtable" style="width: 100%" class="table table-striped">
-                          <thead>
-                            <tr>
-                              <th class="span1"></th>
-                              <th>Command Name</th>
-                              <th>Command Line</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-
-                        </tbody>
-                      </table>
+                    <table id="commandtable" class="table table-striped">
+                      <thead>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
                   </div>
-                  <div class="tab-pane" id="contact"></div>
-                  <div class="tab-pane active" id="host"></div>
+                  <div class="tab-pane" id="contact">
+                    <table id="contacttable" class="table table-striped">
+                      <thead>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="tab-pane" id="host"></div>
                   <div class="tab-pane" id="service"></div>
                   <div class="tab-pane" id="timeperiod"></div>
                 </div>
