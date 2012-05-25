@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Adagios - ObjectBrowser{% endblock %}
+{% block title %}Adagios - Object Browser{% endblock %}
 {% block footer %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        var currenttab;
+
         function populate_datatable_objects(object_type, targetDataTable, fields) {
             /* Determine fields to be queried from API */
             jsonqueryfields = ['id'];
@@ -20,9 +23,11 @@
                 },
                 function(data) {
                     var count = data.length;
+                    var dtData = [];
                     $.each(data, function(i,item){
-                        var fieldarray = ['<input class="bulkselect" type="checkbox">'];
+
                         //alert(fields.length);
+                        var fieldarray = ['']
                         $.each(fields, function(k, field) {
                             var cell = "<a href=\"/uberobject/id/"  + item['id'] + "\">";
                             var fieldvalue = "";
@@ -47,16 +52,16 @@
                             cell += "</a>"
                             fieldarray.push(cell);
                             if (field.cName == fields[fields.length - 1].cName) {
-                                targetDataTable.fnAddData(fieldarray);
+                                dtData.push(fieldarray);
                                 count--;
                                 if (count == 0) {
+                                    targetDataTable.fnAddData(dtData);
                                     targetDataTable.fnAdjustColumnSizing();
                                     targetDataTable.fnSort( [ [1,'asc'] ] );
                                     $("[rel=tooltip]").tooltip();
-
-
-
-                                    if (object_type == 'command') $('#myTab a:first').tab('show');
+                                    if (object_type == 'command') {
+                                        $('#objecttabs a:first').tab('show');
+                                    }
                                 }
                             }
 
@@ -80,7 +85,7 @@
             /* Create the COMMAND object datatable */
             var commandtable = $('#commandtable').dataTable( {
                 "aoColumns": [
-                    { "sTitle": '<input type="checkbox"/ id="selectall_command" rel="selall"/>'},
+                    { "sTitle": '', "sWidth": '32px'},
                     { "sTitle": "Command Name" },
                     { "sTitle": "Command Line" },
                 ],
@@ -104,6 +109,7 @@
             /* Create the CONTACT objec datatable */
             var contacttable = $('#contacttable').dataTable( {
                 "aoColumns": [
+                    { "sTitle": '', "sWidth": '32px'},
                     { "sTitle": "Contact Name" },
                     { "sTitle": "Alias" },
                     { "sTitle": "E-Mail" },
@@ -111,6 +117,7 @@
                 "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
                 "sPaginationType": "bootstrap",
                 "sScrollY": "160px",
+                "bAutoWidth": false,
                 "bPaginate": false,
                 "bScrollCollapse": true
             } );
@@ -140,6 +147,7 @@
              /* Create the CONTACT objec datatable */
             var hosttable = $('#hosttable').dataTable( {
                 "aoColumns": [
+                    { "sTitle": '', "sWidth": '32px'},
                     { "sTitle": "Name", },
                     { "sTitle": "Address" },
                     { "sTitle": "Alias" },
@@ -147,6 +155,7 @@
                 "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
                 "sPaginationType": "bootstrap",
                 "sScrollY": "160px",
+                "bAutoWidth": false,
                 "bPaginate": false,
                 "bScrollCollapse": true
             } );
@@ -171,9 +180,10 @@
                 { "cName": "alias" },
             ]);
 
-                         /* Create the CONTACT objec datatable */
+            /* Create the CONTACT objec datatable */
             var servicetable = $('#servicetable').dataTable( {
                 "aoColumns": [
+                    { "sTitle": '', "sWidth": '32px'},
                     { "sTitle": "Name", },
                     { "sTitle": "Host" },
                     { "sTitle": "Command" },
@@ -181,8 +191,10 @@
                 "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
                 "sPaginationType": "bootstrap",
                 "sScrollY": "160px",
+                "bAutoWidth": false,
                 "bPaginate": false,
-                "bScrollCollapse": true
+                "bScrollCollapse": true,
+                "bAutoWidth": false,
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -190,7 +202,7 @@
                 {
                     "cName": "service_description",
                     "cAltName": "name",
-                    "icon": "glyph-computer-locked",
+                    "icon": "glyph-computer-service",
                 },
                 { "cName": "host_name" },
                 {
@@ -208,36 +220,55 @@
             ]);
 
 
-            $(window).bind('resize', function () {
-                // alert("resize");
-                //$('#myTab').hide();
-                //$('#myTab a:first').tab('show');
+            /* Create the TIMEPERIOD object datatable */
+            var timeperiodtable = $('#timeperiodtable').dataTable( {
+                "aoColumns": [
+                    { "sTitle": '', "sWidth": '32px'},
+                    { "sTitle": "Name", },
+                    { "sTitle": "Alias" },
+                ],
+                "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                "sPaginationType": "bootstrap",
+                "sScrollY": "160px",
+                "bAutoWidth": false,
+                "bPaginate": false,
+                "bScrollCollapse": true
+            } );
 
-                var tables = $.fn.dataTable.fnTables();
-                for ( var i = 0 ; i<tables.length ; i++ ) {
-                    $(tables[i]).dataTable().fnAdjustColumnSizing(false);
-                }
+            /* Populate datatable from rest/pynag/json/get_objects */
+            populate_datatable_objects('timeperiod', timeperiodtable, [
+                {
+                    "cName": "timeperiod_name",
+                    "cAltName": "name",
+                    "icon": "glyph-clock",
+                },
+                { "cName": "alias" },
+            ]);
+
+            $(window).bind('resize', function () {
+                /* This blows, couldn't find a good way to do this - tommi */
+                ctab = currenttab;
+                $('#objecttabs a:first').tab('show');
+                $('#objecttabs a:last').tab('show');
+                $('#objecttabs a[href="' + ctab + '"]').tab('show');
             } );
 
             $('a[data-toggle="tab"]').on('shown', function (e) {
+                currenttab = $(e.target).attr('href');
+                currenttable = $(e.target).attr('href') + 'table';
+                /* For some reason I have to loop through everything, weird.
+                $(currenttable).dataTable().fnAdjustColumnSizing();
+                */
+
                 var tables = $.fn.dataTable.fnTables();
                 for ( var i = 0 ; i<tables.length ; i++ ) {
-                    $(tables[i]).dataTable().fnAdjustColumnSizing(false);
+                    $(tables[i]).dataTable().fnAdjustColumnSizing(true);
                 }
 
+                $('#log').append("Set current tab " + currenttable + '<br/>');
             // e.target // activated tab
             // e.relatedTarget // previous tab
             });
-
-            $("[rel=selall]").click(function(event) {
-                dt = $(event.target).parentsUntil('.dataTable');
-                var table = $(dt[dt.length-1]).parent().hide();
-                alert($(table).html());
-
-                //alert($(this).parent().parent().childElementCount);
-                return false;
-            });
-
         } );
 
       </script>
@@ -276,12 +307,16 @@
 	{% endfor %}
 	          </tbody>
             </table>
+
+          </div>
+          <div class="block" id="log" style="height: 150px;overflow: auto">
+
           </div>
         </div>
 
         <div class="span9">
             <div class="block">
-                <ul class="nav nav-tabs" id="myTab">
+                <ul class="nav nav-tabs" id="objecttabs">
                   <li><a href="#command" data-toggle="tab">Commands</a></li>
                   <li><a href="#contact" data-toggle="tab">Contacts</a></li>
                   <li><a href="#host" data-toggle="tab">Hosts</a></li>
@@ -321,13 +356,16 @@
                       </tbody>
                     </table>
                   </div>
-                  <div class="tab-pane" id="timeperiod"></div>
+                  <div class="tab-pane" id="timeperiod">
+                    <table id="timeperiodtable" class="table table-striped">
+                      <thead>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
             </div>
-            <script>
-
-
-            </script>
         </div>
       </div>
 
