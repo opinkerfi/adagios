@@ -56,7 +56,7 @@
                                 count--;
                                 if (count == 0) {
                                     targetDataTable.fnAddData(dtData);
-                                    targetDataTable.fnAdjustColumnSizing();
+                                    /* targetDataTable.fnAdjustColumnSizing(); */
                                     targetDataTable.fnSort( [ [1,'asc'] ] );
                                     $("[rel=tooltip]").tooltip();
                                     if (object_type == 'command') {
@@ -259,12 +259,13 @@
                 /* For some reason I have to loop through everything, weird.
                 $(currenttable).dataTable().fnAdjustColumnSizing();
                 */
-
+                $(currenttable).dataTable().fnAdjustColumnSizing();
+/*
                 var tables = $.fn.dataTable.fnTables();
                 for ( var i = 0 ; i<tables.length ; i++ ) {
                     $(tables[i]).dataTable().fnAdjustColumnSizing(true);
                 }
-
+*/
                 $('#log').append("Set current tab " + currenttable + '<br/>');
             // e.target // activated tab
             // e.relatedTarget // previous tab
