@@ -21,7 +21,7 @@
                 function(data) {
                     var count = data.length;
                     $.each(data, function(i,item){
-                        var fieldarray = ['i'];
+                        var fieldarray = ['<input class="bulkselect" type="checkbox">'];
                         //alert(fields.length);
                         $.each(fields, function(k, field) {
                             var cell = "<a href=\"/uberobject/id/"  + item['id'] + "\">";
@@ -30,13 +30,15 @@
                                 cell += "<i class=\"" + field.icon + "\"></i> ";
                             }
                             if (item[field.cName]) {
-                                fieldvalue = item[field.cName].replace("\"", "\\\"");
+                                fieldvalue = item[field.cName];
                             } else {
                                 if (item[field.cAltName]) {
-                                    fieldvalue = item[field.cAltName].replace("\"", "\\\"");
+                                    fieldvalue = item[field.cAltName];
                                 }
                             }
-
+                            fieldvalue = fieldvalue.replace("\"", "&quot;");
+                            fieldvalue = fieldvalue.replace(">", "&gt;");
+                            fieldvalue = fieldvalue.replace("<", "&lt;");
                             if ("truncate" in field && fieldvalue.length > (field.truncate + 3)) {
                                 cell += "<abbr rel=\"tooltip\" title=\"" + fieldvalue + "\">" + fieldvalue.substr(0, field.truncate) + " ...</abbr>";
                             } else {
@@ -49,8 +51,12 @@
                                 count--;
                                 if (count == 0) {
                                     targetDataTable.fnAdjustColumnSizing();
-                                    targetDataTable.fnSort( [ [1,'asc'], [2,'asc'] ] );
+                                    targetDataTable.fnSort( [ [1,'asc'] ] );
                                     $("[rel=tooltip]").tooltip();
+
+
+
+                                    if (object_type == 'command') $('#myTab a:first').tab('show');
                                 }
                             }
 
@@ -74,7 +80,7 @@
             /* Create the COMMAND object datatable */
             var commandtable = $('#commandtable').dataTable( {
                 "aoColumns": [
-                    { "sTitle": "f" },
+                    { "sTitle": '<input type="checkbox"/ id="selectall_command" rel="selall"/>'},
                     { "sTitle": "Command Name" },
                     { "sTitle": "Command Line" },
                 ],
@@ -98,10 +104,9 @@
             /* Create the CONTACT objec datatable */
             var contacttable = $('#contacttable').dataTable( {
                 "aoColumns": [
-                    { "sTitle": "f" },
                     { "sTitle": "Contact Name" },
-                    { "sTitle": "E-Mail" },
                     { "sTitle": "Alias" },
+                    { "sTitle": "E-Mail" },
                 ],
                 "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
                 "sPaginationType": "bootstrap",
@@ -135,7 +140,6 @@
              /* Create the CONTACT objec datatable */
             var hosttable = $('#hosttable').dataTable( {
                 "aoColumns": [
-                    { "sTitle": "f" },
                     { "sTitle": "Name", },
                     { "sTitle": "Address" },
                     { "sTitle": "Alias" },
@@ -170,7 +174,6 @@
                          /* Create the CONTACT objec datatable */
             var servicetable = $('#servicetable').dataTable( {
                 "aoColumns": [
-                    { "sTitle": "f" },
                     { "sTitle": "Name", },
                     { "sTitle": "Host" },
                     { "sTitle": "Command" },
@@ -206,27 +209,33 @@
 
 
             $(window).bind('resize', function () {
-                //alert("resize");
-                $('#myTab').hide();
-                $('#myTab').show();
-                $('#myTab a:first').tab('show');
+                // alert("resize");
+                //$('#myTab').hide();
+                //$('#myTab a:first').tab('show');
 
-                commandtable.hide();
-                commandtable.show();
-                commandtable.fnAdjustColumnSizing();
-                contacttable.fnAdjustColumnSizing();
-                hosttable.fnAdjustColumnSizing();
-                servicetable.fnAdjustColumnSizing();
+                var tables = $.fn.dataTable.fnTables();
+                for ( var i = 0 ; i<tables.length ; i++ ) {
+                    $(tables[i]).dataTable().fnAdjustColumnSizing(false);
+                }
             } );
 
             $('a[data-toggle="tab"]').on('shown', function (e) {
-                commandtable.fnAdjustColumnSizing();
-                contacttable.fnAdjustColumnSizing();
-                hosttable.fnAdjustColumnSizing();
-                servicetable.fnAdjustColumnSizing();
+                var tables = $.fn.dataTable.fnTables();
+                for ( var i = 0 ; i<tables.length ; i++ ) {
+                    $(tables[i]).dataTable().fnAdjustColumnSizing(false);
+                }
 
             // e.target // activated tab
             // e.relatedTarget // previous tab
+            });
+
+            $("[rel=selall]").click(function(event) {
+                dt = $(event.target).parentsUntil('.dataTable');
+                var table = $(dt[dt.length-1]).parent().hide();
+                alert($(table).html());
+
+                //alert($(this).parent().parent().childElementCount);
+                return false;
             });
 
         } );
