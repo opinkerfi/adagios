@@ -19,6 +19,7 @@ from django.shortcuts import render_to_response, redirect
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
 from django.utils import simplejson
+from django.template import RequestContext
 from django.core.context_processors import csrf
 
 import sys
@@ -28,6 +29,8 @@ from pynag.Model import *
 from pynag import Model
 from pynag.Model import EventHandlers
 from forms import *
+
+from log import *
 
 try:
     # Hook up git event handler
@@ -87,7 +90,7 @@ def list_objects( request, object_type=None, display_these_objects=None ):
     else:
         c['objects'] = Pynag.objects.filter(**search)
     
-    return render_to_response('list_objects.html', c)
+    return render_to_response('list_objects.html', c, context_instance = RequestContext(request))
 
 def list_object_types(request):
     ''' Collects statistics about pynag objects and returns to template '''
@@ -102,8 +105,9 @@ def list_object_types(request):
                     inactive += 1
                 else:
                     active += 1
-            c['object_types'].append( (name, active, inactive) )
-    return render_to_response('list_object_types.html', c)
+            c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
+    c['gitlog'] = gitlog(dirname(Model.cfg_file))
+    return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
 
 def view_object( request, object_id=None, object_type=None, shortname=None):
