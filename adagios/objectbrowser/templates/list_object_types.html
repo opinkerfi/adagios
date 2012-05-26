@@ -89,12 +89,12 @@
                     { "sTitle": "Command Name" },
                     { "sTitle": "Command Line" },
                 ],
-                "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
-                "sScrollY": "160px",
+                "sScrollY": "260px",
                 "bAutoWidth": false,
-                "bPaginate": false,
-                "bScrollCollapse": true
+                "bPaginate": true,
+                "bScrollCollapse": false
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -114,12 +114,12 @@
                     { "sTitle": "Alias" },
                     { "sTitle": "E-Mail" },
                 ],
-                "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
-                "sScrollY": "160px",
+                "sScrollY": "260px",
                 "bAutoWidth": false,
-                "bPaginate": false,
-                "bScrollCollapse": true
+                "bPaginate": true,
+                "bScrollCollapse": false
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -152,12 +152,12 @@
                     { "sTitle": "Address" },
                     { "sTitle": "Alias" },
                 ],
-                "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
-                "sScrollY": "160px",
+                "sScrollY": "260px",
                 "bAutoWidth": false,
-                "bPaginate": false,
-                "bScrollCollapse": true
+                "bPaginate": true,
+                "bScrollCollapse": false
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -188,12 +188,12 @@
                     { "sTitle": "Host" },
                     { "sTitle": "Command" },
                 ],
-                "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
-                "sScrollY": "160px",
+                "sScrollY": "260px",
                 "bAutoWidth": false,
-                "bPaginate": false,
-                "bScrollCollapse": true,
+                "bPaginate": true,
+                "bScrollCollapse": false,
                 "bAutoWidth": false,
             } );
 
@@ -227,12 +227,12 @@
                     { "sTitle": "Name", },
                     { "sTitle": "Alias" },
                 ],
-                "sDom": "<'row'<'span1'><'offset4 span5'f>r>t<'row'<'span4'i><'span4'p>>",
+                "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
-                "sScrollY": "160px",
+                "sScrollY": "260px",
                 "bAutoWidth": false,
-                "bPaginate": false,
-                "bScrollCollapse": true
+                "bPaginate": true,
+                "bScrollCollapse": false
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -258,7 +258,7 @@
                 currenttable = $(e.target).attr('href') + 'table';
                 /* For some reason I have to loop through everything, weird.
                 $(currenttable).dataTable().fnAdjustColumnSizing();
-                */
+*/
                 $(currenttable).dataTable().fnAdjustColumnSizing();
 /*
                 var tables = $.fn.dataTable.fnTables();
