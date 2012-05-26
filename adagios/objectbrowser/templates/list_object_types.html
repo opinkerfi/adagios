@@ -29,7 +29,7 @@
                         //alert(fields.length);
                         var fieldarray = ['']
                         $.each(fields, function(k, field) {
-                            var cell = "<a href=\"/uberobject/id/"  + item['id'] + "\">";
+                            var cell = '<a href="{{ BASE_URL }}/objectbrowser/id=' + item['id'] + '">';
                             var fieldvalue = "";
                             if ("icon" in field) {
                                 cell += "<i class=\"" + field.icon + "\"></i> ";
@@ -279,9 +279,15 @@
       <div class="row">
         <div class="span12">
           <div class="block">
-            <h2 style="text-align: center">
-              <i class="icon-th-large"></i> Object Browser
+            <ul class="breadcrumb">
+              <li>
+                <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+              </li>
+            </ul>
+            <h2>
+              <i class="icon-th-large"></i> <small>Object</small> Browser
             </h2>
+
           </div>
         </div>
       </div>

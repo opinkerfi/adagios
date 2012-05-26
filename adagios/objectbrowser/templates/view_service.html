@@ -1,78 +1,96 @@
-{% extends "configurator/base.html" %}
+{% extends "base.html" %}
 {% block title %}{{ object_type }}{% endblock %}
+
+{% block footer %}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#objecttab a:first').tab('show');
+        $(document).ready(function() {
+
+
+
+        });
+    </script>
+{%  endblock %}
 
 {% block content %}
 
+    {% if my_object %}
+<div class="row">
+    <div class="span12">
+        <div class="block">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
+                </li>
+            </ul>
+            <h2>
+                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.host_name }}
+            </h2>
+        </div>
+    </div>
+</div>
 
 
-<!--
-{{ my_object }}
--->
 
+<div class="row">
+    <div class="span12">
+        <div class="block">
 
-
-{% if my_object %}
-
-
-	<!-- wrapper for scrollable items -->
-	<div id="tabs">
-
-		<ul>
-			<li><a href="#service">Service</a></li>
-			<li><a href="#monitoring">Monitoring</a></li>
-			<li><a href="#notifications">Notifications</a></li>
-			<li><a href="#advanced">Advanced</a></li>
-			<li><a href="#manual_edit">Manual edit</a></li>
-		</ul>
-		<div id="advanced">
-			{% include "snippets/advanced_edit_form.html" %} 	
-		</div>
-		<div id="manual_edit">
-			{% include "snippets/manual_edit_form.html" %}
-		</div>
-
-<form action="#" method="POST">
-		{% csrf_token %}
-
-		<div id="service">
-			<div>
-			 <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
-			 <label>{{ form.service_description.label }}</label><p>{{ form.service_description }}</p>
-			
-			 <label>{{ form.servicegroups.label }}</label><p>{{ form.servicegroups }}</p>
-			 <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
-		</div>
+            <!-- wrapper for scrollable items -->
+            <ul class="nav nav-tabs" id="objecttab">
+                <li><a href="#service" data-toggle="tab">Service</a></li>
+			    <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
+			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+			    <li><a href="#manual_edit" data-toggle="tab">Manual edit</a></li>
+		    </ul>
+            <div class="tab-content">
+		        <div class="tab-pane" id="advanced">
+			        {# include "snippets/advanced_edit_form.html" #}
+		        </div>
+		        <div class="tab-pane" id="manual_edit">
+			        {#  include "snippets/manual_edit_form.html" #}
+		        </div>
+		            <div class="tab-pane" id="service">
+			            <div>
+			                <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
+			                <label>{{ form.service_description.label }}</label><p>{{ form.service_description }}</p>
+                            <label>{{ form.servicegroups.label }}</label><p>{{ form.servicegroups }}</p>
+                            <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
+                        </div>
 			 
 			 
-			 <!-- Display All Hostgroups if this is that kind of an object -->
-				{% if effective_hostgroups %}
-					<div class="effective_hostgroups">
-					<fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
-					  <legend>Hostgroups</legend>
-						{% for group in effective_hostgroups %}
-						  <p>
-						    <label><a href="id={{ group.id }}">{{group.hostgroup_name}}</a></label>
-						  </p>
-						{% endfor %}
-					</fieldset>
-					</div>
-				{% endif %} 
-		</div>
+                        <!-- Display All Hostgroups if this is that kind of an object -->
+                        {% if effective_hostgroups %}
+                        <div class="tab-pane" class="effective_hostgroups">
+                            <fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
+                                <legend>Hostgroups</legend>
+                                {% for group in effective_hostgroups %}
+                                <p>
+                                    <label><a href="id={{ group.id }}">{{group.hostgroup_name}}</a></label>
+                                </p>
+                                {% endfor %}
+					        </fieldset>
+					    </div>
+                        {% endif %}
+		            </div>
 		
-		<div id="monitoring">
-			{% include "snippets/monitoring_settings.html" %}
-		</div>
+                    <div class="tab-pane" id="monitoring">
+			            {#  include "snippets/monitoring_settings.html" #}
+                    </div>
 
 		
-		<div id="notifications">
-			{% include "snippets/notification_settings.html" %}
-		</div>
-
-	</div>
-		<INPUT type="submit" value="Save">	  	
-
-</form>		
-
+                    <div class="tab-pane" id="notifications">
+                        {# include "snippets/notification_settings.html" #}
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
 	
 {% else %}
 	<p>Object not found </p>
