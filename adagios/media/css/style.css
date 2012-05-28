@@ -35,7 +35,11 @@ body {
   font-weight: bold;
 }
 
-
+.breadcrumb {
+    border: 0;
+    margin: 0;
+    padding: 0 14px;
+}
 .block {
   background: #fff;
   width: 100%;

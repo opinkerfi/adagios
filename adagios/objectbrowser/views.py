@@ -175,7 +175,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     except: pass
     try: c['effective_members'] = o.get_effective_members()
     except: pass
-    return render_to_response('view_object.html', c)
+    return render_to_response('view_object.html', c, context_instance = RequestContext(request))
 
 def _view_contactgroup( request, c):
     ''' This is a helper function to view_object '''
@@ -206,7 +206,7 @@ def _view_service( request, c):
     try: c['object_macros'] = service.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
 
-    return render_to_response('view_service.html', c)
+    return render_to_response('view_service.html', c, context_instance = RequestContext(request))
 def _view_host( request, c):
     ''' This is a helper function to view_object '''
     host = c['my_object']
