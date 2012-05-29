@@ -41,20 +41,6 @@ except:
 def home(request):
     return redirect('adagios')
 
-
-## DEPRECATED for list_objects
-def list_object(request, object_type):
-    c = {}
-    return render_to_response('hosts.html', c)
-
-## Deprecated for list_objects
-def list_contacts(request):
-    c = {}
-    c['contacts'] = Contact.objects.all
-    
-    return render_to_response('configurator/list_contacts.html', c)
-
-
 def list_objects( request, object_type=None, display_these_objects=None ):
     """ Finds Pynag objects and returns them in a pretty list. search filter can be applied via querystring
     
@@ -181,12 +167,12 @@ def _view_contactgroup( request, c):
     ''' This is a helper function to view_object '''
     try: c['effective_members'] = c['my_object'].get_effective_members()
     except: pass
-    return render_to_response('view_contactgroup.html', c)
+    return render_to_response('view_contactgroup.html', c, context_instance = RequestContext(request))
 def _view_contact( request, c):
     ''' This is a helper function to view_object '''
     try: c['effective_contactgroups'] = c['my_object'].get_effective_contactgroups()
     except: pass
-    return render_to_response('view_contact.html', c)
+    return render_to_response('view_contact.html', c, context_instance = RequestContext(request))
 
 def _view_service( request, c):
     ''' This is a helper function to view_object '''
@@ -230,7 +216,7 @@ def _view_host( request, c):
     try: c['object_macros'] = host.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
     
-    return render_to_response('view_host.html', c)
+    return render_to_response('view_host.html', c, context_instance = RequestContext(request))
 
 def confighealth( request  ):
     c = {}
@@ -278,7 +264,7 @@ def confighealth( request  ):
         objects =  s[request.GET['show']]
         return list_objects(request,display_these_objects=objects )
     else:
-        return render_to_response('suggestions.html', c)
+        return render_to_response('suggestions.html', c, context_instance = RequestContext(request))
 
 def show_plugins(request):
     ''' Finds all command_line arguments, and shows missing plugins '''
@@ -304,7 +290,7 @@ def show_plugins(request):
             missing_plugins.append( (check_command, command_name) )
     c['missing_plugins'] = missing_plugins
     c['existing_plugins'] = existing_plugins
-    return render_to_response('show_plugins.html', c)
+    return render_to_response('show_plugins.html', c, context_instance = RequestContext(request))
 
 def view_parents(request):
     c = {}
@@ -321,12 +307,12 @@ def view_parents(request):
     c['parents'] = []
     for i in parents.keys():
         c['parents'].append( parents[i] )
-    return render_to_response('parents.html', c)
+    return render_to_response('parents.html', c, context_instance = RequestContext(request))
 def view_nagioscfg(request):
     c = {}
     c['filename'] = Model.config.cfg_file
     c['content'] = Model.config.maincfg_values
     c['content'].sort()
-    return render_to_response('view_configfile.html', c)
+    return render_to_response('view_configfile.html', c, context_instance = RequestContext(request))
     
  

@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     (r'/plugins/?$', 'objectbrowser.views.show_plugins'),
     (r'/nagios.cfg/?$', 'objectbrowser.views.view_nagioscfg'),
     #(r'^$', 'objectbrowser.views.list_object', { 'object_type':"None" } ),
-    (r'^/(contact|host|service|timeperiod|command|contactgroup|hostgroup|servicegroup)', 'objectbrowser.views.list_object'),
+    #(r'^/(contact|host|service|timeperiod|command|contactgroup|hostgroup|servicegroup)', 'objectbrowser.views.list_object'),
     
     # 
     #(r'/(?P<object_type>.+)/?$', 'objectbrowser.views.list_objects'),

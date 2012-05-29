@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 {% block title %}{{ object_type }}{% endblock %}
 
+{% block head %}
+    <link rel="stylesheet" href="{{ MEDIA_URL }}chosen/chosen.css" />
+{% endblock %}
+
 {% block footer %}
+    <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
         $('#objecttab a:first').tab('show');
         $(document).ready(function() {
 
+            $('.multichoice').chosen();
 
 
         });
@@ -37,56 +43,63 @@
 
 
 <div class="row">
-    <div class="span12">
+    <div class="span9">
         <div class="block">
 
             <!-- wrapper for scrollable items -->
             <ul class="nav nav-tabs" id="objecttab">
-                <li><a href="#service" data-toggle="tab">Service</a></li>
+                <li><a href="#general" data-toggle="tab">General</a></li>
 			    <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
 			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 			    <li><a href="#manual_edit" data-toggle="tab">Manual edit</a></li>
 		    </ul>
             <div class="tab-content">
-		        <div class="tab-pane" id="advanced">
-			        {# include "snippets/advanced_edit_form.html" #}
-		        </div>
-		        <div class="tab-pane" id="manual_edit">
-			        {#  include "snippets/manual_edit_form.html" #}
-		        </div>
-		            <div class="tab-pane" id="service">
-			            <div>
-			                <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
-			                <label>{{ form.service_description.label }}</label><p>{{ form.service_description }}</p>
-                            <label>{{ form.servicegroups.label }}</label><p>{{ form.servicegroups }}</p>
-                            <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
-                        </div>
-			 
-			 
-                        <!-- Display All Hostgroups if this is that kind of an object -->
-                        {% if effective_hostgroups %}
-                        <div class="tab-pane" class="effective_hostgroups">
-                            <fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
-                                <legend>Hostgroups</legend>
-                                {% for group in effective_hostgroups %}
-                                <p>
-                                    <label><a href="id={{ group.id }}">{{group.hostgroup_name}}</a></label>
-                                </p>
-                                {% endfor %}
-					        </fieldset>
-					    </div>
-                        {% endif %}
-		            </div>
-		
-                    <div class="tab-pane" id="monitoring">
-			            {#  include "snippets/monitoring_settings.html" #}
+                <form class="form-horizontal">
+                <div class="tab-pane" id="general">
+                    <div>
+                        <fieldset>
+                            <label class="control-label" for="host_name">{{ form.host_name.label }}</label>
+                            <div class="controls">
+                                {{ form.host_name }}
+                                <p class="help-block">eg web01.example.com</p>
+                            </div>
+                        </fieldset>
+                        <label>{{ form.service_description.label }}</label><p>{{ form.service_description }}</p>
+                        <label>{{ form.servicegroups.label }}</label><p>{{ form.servicegroups }}</p>
+                        <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
                     </div>
+			 
+                </form>
+                    <!-- Display All Hostgroups if this is that kind of an object -->
+                    {% if effective_hostgroups %}
+                    <div class="tab-pane" class="effective_hostgroups">
+                        <fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
+                            <legend>Hostgroups</legend>
+                            {% for group in effective_hostgroups %}
+                            <p>
+                                <label><a href="id={{ group.id }}">{{group.hostgroup_name}}</a></label>
+                            </p>
+                            {% endfor %}
+                        </fieldset>
+                    </div>
+                    {% endif %}
+                </div>
+		
+                <div class="tab-pane" id="monitoring">
+                    {#  include "snippets/monitoring_settings.html" #}
+                </div>
 
 		
-                    <div class="tab-pane" id="notifications">
-                        {# include "snippets/notification_settings.html" #}
-                    </div>
+                <div class="tab-pane" id="notifications">
+                    {# include "snippets/notification_settings.html" #}
+                </div>
+                <div class="tab-pane" id="advanced">
+                    {% include "snippets/advanced_edit_form.html" %}
+                </div>
+                <div class="tab-pane" id="manual_edit">
+                    {#  include "snippets/manual_edit_form.html" #}
+                </div>
             </div>
         </div>
     </div>
@@ -96,16 +109,6 @@
 	<p>Object not found </p>
 {% endif %}
 
-
-<script>
-// wait until document is fully scriptable
-$('#accordion').accordion({ header: "h4" });
-$('#tabs').tabs();
-//$('#tabs').tabs('add', '#cramp', "Ble");
-//$(function() {
-//
-//});
-</script>
 
 
 
