@@ -6,6 +6,7 @@ from django.utils import simplejson
 #from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
+from django.views.decorators.cache import never_cache
 
 
 import inspect
@@ -21,6 +22,7 @@ def _load(module_name):
     return my_module
 
 @csrf_exempt
+@never_cache
 def handle_request(request, module_name, attribute, format):
     m = _load(module_name)
     # TODO: Only allow function calls if method == POST
