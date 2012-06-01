@@ -7,20 +7,20 @@
 
 This page is a placeholder for various testing
 
-<table>
-	<tr>
-		<th>Error</th>
-		<th>Filename</th>
-	</tr>
-{% for i in config %}
-	<tr>
-		<td>{{ i.message }}</td>
-		<td><a href="/objectbrowser/search?filename={{ i.filename }}">{{ i.filename }}</a></td>
-		<td><b>Delete Service</b></td>
-		<td><b>Create reference</b></td>
-		<td><b>Manually edit</b></td>
-	</tr>
+<h1>Edit okconfig settings for {{ hostname }}</h1>
+	<form action="okconfig_edit" method="post">{% csrf_token %}
+	    	<INPUT id="zesubmit" type="submit" value="Save	">
+	
+{% for form in forms %}
+	<table border=1>
+		<tr><th><b>{{ form.s }}</b></th></tr>
+		<tr><td> {{ form.as_p }} </td></tr>
+		<tr><td> {{ form.command_line }} </td></tr>
+	</table> 
+	<br>
 {% endfor %}
-</table>
+{{ form.as_p }}
+$('#zesubmit').button();
+
 {% endblock %}
     
