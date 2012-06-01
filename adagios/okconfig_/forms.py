@@ -4,7 +4,7 @@ from configurator import helpers
 import re
 from django.core.exceptions import ValidationError
 import socket
-
+from pynag import Model
 
 class ScanNetworkForm(forms.Form):
     network_address = forms.CharField()
@@ -92,4 +92,18 @@ class AddTemplateForm(forms.Form):
                 self._errors['template_name'] = self.error_class(err)
         return result
 
+class EditTemplateForm(forms.Form):
+    register = forms.BooleanField()
+    service_description = forms.CharField()
+    def __init__(self, service=Model.Service(), *args, **kwargs):
+        self.service = service
+        super(forms.Form,self).__init__(*args, **kwargs)
         
+        # Run through all the all attributes. Add
+        # to form everything that starts with "_"
+        self.description = service['service_description']
+        self.command_line = service.get_effective_command_line()
+        for k in service.keys():
+            if k.startswith('_'):
+                fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
+                self.fields[fieldname] = forms.CharField(initial=service[k], label=k)
