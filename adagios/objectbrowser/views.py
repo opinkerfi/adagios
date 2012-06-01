@@ -25,7 +25,7 @@ from django.core.context_processors import csrf
 import sys
 from os.path import dirname
 
-from pynag.Model import *
+from pynag.Model import ObjectDefinition
 from pynag import Model
 from pynag.Model import EventHandlers
 from forms import *
@@ -191,7 +191,6 @@ def _view_service( request, c):
     
     try: c['object_macros'] = service.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
-
     return render_to_response('view_service.html', c, context_instance = RequestContext(request))
 def _view_host( request, c):
     ''' This is a helper function to view_object '''

@@ -54,10 +54,9 @@
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 			    <li><a href="#manual_edit" data-toggle="tab">Manual edit</a></li>
 		    </ul>
-            <div class="tab-content">
-                <form class="form-horizontal">
-                <div class="tab-pane" id="general">
-                    <div>
+            <form class="form-horizontal">
+                <div class="tab-content">
+                    <div class="tab-pane" id="general">
                         <fieldset>
                             <label class="control-label" for="host_name">{{ form.host_name.label }}</label>
                             <div class="controls">
@@ -70,10 +69,9 @@
                         <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
                     </div>
 			 
-                </form>
                     <!-- Display All Hostgroups if this is that kind of an object -->
                     {% if effective_hostgroups %}
-                    <div class="tab-pane" class="effective_hostgroups">
+             <!--       <div class="tab-pane" class="effective_hostgroups">
                         <fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
                             <legend>Hostgroups</legend>
                             {% for group in effective_hostgroups %}
@@ -82,25 +80,26 @@
                             </p>
                             {% endfor %}
                         </fieldset>
-                    </div>
+                    </div>  -->
                     {% endif %}
-                </div>
-		
-                <div class="tab-pane" id="monitoring">
-                    {#  include "snippets/monitoring_settings.html" #}
-                </div>
 
 		
-                <div class="tab-pane" id="notifications">
-                    {# include "snippets/notification_settings.html" #}
-                </div>
-                <div class="tab-pane" id="advanced">
-                    {% include "snippets/advanced_edit_form.html" %}
-                </div>
-                <div class="tab-pane" id="manual_edit">
+                    <div class="tab-pane" id="monitoring">
+                        {#  include "snippets/monitoring_settings.html" #}
+                    </div>
+
+		
+                    <div class="tab-pane" id="notifications">
+                        {# include "snippets/notification_settings.html" #}
+                    </div>
+                    <div class="tab-pane" id="advanced">
+                    {# include "snippets/advanced_edit_form.html" #}
+                    </div>
+                    <div class="tab-pane" id="manual_edit">
                     {#  include "snippets/manual_edit_form.html" #}
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>

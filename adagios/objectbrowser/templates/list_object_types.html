@@ -70,7 +70,15 @@
                     });
 
                 }
-            );
+            ).success(function() {
+                targetDataTable.fnAddData(dtData);
+                /* targetDataTable.fnAdjustColumnSizing(); */
+                targetDataTable.fnSort( [ [1,'asc'] ] );
+                $("[rel=tooltip]").tooltip();
+            }).error(function(jqXHR, textStatus, errorThrown) {
+                targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
+                //$('#err').html(jqXHR.responseText);
+            });
         };
 
         $(document).ready(function() {
@@ -80,6 +88,8 @@
                 "sSortDesc": "header headerSortUp",
                 "sSortable": "header"
             } );
+
+            $('#objecttabs a:first').tab('show');
 
 
             /* Create the COMMAND object datatable */
@@ -181,7 +191,7 @@
             ]);
 
             /* Create the CONTACT objec datatable */
-            var servicetable = $('#servicetable').dataTable( {
+            var servicetable = $('table#servicetable').dataTable( {
                 "aoColumns": [
                     { "sTitle": '', "sWidth": '32px'},
                     { "sTitle": "Name", },

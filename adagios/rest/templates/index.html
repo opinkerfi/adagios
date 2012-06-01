@@ -1,38 +1,61 @@
-<html>
-<body>
-<pre>
-This is a very basic rest interface on top of the {{ module_name }} module.
+{% extends "base.html" %}
+{% block title %}REST Interface{% endblock %}
 
-GET = get variable contents
-POST = call a function (with named parameters in querystring)
 
-The following GET operations are supported:
-<table border=1>
-{% for i in gets %}
-	<tr>
-		<td> {{ i }} </td>
-		<td><a href="txt/{{ i }}">txt</a></td>
-		<td><a href="json/{{ i }}">json</a></td>
-		<td><a href="xml/{{ i }}">xml</a></td>
-	</tr>
-{% endfor %}
-</table>
+{% block content %}
+    <div class="row">
+        <div class="span12">
+            <div class="block">
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                    </li>
+                    <li>
+                        <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
+                    </li>
+                </ul>
+                <h2>
+                    <i class="icon-th-large"></i> <small>Service</small> {{ my_object.host_name }}
+                </h2>
+            </div>
+        </div>
+    </div>
 
-The following POST operations are supported:
-<table border=1>
-{% for i in puts %}
-	<tr>
-		<td><a href="help/{{ i }}">{{ i }}</a></td>
-		<td><a href="txt/{{ i }}">txt</a></td>
-		<td><a href="json/{{ i }}">json</a></td>
-		<td><a href="xml/{{ i }}">xml</a></td>
-	</tr>
-{% endfor %}
-</table>
 
-The following is the documentation for the module you requested:
------------------
-{{ module_documenation }}
------------------
-</pre>
-</body></html>
+
+    <div class="row">
+        <div class="span9">
+            <div class="block">
+
+                <table border=1>
+                    {% for i in gets %}
+	                <tr>
+		                <td> {{ i }} </td>
+                        <td><a href="txt/{{ i }}">txt</a></td>
+                        <td><a href="json/{{ i }}">json</a></td>
+                        <td><a href="xml/{{ i }}">xml</a></td>
+	                </tr>
+                    {% endfor %}
+                </table>
+
+                The following POST operations are supported:
+                <table border=1>
+                    {% for i in puts %}
+	                <tr>
+		                <td><a href="help/{{ i }}">{{ i }}</a></td>
+		                <td><a href="txt/{{ i }}">txt</a></td>
+		                <td><a href="json/{{ i }}">json</a></td>
+		                <td><a href="xml/{{ i }}">xml</a></td>
+	                </tr>
+                    {% endfor %}
+                </table>
+                The following is the documentation for the module you requested:
+                -----------------
+                {{ module_documenation }}
+                -----------------
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
