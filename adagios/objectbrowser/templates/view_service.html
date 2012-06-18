@@ -34,7 +34,7 @@
                 </li>
             </ul>
             <h2>
-                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.host_name }}
+                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.name }}
             </h2>
         </div>
     </div>
@@ -64,7 +64,13 @@
                                 <p class="help-block">eg web01.example.com</p>
                             </div>
                         </fieldset>
-                        <label>{{ form.service_description.label }}</label><p>{{ form.service_description }}</p>
+                        <fieldset>
+                            <label class="control-label" for="service_description">{{ form.service_description.label }}</label>
+                            <div class="controls">
+                                {{ form.service_description }}
+                                <p class=="help-block">eg. Running Services</p>
+                            </div>
+                        </fieldset>
                         <label>{{ form.servicegroups.label }}</label><p>{{ form.servicegroups }}</p>
                         <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
                     </div>
@@ -102,6 +108,24 @@
             </form>
         </div>
     </div>
+    <div class="span3">
+        <div class="block">
+            <h5>Actions</h5>
+            <ul class="nav nav-list">
+              <li><a href="#cfgedit"><i class="icon-pencil"></i> Config Edit</a></li>
+              <li><a href="#nag"><i class="icon-fire"></i> Open in Nagios</a></li>
+              <li><a href="#nag"><i class="icon-picture"></i> View Graphs</a></li>
+            </ul>
+
+
+            <h5>Diagnostics</h5>
+            <ul class="nav nav-list">
+              <li><a href="#cfgedit"><i class="icon-play"></i> Run Check Plugin</a></li>
+              <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
+            </ul>
+        </div>
+    </div>
+
 </div>
 	
 {% else %}
