@@ -125,6 +125,44 @@ def verify_okconfig(request):
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
 
+def edit(request, host_name):
+    ''' Edit all the Service "__MACROS" for a given host '''
+    from pynag import Model
+
+    c = { }
+    c.update(csrf(request))
+    c['hostname'] = host_name
+    
+    # Get all services of that host that contain a service_description
+    services = Model.Service.objects.filter(host_name=host_name,service_description__contains='')
+    
+    # All the form fields have an id of HOST::SERVICE::ATTRIBUTE so we have to split it
+    if request.method == 'POST':
+        for k,v in request.POST.items():
+            if k.count('::') < 2: continue
+
+            host_name,service_description,attribute = k.split('::',2)
+            if attribute.startswith("$ARG"): continue
+            attribute = attribute.replace('$_SERVICE', "_")
+            attribute = attribute.replace('$', "")
+            if attribute == 'register':
+                print k, v
+            for i in services:
+                if i['service_description'] == service_description:
+                    if i[attribute] != v:
+                        i[attribute] = v
+                        i.save()
+    myforms =[]       
+    for service in services:
+        print "service: %s\t %s" % (service.service_description, service.get_filename()) 
+        initial = {}
+        initial['service_description'] = service['service_description']
+        initial['register'] = service['register'] == "1"
+        form = forms.EditTemplateForm(service=service,initial=initial)
+        myforms.append( form )
+    c['forms'] = myforms
+    return render_to_response('edittemplate.html', c)
+ 
 def scan_network(request):
     c = {}
     c['errors'] = []

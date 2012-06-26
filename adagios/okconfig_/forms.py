@@ -92,4 +92,31 @@ class AddTemplateForm(forms.Form):
                 self._errors['template_name'] = self.error_class(err)
         return result
 
+class EditTemplateForm(forms.Form):
+#    register = forms.BooleanField()
+#    service_description = forms.CharField()
+    def __init__(self, service=Model.Service(), *args, **kwargs):
+        self.service = service
+        super(forms.Form,self).__init__(*args, **kwargs)
         
+        # Run through all the all attributes. Add
+        # to form everything that starts with "_"
+        self.description = service['service_description']
+        self.command_line = service.get_effective_command_line()
+        macros = []
+        #print service.get_all_macros()
+        for macro,value in service.get_all_macros().items() :
+            #print "MACRO: %s - %s" % (macro, value)
+            if macro.startswith('$_SERVICE') or macro.startswith('S$ARG'):
+                macros.append(macro)
+        fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'register')
+        self.fields[fieldname] = forms.BooleanField(initial=service['register'], label='register')
+        fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'service_description')
+        self.fields[fieldname] = forms.CharField(initial=service['service_description'], label='service_description')
+        for k in sorted( macros ):
+            fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
+            label = k.replace('$_SERVICE','')
+            label = label.replace('_', '')
+            label = label.replace('$', '')
+            label = label.capitalize()
+            self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)

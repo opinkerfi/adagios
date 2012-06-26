@@ -28,6 +28,9 @@ True
 
 
 def test(request):
-        c = {}
+        c = { }
+        from pynag import Model
+        s = Model.Service.objects.all
+        c['config'] = Model.config.errors
         return render_to_response('test.html', c)
 
