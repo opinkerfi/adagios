@@ -85,6 +85,16 @@ def change_attribute(id, attribute_name, new_value):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
+def run_check_command(object_id):
+    ''' Runs the check_command for one specified object
+    
+    Arguments:
+        object_id         -- object_id of the definition (i.e. host or service)
+    Returns:
+        [return_code,stdout,stderr]
+    '''
+    o = Model.ObjectDefinition.objects.get_by_id(object_id)
+    return o.run_check_command()
 
 def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None', append=False):
 	""" Sets specific configuration values of nagios.cfg

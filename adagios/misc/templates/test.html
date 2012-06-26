@@ -8,7 +8,6 @@
 This page is a placeholder for various testing
 
 
-
 <form>
   <link rel="stylesheet" href="/static/chosen/chosen.css" />
     <h2>Standard Select</h2>
@@ -31,5 +30,20 @@ This page is a placeholder for various testing
 {{ form.as_p }}
 
 
+<table>
+	<tr>
+		<th>Error</th>
+		<th>Filename</th>
+	</tr>
+{% for i in config %}
+	<tr>
+		<td>{{ i.message }}</td>
+		<td><a href="/objectbrowser/search?filename={{ i.filename }}">{{ i.filename }}</a></td>
+		<td><b>Delete Service</b></td>
+		<td><b>Create reference</b></td>
+		<td><b>Manually edit</b></td>
+	</tr>
+{% endfor %}
+</table>
 {% endblock %}
     
