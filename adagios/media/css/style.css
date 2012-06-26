@@ -27,14 +27,8 @@ body {
     font-size: 12px;
 }
 
-
-.chzn-container-multi .chzn-choices {
-    border: 0;
-}
-
-.chzn-container-multi .chzn-choices .search-inherited {
-  background-color: #f03030;
-  background-image: -moz-linear-gradient(center bottom , #ffafaf 0%, #f03030 93%);
+.inherited input {
+    background: #feeebd;
 }
 
 .content {

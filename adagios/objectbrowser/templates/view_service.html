@@ -51,14 +51,14 @@
 			    <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
 			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
-			    <li><a href="#manual_edit" data-toggle="tab">Manual edit</a></li>
 		    </ul>
-            <form class="form-horizontal">
+            <form class="form-horizontal" action="#" method="POST">
+            {% csrf_token %}
                 <div class="tab-content">
                     <div class="tab-pane" id="general">
                         <fieldset>
                             <label class="control-label" for="host_name">{{ form.host_name.label }}</label>
-                            <div class="controls">
+                            <div class="controls inherited">
                                 {{ form.host_name }} <i class="glyph-more-windows"></i> Inherited
                                 <p class="help-block">eg web01.example.com</p>
                             </div>
@@ -74,16 +74,22 @@
                             <label class="control-label" for="servicegroups">{{ form.servicegroups.label }}</label>
                             <div class="controls">
                                 {{ form.servicegroups }}
+                                <p class="help-block">Groups for organizing services</p>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <label class="control-label" for="use">{{ form.use.label }}</label>
+                            <div class="controls">
+                                {{ form.use }}
+                                <p class="help-block">Other service definitions to include in this one</p>
                             </div>
                         </fieldset>
 
-
-                        <div class="chzn-container chzn-container-multi">
-                            <ul class="chzn-choices">
-                                <li class="search-choice search-inherited"><span>arf</span></li>
-                            </ul>
+                        <div class="form-actions">
+                                              <button class="btn btn-primary" type="submit">Save changes</button>
+                                              <button class="btn">Cancel</button>
                         </div>
-                        <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
+
                     </div>
 			 
                     <!-- Display All Hostgroups if this is that kind of an object -->
@@ -111,9 +117,6 @@
                     </div>
                     <div class="tab-pane" id="advanced">
                     {# include "snippets/advanced_edit_form.html" #}
-                    </div>
-                    <div class="tab-pane" id="manual_edit">
-                    {#  include "snippets/manual_edit_form.html" #}
                     </div>
                 </div>
             </form>
