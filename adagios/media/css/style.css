@@ -3,6 +3,7 @@
 @import url(bootstrap-responsive.css);
 @import url(glyph-free.css);
 @import url(jquery.dataTables.css);
+@import url(../chosen/chosen.css);
 
 
 /* Modifications to paths in jquery DataTables */
@@ -26,6 +27,15 @@ body {
     font-size: 12px;
 }
 
+
+.chzn-container-multi .chzn-choices {
+    border: 0;
+}
+
+.chzn-container-multi .chzn-choices .search-inherited {
+  background-color: #f03030;
+  background-image: -moz-linear-gradient(center bottom , #ffafaf 0%, #f03030 93%);
+}
 
 .content {
   //background: #fff;

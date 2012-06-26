@@ -2,7 +2,6 @@
 {% block title %}{{ object_type }}{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ MEDIA_URL }}chosen/chosen.css" />
 {% endblock %}
 
 {% block footer %}
@@ -34,7 +33,7 @@
                 </li>
             </ul>
             <h2>
-                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.name }}
+                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.shortname }}
             </h2>
         </div>
     </div>
@@ -60,7 +59,7 @@
                         <fieldset>
                             <label class="control-label" for="host_name">{{ form.host_name.label }}</label>
                             <div class="controls">
-                                {{ form.host_name }}
+                                {{ form.host_name }} <i class="glyph-more-windows"></i> Inherited
                                 <p class="help-block">eg web01.example.com</p>
                             </div>
                         </fieldset>
@@ -68,10 +67,22 @@
                             <label class="control-label" for="service_description">{{ form.service_description.label }}</label>
                             <div class="controls">
                                 {{ form.service_description }}
-                                <p class=="help-block">eg. Running Services</p>
+                                <p class="help-block">eg. Running Services</p>
                             </div>
                         </fieldset>
-                        <label>{{ form.servicegroups.label }}</label><p>{{ form.servicegroups }}</p>
+                        <fieldset>
+                            <label class="control-label" for="servicegroups">{{ form.servicegroups.label }}</label>
+                            <div class="controls">
+                                {{ form.servicegroups }}
+                            </div>
+                        </fieldset>
+
+
+                        <div class="chzn-container chzn-container-multi">
+                            <ul class="chzn-choices">
+                                <li class="search-choice search-inherited"><span>arf</span></li>
+                            </ul>
+                        </div>
                         <label>{{ form.use.label }}</label><p>{{ form.use }}</p>
                     </div>
 			 
@@ -114,7 +125,7 @@
             <ul class="nav nav-list">
               <li><a href="#cfgedit"><i class="icon-pencil"></i> Config Edit</a></li>
               <li><a href="#nag"><i class="icon-fire"></i> Open in Nagios</a></li>
-              <li><a href="#nag"><i class="icon-picture"></i> View Graphs</a></li>
+              <li><a href="#nag"><i class="glyph-charts"></i> View Graphs</a></li>
             </ul>
 
 
