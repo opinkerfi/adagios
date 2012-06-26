@@ -93,8 +93,6 @@ class AddTemplateForm(forms.Form):
         return result
 
 class EditTemplateForm(forms.Form):
-    register = forms.BooleanField()
-    service_description = forms.CharField()
 #    register = forms.BooleanField()
 #    service_description = forms.CharField()
     def __init__(self, service=Model.Service(), *args, **kwargs):
