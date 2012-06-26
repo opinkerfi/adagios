@@ -17,7 +17,7 @@
 from django import forms
 #from django.forms import *
 from pynag import Model
-from adagios.objectbrowser.all_attributes import object_definitions
+from pynag.Model.all_attributes import object_definitions
 from django.utils.encoding import smart_str
 
 
