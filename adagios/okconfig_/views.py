@@ -140,8 +140,13 @@ def edit(request, host_name):
     if request.method == 'POST':
         for k,v in request.POST.items():
             if k.count('::') < 2: continue
-            print "Posting"
+
             host_name,service_description,attribute = k.split('::',2)
+            if attribute.startswith("$ARG"): continue
+            attribute = attribute.replace('$_SERVICE', "_")
+            attribute = attribute.replace('$', "")
+            if attribute == 'register':
+                print k, v
             for i in services:
                 if i['service_description'] == service_description:
                     if i[attribute] != v:
@@ -149,6 +154,7 @@ def edit(request, host_name):
                         i.save()
     myforms =[]       
     for service in services:
+        print "service: %s\t %s" % (service.service_description, service.get_filename()) 
         initial = {}
         initial['service_description'] = service['service_description']
         initial['register'] = service['register'] == "1"
