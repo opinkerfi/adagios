@@ -13,7 +13,7 @@ def gitlog(nagiosdir):
 
     result = []
     for logline in gitstring.splitlines():
-        author, authoremail, authortime, comment = logline.split(":")
+        author, authoremail, authortime, comment = logline.split(":", 3)
         result.append( {
             "author": author,
             "authoremail": authoremail,
