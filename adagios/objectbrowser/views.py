@@ -250,8 +250,11 @@ def confighealth( request  ):
     for i in Host.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 hosts_without_contacts.append(i)
-            if i.get_effective_services() == []:
-                hosts_without_services.append(i)
+            try:
+                if i.get_effective_services() == []:
+                    hosts_without_services.append(i)
+            except:
+                pass
     for i in Service.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 services_without_contacts.append(i)
@@ -261,8 +264,10 @@ def confighealth( request  ):
                 services_without_icon_image.append(i)
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
+    c['errors'] = Model.config.errors
     import okconfig
     c['booleans']['OKConfig is installed and working'] = okconfig.is_valid()
+    s['Parser errors'] = Model.config.errors
     s['Services with no "service_description"'] = services_no_description            
     s['Hosts without any contacts'] = hosts_without_contacts
     s['Services without any contacts'] = services_without_contacts
