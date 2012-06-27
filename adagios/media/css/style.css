@@ -27,8 +27,18 @@ body {
     font-size: 12px;
 }
 
+[rel=tooltip] {
+    text-decoration: underline;
+}
+.form-horizontal .controls {
+    padding-bottom: 18px;
+}
 .inherited input {
     background: #feeebd;
+}
+
+#id_geek_edit textarea {
+    width: 520px;
 }
 
 .content {
