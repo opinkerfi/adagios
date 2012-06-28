@@ -91,7 +91,13 @@ class AddTemplateForm(forms.Form):
                 err = "Template %s not found. Use force to overwrite" % (template_name)
                 self._errors['template_name'] = self.error_class(err)
         return result
-
+class InstallAgentForm(forms.Form):
+    remote_host = forms.CharField()
+    username = forms.CharField(initial='root')
+    password = forms.CharField(required=False)
+    windows_domain = forms.CharField(required=False)
+    install_method = forms.ChoiceField( initial='ssh', choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
+    
 class EditTemplateForm(forms.Form):
 #    register = forms.BooleanField()
 #    service_description = forms.CharField()

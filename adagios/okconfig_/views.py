@@ -124,7 +124,32 @@ def verify_okconfig(request):
             c['errors'].append('There seems to be a problem with your okconfig installation')
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
-
+def install_agent(request):
+    ''' Installs an okagent on a remote host '''
+    c = {}
+    c['errors'] = []
+    c['messages'] = []
+    c['form'] = forms.InstallAgentForm(initial=request.GET )
+    if request.method == 'POST':
+        c['form'] = f = forms.InstallAgentForm(request.POST)
+        if f.is_valid():
+            f.clean()
+            host = f.cleaned_data['remote_host']
+            user = f.cleaned_data['username']
+            passw = f.cleaned_data['password']
+            method = f.cleaned_data['install_method']
+            domain = f.cleaned_data['windows_domain']
+            try:
+                status,out,err = okconfig.install_okagent(remote_host=host, domain=domain, username=user, password=passw, install_method=method)
+                print "STATUS: ",status,out,err
+                c['exit_status'] =  status 
+                c['stdout'] =  out 
+                c['stderr']=  err
+            except Exception,e:
+                c['errors'].append( e )
+        else:
+            c['errors'].append('invalid input')
+    return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
 def edit(request, host_name):
     ''' Edit all the Service "__MACROS" for a given host '''
     from pynag import Model
