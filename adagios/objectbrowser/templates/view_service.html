@@ -65,16 +65,6 @@
                     <div class="tab-pane" id="general">
                         <fieldset>
 
-                            <label class="control-label" for="name" rel="tooltip" title="Name" data-content="Specifies name for this service which enabled it to be included with Inherits from (use)">{{ form.name.label }}</label>
-                            <div class="controls">
-                                {{ form.name }}
-                            </div>
-
-                            <label class="control-label" for="use" rel="tooltip" title="Inherits from" data-content="Specifies from which services this service inherits from">Inherits from</label>
-                            <div class="controls">
-                                {{ form.use }}
-                            </div>
-
                             <label class="control-label" for="host_name" rel="tooltip" title="{{ form.host_name.label }}" data-content="eg web01.example.com">{{ form.host_name.label }}</label>
                             <div class="controls"> <!-- class inherited -->
                                 {{ form.host_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
@@ -88,6 +78,16 @@
                             <label class="control-label" for="servicegroups" rel="tooltip" title="{{ form.servicegroups.label }}" data-content="Groups for organizing services">{{ form.servicegroups.label }}</label>
                             <div class="controls">
                                 {{ form.servicegroups }}
+                            </div>
+
+                            <label class="control-label" for="name" rel="tooltip" title="Name" data-content="Specifies name for this service which enables it to be included with Inherits from (use)">{{ form.name.label }}</label>
+                            <div class="controls">
+                                {{ form.name }}
+                            </div>
+
+                            <label class="control-label" for="use" rel="tooltip" title="Inherits from" data-content="Specifies from which services this service inherits from">Inherits from</label>
+                            <div class="controls">
+                                {{ form.use }}
                             </div>
 
                         </fieldset>
@@ -234,7 +234,7 @@
             <div class="modal-body">
                 <p>
                     <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
-                        {{ manual_edit }}
+                        {{ geek_edit }}
                     </fieldset>
                     <strong>Filename:</strong> {{ my_object.filename }}
                 </p>
@@ -245,10 +245,6 @@
             </div>
         </form>
    </div>
-   <script>
-   $('#manual_submit').button();
-   </script>
-
 </div>
 	
 {% else %}

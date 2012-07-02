@@ -1,43 +1,12 @@
+# These are gathered from Nagios Object Definition documentation (Version 3.2.3)
+
 object_definitions = {}
-object_definitions["host"] = {
-	"host_name": {
-		"name":"host_name",
-		"required":"required",
-		"value":"host_name",
-		"tip": "eg web01.example.com",
-		"type": "string", 
-	},
-	"alias": { 
-		"name":"alias", 
-		"required":"required", 
-		"value":"alias",
-		"tip": "Textual description of host", 
-		"type": "string"
-	},
-	
-	"display_name": {
-		"name":"display_name", 
-		"required":"optional", 
-		"value":"display_name",
-		"tip": "Alternate hostname displayed in nagios",
-		"type": "string",
-	},
-	"address": {
-		"name":"address", 
-		"required":"required", 
-		"value":"address",
-		"tip": "Usually IP address but can also be hostname",
-		"type": [ "hostname", "ip" ],
-	},
-	"parents": { 
-		"name":"parents", 
-		"required":"optional", 
-		"value":"host_names",
-		"tip": "Logical device your host is connected to",
-		"type": "ext",
-		"exttype": [ "host", "host_name" ],
-	},
-}
+object_definitions["host"] = {}
+object_definitions["host"]["host_name"] = { "name":"host_name", "required":"required", "value":"host_name" }
+object_definitions["host"]["alias"] = { "name":"alias", "required":"required", "value":"alias" }
+object_definitions["host"]["display_name"] = { "name":"display_name", "required":"optional", "value":"display_name" }
+object_definitions["host"]["address"] = { "name":"address", "required":"required", "value":"address" }
+object_definitions["host"]["parents"] = { "name":"parents", "required":"optional", "value":"host_names" }
 object_definitions["host"]["hostgroups"] = { "name":"hostgroups", "required":"optional", "value":"hostgroup_names" }
 object_definitions["host"]["check_command"] = { "name":"check_command", "required":"optional", "value":"command_name" }
 object_definitions["host"]["initial_state"] = { "name":"initial_state", "required":"optional", "value":"[o,d,u]" }
@@ -224,3 +193,18 @@ object_definitions["serviceextinfo"]["notes_url"] = { "name":"notes_url", "requi
 object_definitions["serviceextinfo"]["action_url"] = { "name":"action_url", "required":"optional", "value":"url" }
 object_definitions["serviceextinfo"]["icon_image"] = { "name":"icon_image", "required":"optional", "value":"image_file" }
 object_definitions["serviceextinfo"]["icon_image_alt"] = { "name":"icon_image_alt", "required":"optional", "value":"alt_string" }
+
+# Missing from documentation, manually added
+object_definitions["host"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["hostgroup"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["service"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["servicegroup"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["contact"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["contactgroup"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["timeperiod"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["command"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["servicedependency"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["serviceescalation"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["hostdependency"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["hostextinfo"]["use"] = { "name":"use", "required":"optional", "value":"name" }
+object_definitions["serviceextinfo"]["use"] = { "name":"use", "required":"optional", "value":"name" }

@@ -17,7 +17,8 @@
 from django import forms
 #from django.forms import *
 from pynag import Model
-from adagios.objectbrowser.all_attributes import object_definitions
+#from adagios.objectbrowser.all_attributes import object_definitions
+from pynag.Model.all_attributes import object_definitions
 from django.utils.encoding import smart_str
 
 
@@ -157,11 +158,11 @@ class PynagForm(forms.Form):
         return field
                 
         
-class ManualEditObjectForm(forms.Form):
+class GeekEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
     def __init__(self,pynag_object=None, *args,**kwargs):
         self.pynag_object = pynag_object
-        super(ManualEditObjectForm, self).__init__(*args,**kwargs)
+        super(GeekEditObjectForm, self).__init__(*args,**kwargs)
     def clean_definition(self, value=None):
         definition = self.cleaned_data['definition']
         definition = definition.replace('\r\n', '\n')

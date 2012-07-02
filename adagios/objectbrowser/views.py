@@ -117,9 +117,9 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     if request.method == 'POST':
         if request.POST.has_key('definition'):
             'Manual edit of the form'
-            manual_edit = ManualEditObjectForm(data=request.POST, pynag_object=o)
-            if manual_edit.is_valid():
-                manual_edit.save()
+            geek_edit = GeekEditObjectForm(data=request.POST, pynag_object=o)
+            if geek_edit.is_valid():
+                geek_edit.save()
                 m.append("Object Saved manually to '%s'" % o['filename'])
             else:
                 m.append( "Failed to save object")
@@ -138,7 +138,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
 
     c['my_object'] = o
-    c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
+    c['geek_edit'] = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     if o['object_type'] == 'host':
         return _view_host(request, c)
     elif o['object_type'] == 'service':
