@@ -124,7 +124,9 @@ def verify_okconfig(request):
             c['errors'].append('There seems to be a problem with your okconfig installation')
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
+<<<<<<< HEAD
 
+=======
 def install_agent(request):
     ''' Installs an okagent on a remote host '''
     c = {}
@@ -189,6 +191,7 @@ def edit(request, host_name):
     c['forms'] = myforms
     return render_to_response('edittemplate.html', c)
  
+>>>>>>> 3a1cc64... form support for installing agent remotely
 def scan_network(request):
     c = {}
     c['errors'] = []

@@ -91,7 +91,10 @@ class AddTemplateForm(forms.Form):
                 err = "Template %s not found. Use force to overwrite" % (template_name)
                 self._errors['template_name'] = self.error_class(err)
         return result
+<<<<<<< HEAD
 
+        
+=======
 class InstallAgentForm(forms.Form):
     remote_host = forms.CharField()
     username = forms.CharField(initial='root')
@@ -127,3 +130,4 @@ class EditTemplateForm(forms.Form):
             label = label.replace('$', '')
             label = label.capitalize()
             self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)
+>>>>>>> 3a1cc64... form support for installing agent remotely
