@@ -91,43 +91,5 @@ class AddTemplateForm(forms.Form):
                 err = "Template %s not found. Use force to overwrite" % (template_name)
                 self._errors['template_name'] = self.error_class(err)
         return result
-<<<<<<< HEAD
 
         
-=======
-class InstallAgentForm(forms.Form):
-    remote_host = forms.CharField()
-    username = forms.CharField(initial='root')
-    password = forms.CharField(required=False)
-    windows_domain = forms.CharField(required=False)
-    install_method = forms.ChoiceField( initial='ssh', choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
-    
-class EditTemplateForm(forms.Form):
-#    register = forms.BooleanField()
-#    service_description = forms.CharField()
-    def __init__(self, service=Model.Service(), *args, **kwargs):
-        self.service = service
-        super(forms.Form,self).__init__(*args, **kwargs)
-        
-        # Run through all the all attributes. Add
-        # to form everything that starts with "_"
-        self.description = service['service_description']
-        self.command_line = service.get_effective_command_line()
-        macros = []
-        #print service.get_all_macros()
-        for macro,value in service.get_all_macros().items() :
-            #print "MACRO: %s - %s" % (macro, value)
-            if macro.startswith('$_SERVICE') or macro.startswith('S$ARG'):
-                macros.append(macro)
-        fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'register')
-        self.fields[fieldname] = forms.BooleanField(initial=service['register'], label='register')
-        fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'service_description')
-        self.fields[fieldname] = forms.CharField(initial=service['service_description'], label='service_description')
-        for k in sorted( macros ):
-            fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
-            label = k.replace('$_SERVICE','')
-            label = label.replace('_', '')
-            label = label.replace('$', '')
-            label = label.capitalize()
-            self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)
->>>>>>> 3a1cc64... form support for installing agent remotely
