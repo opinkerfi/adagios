@@ -20,7 +20,7 @@
             $('#monitoring select').chosen();
 
 	});
-        $('#run_check_plugin').on('show', function () {
+	function run_check_command() {
 	    $.getJSON("/rest/pynag/json/run_check_command",
 		{
 			object_id: '{{my_object.id}}'
@@ -41,10 +41,18 @@
 				statusString = 'OK';
 			}
 			$('#run_check_plugin div.modal-body').html('<div class="row"><span class="span2">Status:</span><span class="span2 label ' + statusLabel + '">' + statusString + '</span></div><div class="row"><span class="span2">Plugin Output:</span><span class="span2">' + data[1] + '</span></div>');
+			$('#run_check_plugin_refresh').show();
 		}
+		
 	    );
-	
-
+	}
+	$('#run_check_plugin_refresh').click(function() {
+	    $('#run_check_plugin div.modal-body').html('Rerunning plugin');
+	    run_check_command();
+	    return false;
+	});
+        $('#run_check_plugin').on('show', function () {
+	    run_check_command();
         });
 
 	
@@ -261,6 +269,7 @@
 		Running check plugin...
         </div>
         <div class="modal-footer">
+            <button id="run_check_plugin_refresh" class="btn hide" data-dismiss="modal"><i class="icon-refresh"></i> Refresh</button>
             <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
