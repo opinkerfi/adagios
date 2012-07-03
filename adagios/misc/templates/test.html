@@ -25,20 +25,10 @@ This page is a placeholder for various testing
   <script src="/static/chosen/chosen.jquery.js" type="text/javascript"></script>
   <script type="text/javascript"> $("select.chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); </script>
   </form>
-<h1>Edit okconfig settings for {{ hostname }}</h1>
-	<form action="okconfig_edit" method="post">{% csrf_token %}
-	    	<INPUT id="zesubmit" type="submit" value="Save	">
-	
-{% for form in forms %}
-	<table border=1>
-		<tr><th><b>{{ form.s }}</b></th></tr>
-		<tr><td> {{ form.as_p }} </td></tr>
-		<tr><td> {{ form.command_line }} </td></tr>
-	</table> 
-	<br>
-{% endfor %}
+</body>
+
 {{ form.as_p }}
-$('#zesubmit').button();
+
 
 <table>
 	<tr>

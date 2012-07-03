@@ -4,7 +4,7 @@ from configurator import helpers
 import re
 from django.core.exceptions import ValidationError
 import socket
-from pynag import Model
+
 
 class ScanNetworkForm(forms.Form):
     network_address = forms.CharField()
@@ -92,7 +92,6 @@ class AddTemplateForm(forms.Form):
                 self._errors['template_name'] = self.error_class(err)
         return result
 
-<<<<<<< HEAD
 class InstallAgentForm(forms.Form):
     remote_host = forms.CharField()
     username = forms.CharField(initial='root')
@@ -103,11 +102,6 @@ class InstallAgentForm(forms.Form):
 class EditTemplateForm(forms.Form):
 #    register = forms.BooleanField()
 #    service_description = forms.CharField()
-=======
-class EditTemplateForm(forms.Form):
-    register = forms.BooleanField()
-    service_description = forms.CharField()
->>>>>>> 9585769... Feature: Edit of okconfig templates
     def __init__(self, service=Model.Service(), *args, **kwargs):
         self.service = service
         super(forms.Form,self).__init__(*args, **kwargs)
@@ -116,7 +110,6 @@ class EditTemplateForm(forms.Form):
         # to form everything that starts with "_"
         self.description = service['service_description']
         self.command_line = service.get_effective_command_line()
-<<<<<<< HEAD
         macros = []
         #print service.get_all_macros()
         for macro,value in service.get_all_macros().items() :
@@ -134,9 +127,3 @@ class EditTemplateForm(forms.Form):
             label = label.replace('$', '')
             label = label.capitalize()
             self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)
-=======
-        for k in service.keys():
-            if k.startswith('_'):
-                fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
-                self.fields[fieldname] = forms.CharField(initial=service[k], label=k)
->>>>>>> 9585769... Feature: Edit of okconfig templates
