@@ -28,13 +28,6 @@ True
 
 
 def test(request):
-<<<<<<< HEAD
         c = {}
-=======
-        c = { }
-        from pynag import Model
-        s = Model.Service.objects.all
-        c['config'] = Model.config.errors
->>>>>>> 19a099d... Feature: run_check_command() feature added to pynag helpers
         return render_to_response('test.html', c)
 
