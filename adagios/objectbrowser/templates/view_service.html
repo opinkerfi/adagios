@@ -19,9 +19,37 @@
             $('#notifications select').chosen();
             $('#monitoring select').chosen();
 
-
+	});
+        $('#run_check_plugin').on('show', function () {
+	    $.getJSON("/rest/pynag/json/run_check_command",
+		{
+			object_id: '{{my_object.id}}'
+		},
+		function(data) {
+			var statusLabel = 'label-inverse';
+			var statusString = 'Unknown';
+			if (data[0] == 2) {
+				statusLabel = 'label-important';
+				statusString = 'Critical';
+			}
+			if (data[0] == 1) {
+				statusLabel = 'label-warning';
+				statusString = 'Warning';
+			}
+			if (data[0] == 0) {
+				statusLabel = 'label-success';
+				statusString = 'OK';
+			}
+			$('#run_check_plugin div.modal-body').html('<div class="row"><span class="span2">Status:</span><span class="span2 label ' + statusLabel + '">' + statusString + '</span></div><div class="row"><span class="span2">Plugin Output:</span><span class="span2">' + data[1] + '</span></div>');
+		}
+	    );
+	
 
         });
+
+	
+
+
     </script>
 {%  endblock %}
 
@@ -220,9 +248,20 @@
 
             <h5>Diagnostics</h5>
             <ul class="nav nav-list">
-              <li><a href="#cfgedit"><i class="icon-play"></i> Run Check Plugin</a></li>
+              <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
               <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
             </ul>
+        </div>
+    </div>
+    <div class="modal hide" id="run_check_plugin">
+        <div class="modal-header">
+            <h3>Run Check Plugin</h3>
+        </div>
+        <div class="modal-body">
+		Running check plugin...
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
     <div class="modal hide" id="geek_edit">
