@@ -125,6 +125,7 @@ def verify_okconfig(request):
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
 
+<<<<<<< HEAD
 def install_agent(request):
     ''' Installs an okagent on a remote host '''
     c = {}
@@ -151,6 +152,8 @@ def install_agent(request):
         else:
             c['errors'].append('invalid input')
     return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
+=======
+>>>>>>> 9585769... Feature: Edit of okconfig templates
 def edit(request, host_name):
     ''' Edit all the Service "__MACROS" for a given host '''
     from pynag import Model
@@ -166,6 +169,7 @@ def edit(request, host_name):
     if request.method == 'POST':
         for k,v in request.POST.items():
             if k.count('::') < 2: continue
+<<<<<<< HEAD
 
             host_name,service_description,attribute = k.split('::',2)
             if attribute.startswith("$ARG"): continue
@@ -173,6 +177,10 @@ def edit(request, host_name):
             attribute = attribute.replace('$', "")
             if attribute == 'register':
                 print k, v
+=======
+            print "Posting"
+            host_name,service_description,attribute = k.split('::',2)
+>>>>>>> 9585769... Feature: Edit of okconfig templates
             for i in services:
                 if i['service_description'] == service_description:
                     if i[attribute] != v:
@@ -180,7 +188,10 @@ def edit(request, host_name):
                         i.save()
     myforms =[]       
     for service in services:
+<<<<<<< HEAD
         print "service: %s\t %s" % (service.service_description, service.get_filename()) 
+=======
+>>>>>>> 9585769... Feature: Edit of okconfig templates
         initial = {}
         initial['service_description'] = service['service_description']
         initial['register'] = service['register'] == "1"
