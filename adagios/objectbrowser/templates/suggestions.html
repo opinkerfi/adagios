@@ -35,23 +35,4 @@
 	</ul>
 {% endif %}
 
-{% if errors %}
-<!-- Display a list of config errors -->
-<h1>Parsing Errors</h1>
-<table>
-	<tr>
-		<th>Filename</th>
-		<th>Error</th>
-		<th>Actions</th>
-
-	</tr>
-{% for i in errors %}
-	<tr>
-		<td><a href="/objectbrowser/search?filename={{ i.filename }}">{{ i.filename }}</a></td>
-		<td>{{ i.message }}</td>
-		<td><a href="#">Delete Object</a> | <a href="#">Create Reference</a> | <a href="#">Manually Edit</a> |</td>
-	</tr>
-{% endfor %}
-</table>
-{% endif %}
 {% endblock %}
