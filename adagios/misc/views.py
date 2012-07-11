@@ -53,3 +53,6 @@ def contact_us( request ):
 		
 	
 
+def nagios(request):
+	c = {}
+	return render_to_response('nagios.html', c, context_instance = RequestContext(request))

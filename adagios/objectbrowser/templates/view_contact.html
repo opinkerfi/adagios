@@ -1,245 +1,292 @@
-{% extends "configurator/base.html" %}
-{% block title %}{{ object_type }}{% endblock %}
+{% extends "base.html" %}
+{% block title %}Adagios - {{ my_object.object_type }} {{ my_object.shortname }}{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block footer %}
+    <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#objecttab a:first').tab('show');
+        $(document).ready(function() {
+
+
+
+            $("[rel=tooltip]").popover();
+            $("#popover").popover();
+            $('#general select').chosen();
+            $('#notifications select').chosen();
+            $('#memberof select').chosen();
+
+	});
+	function run_check_command() {
+	    $.getJSON("/rest/pynag/json/run_check_command",
+		{
+			object_id: '{{my_object.id}}'
+		},
+		function(data) {
+			var statusLabel = 'label-inverse';
+			var statusString = 'Unknown';
+			if (data[0] == 2) {
+				statusLabel = 'label-important';
+				statusString = 'Critical';
+			}
+			if (data[0] == 1) {
+				statusLabel = 'label-warning';
+				statusString = 'Warning';
+			}
+			if (data[0] == 0) {
+				statusLabel = 'label-success';
+				statusString = 'OK';
+			}
+			$('#run_check_plugin div.modal-body').html('<div class="row"><span class="span2">Status:</span><span class="span2 label ' + statusLabel + '">' + statusString + '</span></div><div class="row"><span class="span2">Plugin Output:</span><span class="span2">' + data[1] + '</span></div>');
+			$('#run_check_plugin_refresh').show();
+		}
+		
+	    );
+	}
+	$('#run_check_plugin_refresh').click(function() {
+	    $('#run_check_plugin div.modal-body').html('Rerunning plugin');
+	    run_check_command();
+	    return false;
+	});
+        $('#run_check_plugin').on('show', function () {
+	    run_check_command();
+        });
+
+	
+
+
+    </script>
+{%  endblock %}
 
 {% block content %}
-<!--
-<h1>We are viewing a beautiful {{ my_object.object_type }}</h1>
--->
 
-
-{% if my_object %}
-	<!--
-	{{ my_object }}
-	-->
-
-
-
-
-	<!-- wrapper for scrollable items -->
-	<div id="tabs">
-
-		<ul>
-			<li><a href="#contact">General</a></li>
-			<li><a href="#contactgroups">Member of</a></li>
-			<li><a href="#notifications">Notifications</a></li>
-			<li><a href="#advanced">Advanced</a></li>
-			<li><a href="#manual_edit">Manual edit</a></li>
-			<!-- <li><a href="#misc">Misc</a></li> -->
-			<!-- <li><a href="#old_edit_form">Old Ajaxy Edit Form</a></li> -->
-		</ul>
-
-
-		<div id="advanced">
-			{% include "snippets/advanced_edit_form.html" %} 	
-		</div>
-
-		<div id="manual_edit">
-			{% include "snippets/manual_edit_form.html" %}
-		</div>
-
-
-		<form action="#" method="POST">{% csrf_token %}
-			<div id="contact">
-
-			<div class="{{ form.contact_name.field.widget.attrs.class }}">
-			<p><label> {{ form.contact_name.label }} </label>{{ form.contact_name }} {{ form.contact_name.errors}} {{ form.contact_name.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.alias.field.widget.attrs.class }}">
-			<p><label> {{ form.alias.label }} </label>{{ form.alias }} {{ form.alias.errors}} {{ form.alias.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.use.field.widget.attrs.class }}">
-			<p><label> {{ form.use.label }} </label>{{ form.use }} {{ form.use.errors}} {{ form.use.help_text }} </p>
-			</div>
-			
-						
-			<div class="{{ form.email.field.widget.attrs.class }}">
-			<p><label> {{ form.email.label }} </label>{{ form.email }} {{ form.email.errors}} {{ form.email.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.pager.field.widget.attrs.class }}">
-			<p><label> {{ form.pager.label }} </label>{{ form.pager }} {{ form.pager.errors}} {{ form.pager.help_text }} </p>
-			</div>
-
-		</div>
-		<div id="contactgroups">
-			<div class="{{ form.contactgroups.field.widget.attrs.class }}">
-			<p><label> {{ form.contactgroups.label }} </label>{{ form.contactgroups }} {{ form.contactgroups.errors}} {{ form.contactgroups.help_text }} </p>
-			</div>
-
-			<!-- Display All Contactgroups if this is that kind of an object -->
-				<div class="effective_contactgroups">
-				<fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
-				  <legend>Current Contactgroups</legend>
-				  	{% if effective_contactgroups %}
-					  <p>
-					{% for group in effective_contactgroups %}
-					    <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label> 
-					{% endfor %}
-					  </p>
-					{% endif %}
-				</fieldset>
-				</div>
-			
-
-		</div>
-		<div id="notifications">
-
-			<div class="{{ form.host_notifications_enabled.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notifications_enabled.label }} </label>{{ form.host_notifications_enabled }} {{ form.host_notifications_enabled.errors}} {{ form.host_notifications_enabled.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.host_notification_commands.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notification_commands.label }} </label>{{ form.host_notification_commands }} {{ form.host_notification_commands.errors}} {{ form.host_notification_commands.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.host_notification_period.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notification_period.label }} </label>{{ form.host_notification_period }} {{ form.host_notification_period.errors}} {{ form.host_notification_period.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.host_notification_options.field.widget.attrs.class }}">
-			<p><label> {{ form.host_notification_options.label }} </label>{{ form.host_notification_options }} {{ form.host_notification_options.errors}} {{ form.host_notification_options.help_text }} </p>
-			</div>
-			---
-			
-			<div class="{{ form.service_notifications_enabled.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notifications_enabled.label }} </label>{{ form.service_notifications_enabled }} {{ form.service_notifications_enabled.errors}} {{ form.service_notifications_enabled.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.service_notification_commands.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notification_commands.label }} </label>{{ form.service_notification_commands }} {{ form.service_notification_commands.errors}} {{ form.service_notification_commands.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.service_notification_period.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notification_period.label }} </label>{{ form.service_notification_period }} {{ form.service_notification_period.errors}} {{ form.service_notification_period.help_text }} </p>
-			</div>
-			
-			<div class="{{ form.service_notification_options.field.widget.attrs.class }}">
-			<p><label> {{ form.service_notification_options.label }} </label>{{ form.service_notification_options }} {{ form.service_notification_options.errors}} {{ form.service_notification_options.help_text }} </p>
-			</div>
-
-
-
-		</div>
-		<INPUT type="submit" value="Save">	  	
-</form>
-
-
-			
-
-		</div>		
-			
-
-
-
-<div class="overlay">
-  <button id="close_overlay">Close Error</button><br/>
-  <div id="error">
-  </div>
+    {% if my_object %}
+<div class="row">
+    <div class="span12">
+        <div class="block">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
+                </li>
+            </ul>
+            <h2>
+                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.shortname }}
+            </h2>
+        </div>
+    </div>
 </div>
-	
-	<script>
-	
-$('#close_overlay').click(function() {
-	$('.overlay').hide();
-	return false;
-});
-$(document).ajaxError(function(e, xhr, settings, exception) {
-	$('#error').html( xhr.responseText );
-	$('.overlay').show();
-}); 
-$(document).ajaxSend(function(event, xhr, settings) {
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    function sameOrigin(url) {
-        // url could be relative or scheme relative or absolute
-        var host = document.location.host; // host + port
-        var protocol = document.location.protocol;
-        var sr_origin = '//' + host;
-        var origin = protocol + sr_origin;
-        // Allow absolute or scheme relative URLs to same origin
-        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-            // or any other URL that isn't scheme relative or absolute i.e relative.
-            !(/^(\/\/|http:|https:).*/.test(url));
-    }
-	    function safeMethod(method) {
-	        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-	    }
-
-	    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
-	        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-	    }
-	});
-	$('.modify_button').click(function() {
-		id = this.id.replace('modify_', '');
-		currentval = $('#key_' + id).text();
 
 
-		if (id == 'contact_groups') {
-			$('#key_' + id).html("<select id='input_" + id + "'></select>");
-			
-			$.getJSON("/rest/pynag/json/contactgroups", function(json) {
-				$.each(json, function(k, v) {
-					//alert('<option value="' + v['contactgroup_name'] + '">' + v['contactgroup_name'] + "</option>");
-					$('#input_' + id).append('<option value="' + v['contactgroup_name'] + '">' + v['contactgroup_name'] + "</option>");
-				});
-			});
-						
-			newinput = $('#input_' + id);
-			newinput.select();
-		} else {
-			$('#key_' + id).html("<input id='input_" + id + "'/>");
-			newinput = $('#input_' + id)
-			newinput.val(currentval);
-			newinput.select();
-		}		
-		newinput.blur(function(blurrer) {
-			val = newinput.val();
-			$('#key_' + id).html(val);
-			d = {}
-			//d[id] = val;
-			d['attribute_name'] = id;
-			d['new_value'] = val;
-			d['id'] = "{{ my_object.id }}";
-			$.post("/rest/pynag/json/change_attribute", d );
-		});
+
+<div class="row">
+    <div class="span9">
+        <div class="block">
+
+            <!-- wrapper for scrollable items -->
+            <ul class="nav nav-tabs" id="objecttab">
+                <li><a href="#general" data-toggle="tab">General</a></li>
+			    <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
+			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+		    </ul>
+            <form class="form-horizontal" action="#" method="POST">
+            {% csrf_token %}
+                <div class="tab-content">
+                    <div class="tab-pane" id="general">
+                        <fieldset>
+
+                            <label class="control-label" for="contact_name" rel="tooltip" title="{{ form.contact_name.label }}" data-content="eg admin@example.com">{{ form.contact_name.label }}</label>
+                            <div class="controls">
+                                {{ form.contact_name }}
+                            </div>
+                            
+                            <label class="control-label" for="alias" rel="tooltip" title="{{ form.alias.label }}" data-content="eg Full name of contact">{{ form.alias.label }}</label>
+                            <div class="controls">
+                                {{ form.alias }}
+                            </div>
+
+                            <label class="control-label" for="use" rel="tooltip" title="{{ form.use.label }}" data-content="eg generic-contact">{{ form.use.label }}</label>
+                            <div class="controls">
+                                {{ form.use }}
+                            </div>
+
+                            <label class="control-label" for="email" rel="tooltip" title="{{ form.email.label }}" data-content="eg admin@example.com">{{ form.email.label }}</label>
+                            <div class="controls">
+                                {{ form.email }}
+                            </div>
+
+                            <label class="control-label" for="pager" rel="tooltip" title="{{ form.pager.label }}" data-content="eg 00 1234567">{{ form.pager.label }}</label>
+                            <div class="controls">
+                                {{ form.pager }}
+                            </div>
+
+
+                            
+
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn">Cancel</button>
+                        </div>
+                    </div>
 		
-	});
-	
-	</script>
+                    <div class="tab-pane" id="memberof">
+                        <fieldset>
 
-	
-<script>
-// wait until document is fully scriptable
-$('#accordion').accordion({ header: "h4" });
-$('#tabs').tabs();
-//$('#tabs').tabs('add', '#cramp', "Ble");
-//$(function() {
-//
-//});
-</script>
-<script>
-$('#zesubmit').button();
-</script>
-	
+
+                            <label class="control-label" for="contactgroups" rel="tooltip" title="{{ form.contactgroups.label }}" data-content="eg select groups this contact belongs to">{{ form.contact_groups.label }}</label>
+                            <div class="controls">
+                                {{ form.contactgroups }}
+                            </div>
+
+                        <!-- Display All Contactgroups if this is that kind of an object -->
+                            <div class="effective_contactgroups">
+                            <fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
+                              <legend>Effective Contactgroups for this contact</legend>
+                                    {% if effective_contactgroups %}
+                                      <p>
+                                    {% for group in effective_contactgroups %}
+                                        <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
+                                    {% endfor %}
+                                      </p>
+                                    {% endif %}
+                            </fieldset>
+                            </div>
+
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn">Cancel</button>
+                        </div>
+                    </div>
+
+		
+                    <div class="tab-pane" id="notifications">
+                        <fieldset>
+
+                            <label class="control-label" for="host_notifications_enabled" rel="tooltip" title="{{ form.host_notifications_enabled.label }}" data-content="eg 1 or 0">{{ form.host_notifications_enabled.label }}</label>
+                            <div class="controls">
+                                {{ form.host_notifications_enabled }}
+                            </div>
+                            <label class="control-label" for="host_notification_commands" rel="tooltip" title="{{ form.host_notification_commands.label }}" data-content="eg 1 or 0">{{ form.host_notification_commands.label }}</label>
+                            <div class="controls">
+                                {{ form.host_notification_commands }}
+                            </div>
+
+                            <label class="control-label" for="host_notification_period" rel="tooltip" title="{{ form.host_notification_period.label }}" data-content="eg select a timeperiod">{{ form.host_notification_period.label }}</label>
+                            <div class="controls">
+                                {{ form.host_notification_period }}
+                            </div>
+
+                            <label class="control-label" for="service_notifications_enabled" rel="tooltip" title="{{ form.service_notifications_enabled.label }}" data-content="eg 1 or 0">{{ form.service_notifications_enabled.label }}</label>
+                            <div class="controls">
+                                {{ form.service_notifications_enabled }}
+                            </div>
+                            <label class="control-label" for="service_notification_commands" rel="tooltip" title="{{ form.service_notification_commands.label }}" data-content="eg 1 or 0">{{ form.service_notification_commands.label }}</label>
+                            <div class="controls">
+                                {{ form.service_notification_commands }}
+                            </div>
+
+                            <label class="control-label" for="service_notification_period" rel="tooltip" title="{{ form.service_notification_period.label }}" data-content="eg select a timeperiod">{{ form.service_notification_period.label }}</label>
+                            <div class="controls">
+                                {{ form.service_notification_period }}
+                            </div>
+
+                    </div>
+                    <div class="tab-pane" id="advanced">
+                        <form action="#" method="post">
+
+                            {% csrf_token %}
+                        	{% for field in form %}
+
+
+                            <fieldset>
+                                <label class="control-label" for="{{ field.name }}">{{ field.label }}{% if field.help %} <abbr rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}"><i class="icon-question-sign"></i></abbr> {% endif %}</label>
+                                <div class="controls" id="advanced_field">
+                                    {{ field }}
+                                </div>
+                            </fieldset>
+<!--
+                        	<div class="{{ field.field.widget.attrs.class }}">
+                        		<p><label> {{ field.label }} </label>
+                        		{{ field }} {{ field.errors }} {{ field.help_text }} </p>
+                        	</div> -->
+                        	{% endfor %}
+                            <div class="form-actions">
+                                <button class="btn btn-primary" type="submit">Save changes</button>
+                                <button class="btn">Cancel</button>
+                            </div>
+                         </form>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="span3">
+        <div class="block">
+            <h5>Actions</h5>
+            <ul class="nav nav-list">
+              <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
+              <li><a href="#nag"><i class="icon-fire"></i> Open in Nagios</a></li>
+              <li><a href="#nag"><i class="glyph-charts"></i> View Graphs</a></li>
+            </ul>
+
+
+            <h5>Diagnostics</h5>
+            <ul class="nav nav-list">
+              <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
+              <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="modal hide" id="run_check_plugin">
+        <div class="modal-header">
+            <h3>Run Check Plugin</h3>
+        </div>
+        <div class="modal-body">
+		Running check plugin...
+        </div>
+        <div class="modal-footer">
+            <button id="run_check_plugin_refresh" class="btn hide" data-dismiss="modal"><i class="icon-refresh"></i> Refresh</button>
+            <button class="btn" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    <div class="modal hide" id="geek_edit">
+        <form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Geek Edit</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
+                        {{ geek_edit }}
+                    </fieldset>
+                    <strong>Filename:</strong> {{ my_object.filename }}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit">Save changes</button>
+            </div>
+        </form>
+   </div>
+</div>
 	
 {% else %}
 	<p>Object not found </p>
 {% endif %}
+
+
+
 
 {% endblock %}
