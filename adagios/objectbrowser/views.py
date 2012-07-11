@@ -106,7 +106,7 @@ def list_object_types(request):
     return render_to_response('list_object_types.html', c)
 
 
-def view_object( request, object_id=None, object_type=None, shortname=None):
+def view_object( request, object_id=None, object_type=None, shortname=None, object_instance=None):
     ''' View details about one specific pynag object '''
     c = {}
     c.update(csrf(request))
@@ -120,6 +120,8 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         # TODO: if multiple objects are found, display a list
         otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
         o = otype.objects.get_by_shortname(shortname)
+    elif object_instance != None:
+        o = object_instance
     else:
         raise ValueError("Object not found")
 
@@ -330,4 +332,29 @@ def view_nagioscfg(request):
     c['content'].sort()
     return render_to_response('view_configfile.html', c)
     
+def add_service(request):
+    c = {}
+    c.update(csrf(request))
+    c['form'] = AddServiceToHostForm()
+    c['messages'] = []
+    c['errors'] = []
+    c['filename'] = Model.config.cfg_file
+    if request.method == 'POST':
+        c['form'] = form = AddServiceToHostForm(data=request.POST)
+        if form.is_valid():
+            host_name =  form.cleaned_data['host_name']
+            host = Model.Host.objects.get_by_shortname(host_name)
+            service = form.cleaned_data['service']
+            new_service = Model.Service()
+            new_service.host_name = host_name   
+            new_service.use = service
+            new_service.set_filename(host.get_filename())
+            new_service.reload_object()
+            #Model.Service.objects.clean_cache()
+            #Model.config = None
+            #Model.Service.objects.get_by_id(new_service.get_id())
+            c['my_object'] = new_service
+            return view_object(request, object_instance=new_service)
+
+    return render_to_response('add_service.html', c)
  
