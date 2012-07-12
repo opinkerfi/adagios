@@ -124,7 +124,70 @@ def verify_okconfig(request):
             c['errors'].append('There seems to be a problem with your okconfig installation')
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
+def install_agent(request):
+    ''' Installs an okagent on a remote host '''
+    c = {}
+    c['errors'] = []
+    c['messages'] = []
+    c['form'] = forms.InstallAgentForm(initial=request.GET )
+    if request.method == 'POST':
+        c['form'] = f = forms.InstallAgentForm(request.POST)
+        if f.is_valid():
+            f.clean()
+            host = f.cleaned_data['remote_host']
+            user = f.cleaned_data['username']
+            passw = f.cleaned_data['password']
+            method = f.cleaned_data['install_method']
+            domain = f.cleaned_data['windows_domain']
+            try:
+                status,out,err = okconfig.install_okagent(remote_host=host, domain=domain, username=user, password=passw, install_method=method)
+                print "STATUS: ",status,out,err
+                c['exit_status'] =  status 
+                c['stdout'] =  out 
+                c['stderr']=  err
+            except Exception,e:
+                c['errors'].append( e )
+        else:
+            c['errors'].append('invalid input')
+    return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
+def edit(request, host_name):
+    ''' Edit all the Service "__MACROS" for a given host '''
+    from pynag import Model
 
+    c = { }
+    c.update(csrf(request))
+    c['hostname'] = host_name
+    
+    # Get all services of that host that contain a service_description
+    services = Model.Service.objects.filter(host_name=host_name,service_description__contains='')
+    
+    # All the form fields have an id of HOST::SERVICE::ATTRIBUTE so we have to split it
+    if request.method == 'POST':
+        for k,v in request.POST.items():
+            if k.count('::') < 2: continue
+
+            host_name,service_description,attribute = k.split('::',2)
+            if attribute.startswith("$ARG"): continue
+            attribute = attribute.replace('$_SERVICE', "_")
+            attribute = attribute.replace('$', "")
+            if attribute == 'register':
+                print k, v
+            for i in services:
+                if i['service_description'] == service_description:
+                    if i[attribute] != v:
+                        i[attribute] = v
+                        i.save()
+    myforms =[]       
+    for service in services:
+        print "service: %s\t %s" % (service.service_description, service.get_filename()) 
+        initial = {}
+        initial['service_description'] = service['service_description']
+        initial['register'] = service['register'] == "1"
+        form = forms.EditTemplateForm(service=service,initial=initial)
+        myforms.append( form )
+    c['forms'] = myforms
+    return render_to_response('edittemplate.html', c)
+ 
 def scan_network(request):
     c = {}
     c['errors'] = []

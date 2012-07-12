@@ -4,7 +4,6 @@
 Convenient stateless functions for pynag
 '''
 
-import sys
 
 
 from pynag import Model
@@ -56,6 +55,14 @@ def get_object(id):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     del o.objects
     return o
+def delete_object(object_id, cascade=False):
+    '''Delete one specific ObjectDefinition'''
+    try:
+        o = Model.ObjectDefinition.objects.get_by_id(id)
+        o.delete(cascade=cascade)
+        return True
+    except:
+        return False
 def get_host_names(invalidate_cache=False):
     """ Returns a list of all hosts """
     if invalidate_cache is True:
@@ -77,9 +84,19 @@ def change_attribute(id, attribute_name, new_value):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
+def run_check_command(object_id):
+    ''' Runs the check_command for one specified object
+    
+    Arguments:
+        object_id         -- object_id of the definition (i.e. host or service)
+    Returns:
+        [return_code,stdout,stderr]
+    '''
+    o = Model.ObjectDefinition.objects.get_by_id(object_id)
+    return o.run_check_command()
 
 def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None', append=False):
-	""" Sets specific configuration values of nagios.cfg
+    """ Sets specific configuration values of nagios.cfg
 	
 	Required Arguments:
 		attribute   -- Attribute to change (i.e. process_performance_data)
@@ -93,10 +110,10 @@ def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None'
 		True	-- If any changes were made
 		False	-- If no changes were made
 	"""
-	if old_value.lower() == 'none': old_value=None
-	if new_value.lower() == 'none': new_value=None
-	if filename.lower() == 'none': filename=None
-	if append.lower() == 'false': append=False
-	elif append.lower() == 'true': append=True
-	elif append.lower() == 'none': append=None
-	return _config._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
+    if old_value.lower() == 'none': old_value=None
+    if new_value.lower() == 'none': new_value=None
+    if filename.lower() == 'none': filename=None
+    if append.lower() == 'false': append=False
+    elif append.lower() == 'true': append=True
+    elif append.lower() == 'none': append=None
+    return _config._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)

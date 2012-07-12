@@ -1,0 +1,39 @@
+{% extends "configurator/base.html" %}
+{% block title %}Add Host{% endblock %}
+{% block content %}
+
+
+
+{% if stdout %}
+* exit status: <pre>{{ exit_status }} </pre>
+<br>
+Errors:
+<pre>
+{{ stderr }}
+</pre>
+<br>
+Script output:
+<pre>
+{{ stdout }}
+</pre>
+{% endif %}
+
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<form action="install_agent" method="post">{% csrf_token %}
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Install okconfig Agent to remote host</a>
+		</li>
+	</ul>
+		{{ form.as_p }}
+		<p>
+    	<INPUT id="zesubmit" type="submit" value="Submit">
+    
+	</form>
+</div>
+
+<script>
+$('#zesubmit').button();
+</script>
+
+{% endblock %}

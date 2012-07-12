@@ -106,7 +106,7 @@ def list_object_types(request):
     return render_to_response('list_object_types.html', c)
 
 
-def view_object( request, object_id=None, object_type=None, shortname=None):
+def view_object( request, object_id=None, object_type=None, shortname=None, object_instance=None):
     ''' View details about one specific pynag object '''
     c = {}
     c.update(csrf(request))
@@ -120,6 +120,8 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         # TODO: if multiple objects are found, display a list
         otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
         o = otype.objects.get_by_shortname(shortname)
+    elif object_instance != None:
+        o = object_instance
     else:
         raise ValueError("Object not found")
 
@@ -250,8 +252,11 @@ def confighealth( request  ):
     for i in Host.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 hosts_without_contacts.append(i)
-            if i.get_effective_services() == []:
-                hosts_without_services.append(i)
+            try:
+                if i.get_effective_services() == []:
+                    hosts_without_services.append(i)
+            except:
+                pass
     for i in Service.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 services_without_contacts.append(i)
@@ -261,8 +266,10 @@ def confighealth( request  ):
                 services_without_icon_image.append(i)
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
+    c['errors'] = Model.config.errors
     import okconfig
     c['booleans']['OKConfig is installed and working'] = okconfig.is_valid()
+    s['Parser errors'] = Model.config.errors
     s['Services with no "service_description"'] = services_no_description            
     s['Hosts without any contacts'] = hosts_without_contacts
     s['Services without any contacts'] = services_without_contacts
@@ -325,4 +332,29 @@ def view_nagioscfg(request):
     c['content'].sort()
     return render_to_response('view_configfile.html', c)
     
+def add_service(request):
+    c = {}
+    c.update(csrf(request))
+    c['form'] = AddServiceToHostForm()
+    c['messages'] = []
+    c['errors'] = []
+    c['filename'] = Model.config.cfg_file
+    if request.method == 'POST':
+        c['form'] = form = AddServiceToHostForm(data=request.POST)
+        if form.is_valid():
+            host_name =  form.cleaned_data['host_name']
+            host = Model.Host.objects.get_by_shortname(host_name)
+            service = form.cleaned_data['service']
+            new_service = Model.Service()
+            new_service.host_name = host_name   
+            new_service.use = service
+            new_service.set_filename(host.get_filename())
+            new_service.reload_object()
+            #Model.Service.objects.clean_cache()
+            #Model.config = None
+            #Model.Service.objects.get_by_id(new_service.get_id())
+            c['my_object'] = new_service
+            return view_object(request, object_instance=new_service)
+
+    return render_to_response('add_service.html', c)
  

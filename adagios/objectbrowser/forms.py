@@ -17,8 +17,9 @@
 from django import forms
 #from django.forms import *
 from pynag import Model
-from adagios.objectbrowser.all_attributes import object_definitions
+from pynag.Model.all_attributes import object_definitions
 from django.utils.encoding import smart_str
+from pynag.Model import ObjectDefinition
 
 
 # These fields are special, they are a comma seperated list, and may or may not have +/- in front of them.
@@ -34,6 +35,15 @@ NOTIFICATION_OPTIONS = (
                         )
 
 BOOLEAN_CHOICES = ( ('', 'not set'),('1','1'),('0','0'))
+
+# List of all host_names
+ALL_HOSTS = map(lambda x: (x.host_name, x.host_name),
+                Model.Host.objects.filter(host_name__contains="", register="1"))
+ALL_HOSTS.sort()
+# List of all unregistered services (templates)
+INACTIVE_SERVICES = map(lambda x: (x.name, x.name),
+                        Model.Service.objects.filter(service_description__contains="", name__contains="", register="0"))
+INACTIVE_SERVICES.sort()
 
 class PynagChoiceField(forms.MultipleChoiceField):
     ''' multichoicefields that accepts comma seperated input as values '''
@@ -172,3 +182,7 @@ class ManualEditObjectForm(forms.Form):
     def save(self):
         definition = self.cleaned_data['definition']
         self.pynag_object.rewrite( str_new_definition=definition )
+
+class AddServiceToHostForm(forms.Form):
+    host_name = forms.ChoiceField(choices=ALL_HOSTS)
+    service = forms.ChoiceField(choices=INACTIVE_SERVICES)

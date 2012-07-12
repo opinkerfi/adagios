@@ -57,4 +57,9 @@ class AdagiosSettingsForm(forms.Form):
 	configuration_host = forms.CharField(initial='localhost')
 	git_commit_on_changes = forms.BooleanField(initial=True)
 	log_to_file_on_changes = forms.BooleanField(initial=True)
+
 	
+class OkconfigEditTemplateForm(forms.Form):
+	register = forms.BooleanField()
+	service_description = forms.CharField()
+

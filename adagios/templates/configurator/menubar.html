@@ -2,10 +2,12 @@
 		<div class="ui-widget-header ui-corner-all ui-tabs navheader">Assistants</div>
 		<div class="naventries">
 			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-				<li><a href="/okconfig/addhost">Add New Host</a></li>
+				<li><a href="/okconfig/addhost">Add Host</a></li>
 				<li><a href="/okconfig/addtemplate">Add Templates to host</a></li>
-				<li><a href="/okconfig/addgroup">Add New Group</a></li>
+				<li><a href="/objectbrowser/add_service">Add Service to host</a></li>
+				<li><a href="/okconfig/addgroup">Add Group</a></li>
 				<li><a href="/okconfig/scan_network">Scan Network</a></li>
+				<li><a href="/okconfig/install_agent">Install agent</a></li>
 				
 			</ul>
 		</div>
@@ -13,24 +15,24 @@
 		<div class="ui-widget-header ui-corner-all ui-tabs navheader">Browse</div>
 		<div class="naventries">
 			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-				<li><a href="/objectbrowser/overview">Overview</a></li>
+				<li><a href="{% url objectbrowser.views.list_object_types %}">Overview</a></li>
 				<li>-------</li>
-				<li><a href="/objectbrowser/contact">Contacts</a></li>
-				<li><a href="/objectbrowser/host">Hosts</a></li>
-				<li><a href="/objectbrowser/service">Services</a></li>
-				<li><a href="/objectbrowser/timeperiod">Timeperiods</a></li>
-				<li><a href="/objectbrowser/command">Commands</a></li>
+				<li><a href="{% url objectbrowser.views.list_object "contact" %}">Contacts</a></li>
+				<li><a href="{% url objectbrowser.views.list_object "host" %}">Hosts</a></li>
+				<li><a href="{% url objectbrowser.views.list_object "service" %}">Services</a></li>
+				<li><a href="{% url objectbrowser.views.list_object "timeperiod" %}">Timeperiods</a></li>
+				<li><a href="{% url objectbrowser.views.list_object "command" %}">Commands</a></li>
 				<li>-------</li>
-				<li><a href="/objectbrowser/contactgroup">Contactgroups</a></li>
-				<li><a href="/objectbrowser/hostgroup">Hostgroups</a></li>
-				<li><a href="/objectbrowser/servicegroup">Servicegroups</a></li>        		
+				<li><a href="{% url objectbrowser.views.list_object "contactgroup" %}">Contactgroups</a></li>
+				<li><a href="{% url objectbrowser.views.list_object "hostgroup" %}">Hostgroups</a></li>
+				<li><a href="{% url objectbrowser.views.list_object "servicegroup" %}">Servicegroups</a></li>        		
 			</ul>
 		</div>
 		<div class="ui-widget-header ui-corner-all ui-tabs navheader">Utilities</div>
 		<div class="naventries">
 			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-				<li><a href="/objectbrowser/parents">Template Tree</a></li>
-				<li><a href="/objectbrowser/plugins">Missing Plugins</a></li>
+				<li><a href="{% url objectbrowser.views.view_parents %}">Template Tree</a></li>
+				<li><a href="{% url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
 				<li><a href="/okconfig/verify_okconfig">Verify okconfig</a></li>
 			</ul>
 		</div>
@@ -48,10 +50,10 @@
 		<div class="ui-widget-header ui-corner-all ui-tabs navheader">Other</div>
 		<div class="naventries">
 			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfixl">
-				<li><a href="/objectbrowser/nagios.cfg">View Nagios.cfg</a></li>
-				<li><a href="/objectbrowser/confighealth">Configuration Health</a></li>
-				<li><a href="/misc/settings">Adagios Settings</a></li>
-				<li><a href="/NotImplemented">Help</a></li>
+				<li><a href="{% url objectbrowser.views.view_nagioscfg %}">View Nagios.cfg</a></li>
+				<li><a href="{% url objectbrowser.views.confighealth %}">Configuration Health</a></li>
+				<li><a href="{% url misc.views.settings %}">Adagios Settings</a></li>
+				<li><a href="NotImplemented">Help</a></li>
 				<li>--------</li>
 				<li><a href="http://opensource.is/adagios/newticket?type=enhancement">Suggestions or Bugs?</a></li>
 			</ul>

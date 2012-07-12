@@ -8,7 +8,7 @@ Replace these with more appropriate tests for your application.
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 import forms
-
+import django.forms
 
 from django.test import TestCase
 
@@ -28,6 +28,9 @@ True
 
 
 def test(request):
-        c = {}
+        c = { }
+        from pynag import Model
+        s = Model.Service.objects.all
+        c['config'] = Model.config.errors
         return render_to_response('test.html', c)
 
