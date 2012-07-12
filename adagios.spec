@@ -24,7 +24,8 @@ BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
 Requires: pynag >= 0.4.0
-Requires: httpd mod_wsgi Django
+Requires: httpd
+Requires: mod_wsgi
 
 %description
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. 
@@ -37,7 +38,7 @@ python setup.py build
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
-chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
+#chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
 sed -i 's|#python_path#|%{python_sitelib}|g' %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
 mv %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
@@ -52,7 +53,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 
 %changelog
-
 * Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is> 1.0.0-1
 - tito releasers added (palli@opensource.is)
 - copied wsgi configuration from fpaste.wsgi (palli@opensource.is)
