@@ -91,6 +91,7 @@ class AddTemplateForm(forms.Form):
                 err = "Template %s not found. Use force to overwrite" % (template_name)
                 self._errors['template_name'] = self.error_class(err)
         return result
+
 class InstallAgentForm(forms.Form):
     remote_host = forms.CharField()
     username = forms.CharField(initial='root')

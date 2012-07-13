@@ -1,114 +1,305 @@
-{% extends "configurator/base.html" %}
-{% block title %}{{ object_type }}{% endblock %}
+{% extends "base.html" %}
+{% block title %}Adagios - {{ my_object.object_type }} {{ my_object.shortname }}{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block footer %}
+    <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#objecttab a:first').tab('show');
+        $(document).ready(function() {
+
+
+
+            $("[rel=tooltip]").popover();
+            $("#popover").popover();
+            $('#general select').chosen();
+            $('#notifications select').chosen();
+            $('#monitoring select').chosen();
+
+	});
+	function run_check_command() {
+	    $.getJSON("/rest/pynag/json/run_check_command",
+		{
+			object_id: '{{my_object.id}}'
+		},
+		function(data) {
+			var statusLabel = 'label-inverse';
+			var statusString = 'Unknown';
+			if (data[0] == 2) {
+				statusLabel = 'label-important';
+				statusString = 'Critical';
+			}
+			if (data[0] == 1) {
+				statusLabel = 'label-warning';
+				statusString = 'Warning';
+			}
+			if (data[0] == 0) {
+				statusLabel = 'label-success';
+				statusString = 'OK';
+			}
+			$('#run_check_plugin div.modal-body').html('<div class="row"><span class="span2">Status:</span><span class="span2 label ' + statusLabel + '">' + statusString + '</span></div><div class="row"><span class="span2">Plugin Output:</span><span class="span2">' + data[1] + '</span></div>');
+			$('#run_check_plugin_refresh').show();
+		}
+		
+	    );
+	}
+	$('#run_check_plugin_refresh').click(function() {
+	    $('#run_check_plugin div.modal-body').html('Rerunning plugin');
+	    run_check_command();
+	    return false;
+	});
+        $('#run_check_plugin').on('show', function () {
+	    run_check_command();
+        });
+
+	
+
+
+    </script>
+{%  endblock %}
 
 {% block content %}
 
+    {% if my_object %}
+<div class="row">
+    <div class="span12">
+        <div class="block">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
+                </li>
+            </ul>
+            <h2>
+                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.shortname }}
+            </h2>
+        </div>
+    </div>
+</div>
 
 
+
+<div class="row">
+    <div class="span9">
+        <div class="block">
+
+            <!-- wrapper for scrollable items -->
+            <ul class="nav nav-tabs" id="objecttab">
+                <li><a href="#general" data-toggle="tab">General</a></li>
+			    <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
+			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+		    </ul>
+            <form class="form-horizontal" action="#" method="POST">
+            {% csrf_token %}
+                <div class="tab-content">
+                    <div class="tab-pane" id="general">
+                        <fieldset>
+
+                            <label class="control-label" for="host_name" rel="tooltip" title="{{ form.host_name.label }}" data-content="eg web01.example.com">{{ form.host_name.label }}</label>
+                            <div class="controls"> <!-- class inherited -->
+                                {{ form.host_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
+                            </div>
+
+                            <label class="control-label" for="address" rel="tooltip" title="{{ form.address.label }}" data-content="eg 127.0.0.1">{{ form.address.label }}</label>
+                            <div class="controls">
+                                {{ form.address }}
+                            </div>
+
+                            <label class="control-label" for="alias" rel="tooltip" title="{{ form.alias.label }}" data-content="eg my Monitored host">{{ form.alias.label }}</label>
+                            <div class="controls">
+                                {{ form.alias }}
+                            </div>
+
+                            <label class="control-label" for="hostgroups" rel="tooltip" title="{{ form.hostgroups.label }}" data-content="eg hostgroups">{{ form.hostgroups.label }}</label>
+                            <div class="controls">
+                                {{ form.hostgroups }}
+                            </div>
+                            
+                            <label class="control-label" for="use" rel="tooltip" title="{{ form.use.label }}" data-content="eg name of object to inherit from">{{ form.use.label }}</label>
+                            <div class="controls">
+                                {{ form.use }}
+                            </div>
+                            
+
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn">Cancel</button>
+                        </div>
+                    </div>
+		
+                    <div class="tab-pane" id="monitoring">
+                        <fieldset>
+
+                            <label class="control-label" for="check_command" rel="tooltip" title="{{ form.check_command.label }}" data-content="Command executed when the service check runs">{{ form.check_command.label }}</label>
+                            <div class="controls">
+                                {{ form.check_command }}
+                            </div>
+
+                            <label class="control-label" for="max_check_attempts" rel="tooltip" title="{{ form.max_check_attempts.label }}" data-content="How many check failures before notifications are sent">{{ form.max_check_attempts.label }}</label>
+                            <div class="controls">
+                                {{ form.max_check_attempts }}
+                            </div>
+
+                            <label class="control-label" for="check_interval" rel="tooltip" title="{{ form.check_interval.label }}" data-content="Minute interval between checks">{{ form.check_interval.label }}</label>
+                            <div class="controls">
+                                {{ form.check_interval }}
+                            </div>
+
+                            <label class="control-label" for="active_checks_enabled" rel="tooltip" title="{{ form.active_checks_enabled.label }}" data-content="Whether Nagios polls actively for service state">{{ form.active_checks_enabled.label }}</label>
+                            <div class="controls">
+                                {{ form.active_checks_enabled }}
+                            </div>
+
+                            <label class="control-label" for="passive_checks_enabled" rel="tooltip" title="{{ form.passive_checks_enabled.label }}" data-content="Whether Nagios will recieve passive service state from external source">{{ form.passive_checks_enabled.label }}</label>
+                            <div class="controls">
+                                {{ form.passive_checks_enabled }}
+                            </div>
+
+                            <label class="control-label" for="check_period" rel="tooltip" title="{{ form.check_period.label }}" data-content="When Nagios polls for service state">{{ form.check_period.label }}</label>
+                            <div class="controls">
+                                {{ form.check_period }}
+                            </div>
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn">Cancel</button>
+                        </div>
+                    </div>
+
+		
+                    <div class="tab-pane" id="notifications">
+                        <fieldset>
+
+                            <label class="control-label" for="notification_interval">{{ form.notification_interval.label }}</label>
+                            <div class="controls">
+                                {{ form.notification_interval }}
+                            </div>
+
+                            <label class="control-label" for="first_notification_delay">{{ form.first_notification_delay.label }}</label>
+                            <div class="controls">
+                                {{ form.first_notification_delay }}
+                            </div>
+
+                            <label class="control-label" for="notification_period">{{ form.notification_period.label }}</label>
+                            <div class="controls">
+                                {{ form.notification_period }}
+                            </div>
+
+                            <label class="control-label" for="notification_options">{{ form.notification_options.label }}</label>
+                            <div class="controls">
+                                {{ form.notification_options }}
+                            </div>
+
+                            <label class="control-label" for="contacts">{{ form.contacts.label }}</label>
+                            <div class="controls">
+                                {{ form.contacts }}
+                            </div>
+
+                            <label class="control-label" for="contact_groups">{{ form.contact_groups.label }}</label>
+                            <div class="controls">
+                                {{ form.contact_groups }}
+                            </div>
+
+                        </fieldset>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="advanced">
+                        <form action="#" method="post">
+
+                            {% csrf_token %}
+                        	{% for field in form %}
+
+
+                            <fieldset>
+                                <label class="control-label" for="{{ field.name }}">{{ field.label }}{% if field.help %} <abbr rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}"><i class="icon-question-sign"></i></abbr> {% endif %}</label>
+                                <div class="controls" id="advanced_field">
+                                    {{ field }}
+                                </div>
+                            </fieldset>
 <!--
-{{ my_object }}
--->
+                        	<div class="{{ field.field.widget.attrs.class }}">
+                        		<p><label> {{ field.label }} </label>
+                        		{{ field }} {{ field.errors }} {{ field.help_text }} </p>
+                        	</div> -->
+                        	{% endfor %}
+                            <div class="form-actions">
+                                <button class="btn btn-primary" type="submit">Save changes</button>
+                                <button class="btn">Cancel</button>
+                            </div>
+                         </form>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="span3">
+        <div class="block">
+            <h5>Actions</h5>
+            <ul class="nav nav-list">
+              <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
+              <li><a href="#nag"><i class="icon-fire"></i> Open in Nagios</a></li>
+              <li><a href="#nag"><i class="glyph-charts"></i> View Graphs</a></li>
+            </ul>
 
 
-
-{% if my_object %}
-
-
-	<!-- wrapper for scrollable items -->
-	<div id="tabs">
-
-		<ul>
-			<li><a href="#host">Host</a></li>
-			<li><a href="#monitoring">Monitoring</a></li>
-			<li><a href="#services">Services</a></li>
-			<li><a href="#notifications">Notifications</a></li>
-			<li><a href="#advanced">Advanced</a></li>
-			<li><a href="#manual_edit">Manual edit</a></li>
-		</ul>
-		<div id="advanced">
-			{% include "snippets/advanced_edit_form.html" %}
-		</div>
-		<div id="manual_edit">
-			{% include "snippets/manual_edit_form.html" %}
-		</div>
-
-<form action="#" method="POST">
-		{% csrf_token %}
-
-		<div id="host">
-			<div>
-
-			 <label>{{ form.host_name.label }}</label><p>{{ form.host_name }}</p>
-			 <label>{{ form.address.label }}</label><p>{{ form.address }}</p>
-			 <label>{{ form.alias.label }}</label><p>{{ form.alias }}</p> 
-			
-			 <label>{{ form.hostgroups.label }}</label><p>{{ form.hostgroups }}</p>
-			 <label>{{ form.use.label }}</label><p>{{ form.use }}</p> 
-</select>
-
-			 </div>
-			 
-			 
-			 <!-- Display All Hostgroups if this is that kind of an object -->
-				{% if effective_hostgroups %}
-					<div class="effective_hostgroups">
-					<fieldset id="id_effective_hostgroups" class="attribute_{{object_type}}">
-					  <legend>Hostgroups</legend>
-						{% for group in effective_hostgroups %}
-						  <p>
-						    <label><a href="id={{ group.id }}">{{group.hostgroup_name}}</a></label>
-						  </p>
-						{% endfor %}
-					</fieldset>
-					</div>
-				{% endif %} 
-	
-		</div>	
-		<div id="monitoring">
-			{% include "snippets/monitoring_settings.html" %}
-		</div>
-
-
-		
-		<div id="notifications">
-			{% include "snippets/notification_settings.html" %}
-		</div>
-
-
-		<div id="services">
-			<legend>Services of this Host</legend>
-			{% if effective_services %}
-				<div class="effective_services">
-				<ul>
-				 {% for service in effective_services %}
-				 	<li><a href="id={{service.id}}">{{ service.service_description }}</a></li>
-				 {% endfor %}
-				</ul>
-				</div>
-			{% endif %}
-		</div>
-		
-
-	</div>
-		<INPUT type="submit" value="Save">	  	
-
-</form>		
-
+            <h5>Diagnostics</h5>
+            <ul class="nav nav-list">
+              <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
+              <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="modal hide" id="run_check_plugin">
+        <div class="modal-header">
+            <h3>Run Check Plugin</h3>
+        </div>
+        <div class="modal-body">
+		Running check plugin...
+        </div>
+        <div class="modal-footer">
+            <button id="run_check_plugin_refresh" class="btn hide" data-dismiss="modal"><i class="icon-refresh"></i> Refresh</button>
+            <button class="btn" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    <div class="modal hide" id="geek_edit">
+        <form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Geek Edit</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
+                        {{ geek_edit }}
+                    </fieldset>
+                    <strong>Filename:</strong> {{ my_object.filename }}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit">Save changes</button>
+            </div>
+        </form>
+   </div>
+</div>
 	
 {% else %}
 	<p>Object not found </p>
 {% endif %}
 
-
-<script>
-// wait until document is fully scriptable
-$('#accordion').accordion({ header: "h4" });
-$('#tabs').tabs();
-//$('#tabs').tabs('add', '#cramp', "Ble");
-//$(function() {
-//
-//});
-</script>
 
 
 

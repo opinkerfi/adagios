@@ -166,6 +166,22 @@ def edit(request, host_name):
         for k,v in request.POST.items():
             if k.count('::') < 2: continue
 
+def edit(request, host_name):
+    ''' Edit all the Service "__MACROS" for a given host '''
+    from pynag import Model
+
+    c = { }
+    c.update(csrf(request))
+    c['hostname'] = host_name
+    
+    # Get all services of that host that contain a service_description
+    services = Model.Service.objects.filter(host_name=host_name,service_description__contains='')
+    
+    # All the form fields have an id of HOST::SERVICE::ATTRIBUTE so we have to split it
+    if request.method == 'POST':
+        for k,v in request.POST.items():
+            if k.count('::') < 2: continue
+
             host_name,service_description,attribute = k.split('::',2)
             if attribute.startswith("$ARG"): continue
             attribute = attribute.replace('$_SERVICE', "_")

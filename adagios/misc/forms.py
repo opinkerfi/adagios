@@ -62,4 +62,3 @@ class AdagiosSettingsForm(forms.Form):
 class OkconfigEditTemplateForm(forms.Form):
 	register = forms.BooleanField()
 	service_description = forms.CharField()
-

@@ -1,233 +1,167 @@
+
+@import url(bootstrap.css);
+@import url(bootstrap-responsive.css);
+@import url(glyph-free.css);
+@import url(jquery.dataTables.css);
+@import url(../chosen/chosen.css);
+
+
+/* Modifications to paths in jquery DataTables */
+.paginate_enabled_previous { background: url('../img/jquery-datatables/back_enabled.png') no-repeat top left; }
+.paginate_enabled_previous:hover { background: url('../img/jquery-datatables/back_enabled_hover.png') no-repeat top left; }
+.paginate_disabled_previous { background: url('../img/jquery-datatables/back_disabled.png') no-repeat top left; }
+
+.paginate_enabled_next { background: url('../img/jquery-datatables/forward_enabled.png') no-repeat top right; }
+.paginate_enabled_next:hover { background: url('../img/jquery-datatables/forward_enabled_hover.png') no-repeat top right; }
+.paginate_disabled_next { background: url('../img/jquery-datatables/forward_disabled.png') no-repeat top right; }
+
+.sorting { background: url('../img/jquery-datatables/sort_both.png') no-repeat center right; }
+.sorting_asc { background: url('../img/jquery-datatables/sort_asc.png') no-repeat center right; }
+.sorting_desc { background: url('../img/jquery-datatables/sort_desc.png') no-repeat center right; }
+
+.sorting_asc_disabled { background: url('../img/jquery-datatables/sort_asc_disabled.png') no-repeat center right; }
+.sorting_desc_disabled { background: url('../img/jquery-datatables/sort_desc_disabled.png') no-repeat center right; }
+
 body {
-	font-family: helvetica, georgia, courier, arial;
-	background: #fff;
-	margin: 0;
-	padding: 0;
-	font-size: 70%;
+	background: url('../img/bak.jpg');
+    font-size: 12px;
 }
 
-hr {
-	color: sienna;
+[rel=tooltip] {
+    text-decoration: underline;
+}
+.form-horizontal .controls {
+    padding-bottom: 18px;
+}
+.inherited input {
+    background: #feeebd;
 }
 
-p {
-	margin-left: 20px;
+#id_geek_edit textarea {
+    width: 520px;
 }
 
-.left {
-	float:left;
+.content {
+  //background: #fff;
 }
 
-.right {
-	float:right;
+.control-label {
+  font-weight: bold;
 }
 
-.navheader {
-	text-align: center;
+.breadcrumb {
+    background-image: none;
+    border: 0;
+    margin: 0;
+    padding: 0 14px;
+}
+.block {
+  background: #fff;
+  width: 100%;
+  margin: 6px;
+  padding: 6px;
+  -moz-box-shadow:    1px 1px 2px 3px #666;
+  -webkit-box-shadow: 1px 1px 2px 3px #666;
+  box-shadow:         1px 1px 2px 3px #666;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+
 }
 
-#sidebar {
-	margin-top: 4px;
-	margin-left: 12px;
-	padding: 2px;
-	width:170px;
-	background: #fff;
+thead {
+//  border-bottom: solid 1px #ccc;
+}
+.shadow {
 }
 
-#content {
-	padding-left: 4px;
-	padding-top: 4px;
-	width:70%;
-	
+.center {
+    text-align: center;
+
 }
 
-button {
-	background: #000;
-	color: #fff;
-	
+.main {
+  background: white;
 }
 
-#container {
-	width:100%;
-}
+table.log {
+  width: 100%;
 
-.odd {
-	background-color:#DDDDCC;
-}
-
-.even {
-	background-color:#eeeecc;
-}
-
-.inherited_attribute {
-	 color:#777777;
-}
-
-.undefined_attribute {
-	color:#777777;
-}
-
-.definiton_choices {
-	visibility:hidden;
 }
 
 
-.dataTables_wrapper {
-}
-
-
-#servicetemplate {
-	width: 200px;
-}
-
-a:link, a:visited {
-    color: #4C3000;
+a {
+    color: #b70000;
     text-decoration: none;
+    font-weight: bold;
+}
+
+td {
+    font-size: 11px;
+}
+th {
+    font-size: 11px;
+}
+p {
+  font-size: 12px;
 }
 
 
-.css_right {
-	float: right;
-}
-
-.DataTables_sort_wrapper {
-	cursor: pointer;
-}
-
-.dataTables_filter {
-	float: right;
-	padding: 2px;
-}
-
-.dataTables_filter input {
-	height: 16px;
-	width: 120px;
-	font-size: 80%;
-}
-
-.console {
-	;
-}
-
-#id_definition {
-	font-family: courier;
-}
-
-#logo {
-	background: url("/static/adagios-logo.png") no-repeat scroll 10px 10px #ffffff;
-	display: block;
-	height: 62px;
-	padding: 0;
-	margin: 0;
-	}
-
-.warning {
-	margin-left: 20px;
-}
-
-em {
-	color: red;
-}
 
 
-/* tooltip styling. by default the element to be styled is .tooltip  */
-/* simple css-based tooltip */
-.tooltip {
-	background-color:#000;
-	border:1px solid #fff;
-	padding:10px 15px;
-	width:200px;
-	display:none;
-	color:#fff;
-	text-align:left;
-	font-size:12px;
 
-	/* outline radius for mozilla/firefox only */
-	-moz-box-shadow:0 0 10px #000;
-	-webkit-box-shadow:0 0 10px #000;
-}
-
-
-.object_attribute {
-	margin-top: 8px;
-}
-
-label
-{
-	width: 150px;
-	font-size: 110%;
-	height: 30px;
+div.dataTables_length label {
 	float: left;
 	text-align: left;
-	margin-right: 0.5em;
-	vertical-align: middle;
-	display: block;
-	clear: both;
 }
 
-.attributelook .attributevalue {
-	display: block;
-	width: 100px;
-	float: left;
+div.dataTables_length select {
+	width: 75px;
 }
 
-
-.attributelook input {
-	width: 80px;
+div.dataTables_filter label {
+	float: right;
 }
 
-.navi {
+div.dataTables_info {
+	padding-top: 8px;
 }
 
-div.attributelook  {
-	
-}
-.submit input
-{
-	margin-left: 4.5em;
-} 
-
-
-fieldset#subtemplates {
-	display: none;
-}
-
-
-
-fieldset .subtemplate {
-	display: none;
-}
-
-
-
-.overlay {
-	width: 90%;
-	height: 60%;
-	display: none;
-	position: absolute;
-	top: 20%;
-	left: 5%;
-	border: 1px solid black;
-	background: #fff;
-}
-
-#error {
-	position: relative;
-	width: 98%;
-	height: 92%;
-	overflow: auto;
-}
-
-#accordion {
-	clear: both;
+div.dataTables_paginate {
+	float: right;
 	margin: 0;
-	padding: 0;
 }
 
-.scan {
+table.table {
+	clear: both;
+	margin-bottom: 6px !important;
+}
+
+table.table thead .sorting,
+table.table thead .sorting_asc,
+table.table thead .sorting_desc,
+table.table thead .sorting_asc_disabled,
+table.table thead .sorting_desc_disabled {
+	cursor: pointer;
+	*cursor: hand;
 }
 
 
-.naventries {
-	margin: 4px 4px 4px 12px;
+
+
+
+table.table thead .sorting { background: url('images/sort_both.png') no-repeat center right; }
+table.table thead .headerSortUp { background: url('images/sort_asc.png') no-repeat center right; }
+table.table thead .sorting_desc { background: url('images/sort_desc.png') no-repeat center right; }
+
+table.table thead .sorting_asc_disabled { background: url('images/sort_asc_disabled.png') no-repeat center right; }
+table.table thead .sorting_desc_disabled { background: url('images/sort_desc_disabled.png') no-repeat center right; }
+
+table.dataTable th:active {
+	outline: none;
+}
+
+
+table.table th, table.table td {
+    line-height: 12px;
 }

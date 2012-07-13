@@ -145,7 +145,7 @@ class PynagForm(forms.Form):
         elif field_name.endswith('notification_options'):
             field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':
-            field = forms.ChoiceField(choices=BOOLEAN_CHOICES)
+            field = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
         else:
             ''' Fallback to a default charfield '''
             field = forms.CharField()
@@ -167,11 +167,11 @@ class PynagForm(forms.Form):
         return field
                 
         
-class ManualEditObjectForm(forms.Form):
+class GeekEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
     def __init__(self,pynag_object=None, *args,**kwargs):
         self.pynag_object = pynag_object
-        super(ManualEditObjectForm, self).__init__(*args,**kwargs)
+        super(GeekEditObjectForm, self).__init__(*args,**kwargs)
     def clean_definition(self, value=None):
         definition = self.cleaned_data['definition']
         definition = definition.replace('\r\n', '\n')
