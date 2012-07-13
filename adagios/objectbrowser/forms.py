@@ -135,7 +135,7 @@ class PynagForm(forms.Form):
         elif field_name.endswith('notification_options'):
             field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':
-            field = forms.ChoiceField(choices=BOOLEAN_CHOICES)
+            field = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
         else:
             ''' Fallback to a default charfield '''
             field = forms.CharField()

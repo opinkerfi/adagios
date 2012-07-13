@@ -8,6 +8,28 @@
     <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
+/*
+Allow radio inputs as buttong in regular form 
+http://dan.doezema.com/2012/03/twitter-bootstrap-radio-button-form-inputs/
+*/
+jQuery(function($) {
+  $('div.btn-group[data-toggle-name=*]').each(function(){
+    var group   = $(this);
+    var form    = group.parents('form').eq(0);
+    var name    = group.attr('data-toggle-name');
+    var hidden  = $('input[name="' + name + '"]', form);
+    $('button', group).each(function(){
+      var button = $(this);
+      button.live('click', function(){
+          hidden.val($(this).val());
+      });
+      if(button.val() == hidden.val()) {
+        button.addClass('active');
+      }
+    });
+  });
+});
+
         $('#objecttab a:first').tab('show');
         $(document).ready(function() {
 
@@ -171,12 +193,22 @@
 
                             <label class="control-label" for="active_checks_enabled" rel="tooltip" title="{{ form.active_checks_enabled.label }}" data-content="Whether Nagios polls actively for service state">{{ form.active_checks_enabled.label }}</label>
                             <div class="controls">
-                                {{ form.active_checks_enabled }}
+                                <div class="btn-group" data-toggle-name="active_checks_enabled" data-toggle="buttons-radio">
+                                    <button type="button" value="1" class="btn btn-primary">On</button>
+                                    <button type="button" value="0" class="btn btn-primary">Off</button>
+                                    <button type="button" value="" class="btn">Unset</button>
+                                </div>
+                                <input type="hidden" name="active_checks_enabled" value="{{ form.active_checks_enabled.value }}" />
                             </div>
 
                             <label class="control-label" for="passive_checks_enabled" rel="tooltip" title="{{ form.passive_checks_enabled.label }}" data-content="Whether Nagios will recieve passive service state from external source">{{ form.passive_checks_enabled.label }}</label>
                             <div class="controls">
-                                {{ form.passive_checks_enabled }}
+                                <div class="btn-group" data-toggle-name="passive_checks_enabled" data-toggle="buttons-radio">
+                                    <button type="button" value="1" class="btn btn-primary">On</button>
+                                    <button type="button" value="0" class="btn btn-primary">Off</button>
+                                    <button type="button" value="" class="btn">Unset</button>
+                                </div>
+                                <input type="hidden" name="passive_checks_enabled" value="{{ form.passive_checks_enabled.value }}" />
                             </div>
 
                             <label class="control-label" for="check_period" rel="tooltip" title="{{ form.check_period.label }}" data-content="When Nagios polls for service state">{{ form.check_period.label }}</label>
