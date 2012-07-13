@@ -157,8 +157,6 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         return _view_service(request, c)
     elif o['object_type'] == 'contact':
         return _view_contact(request, c)
-    elif o['object_type'] == 'contactgroup':
-        return _view_contactgroup(request, c)
     try: c['command_line'] = o.get_effective_command_line()
     except: pass
     try: c['object_macros'] = o.get_all_macros()

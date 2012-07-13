@@ -50,3 +50,7 @@ def contact_us( request ):
 		
 	c['form'] = form
 	return render_to_response('contact_us.html', c)
+
+def nagios(request):
+	c = {}
+	return render_to_response('nagios.html', c, context_instance = RequestContext(request))

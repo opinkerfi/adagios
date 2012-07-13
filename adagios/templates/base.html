@@ -65,6 +65,10 @@
                 <ul class="dropdown-menu">
                   <li><a href="#addhost">Add Host</a></li>
                   <li><a href="#addhost">Add Template to Host</a></li>
+                  <li><a href="#addhost">Add Service</a></li>
+                  <li><a href="#addhost">Add Group</a></li>
+                  <li><a href="#addhost">Install Agent</a></li>
+                  <li><a href="#addhost">Scan Network</a></li>
                 </ul>
               </li>
 
@@ -74,6 +78,11 @@
               <!-- Object Browser -->
               <li>
                 <a href="{% url objectbrowser.views.list_object_types %}"><i class="icon-list icon-white"></i> Object Browser</a>
+              </li>
+
+              <!-- Nagios -->
+              <li>
+                <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i>Monitor</a>
               </li>
 
             </ul>
