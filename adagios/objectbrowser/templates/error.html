@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Adagios - Objectbrowser - Object not found{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="span8">
+        <div class="block">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
+                </li>
+            </ul>
+          <br/>
+          <div class="alert alert-error">
+            <h2>
+		{{ error_summary }}
+            </h2>
+            <p>
+                {{ error }}
+            </p>
+          </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

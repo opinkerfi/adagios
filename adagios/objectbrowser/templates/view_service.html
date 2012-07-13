@@ -40,14 +40,26 @@
 				statusLabel = 'label-success';
 				statusString = 'OK';
 			}
-			$('#run_check_plugin div.modal-body').html('<div class="row"><span class="span2">Status:</span><span class="span2 label ' + statusLabel + '">' + statusString + '</span></div><div class="row"><span class="span2">Plugin Output:</span><span class="span2">' + data[1] + '</span></div>');
+            // Set the correct class for state coloring box
+            $('#run_check_plugin #pluginstate').addClass(statusLabel);
+            // Fill it up with the correct status
+            $('#run_check_plugin #pluginstate').html(statusString);
+            // Put the plugin output in the correct div
+            $('#run_check_plugin #pluginoutput').html(data[1]);
+            // Show the refresh button
 			$('#run_check_plugin_refresh').show();
 		}
 		
 	    );
 	}
 	$('#run_check_plugin_refresh').click(function() {
-	    $('#run_check_plugin div.modal-body').html('Rerunning plugin');
+	    //$('#run_check_plugin div.modal-body').html('Rerunning plugin');
+            // Reset the class on the button
+            $('#run_check_plugin #pluginstate').removeClass("label-important");
+            $('#run_check_plugin #pluginstate').removeClass("label-warning");
+            $('#run_check_plugin #pluginstate').removeClass("label-success");
+            $('#run_check_plugin #pluginstate').html("Pending");
+            $('#run_check_plugin #pluginoutput').html("Executing check plugin");
 	    run_check_command();
 	    return false;
 	});
@@ -63,7 +75,6 @@
 
 {% block content %}
 
-    {% if my_object %}
 <div class="row">
     <div class="span12">
         <div class="block">
@@ -75,13 +86,19 @@
                     <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
                 </li>
             </ul>
+    {% if my_object %}
             <h2>
                 <i class="icon-th-large"></i> <small>Service</small> {{ my_object.shortname }}
+    {% else %}
+            <h2 class="error">
+                <i class="icon-th-large"></i> <small>Service</small> ID not found
+    {% endif %}
             </h2>
         </div>
     </div>
 </div>
 
+    {% if my_object %}
 
 
 <div class="row">
@@ -256,24 +273,38 @@
 
             <h5>Diagnostics</h5>
             <ul class="nav nav-list">
+              {% if command_line %}
               <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
+              {% endif %}
               <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
             </ul>
         </div>
     </div>
-    <div class="modal hide" id="run_check_plugin">
+    <div class="modal hide fade" id="run_check_plugin">
         <div class="modal-header">
             <h3>Run Check Plugin</h3>
+            <div class="well">{{ command_line }}</div>
+            <div class="row">
+                <div class="span2">Status:</div>
+                <div class="span2 label" id="pluginstate">Pending</div>
+            </div>
+            <div class="row">
+                <div class="span2">Plugin Output:</div>
+            </div>
         </div>
         <div class="modal-body">
-		Running check plugin...
+            <div class="row">
+                <div class="span8" style="height: 250px">
+                    <pre id="pluginoutput">Executing check plugin</pre>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button id="run_check_plugin_refresh" class="btn hide" data-dismiss="modal"><i class="icon-refresh"></i> Refresh</button>
             <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
-    <div class="modal hide" id="geek_edit">
+    <div class="modal hide fade" id="geek_edit">
         <form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>

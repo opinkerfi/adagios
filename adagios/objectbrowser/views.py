@@ -105,11 +105,23 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     
     # Get our object
     if object_id != None:
-        o = ObjectDefinition.objects.get_by_id(id=object_id)
+        try:
+            o = ObjectDefinition.objects.get_by_id(id=object_id)
+        except Exception, e:
+            # Not raising, handled by template
+            c['error_summary'] = 'Unable to get object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
     elif object_type != None and shortname != None:
         # TODO: if multiple objects are found, display a list
-        otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
-        o = otype.objects.get_by_shortname(shortname)
+        try:
+            otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
+            o = otype.objects.get_by_shortname(shortname)
+        except Exception, e:
+            # Not raising, handled by template
+            c['error_summary'] = 'Unable to get object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
     else:
         raise ValueError("Object not found")
 

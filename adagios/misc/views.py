@@ -50,6 +50,3 @@ def contact_us( request ):
 		
 	c['form'] = form
 	return render_to_response('contact_us.html', c)
-		
-	
-
