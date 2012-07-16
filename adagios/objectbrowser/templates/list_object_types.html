@@ -19,7 +19,7 @@
             $.getJSON("/rest/pynag/json/get_objects",
                 {
                     object_type: object_type,
-                    with_fields: jsonqueryfields.join(),
+                    with_fields: jsonqueryfields.join()
                 },
                 function(data) {
                     var count = data.length;
@@ -27,7 +27,7 @@
                     $.each(data, function(i,item){
 
                         //alert(fields.length);
-                        var fieldarray = ['']
+                        var fieldarray = ['<a href="{{ BASE_URL }}/objectbrowser/delete?id=' + item['id'] + '"><i class="icon-trash"></i></a> <input rel="ob_mass_select" type="checkbox">'];
                         $.each(fields, function(k, field) {
                             var cell = '<a href="{{ BASE_URL }}/objectbrowser/id=' + item['id'] + '">';
                             var fieldvalue = "";
@@ -49,7 +49,7 @@
                             } else {
                                 cell += fieldvalue;
                             }
-                            cell += "</a>"
+                            cell += "</a>";
                             fieldarray.push(cell);
                             if (field.cName == fields[fields.length - 1].cName) {
                                 dtData.push(fieldarray);
@@ -58,7 +58,6 @@
                                     targetDataTable.fnAddData(dtData);
                                     /* targetDataTable.fnAdjustColumnSizing(); */
                                     targetDataTable.fnSort( [ [1,'asc'] ] );
-                                    $("[rel=tooltip]").tooltip();
                                     if (object_type == 'command') {
                                         $('#objecttabs a:first').tab('show');
                                     }
@@ -79,7 +78,7 @@
                 targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
                 //$('#err').html(jqXHR.responseText);
             });
-        };
+        }
 
         $(document).ready(function() {
             /* Default class modification */
@@ -97,22 +96,28 @@
                 "aoColumns": [
                     { "sTitle": '', "sWidth": '32px'},
                     { "sTitle": "Command Name" },
-                    { "sTitle": "Command Line" },
+                    { "sTitle": "Command Line" }
                 ],
                 "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
                 "sScrollY": "260px",
                 "bAutoWidth": false,
                 "bPaginate": true,
-                "bScrollCollapse": false
+                "bScrollCollapse": false,
+                "fnDrawCallback": function( oSettings ) {
+                    $("[rel=tooltip]").tooltip();
+                    $("#commandtable").find('input').each(function() {
+                        $(this).click(mass_select_change);
+                    });
+                }
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
             populate_datatable_objects('command', commandtable, [
-                { "cName": "command_name", "icon": "glyph-computer-proces", },
+                { "cName": "command_name", "icon": "glyph-computer-proces" },
                 {
                     "cName": "command_line",
-                    "truncate": 40,
+                    "truncate": 40
                 }
             ]);
 
@@ -122,14 +127,17 @@
                     { "sTitle": '', "sWidth": '32px'},
                     { "sTitle": "Contact Name" },
                     { "sTitle": "Alias" },
-                    { "sTitle": "E-Mail" },
+                    { "sTitle": "E-Mail" }
                 ],
                 "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
                 "sScrollY": "260px",
                 "bAutoWidth": false,
                 "bPaginate": true,
-                "bScrollCollapse": false
+                "bScrollCollapse": false,
+                "fnDrawCallback": function( oSettings ) {
+                    $("[rel=tooltip]").tooltip();
+                }
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -137,10 +145,10 @@
                 {
                     "cName": "contact_name",
                     "cAltName": "name",
-                    "icon": "glyph-woman",
+                    "icon": "glyph-woman"
                 },
                 { "cName": "alias" },
-                { "cName": "email" },
+                { "cName": "email" }
             ]);
             /* Populate datatable from rest/pynag/json/get_objects */
             populate_datatable_objects('contactgroup', contacttable, [
@@ -150,7 +158,7 @@
                     "icon": "glyph-adress-book"
                 },
                 { "cName": "alias" },
-                { "cName": "email" },
+                { "cName": "email" }
             ]);
 
 
@@ -158,45 +166,9 @@
             var hosttable = $('#hosttable').dataTable( {
                 "aoColumns": [
                     { "sTitle": '', "sWidth": '32px'},
-                    { "sTitle": "Name", },
+                    { "sTitle": "Name" },
                     { "sTitle": "Address" },
-                    { "sTitle": "Alias" },
-                ],
-                "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
-                "sPaginationType": "bootstrap",
-                "sScrollY": "260px",
-                "bAutoWidth": false,
-                "bPaginate": true,
-                "bScrollCollapse": false
-            } );
-
-            /* Populate datatable from rest/pynag/json/get_objects */
-            populate_datatable_objects('host', hosttable, [
-                {
-                    "cName": "host_name",
-                    "cAltName": "name",
-                    "icon": "glyph-computer-locked",
-                },
-                { "cName": "address" },
-                { "cName": "alias" },
-            ]);
-            populate_datatable_objects('hostgroup', hosttable, [
-                {
-                    "cName": "hostgroup_name",
-                    "cAltName": "name",
-                    "icon": "glyph-more-items",
-                },
-                { "cName": "address" },
-                { "cName": "alias" },
-            ]);
-
-            /* Create the CONTACT objec datatable */
-            var servicetable = $('table#servicetable').dataTable( {
-                "aoColumns": [
-                    { "sTitle": '', "sWidth": '32px'},
-                    { "sTitle": "Name", },
-                    { "sTitle": "Host" },
-                    { "sTitle": "Command" },
+                    { "sTitle": "Alias" }
                 ],
                 "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
@@ -204,7 +176,48 @@
                 "bAutoWidth": false,
                 "bPaginate": true,
                 "bScrollCollapse": false,
+                "fnDrawCallback": function( oSettings ) {
+                    $("[rel=tooltip]").tooltip();
+                }
+            } );
+
+            /* Populate datatable from rest/pynag/json/get_objects */
+            populate_datatable_objects('host', hosttable, [
+                {
+                    "cName": "host_name",
+                    "cAltName": "name",
+                    "icon": "glyph-computer-locked"
+                },
+                { "cName": "address" },
+                { "cName": "alias" }
+            ]);
+            populate_datatable_objects('hostgroup', hosttable, [
+                {
+                    "cName": "hostgroup_name",
+                    "cAltName": "name",
+                    "icon": "glyph-more-items"
+                },
+                { "cName": "address" },
+                { "cName": "alias" }
+            ]);
+
+            /* Create the CONTACT objec datatable */
+            var servicetable = $('table#servicetable').dataTable( {
+                "aoColumns": [
+                    { "sTitle": '', "sWidth": '32px'},
+                    { "sTitle": "Name" },
+                    { "sTitle": "Host" },
+                    { "sTitle": "Command" }
+                ],
+                "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
+                "sPaginationType": "bootstrap",
+                "sScrollY": "260px",
+                "bPaginate": true,
+                "bScrollCollapse": false,
                 "bAutoWidth": false,
+                "fnDrawCallback": function( oSettings ) {
+                    $("[rel=tooltip]").tooltip();
+               }
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -212,22 +225,22 @@
                 {
                     "cName": "service_description",
                     "cAltName": "name",
-                    "icon": "glyph-computer-service",
+                    "icon": "glyph-computer-service"
                 },
                 { "cName": "host_name" },
                 {
                     "cName": "check_command",
-                    "truncate": 16,
-                },
+                    "truncate": 16
+                }
             ]);
             populate_datatable_objects('servicegroup', servicetable, [
                 {
                     "cName": "servicegroup_name",
                     "cAltName": "name",
-                    "icon": "glyph-more-items",
+                    "icon": "glyph-more-items"
                 },
                 { "cName": "host_name" },
-                { "cName": "check_command" },
+                { "cName": "check_command" }
             ]);
 
 
@@ -235,15 +248,18 @@
             var timeperiodtable = $('#timeperiodtable').dataTable( {
                 "aoColumns": [
                     { "sTitle": '', "sWidth": '32px'},
-                    { "sTitle": "Name", },
-                    { "sTitle": "Alias" },
+                    { "sTitle": "Name" },
+                    { "sTitle": "Alias" }
                 ],
                 "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
                 "sPaginationType": "bootstrap",
                 "sScrollY": "260px",
                 "bAutoWidth": false,
                 "bPaginate": true,
-                "bScrollCollapse": false
+                "bScrollCollapse": false,
+                "fnDrawCallback": function( oSettings ) {
+                    $("[rel=tooltip]").tooltip();
+                }
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -251,9 +267,9 @@
                 {
                     "cName": "timeperiod_name",
                     "cAltName": "name",
-                    "icon": "glyph-clock",
+                    "icon": "glyph-clock"
                 },
-                { "cName": "alias" },
+                { "cName": "alias" }
             ]);
 
             $(window).bind('resize', function () {
@@ -280,7 +296,10 @@
                 $('#log').append("Set current tab " + currenttable + '<br/>');
             // e.target // activated tab
             // e.relatedTarget // previous tab
+
             });
+
+
         } );
 
       </script>
@@ -305,7 +324,37 @@
 {% if object_types %}
 
       <div class="row">
+
         <div class="span3">
+            <div class="block">
+                <h5>Actions</h5>
+                <div class="btn-group">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                      <i class="icon-plus-sign"></i> Add Object
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><h5 class="center">Objects</h5></li>
+                        <li><a href="/add/host"><i class="glyph-computer-proces"></i> Command</a></li>
+                        <li><a href="/add/host"><i class="glyph-woman"></i> Contact</a></li>
+                        <li><a href="/add/host"><i class="glyph-computer-locked"></i> Host</a></li>
+                        <li><a href="/add/host"><i class="glyph-computer-service"></i> Service</a></li>
+                        <li><a href="/add/host"><i class="glyph-clock"></i> Timeperiod</a></li>
+                        <li><h5 class="center">Object Groups</h5></li>
+                        <li><a href="/add/host"><i class="glyph-adress-book"></i> Contact</a></li>
+                        <li><a href="/add/host"><i class="glyph-more-items"></i> Host</a></li>
+                        <li><a href="/add/host"><i class="glyph-more-items"></i> Service</a></li>
+                    </ul>
+                </div>
+                <div id="bulk" class="hide">
+                    <h5>Bulk Actions</h5>
+                    <ul class="nav nav-list">
+                      <li><a href="/objectbrowser/bulk/delete"><i class="icon-trash"></i> Delete</a></li>
+                      <li><a href="/objectbrowser/bulk/update"><i class="glyph-pencil"></i> Update Field</a></li>
+                    </ul>
+            </div>
+
+        </div>
+
           <div class="block">
 	        <table style="width: 100%" id="objectoverview">
 	          <thead>
