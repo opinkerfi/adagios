@@ -8,89 +8,20 @@
     <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
-/*
-Allow radio inputs as buttong in regular form 
-http://dan.doezema.com/2012/03/twitter-bootstrap-radio-button-form-inputs/
-*/
-jQuery(function($) {
-  $('div.btn-group[data-toggle-name=*]').each(function(){
-    var group   = $(this);
-    var form    = group.parents('form').eq(0);
-    var name    = group.attr('data-toggle-name');
-    var hidden  = $('input[name="' + name + '"]', form);
-    $('button', group).each(function(){
-      var button = $(this);
-      button.live('click', function(){
-          hidden.val($(this).val());
-      });
-      if(button.val() == hidden.val()) {
-        button.addClass('active');
-      }
-    });
-  });
-});
+    $('#objecttab a:first').tab('show');
+    $(document).ready(function() {
+        // Popovers
+        $("[rel=tooltip]").popover();
+        $("#popover").popover();
 
-        $('#objecttab a:first').tab('show');
-        $(document).ready(function() {
+        // Use chosen dropdowns for everything but the Advanced tab
+        $('#general select').chosen();
+        $('#notifications select').chosen();
+        $('#monitoring select').chosen();
 
-
-
-            $("[rel=tooltip]").popover();
-            $("#popover").popover();
-            $('#general select').chosen();
-            $('#notifications select').chosen();
-            $('#monitoring select').chosen();
-
+        // run_check_plugin
+        $('#run_check_plugin').on('show', check_plugin_refresh);
 	});
-	function run_check_command() {
-	    $.getJSON("/rest/pynag/json/run_check_command",
-		{
-			object_id: '{{my_object.id}}'
-		},
-		function(data) {
-			var statusLabel = 'label-inverse';
-			var statusString = 'Unknown';
-			if (data[0] == 2) {
-				statusLabel = 'label-important';
-				statusString = 'Critical';
-			}
-			if (data[0] == 1) {
-				statusLabel = 'label-warning';
-				statusString = 'Warning';
-			}
-			if (data[0] == 0) {
-				statusLabel = 'label-success';
-				statusString = 'OK';
-			}
-            // Set the correct class for state coloring box
-            $('#run_check_plugin #pluginstate').addClass(statusLabel);
-            // Fill it up with the correct status
-            $('#run_check_plugin #pluginstate').html(statusString);
-            // Put the plugin output in the correct div
-            $('#run_check_plugin #pluginoutput').html(data[1]);
-            // Show the refresh button
-			$('#run_check_plugin_refresh').show();
-		}
-		
-	    );
-	}
-	$('#run_check_plugin_refresh').click(function() {
-	    //$('#run_check_plugin div.modal-body').html('Rerunning plugin');
-            // Reset the class on the button
-            $('#run_check_plugin #pluginstate').removeClass("label-important");
-            $('#run_check_plugin #pluginstate').removeClass("label-warning");
-            $('#run_check_plugin #pluginstate').removeClass("label-success");
-            $('#run_check_plugin #pluginstate').html("Pending");
-            $('#run_check_plugin #pluginoutput').html("Executing check plugin");
-	    run_check_command();
-	    return false;
-	});
-        $('#run_check_plugin').on('show', function () {
-	    run_check_command();
-        });
-
-	
-
 
     </script>
 {%  endblock %}
@@ -312,7 +243,7 @@ jQuery(function($) {
             </ul>
         </div>
     </div>
-    <div class="modal hide fade" id="run_check_plugin">
+    <div class="modal hide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}">
         <div class="modal-header">
             <h3>Run Check Plugin</h3>
             <div class="well">{{ command_line }}</div>
@@ -332,7 +263,7 @@ jQuery(function($) {
             </div>
         </div>
         <div class="modal-footer">
-            <button id="run_check_plugin_refresh" class="btn hide" data-dismiss="modal"><i class="icon-refresh"></i> Refresh</button>
+            <button id="run_check_plugin_refresh" class="btn hide" data-object-id="{{ my_object.id }}"><i class="icon-refresh"></i> Refresh</button>
             <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
