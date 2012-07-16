@@ -63,7 +63,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
 class PynagForm(forms.Form):
     def clean(self):
         for k,v in self.cleaned_data.items():
-            if k in MULTICHOICE_FIELDS:
+            if k in MULTICHOICE_FIELDS and self.simple == False:
                 if self.pynag_object.get(k,'').startswith('+'):
                     v = self.cleaned_data[k] = "+%s"%(v)
             if k not in self.data.keys(): self.cleaned_data.pop(k)
@@ -81,8 +81,9 @@ class PynagForm(forms.Form):
                 self.fields[k] = self.get_pynagField(k, css_tag="defined_attribute")
                 self.fields[k].value = v
         self.pynag_object.save()
-    def __init__(self, pynag_object, show_defined_attributes=True,show_inherited_attributes=True,show_undefined_attributes=True, show_radiobuttons=True,*args, **kwargs):
+    def __init__(self, pynag_object, simple=False,show_defined_attributes=True,show_inherited_attributes=True,show_undefined_attributes=True, show_radiobuttons=True,*args, **kwargs):
         self.pynag_object = pynag_object
+        self.simple = simple
         super(forms.Form,self).__init__(*args, **kwargs)
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
@@ -96,16 +97,11 @@ class PynagForm(forms.Form):
             if i in inherited_attributes: continue
             self.undefined_attributes.append( i )
         # Find out which attributes to show
-        if show_defined_attributes:
-            for field_name in defined_attributes:
-                self.fields[field_name] = self.get_pynagField(field_name,css_tag="defined_attribute")
-        if show_inherited_attributes:
-            for field_name in inherited_attributes:
-                if field_name in defined_attributes: continue
-                self.fields[field_name] = self.get_pynagField(field_name, css_tag="inherited_attribute")
-        if show_undefined_attributes:
-            for field_name in self.undefined_attributes:
-                self.fields[field_name] = self.get_pynagField(field_name, css_tag="undefined_attribute")
+        for field_name in defined_attributes + inherited_attributes + self.undefined_attributes:
+            if self.simple:
+                self.fields[field_name] = self.get_pynagField(field_name)
+            else:
+                self.fields[field_name] = self.get_pynagField(field_name)
         return
     def get_pynagField(self, field_name, css_tag=""):
         """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
@@ -113,8 +109,12 @@ class PynagForm(forms.Form):
         object_type = self.pynag_object['object_type']
         definitions = object_definitions.get( object_type ) or {}
         options = definitions.get(field_name) or {}
-        # Some fields get special treatment
-        if field_name in ('contact_groups','contactgroups','contactgroup_members'):
+        
+        # Find out what type of field to create from the field_name
+        # If this is the advanved_edit form, then all fields are charfields
+        if self.simple == True:
+            field = forms.CharField()
+        elif field_name in ('contact_groups','contactgroups','contactgroup_members'):
                 all_groups = Model.Contactgroup.objects.filter(contactgroup_name__contains="")
                 choices = map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups)
                 field = PynagChoiceField(choices=choices)
@@ -147,25 +147,35 @@ class PynagForm(forms.Form):
         elif options.get('value') == '[0/1]':
             field = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
         else:
-            ''' Fallback to a default charfield '''
+            # Fallback to a default charfield
             field = forms.CharField()
-        'no prettyprint for macros'
+        
+        # No prettyprint for macros
         if field_name.startswith('_'):
             field.label = field_name
+        
+        # If any CSS tag was given, add it to the widget
+        self.add_css_tag(field=field, css_tag=css_tag)
+        
         if options.has_key('required'):
-            css_tag = css_tag + " " + options['required']
+            self.add_css_tag(field=field, css_tag=options['required'])
             field.required = options['required'] == 'required'
         else:
             field.required = False
         # At the moment, our database of required objects is incorrect
         field.required = False
-	if field_name in MULTICHOICE_FIELDS:
-		css_tag += " multichoice"
-        if css_tag:
-            field.widget.attrs['class'] = css_tag
-            field.css_tag = css_tag
+        
+        if field_name in MULTICHOICE_FIELDS:
+            self.add_css_tag(field=field, css_tag="multichoice")
+        
         return field
-                
+    def add_css_tag(self, field, css_tag):
+        ''' Add a CSS tag to the widget of a specific field '''
+        if not field.widget.attrs.has_key('class'):
+            field.widget.attrs['class'] = ''
+            field.css_tag = ''
+        field.widget.attrs['class'] += " " + css_tag 
+        field.css_tag += " " + css_tag
         
 class GeekEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )

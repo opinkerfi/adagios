@@ -17,11 +17,12 @@
 
 from django.shortcuts import render_to_response, redirect
 from django.core import serializers
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError,\
+    HttpResponseRedirect
 from django.utils import simplejson
 from django.template import RequestContext
 from django.core.context_processors import csrf
-
+from django.core.urlresolvers import reverse
 import sys
 from os.path import dirname
 
@@ -92,16 +93,72 @@ def list_object_types(request):
     c['gitlog'] = gitlog(dirname(Model.cfg_file))
     return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
+def geek_edit( request, object_id ):
+    ''' Function handles POST requests for the geek edit form '''
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = m = []
+    c['errors'] = []
 
+    # Get our object
+    try:
+        o = ObjectDefinition.objects.get_by_id(id=object_id)
+        c['my_object'] = o
+    except Exception, e:
+        # Not raising, handled by template
+        c['error_summary'] = 'Unable to find object'
+        c['error'] = e
+        return render_to_response('error.html', c, context_instance = RequestContext(request))
+
+    
+    if request.method == 'POST':
+        'Manual edit of the form'
+        form = GeekEditObjectForm(data=request.POST, pynag_object=o)
+        if form.is_valid():
+            form.save()
+            m.append("Object Saved manually to '%s'" % o['filename'])
+        else:
+            m.append( "Failed to save object")
+    else:
+        form = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
+    
+    # Lets return the user to the general view_object form
+    return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
+
+def advanced_edit(request, object_id):
+    ''' Handles POST only requests for the "advanced" object edit form. '''
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = m = []
+    c['errors'] = []
+    # Get our object
+    try:
+        o = ObjectDefinition.objects.get_by_id(id=object_id)
+    except Exception, e:
+        c['error_summary'] = 'Unable to get object'
+        c['error'] = e
+        return render_to_response('error.html', c, context_instance = RequestContext(request))
+
+    if request.method == 'POST':
+        "User is posting data into our form "
+        c['advanced_form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST, simple=True )
+        if c['advanced_form'].is_valid():
+            c['advanced_form'].save()
+            m.append("Object Saved to %s" % o['filename'])
+        else:
+            c['errors'].append( "Problem reading form input")
+    
+    return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
+             
 def view_object( request, object_id=None, object_type=None, shortname=None, object_instance=None):
     """ View details about one specific pynag object """
     c = {}
     c.update(csrf(request))
     c['messages'] = m = []
     c['errors'] = []
-    
     # Get our object
     if object_id is not None:
+        # If object id was specified
         try:
             o = ObjectDefinition.objects.get_by_id(id=object_id)
         except Exception, e:
@@ -110,6 +167,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None, obje
             c['error'] = e
             return render_to_response('error.html', c, context_instance = RequestContext(request))
     elif object_type is not None and shortname is not None:
+        # Its also valid to specify object type and shortname
         # TODO: if multiple objects are found, display a list
         try:
             otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
@@ -121,39 +179,34 @@ def view_object( request, object_id=None, object_type=None, shortname=None, obje
             return render_to_response('error.html', c, context_instance = RequestContext(request))
     else:
         raise ValueError("Object not found")
-
     
     if request.method == 'POST':
-        if request.POST.has_key('definition'):
-            # Manual edit of the form
-            geek_edit = GeekEditObjectForm(data=request.POST, pynag_object=o)
-            if geek_edit.is_valid():
-                geek_edit.save()
-                m.append("Object Saved manually to '%s'" % o['filename'])
-            else:
-                m.append( "Failed to save object")
+        # User is posting data into our form
+        c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST, simple=True )
+        if c['form'].is_valid():
+            c['form'].save()
+            m.append("Object Saved to %s" % o['filename'])
         else:
-            # this is the 'advanced_edit' form
-            c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
-            if c['form'].is_valid():
-                c['form'].save()
-                m.append("Object Saved to %s" % o['filename'])
-            else:
-                c['errors'].append( "Problem reading form input")
+            c['errors'].append( "Problem reading form input")      
+        return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id() + "###"] ) )
+    else:
+        c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
 
-    c['inherited_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False,   show_inherited_attributes=True, show_undefined_attributes=False)
-    c['defined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes,   show_undefined_attributes=False, show_inherited_attributes=False)
-    c['undefined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False,   show_inherited_attributes=False)
     c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
-
     c['my_object'] = o
     c['geek_edit'] = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
+    c['advanced_form'] = PynagForm( pynag_object=o, initial=o._original_attributes, simple=True )
+    
+    # Some type of objects get a little special treatment:
     if o['object_type'] == 'host':
         return _view_host(request, c)
     elif o['object_type'] == 'service':
         return _view_service(request, c)
     elif o['object_type'] == 'contact':
         return _view_contact(request, c)
+    
+    # Here we have all sorts of extra information that can be stuffed into the template,
+    # Some of these do not apply for every type of object, hence the try/except
     try: c['command_line'] = o.get_effective_command_line()
     except: pass
     try: c['object_macros'] = o.get_all_macros()
@@ -168,6 +221,7 @@ def view_object( request, object_id=None, object_type=None, shortname=None, obje
     except: pass
     try: c['effective_members'] = o.get_effective_members()
     except: pass
+    
     return render_to_response('view_object.html', c, context_instance = RequestContext(request))
 
 def _view_contactgroup( request, c):
@@ -340,11 +394,12 @@ def add_service(request):
             new_service.use = service
             new_service.set_filename(host.get_filename())
             new_service.reload_object()
+            new_service.save()
             #Model.Service.objects.clean_cache()
             #Model.config = None
             #Model.Service.objects.get_by_id(new_service.get_id())
             c['my_object'] = new_service
-            return view_object(request, object_instance=new_service)
+            return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[new_service.get_id()] ) )
 
-    return render_to_response('add_service.html', c)
+    return render_to_response('add_service.html', c,context_instance = RequestContext(request))
  

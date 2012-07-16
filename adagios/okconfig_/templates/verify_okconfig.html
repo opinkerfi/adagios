@@ -1,18 +1,14 @@
-{% extends "configurator/base.html" %}
-{% block title %}Add Complete{% endblock %}
+{% extends "adagios_standard.html" %}
+{% block title %}Edit Host{% endblock %}
+{% block smallheader %}Edit{% endblock %}
+{% block largeheader %}Host{% endblock %}
+{% block nav1 %}okconfig{% endblock %}
+
 {% block content %}
-
-
 {% if okconfig_checks %}
 
 
 
-<div class="okconfig_verify_configuration ui-tabs ui-widget ui-widget-content ui-corner-all">
-	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-			<a href="#verify">OKConfig verification</a>
-		</li>
-	</ul>
 	<table>
 	 <thead><tr>
 	  <th>Check</th>
