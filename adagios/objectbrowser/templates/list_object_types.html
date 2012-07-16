@@ -27,7 +27,7 @@
                     $.each(data, function(i,item){
 
                         //alert(fields.length);
-                        var fieldarray = [''];
+                        var fieldarray = ['<a href="{{ BASE_URL }}/objectbrowser/delete?id=' + item['id'] + '"><i class="icon-trash"></i></a> <input rel="ob_mass_select" type="checkbox">'];
                         $.each(fields, function(k, field) {
                             var cell = '<a href="{{ BASE_URL }}/objectbrowser/id=' + item['id'] + '">';
                             var fieldvalue = "";
@@ -106,6 +106,9 @@
                 "bScrollCollapse": false,
                 "fnDrawCallback": function( oSettings ) {
                     $("[rel=tooltip]").tooltip();
+                    $("#commandtable").find('input').each(function() {
+                        $(this).click(mass_select_change);
+                    });
                 }
             } );
 
@@ -214,7 +217,7 @@
                 "bAutoWidth": false,
                 "fnDrawCallback": function( oSettings ) {
                     $("[rel=tooltip]").tooltip();
-                }
+               }
             } );
 
             /* Populate datatable from rest/pynag/json/get_objects */
@@ -293,7 +296,10 @@
                 $('#log').append("Set current tab " + currenttable + '<br/>');
             // e.target // activated tab
             // e.relatedTarget // previous tab
+
             });
+
+
         } );
 
       </script>
@@ -339,7 +345,15 @@
                         <li><a href="/add/host"><i class="glyph-more-items"></i> Service</a></li>
                     </ul>
                 </div>
+                <div id="bulk" class="hide">
+                    <h5>Bulk Actions</h5>
+                    <ul class="nav nav-list">
+                      <li><a href="/objectbrowser/bulk/delete"><i class="icon-trash"></i> Delete</a></li>
+                      <li><a href="/objectbrowser/bulk/update"><i class="glyph-pencil"></i> Update Field</a></li>
+                    </ul>
             </div>
+
+        </div>
 
           <div class="block">
 	        <table style="width: 100%" id="objectoverview">

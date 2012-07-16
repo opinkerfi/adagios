@@ -20,7 +20,9 @@ jQuery(function($) {
     });
 });
 
-
+function mass_select_change() {
+    $('#bulk').fadeIn();
+}
 function run_check_command(modal) {
 
     id = modal.attr('data-object-id');
