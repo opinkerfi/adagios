@@ -1,25 +1,8 @@
-    
-    
-{% extends "configurator/base.html" %}
-{% block title %}Test Playground{% endblock %}
+{% extends "adagios_standard.html" %}
+{% block title %}Adagios - Flunder{% endblock %}
+{% block smallheader %}This is{% endblock %}
+{% block largeheader %}My header{% endblock %}
+
 {% block content %}
-
-
-This page is a placeholder for various testing
-<table>
-	<tr>
-		<th>Error</th>
-		<th>Filename</th>
-	</tr>
-{% for i in config %}
-	<tr>
-		<td>{{ i.message }}</td>
-		<td><a href="/objectbrowser/search?filename={{ i.filename }}">{{ i.filename }}</a></td>
-		<td><b>Delete Service</b></td>
-		<td><b>Create reference</b></td>
-		<td><b>Manually edit</b></td>
-	</tr>
-{% endfor %}
-</table>
+ Hello world
 {% endblock %}
-    
