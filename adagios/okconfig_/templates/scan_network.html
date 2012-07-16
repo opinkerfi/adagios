@@ -1,28 +1,25 @@
-{% extends "configurator/base.html" %}
+{% extends "adagios_standard.html" %}
 {% block title %}Scan Network{% endblock %}
+{% block smallheader %}scan{% endblock %}
+{% block largeheader %}Network{% endblock %}
+{% block nav1 %}okconfig{% endblock %}
+
+
+
 {% block head %}
     <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
 {% endblock %}
 
 {% block content %}
 
-<div class="okconfig_scan_network ui-tabs ui-widget ui-widget-content ui-corner-all">
-	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-			<a href="#host">Scan Network</a>
-		</li>
-	</ul>
-	<form action="scan_network" method="post">{% csrf_token %}
+	<form action="#" method="post">{% csrf_token %}
 		<div class="left">{{ form }}</div>
     	<div >
-    		<INPUT id="zesubmit" type="submit" value="Scan">
+    		<INPUT type="submit" value="Scan">
     	</div>
 	</form>
 </div>
 
-<script>
-$('#zesubmit').button();
-</script>
 
 
 

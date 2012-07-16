@@ -202,7 +202,7 @@ def edit(request, host_name):
         form = forms.EditTemplateForm(service=service,initial=initial)
         myforms.append( form )
     c['forms'] = myforms
-    return render_to_response('edittemplate.html', c)
+    return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
  
 def scan_network(request):
     c = {}

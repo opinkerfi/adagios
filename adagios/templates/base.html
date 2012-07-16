@@ -63,12 +63,12 @@
                    href="#"><i class="icon-edit icon-white"></i> Wizards <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a href="#addhost">Add Host</a></li>
-                  <li><a href="#addhost">Add Template to Host</a></li>
-                  <li><a href="#addhost">Add Service</a></li>
-                  <li><a href="#addhost">Add Group</a></li>
-                  <li><a href="#addhost">Install Agent</a></li>
-                  <li><a href="#addhost">Scan Network</a></li>
+                  <li><a href="{% url okconfig_.views.addhost %}">Add Host</a></li>
+                  <li><a href="{% url okconfig_.views.addtemplate %}">Add Template to Host</a></li>
+                  <li><a href="{% url objectbrowser.views.add_service %}">Add Service</a></li>
+                  <li><a href="{% url okconfig_.views.addgroup %}">Add Group</a></li>
+                  <li><a href="{% url okconfig_.views.install_agent %}">Install Agent</a></li>
+                  <li><a href="{% url okconfig_.views.scan_network %}"">Scan Network</a></li>
                 </ul>
               </li>
 
@@ -113,6 +113,7 @@
     <!-- Here we start the main view -->
     <div class="container content">
 
+{% block adagios_hausinn %}{% endblock %}
 {% block content %}{% endblock %}
 
     </div> <!-- /container -->

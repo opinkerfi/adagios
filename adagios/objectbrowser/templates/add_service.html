@@ -1,32 +1,69 @@
-{% extends "configurator/base.html" %}
-{% block title %}Add Service{% endblock %}
+{% extends "base.html" %}
+{% block title %}Adagios - Flunder{% endblock %}
+
+{% block head %}
+{% endblock %}
+
 
 {% block content %}
+
+<div class="row">
+    <div class="span8">
+        <div class="block">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
+                </li>
+            </ul>
+            <h2>
+                <i class="icon-th-large"></i> <small>Add</small> Service to host
+            </h2>
+        </div>
+    </div>
+</div>
+
+<div class="row"><div class="span8"> <div class="block">
+
+
 
 
 {% if form %}
 
-<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all">
-  <form action="#" method="POST">{% csrf_token %}
-	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-			<a href="#host">Add Service to host</a>
-		</li>
-	</ul>
-	{{ form.as_p }}
-		<p>
-    	<INPUT id="zesubmit" type="submit" value="Submit">
-	</form>
-	</fieldset>
-</div>
 
-<script>
-$('#zesubmit').button();
-</script>
+  <form action="#" method="POST">{% csrf_token %}
+                            <fieldset>
+                        	{% for field in form %}
+
+
+                                <label class="control-label" for="{{ field.name }}">{{ field.label }}{% if field.help %} <abbr rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}"><i class="icon-question-sign"></i></abbr> {% endif %}</label>
+                                <div class="controls" id="advanced_field">
+                                    {{ field }}
+                                </div>
+
+                        	{% endfor %}
+                            </fieldset>
+		<p>
+    	<INPUT type="submit" value="Submit">
+	</form>
 
 
 
 {% endif %}
 
 
+
+
+
+
+
+
+</div> </div> </div>
+
+
 {% endblock %}
+
+{% block footer %}
+{%  endblock %}
