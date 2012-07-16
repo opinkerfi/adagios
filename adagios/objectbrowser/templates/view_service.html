@@ -263,11 +263,12 @@ jQuery(function($) {
                             <button class="btn">Cancel</button>
                         </div>
                     </div>
+            </form>
                     <div class="tab-pane" id="advanced">
                         <form action="#" method="post">
 
                             {% csrf_token %}
-                        	{% for field in form %}
+                        	{% for field in advanced_form %}
 
 
                             <fieldset>
@@ -289,8 +290,6 @@ jQuery(function($) {
                          </form>
                     </div>
                 </div>
-
-            </form>
         </div>
     </div>
     <div class="span3">
@@ -337,7 +336,7 @@ jQuery(function($) {
         </div>
     </div>
     <div class="modal hide fade" id="geek_edit">
-        <form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}
+        <form action="geek_edit/id={{my_object.id}}" method="post">{% csrf_token %}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h3>Geek Edit</h3>
