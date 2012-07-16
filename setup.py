@@ -33,6 +33,6 @@ setup(name=app_name,
     author_email='palli@opensource.is',
     url='https://adagios.opensource.is/',
     packages=['adagios'],
-    package_data={'adagios': data_files }
+    package_data={'adagios': data_files }, requires=['django', "pynag"]
 
 )
