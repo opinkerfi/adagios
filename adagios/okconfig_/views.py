@@ -29,7 +29,7 @@ import okconfig
 import okconfig.network_scan
 
 def addcomplete(request, c={}):
-    return render_to_response('addcomplete.html', c)
+    return render_to_response('addcomplete.html', c,context_instance=RequestContext(request))
 
 def addgroup(request):
     c = {}
