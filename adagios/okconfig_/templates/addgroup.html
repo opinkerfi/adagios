@@ -1,24 +1,14 @@
-{% extends "configurator/base.html" %}
+{% extends "adagios_standard.html" %}
 {% block title %}Add Group{% endblock %}
+{% block smallheader %}Add{% endblock %}
+{% block largeheader %}Group{% endblock %}
+{% block nav1 %}okconfig{% endblock %}
+
+
+
 {% block content %}
-
-<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all">
 	<form action="addgroup" method="post">{% csrf_token %}
-	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-			<a href="#host">Add Group</a>
-		</li>
-	</ul>
-	{{ form.as_p }}
-		<p>
-    	<INPUT id="zesubmit" type="submit" value="Submit">
+		{{ form.as_p }}
+    		<INPUT type="submit" value="Submit">
 	</form>
-	</fieldset>
-</div>
-
-<script>
-$('#zesubmit').button();
-</script>
-
-
 {% endblock %}

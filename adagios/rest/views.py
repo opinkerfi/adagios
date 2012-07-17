@@ -5,6 +5,8 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.utils import simplejson
 #from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
+from django.template import RequestContext
+
 
 import inspect
 from django import forms
@@ -18,7 +20,7 @@ def _load(module_name):
     my_module = __import__(module_name, None, None, [''])
     return my_module
 
-@csrf_exempt   
+@csrf_exempt
 def handle_request(request, module_name, attribute, format):
     m = _load(module_name)
     # TODO: Only allow function calls if method == POST
@@ -38,8 +40,16 @@ def handle_request(request, module_name, attribute, format):
             c['function_name'] = attribute
             c['form'] = CallFunctionForm(function=item, initial=request.GET)
             c['docstring'] = docstring
-            return render_to_response('function_form.html', c)
-            #result = item( **arguments )
+            if not request.GET.items():
+            	return render_to_response('function_form.html', c, context_instance = RequestContext(request))
+            # Handle get parameters
+	    arguments = {}
+            for k, v in request.GET.items():
+                #print "%s = %s (%s)" % (k,v, type(v))
+                # TODO: Is it safe to turn all digits to int ?
+                #if str(v).isdigit(): v = int(float(v))
+                arguments[str(k)] = str(v)
+            result = item( **arguments )
     elif request.method == 'POST':
         item = members[attribute]
         if not inspect.isfunction(item):
@@ -88,7 +98,7 @@ def index( request, module_name ):
     c['gets'] = gets
     c['puts'] = puts
     c['module_documenation'] = inspect.getdoc(m)
-    return render_to_response('index.html', c)
+    return render_to_response('index.html', c, context_instance = RequestContext(request))
 
 class CallFunctionForm(forms.Form):
     def __init__(self, function, *args, **kwargs):

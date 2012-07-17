@@ -17,53 +17,41 @@
 
 from django.shortcuts import render_to_response, redirect
 from django.core import serializers
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError,\
+    HttpResponseRedirect
 from django.utils import simplejson
+from django.template import RequestContext
 from django.core.context_processors import csrf
-
+from django.core.urlresolvers import reverse
 import sys
 from os.path import dirname
 
-from pynag.Model import *
+from pynag.Model import ObjectDefinition
 from pynag import Model
 from pynag.Model import EventHandlers
 from forms import *
 
+from log import *
+
 try:
     # Hook up git event handler
     Model.eventhandlers.append(Model.EventHandlers.GitEventHandler(dirname(Model.cfg_file), 'adagios', 'tommi'))
-except:
+except Exception, e:
     pass
 
 def home(request):
     return redirect('adagios')
 
-
-## DEPRECATED for list_objects
-def list_object(request, object_type):
-    c = {}
-    return render_to_response('hosts.html', c)
-
-## Deprecated for list_objects
-def list_contacts(request):
-    c = {}
-    c['contacts'] = Contact.objects.all
-    
-    return render_to_response('configurator/list_contacts.html', c)
-
-
 def list_objects( request, object_type=None, display_these_objects=None ):
-    """ Finds Pynag objects and returns them in a pretty list. search filter can be applied via querystring
+    """Finds Pynag objects and returns them in a pretty list. search filter can be applied via querystring
     
     Arguments:
         object_type(str) : Only find pynag object of this type
         display_these_objects([ObjectDefinition]) : Instead of searching, simply return these objects
         
     """ 
-    c = {}                      # This hash is sent to our template
-    c['messages'] = m = []      # If we want to get any messages or errors accross
-    c['objects'] = [] # Our pynag objects are collected in here
-    c['object_type'] = object_type
+    c = {'messages': [], 'objects': [],
+         'object_type': object_type}                      # This hash is sent to our template
     # Validate any potential search terms sent via querystring
     search = {}
     for k,v in request.GET.items():
@@ -82,19 +70,18 @@ def list_objects( request, object_type=None, display_these_objects=None ):
     # Lets decide if we want to get everything or apply a filter
     if display_these_objects is not None:
         c['objects'] = display_these_objects
-    elif len(search) == 0:
+    elif not len(search):
         c['objects'] = Pynag.objects.all
     else:
         c['objects'] = Pynag.objects.filter(**search)
     
-    return render_to_response('list_objects.html', c)
+    return render_to_response('list_objects.html', c, context_instance = RequestContext(request))
 
 def list_object_types(request):
-    ''' Collects statistics about pynag objects and returns to template '''
-    c = {}
-    c['object_types'] = []
+    """ Collects statistics about pynag objects and returns to template """
+    c = {'object_types': []}
     for name,Class in Model.string_to_class.items():
-        if name != None:
+        if name is not None:
             active = inactive = 0
             all_instances = Class.objects.all
             for i in all_instances:
@@ -102,63 +89,124 @@ def list_object_types(request):
                     inactive += 1
                 else:
                     active += 1
-            c['object_types'].append( (name, active, inactive) )
-    return render_to_response('list_object_types.html', c)
+            c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
+    c['gitlog'] = gitlog(dirname(Model.cfg_file))
+    return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
-
-def view_object( request, object_id=None, object_type=None, shortname=None, object_instance=None):
-    ''' View details about one specific pynag object '''
+def geek_edit( request, object_id ):
+    ''' Function handles POST requests for the geek edit form '''
     c = {}
     c.update(csrf(request))
     c['messages'] = m = []
     c['errors'] = []
-    
+
     # Get our object
-    if object_id != None:
+    try:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
-    elif object_type != None and shortname != None:
-        # TODO: if multiple objects are found, display a list
-        otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
-        o = otype.objects.get_by_shortname(shortname)
-    elif object_instance != None:
-        o = object_instance
-    else:
-        raise ValueError("Object not found")
+        c['my_object'] = o
+    except Exception, e:
+        # Not raising, handled by template
+        c['error_summary'] = 'Unable to find object'
+        c['error'] = e
+        return render_to_response('error.html', c, context_instance = RequestContext(request))
 
     
     if request.method == 'POST':
-        if request.POST.has_key('definition'):
-            'Manual edit of the form'
-            manual_edit = ManualEditObjectForm(data=request.POST, pynag_object=o)
-            if manual_edit.is_valid():
-                manual_edit.save()
-                m.append("Object Saved manually to '%s'" % o['filename'])
-            else:
-                m.append( "Failed to save object")
+        'Manual edit of the form'
+        form = GeekEditObjectForm(data=request.POST, pynag_object=o)
+        if form.is_valid():
+            form.save()
+            m.append("Object Saved manually to '%s'" % o['filename'])
         else:
-            "this is the 'advanced_edit' form "
-            c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
-            if c['form'].is_valid():
-                c['form'].save()
-                m.append("Object Saved to %s" % o['filename'])
-            else:
-                c['errors'].append( "Problem reading form input")
+            m.append( "Failed to save object")
+    else:
+        form = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
+    
+    # Lets return the user to the general view_object form
+    return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
 
-    c['inherited_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False,   show_inherited_attributes=True, show_undefined_attributes=False)
-    c['defined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes,   show_undefined_attributes=False, show_inherited_attributes=False)
-    c['undefined_attributes'] = PynagForm(pynag_object=o, initial=o._original_attributes, show_defined_attributes=False,   show_inherited_attributes=False)
+def advanced_edit(request, object_id):
+    ''' Handles POST only requests for the "advanced" object edit form. '''
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = m = []
+    c['errors'] = []
+    # Get our object
+    try:
+        o = ObjectDefinition.objects.get_by_id(id=object_id)
+    except Exception, e:
+        c['error_summary'] = 'Unable to get object'
+        c['error'] = e
+        return render_to_response('error.html', c, context_instance = RequestContext(request))
+
+    if request.method == 'POST':
+        "User is posting data into our form "
+        c['advanced_form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST, simple=True )
+        if c['advanced_form'].is_valid():
+            c['advanced_form'].save()
+            m.append("Object Saved to %s" % o['filename'])
+        else:
+            c['errors'].append( "Problem reading form input")
+    
+    return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
+             
+def view_object( request, object_id=None, object_type=None, shortname=None, object_instance=None):
+    """ View details about one specific pynag object """
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = m = []
+    c['errors'] = []
+    # Get our object
+    if object_id is not None:
+        # If object id was specified
+        try:
+            o = ObjectDefinition.objects.get_by_id(id=object_id)
+        except Exception, e:
+            # Not raising, handled by template
+            c['error_summary'] = 'Unable to get object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
+    elif object_type is not None and shortname is not None:
+        # Its also valid to specify object type and shortname
+        # TODO: if multiple objects are found, display a list
+        try:
+            otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
+            o = otype.objects.get_by_shortname(shortname)
+        except Exception, e:
+            # Not raising, handled by template
+            c['error_summary'] = 'Unable to get object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
+    else:
+        raise ValueError("Object not found")
+    
+    if request.method == 'POST':
+        # User is posting data into our form
+        c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
+        if c['form'].is_valid():
+            c['form'].save()
+            m.append("Object Saved to %s" % o['filename'])
+        else:
+            c['errors'].append( "Problem reading form input")      
+        return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
+    else:
+        c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
+
     c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
-
     c['my_object'] = o
-    c['manual_edit'] = ManualEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
+    c['geek_edit'] = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
+    c['advanced_form'] = PynagForm( pynag_object=o, initial=o._original_attributes, simple=True )
+    
+    # Some type of objects get a little special treatment:
     if o['object_type'] == 'host':
         return _view_host(request, c)
     elif o['object_type'] == 'service':
         return _view_service(request, c)
     elif o['object_type'] == 'contact':
         return _view_contact(request, c)
-    elif o['object_type'] == 'contactgroup':
-        return _view_contactgroup(request, c)
+    
+    # Here we have all sorts of extra information that can be stuffed into the template,
+    # Some of these do not apply for every type of object, hence the try/except
     try: c['command_line'] = o.get_effective_command_line()
     except: pass
     try: c['object_macros'] = o.get_all_macros()
@@ -173,21 +221,22 @@ def view_object( request, object_id=None, object_type=None, shortname=None, obje
     except: pass
     try: c['effective_members'] = o.get_effective_members()
     except: pass
-    return render_to_response('view_object.html', c)
+    
+    return render_to_response('view_object.html', c, context_instance = RequestContext(request))
 
 def _view_contactgroup( request, c):
-    ''' This is a helper function to view_object '''
+    """ This is a helper function to view_object """
     try: c['effective_members'] = c['my_object'].get_effective_members()
     except: pass
-    return render_to_response('view_contactgroup.html', c)
+    return render_to_response('view_contactgroup.html', c, context_instance = RequestContext(request))
 def _view_contact( request, c):
-    ''' This is a helper function to view_object '''
+    """ This is a helper function to view_object """
     try: c['effective_contactgroups'] = c['my_object'].get_effective_contactgroups()
     except: pass
-    return render_to_response('view_contact.html', c)
+    return render_to_response('view_contact.html', c, context_instance = RequestContext(request))
 
 def _view_service( request, c):
-    ''' This is a helper function to view_object '''
+    """ This is a helper function to view_object """
     service = c['my_object']
     try: c['command_line'] = service.get_effective_command_line()
     except: c['errors'].append( "Configuration error while looking up command_line")
@@ -203,10 +252,9 @@ def _view_service( request, c):
     
     try: c['object_macros'] = service.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
-
-    return render_to_response('view_service.html', c)
+    return render_to_response('view_service.html', c, context_instance = RequestContext(request))
 def _view_host( request, c):
-    ''' This is a helper function to view_object '''
+    """ This is a helper function to view_object """
     host = c['my_object']
     if not c.has_key('errors'): c['errors'] = []
     
@@ -228,16 +276,15 @@ def _view_host( request, c):
     try: c['object_macros'] = host.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
     
-    return render_to_response('view_host.html', c)
+    return render_to_response('view_host.html', c, context_instance = RequestContext(request))
 
-def confighealth( request  ):
-    c = {}
+def config_health( request  ):
+    c = dict()
     c['messages'] = m = []
-    c['objecthealth'] = s = {}
+    c['object_health'] = s = {}
     c['booleans'] = {}
     services_no_description = Service.objects.filter(register="1", service_description=None)
     hosts_without_contacts = []
-    hosts_with_invalid_contacts = []
     hosts_without_services =[]
     objects_with_invalid_parents = []
     services_without_contacts = []
@@ -281,10 +328,10 @@ def confighealth( request  ):
         objects =  s[request.GET['show']]
         return list_objects(request,display_these_objects=objects )
     else:
-        return render_to_response('suggestions.html', c)
+        return render_to_response('suggestions.html', c, context_instance = RequestContext(request))
 
 def show_plugins(request):
-    ''' Finds all command_line arguments, and shows missing plugins '''
+    """ Finds all command_line arguments, and shows missing plugins """
     c = {}
     missing_plugins = []
     existing_plugins = []
@@ -307,7 +354,7 @@ def show_plugins(request):
             missing_plugins.append( (check_command, command_name) )
     c['missing_plugins'] = missing_plugins
     c['existing_plugins'] = existing_plugins
-    return render_to_response('show_plugins.html', c)
+    return render_to_response('show_plugins.html', c, context_instance = RequestContext(request))
 
 def view_parents(request):
     c = {}
@@ -318,19 +365,16 @@ def view_parents(request):
             name = parent.name
             if not parents.has_key( name ):
                 parents[ name ] = {'children':[], 'num_children':0, 'name':name}
-                parents[ name ] 
             parents[name]['children'].append ( h )
             parents[name]['num_children'] += 1
     c['parents'] = []
     for i in parents.keys():
         c['parents'].append( parents[i] )
-    return render_to_response('parents.html', c)
-def view_nagioscfg(request):
-    c = {}
-    c['filename'] = Model.config.cfg_file
-    c['content'] = Model.config.maincfg_values
+    return render_to_response('parents.html', c, context_instance = RequestContext(request))
+def view_nagios_cfg(request):
+    c = {'filename': Model.config.cfg_file, 'content': Model.config.maincfg_values}
     c['content'].sort()
-    return render_to_response('view_configfile.html', c)
+    return render_to_response('view_configfile.html', c, context_instance = RequestContext(request))
     
 def add_service(request):
     c = {}
@@ -350,11 +394,12 @@ def add_service(request):
             new_service.use = service
             new_service.set_filename(host.get_filename())
             new_service.reload_object()
+            new_service.save()
             #Model.Service.objects.clean_cache()
             #Model.config = None
             #Model.Service.objects.get_by_id(new_service.get_id())
             c['my_object'] = new_service
-            return view_object(request, object_instance=new_service)
+            return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[new_service.get_id()] ) )
 
-    return render_to_response('add_service.html', c)
+    return render_to_response('add_service.html', c,context_instance = RequestContext(request))
  

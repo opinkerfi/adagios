@@ -1,7 +1,9 @@
-{% extends "configurator/base.html" %}
+{% extends "base.html" %}
 {% block title %}List Objects{% endblock %}
 {% block head %}
-    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.dataTables.min.js"></script>
+
+
 {% endblock %}
 
 {% block content %}

@@ -1,42 +1,468 @@
-{% extends "configurator/base.html" %}
-{% block head %}
-    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+{% extends "base.html" %}
+
+{% block title %}Adagios - Object Browser{% endblock %}
+{% block footer %}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+    var currenttab;
+
+    function populate_datatable_objects(object_type, targetDataTable, fields) {
+        /* Determine fields to be queried from API */
+        jsonqueryfields = ['id'];
+        $.each(fields, function(k, field){
+            jsonqueryfields.push(field.cName);
+            /* Fetch alternate columns as well */
+            if ("cAltName" in field) {
+                jsonqueryfields.push(field.cAltName);
+            }
+        });
+        $.getJSON("/rest/pynag/json/get_objects",
+                {
+                    object_type: object_type,
+                    with_fields: jsonqueryfields.join()
+                },
+                function(data) {
+                    var count = data.length;
+                    var dtData = [];
+                    $.each(data, function(i,item){
+
+                        //alert(fields.length);
+                        var fieldarray = ['<a href="{{ BASE_URL }}/objectbrowser/delete?id=' + item['id'] + '"><i class="icon-trash"></i></a> <input rel="ob_mass_select" type="checkbox">'];
+                        $.each(fields, function(k, field) {
+                            var cell = '<a href="{{ BASE_URL }}/objectbrowser/id=' + item['id'] + '">';
+                            var fieldvalue = "";
+                            if ("icon" in field) {
+                                cell += "<i class=\"" + field.icon + "\"></i> ";
+                            }
+                            if (item[field.cName]) {
+                                fieldvalue = item[field.cName];
+                            } else {
+                                if (item[field.cAltName]) {
+                                    fieldvalue = item[field.cAltName];
+                                }
+                            }
+                            fieldvalue = fieldvalue.replace("\"", "&quot;");
+                            fieldvalue = fieldvalue.replace(">", "&gt;");
+                            fieldvalue = fieldvalue.replace("<", "&lt;");
+                            if ("truncate" in field && fieldvalue.length > (field.truncate + 3)) {
+                                cell += "<abbr rel=\"tooltip\" title=\"" + fieldvalue + "\">" + fieldvalue.substr(0, field.truncate) + " ...</abbr>";
+                            } else {
+                                cell += fieldvalue;
+                            }
+                            cell += "</a>";
+                            fieldarray.push(cell);
+                            if (field.cName == fields[fields.length - 1].cName) {
+                                dtData.push(fieldarray);
+                                count--;
+                                if (count == 0) {
+                                    targetDataTable.fnAddData(dtData);
+                                    /* targetDataTable.fnAdjustColumnSizing(); */
+                                    targetDataTable.fnSort( [ [1,'asc'] ] );
+                                    if (object_type == 'command') {
+                                        $('#objecttabs a:first').tab('show');
+                                    }
+                                }
+                            }
+
+                        });
+
+                    });
+
+                }
+        ).success(function() {
+                    targetDataTable.fnAddData(dtData);
+                    /* targetDataTable.fnAdjustColumnSizing(); */
+                    targetDataTable.fnSort( [ [1,'asc'] ] );
+                    $("[rel=tooltip]").tooltip();
+                }).error(function(jqXHR, textStatus, errorThrown) {
+                    targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
+                    //$('#err').html(jqXHR.responseText);
+                });
+    }
+
+    $(document).ready(function() {
+        /* Default class modification */
+        $.extend( $.fn.dataTableExt.oStdClasses, {
+            "sSortAsc": "header headerSortDown",
+            "sSortDesc": "header headerSortUp",
+            "sSortable": "header"
+        } );
+
+        $('#objecttabs a:first').tab('show');
+
+
+        /* Create the COMMAND object datatable */
+        var commandtable = $('#commandtable').dataTable( {
+            "aoColumns": [
+                { "sTitle": '', "sWidth": '32px'},
+                { "sTitle": "Command Name" },
+                { "sTitle": "Command Line" }
+            ],
+            "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
+            "sPaginationType": "bootstrap",
+            "sScrollY": "260px",
+            "bAutoWidth": false,
+            "bPaginate": true,
+            "bScrollCollapse": false,
+            "fnDrawCallback": function( oSettings ) {
+                $("[rel=tooltip]").tooltip();
+                $("#commandtable").find('input').each(function() {
+                    $(this).click(mass_select_change);
+                });
+            }
+        } );
+
+        /* Populate datatable from rest/pynag/json/get_objects */
+        populate_datatable_objects('command', commandtable, [
+            { "cName": "command_name", "icon": "glyph-computer-proces" },
+            {
+                "cName": "command_line",
+                "truncate": 40
+            }
+        ]);
+
+        /* Create the CONTACT objec datatable */
+        var contacttable = $('#contacttable').dataTable( {
+            "aoColumns": [
+                { "sTitle": '', "sWidth": '32px'},
+                { "sTitle": "Contact Name" },
+                { "sTitle": "Alias" },
+                { "sTitle": "E-Mail" }
+            ],
+            "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
+            "sPaginationType": "bootstrap",
+            "sScrollY": "260px",
+            "bAutoWidth": false,
+            "bPaginate": true,
+            "bScrollCollapse": false,
+            "fnDrawCallback": function( oSettings ) {
+                $("[rel=tooltip]").tooltip();
+            }
+        } );
+
+        /* Populate datatable from rest/pynag/json/get_objects */
+        populate_datatable_objects('contact', contacttable, [
+            {
+                "cName": "contact_name",
+                "cAltName": "name",
+                "icon": "glyph-woman"
+            },
+            { "cName": "alias" },
+            { "cName": "email" }
+        ]);
+        /* Populate datatable from rest/pynag/json/get_objects */
+        populate_datatable_objects('contactgroup', contacttable, [
+            {
+                "cName": "contactgroup_name",
+                "cAltName": "name",
+                "icon": "glyph-adress-book"
+            },
+            { "cName": "alias" },
+            { "cName": "email" }
+        ]);
+
+
+        /* Create the CONTACT objec datatable */
+        var hosttable = $('#hosttable').dataTable( {
+            "aoColumns": [
+                { "sTitle": '', "sWidth": '32px'},
+                { "sTitle": "Name" },
+                { "sTitle": "Address" },
+                { "sTitle": "Alias" }
+            ],
+            "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
+            "sPaginationType": "bootstrap",
+            "sScrollY": "260px",
+            "bAutoWidth": false,
+            "bPaginate": true,
+            "bScrollCollapse": false,
+            "fnDrawCallback": function( oSettings ) {
+                $("[rel=tooltip]").tooltip();
+            }
+        } );
+
+        /* Populate datatable from rest/pynag/json/get_objects */
+        populate_datatable_objects('host', hosttable, [
+            {
+                "cName": "host_name",
+                "cAltName": "name",
+                "icon": "glyph-computer-locked"
+            },
+            { "cName": "address" },
+            { "cName": "alias" }
+        ]);
+        populate_datatable_objects('hostgroup', hosttable, [
+            {
+                "cName": "hostgroup_name",
+                "cAltName": "name",
+                "icon": "glyph-more-items"
+            },
+            { "cName": "address" },
+            { "cName": "alias" }
+        ]);
+
+        /* Create the CONTACT objec datatable */
+        var servicetable = $('table#servicetable').dataTable( {
+            "aoColumns": [
+                { "sTitle": '', "sWidth": '32px'},
+                { "sTitle": "Name" },
+                { "sTitle": "Host" },
+                { "sTitle": "Command" }
+            ],
+            "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
+            "sPaginationType": "bootstrap",
+            "sScrollY": "260px",
+            "bPaginate": true,
+            "bScrollCollapse": false,
+            "bAutoWidth": false,
+            "fnDrawCallback": function( oSettings ) {
+                $("[rel=tooltip]").tooltip();
+            }
+        } );
+
+        /* Populate datatable from rest/pynag/json/get_objects */
+        populate_datatable_objects('service', servicetable, [
+            {
+                "cName": "service_description",
+                "cAltName": "name",
+                "icon": "glyph-computer-service"
+            },
+            { "cName": "host_name" },
+            {
+                "cName": "check_command",
+                "truncate": 16
+            }
+        ]);
+        populate_datatable_objects('servicegroup', servicetable, [
+            {
+                "cName": "servicegroup_name",
+                "cAltName": "name",
+                "icon": "glyph-more-items"
+            },
+            { "cName": "host_name" },
+            { "cName": "check_command" }
+        ]);
+
+
+        /* Create the TIMEPERIOD object datatable */
+        var timeperiodtable = $('#timeperiodtable').dataTable( {
+            "aoColumns": [
+                { "sTitle": '', "sWidth": '32px'},
+                { "sTitle": "Name" },
+                { "sTitle": "Alias" }
+            ],
+            "sDom": "<'row'<'span1'><'span4'f>r>t<'row'<'span2'i><'span7'p>>",
+            "sPaginationType": "bootstrap",
+            "sScrollY": "260px",
+            "bAutoWidth": false,
+            "bPaginate": true,
+            "bScrollCollapse": false,
+            "fnDrawCallback": function( oSettings ) {
+                $("[rel=tooltip]").tooltip();
+            }
+        } );
+
+        /* Populate datatable from rest/pynag/json/get_objects */
+        populate_datatable_objects('timeperiod', timeperiodtable, [
+            {
+                "cName": "timeperiod_name",
+                "cAltName": "name",
+                "icon": "glyph-clock"
+            },
+            { "cName": "alias" }
+        ]);
+
+        $(window).bind('resize', function () {
+            /* This blows, couldn't find a good way to do this - tommi */
+            ctab = currenttab;
+            $('#objecttabs a:first').tab('show');
+            $('#objecttabs a:last').tab('show');
+            $('#objecttabs a[href="' + ctab + '"]').tab('show');
+        } );
+
+        $('a[data-toggle="tab"]').on('shown', function (e) {
+            currenttab = $(e.target).attr('href');
+            currenttable = $(e.target).attr('href') + 'table';
+            /* For some reason I have to loop through everything, weird.
+             $(currenttable).dataTable().fnAdjustColumnSizing();
+             */
+            $(currenttable).dataTable().fnAdjustColumnSizing();
+            /*
+             var tables = $.fn.dataTable.fnTables();
+             for ( var i = 0 ; i<tables.length ; i++ ) {
+             $(tables[i]).dataTable().fnAdjustColumnSizing(true);
+             }
+             */
+            $('#log').append("Set current tab " + currenttable + '<br/>');
+            // e.target // activated tab
+            // e.relatedTarget // previous tab
+
+        });
+
+
+    } );
+
+    </script>
 {% endblock %}
-{% block title %}List of object Types{% endblock %}
-
 {% block content %}
-<h1>List of Available Object types</h1>
+
+    <div class="row">
+        <div class="span12">
+            <div class="block">
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                    </li>
+                </ul>
+                <h2>
+                    <i class="icon-th-large"></i> <small>Object</small> Browser
+                </h2>
+
+            </div>
+        </div>
+    </div>
+    {% if object_types %}
+
+        <div class="row">
+            <div class="span9">
+                <div class="block">
+                    <ul class="nav nav-tabs" id="objecttabs">
+                        <li><a href="#command" data-toggle="tab">Commands</a></li>
+                        <li><a href="#contact" data-toggle="tab">Contacts</a></li>
+                        <li><a href="#host" data-toggle="tab">Hosts</a></li>
+                        <li><a href="#service" data-toggle="tab">Services</a></li>
+                        <li><a href="#timeperiod" data-toggle="tab">Timeperiods</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="command">
+                            <table id="commandtable" class="table table-striped">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="contact">
+                            <table id="contacttable" class="table table-striped">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="host">
+                            <table id="hosttable" class="table table-striped">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="service">
+                            <table id="servicetable" class="table table-striped">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="timeperiod">
+                            <table id="timeperiodtable" class="table table-striped">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="span3">
+                <div class="block">
+                    <h5>Actions</h5>
+                    <div class="btn-group">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="icon-plus-sign"></i> Add Object
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><h5 class="center">Objects</h5></li>
+                            <li><a href="/add/host"><i class="glyph-computer-proces"></i> Command</a></li>
+                            <li><a href="/add/host"><i class="glyph-woman"></i> Contact</a></li>
+                            <li><a href="/add/host"><i class="glyph-computer-locked"></i> Host</a></li>
+                            <li><a href="/add/host"><i class="glyph-computer-service"></i> Service</a></li>
+                            <li><a href="/add/host"><i class="glyph-clock"></i> Timeperiod</a></li>
+                            <li><h5 class="center">Object Groups</h5></li>
+                            <li><a href="/add/host"><i class="glyph-adress-book"></i> Contact</a></li>
+                            <li><a href="/add/host"><i class="glyph-more-items"></i> Host</a></li>
+                            <li><a href="/add/host"><i class="glyph-more-items"></i> Service</a></li>
+                        </ul>
+                    </div>
+                    <div id="bulk" class="hide">
+                        <h5>Bulk Actions</h5>
+                        <ul class="nav nav-list">
+                            <li><a href="/objectbrowser/bulk/delete"><i class="icon-trash"></i> Delete</a></li>
+                            <li><a href="/objectbrowser/bulk/update"><i class="glyph-pencil"></i> Update Field</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="block">
+                    <table style="width: 100%" id="objectoverview">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Active</th>
+                            <th>Inactive</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in object_types %}
+                            <tr class="{% cycle 'even' 'odd' %}">
+                                <td><a href="search?object_type={{ i.name }}">{{ i.name }}</a></td>
+                                <td class="center"><a href="search?object_type={{ i.name }}&register=1">{{ i.active }}</a></td>
+                                <td class="center"><a href="search?object_type={{ i.name }}&register=0">{{ i.inactive }}</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="block" id="log" style="height: 150px;overflow: auto">
+
+                </div>
+            </div>
+
+        </div>
 
 
-{% if object_types %}
+    {% else %}
+        <p>List of object types not found </p>
+    {% endif %}
 
-<div class="objectbrowser_list_objects ui-tabs ui-widget ui-widget-content ui-corner-all">
-	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-			<a href="#host">Object List</a>
-		</li>
-	</ul>
+    <div class="row">
+        <div class="span12">
+            <div class="block">
+                <h5 style="border-bottom: 1px solid #ccc">Most Recent Changes</h5>
+                <table class="log">
+                    <thead>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>What</th>
+                    </thead>
+                    <tbody>
 
-	<table width="100%">
-	<thead>
-	 <tr>
-		<th>Object Type</th>
-		<th>Active</th>
-		<th>Inactive</th>
-	 </tr>
-	</thead>
-	<tbody>
-	{% for i in object_types %}
-		<tr class="{% cycle 'even' 'odd' %}">
-			<td><a href="search?object_type={{ i.0 }}">{{ i.0 }}</a></td>
-			<td><a href="search?object_type={{ i.0 }}&register=1">{{ i.1 }}</a></td>
-			<td><a href="search?object_type={{ i.0 }}&register=0">{{ i.2 }}</a></td>
-		</tr>
-	{% endfor %}
-	</tbody></table>
-</div>
-{% else %}
-	<p>List of object types not found </p>
-{% endif %}
-
+                    {% for logentry in gitlog %}
+                        <tr>
+                            <td>{{ logentry.authortime|date:"j M Y, H:i" }}</td>
+                            <td>{{ logentry.author }} &lt;{{ logentry.authoremail }}&gt;</td>
+                            <td>{{ logentry.comment }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

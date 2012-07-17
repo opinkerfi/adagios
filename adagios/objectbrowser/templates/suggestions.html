@@ -19,14 +19,14 @@
 {% endif %}
 </table>
 
-{% if objecthealth %}
+{% if object_health %}
 	<h1>Object Health</h1>
 	<table border=1>
 	<tr>
 		<th>Description</th>
 		<th>Count</th>
 	</tr>
-	{% for k,v in objecthealth.items %}
+	{% for k,v in object_health.items %}
 		<tr>
 			<td><a href="?show={{ k }}">{{ k }}</a></td>
 			<td>{{ v|length }}</td>
