@@ -1,12 +1,12 @@
 import sys
 
 from pynag.Parsers import config
-nc = config('/etc/nagios/nagios.cfg')
+nc = config()
 nc.parse()
 
 def parse():
 	global nc
-	nc = config('/etc/nagios/nagios.cfg')	
+	nc = config()
 	nc.parse()
 def get_hosts():
 	## Create the plugin option
