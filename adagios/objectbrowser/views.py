@@ -182,13 +182,13 @@ def view_object( request, object_id=None, object_type=None, shortname=None, obje
     
     if request.method == 'POST':
         # User is posting data into our form
-        c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST, simple=True )
+        c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
         if c['form'].is_valid():
             c['form'].save()
             m.append("Object Saved to %s" % o['filename'])
         else:
             c['errors'].append( "Problem reading form input")      
-        return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id() + "###"] ) )
+        return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
     else:
         c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
 
