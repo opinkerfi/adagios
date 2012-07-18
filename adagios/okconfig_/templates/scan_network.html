@@ -12,12 +12,13 @@
 
 {% block content %}
 
-	<form action="#" method="post">{% csrf_token %}
-		<div class="left">{{ form }}</div>
-    	<div >
-    		<INPUT type="submit" value="Scan">
-    	</div>
-	</form>
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </form>
+
 </div>
 
 

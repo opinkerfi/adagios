@@ -5,10 +5,20 @@
 {% block nav1 %}okconfig{% endblock %}
 
 
+<label class="control-label" for="host_name" rel="tooltip" title="{{ form.host_name.label }}" data-content="eg web01.example.com">{{ form.host_name.label }}</label>
+<div class="controls"> <!-- class inherited -->
+    {{ form.host_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
+</div>
+
 
 {% block content %}
-	<form action="addhost" method="post">{% csrf_token %}
-		{{ form.as_p }}
-    		<INPUT type="submit" value="Submit">
+
+	<form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
 	</form>
+
+
 {% endblock %}

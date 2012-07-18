@@ -7,18 +7,20 @@
 
 
 {% block content %}
-<form action="#" method="post">{% csrf_token %}
-	<INPUT type="submit" value="Save	">
+<form action="#" method="post" class="form-horizontal">{% csrf_token %}
+    <button class="btn btn-primary" type="submit">Save</button><p></p>
 	
 {% for form in forms %}
-	<table border=1>
-		<tr><th><b>{{ form.description }}</b> <a href="../../objectbrowser/id={{ form.service.id }}">(edit)</a></th></tr>
-		<tr><td> {{ form.as_p }} </td></tr>
+	<table border=1 width=100%>
+		<tr><th><h2>{{ form.description }}</h2> <a href="../../objectbrowser/id={{ form.service.id }}">(edit)</a></th></tr>
+		<tr><td>
+                {% include "bootstrap_fields.html" with fields=form %}
+		</td></tr>
 		<tr><td> {{ form.command_line }} </td></tr>
 	</table> 
 	<br>
 {% endfor %}
-{{ form.as_p }}
+
 <form>
 
     

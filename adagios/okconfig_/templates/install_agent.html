@@ -22,8 +22,11 @@ Script output:
 </pre>
 {% endif %}
 
-	<form action="#" method="post">{% csrf_token %}
-		{{ form.as_p }}
-    		<INPUT type="submit" value="Submit">
-	</form>
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </form>
+
 {% endblock %}
