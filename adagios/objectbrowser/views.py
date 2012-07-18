@@ -122,8 +122,8 @@ def geek_edit( request, object_id ):
     else:
         form = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     
-    # Lets return the user to the general view_object form
-    return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
+    # Lets return the user to the general edit_object form
+    return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[o.get_id()] ) )
 
 def advanced_edit(request, object_id):
     ''' Handles POST only requests for the "advanced" object edit form. '''
@@ -148,9 +148,9 @@ def advanced_edit(request, object_id):
         else:
             c['errors'].append( "Problem reading form input")
     
-    return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
+    return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[o.get_id()] ) )
              
-def view_object( request, object_id=None, object_type=None, shortname=None):
+def edit_object( request, object_id=None, object_type=None, shortname=None):
     """ View details about one specific pynag object """
     c = {}
     c.update(csrf(request))
@@ -190,10 +190,9 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
         if c['form'].is_valid():
             c['form'].save()
             m.append("Object Saved to %s" % o['filename'])
+            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
         else:
-            print "not saved"
-            c['errors'].append( "Problem reading form input")      
-        return HttpResponseRedirect( reverse('objectbrowser.views.view_object', kwargs={'object_id':o.get_id()} ) )
+            c['errors'].append( "Could not validate form input")
     else:
         c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
 
@@ -204,11 +203,11 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     
     # Some type of objects get a little special treatment:
     if o['object_type'] == 'host':
-        return _view_host(request, c)
+        return _edit_host(request, c)
     elif o['object_type'] == 'service':
-        return _view_service(request, c)
+        return _edit_service(request, c)
     elif o['object_type'] == 'contact':
-        return _view_contact(request, c)
+        return _edit_contact(request, c)
     
     # Here we have all sorts of extra information that can be stuffed into the template,
     # Some of these do not apply for every type of object, hence the try/except
@@ -227,21 +226,21 @@ def view_object( request, object_id=None, object_type=None, shortname=None):
     try: c['effective_members'] = o.get_effective_members()
     except: pass
     
-    return render_to_response('view_object.html', c, context_instance = RequestContext(request))
+    return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
 
-def _view_contactgroup( request, c):
-    """ This is a helper function to view_object """
+def _edit_contactgroup( request, c):
+    """ This is a helper function to edit_object """
     try: c['effective_members'] = c['my_object'].get_effective_members()
     except: pass
-    return render_to_response('view_contactgroup.html', c, context_instance = RequestContext(request))
-def _view_contact( request, c):
-    """ This is a helper function to view_object """
+    return render_to_response('edit_contactgroup.html', c, context_instance = RequestContext(request))
+def _edit_contact( request, c):
+    """ This is a helper function to edit_object """
     try: c['effective_contactgroups'] = c['my_object'].get_effective_contactgroups()
     except: pass
-    return render_to_response('view_contact.html', c, context_instance = RequestContext(request))
+    return render_to_response('edit_contact.html', c, context_instance = RequestContext(request))
 
-def _view_service( request, c):
-    """ This is a helper function to view_object """
+def _edit_service( request, c):
+    """ This is a helper function to edit_object """
     service = c['my_object']
     try: c['command_line'] = service.get_effective_command_line()
     except: c['errors'].append( "Configuration error while looking up command_line")
@@ -257,9 +256,9 @@ def _view_service( request, c):
     
     try: c['object_macros'] = service.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
-    return render_to_response('view_service.html', c, context_instance = RequestContext(request))
-def _view_host( request, c):
-    """ This is a helper function to view_object """
+    return render_to_response('edit_service.html', c, context_instance = RequestContext(request))
+def _edit_host( request, c):
+    """ This is a helper function to edit_object """
     host = c['my_object']
     if not c.has_key('errors'): c['errors'] = []
     
@@ -281,7 +280,7 @@ def _view_host( request, c):
     try: c['object_macros'] = host.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
     
-    return render_to_response('view_host.html', c, context_instance = RequestContext(request))
+    return render_to_response('edit_host.html', c, context_instance = RequestContext(request))
 
 def config_health( request  ):
     c = dict()
@@ -361,7 +360,7 @@ def show_plugins(request):
     c['existing_plugins'] = existing_plugins
     return render_to_response('show_plugins.html', c, context_instance = RequestContext(request))
 
-def view_parents(request):
+def edit_parents(request):
     c = {}
     parents = {}
     hosts = Host.objects.all
@@ -376,10 +375,10 @@ def view_parents(request):
     for i in parents.keys():
         c['parents'].append( parents[i] )
     return render_to_response('parents.html', c, context_instance = RequestContext(request))
-def view_nagios_cfg(request):
+def edit_nagios_cfg(request):
     c = {'filename': Model.config.cfg_file, 'content': Model.config.maincfg_values}
     c['content'].sort()
-    return render_to_response('view_configfile.html', c, context_instance = RequestContext(request))
+    return render_to_response('edit_configfile.html', c, context_instance = RequestContext(request))
     
 def add_service(request):
     c = {}
@@ -404,7 +403,7 @@ def add_service(request):
             #Model.config = None
             #Model.Service.objects.get_by_id(new_service.get_id())
             c['my_object'] = new_service
-            return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[new_service.get_id()] ) )
+            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[new_service.get_id()] ) )
 
     return render_to_response('add_service.html', c,context_instance = RequestContext(request))
  

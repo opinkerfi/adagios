@@ -31,7 +31,7 @@ Temp. disabled.
 
 {% if form_not_used %}
 
-<form action="view_object/id={{my_object.id}}" method="post">{% csrf_token %}
+<form action="edit_object/id={{my_object.id}}" method="post">{% csrf_token %}
 	<div class="attribute_contact">
 
 		<div class="attribute_{{object_type}}">
