@@ -165,3 +165,14 @@ table.dataTable th:active {
 table.table th, table.table td {
     line-height: 12px;
 }
+
+
+#bulk a {
+    color: #5c5c5c;
+}
+
+
+.nav .nav-header {
+    background-color: #EEEEEE;
+    color: #404040;
+}

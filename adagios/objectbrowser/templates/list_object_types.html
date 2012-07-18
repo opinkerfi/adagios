@@ -249,27 +249,34 @@
 
             <div class="span3">
                 <div class="block">
-                    <h5>Actions</h5>
-                    <div class="btn-group">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="icon-plus-sign"></i> Add Object
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><h5 class="center">Objects</h5></li>
-                            <li><a href="add/command"><i class="glyph-computer-proces"></i> Command</a></li>
-                            <li><a href="add/contact"><i class="glyph-woman"></i> Contact</a></li>
-                            <li><a href="add/host"><i class="glyph-computer-locked"></i> Host</a></li>
-                            <li><a href="add/service"><i class="glyph-computer-service"></i> Service</a></li>
-                            <li><a href="add/timeperiod"><i class="glyph-clock"></i> Timeperiod</a></li>
-                            <li><h5 class="center">Object Groups</h5></li>
-                            <li><a href="add/contactgroup"><i class="glyph-adress-book"></i> Contactgroup</a></li>
-                            <li><a href="add/hostgroup"><i class="glyph-more-items"></i> Hostgroup</a></li>
-                            <li><a href="add/servicegroup"><i class="glyph-more-items"></i> Servicegroup</a></li>
+                    <div>
+                        <ul class="nav nav-list">
+                            <li class="nav-header">Actions</li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle"
+                                   data-toggle="dropdown"
+                                   href="#">
+                                    <i class="icon-plus-sign"></i> Add Object
+                                </a>
+
+                                <ul class="dropdown-menu">
+                                    <li class="nav-header">Objects</li>
+                                    <li><a href="add/command"><i class="glyph-computer-proces"></i> Command</a></li>
+                                    <li><a href="add/contact"><i class="glyph-woman"></i> Contact</a></li>
+                                    <li><a href="add/host"><i class="glyph-computer-locked"></i> Host</a></li>
+                                    <li><a href="add/service"><i class="glyph-computer-service"></i> Service</a></li>
+                                    <li><a href="add/timeperiod"><i class="glyph-clock"></i> Timeperiod</a></li>
+                                    <li class="nav-header">Object Groups</li>
+                                    <li><a href="add/contactgroup"><i class="glyph-adress-book"></i> Contactgroup</a></li>
+                                    <li><a href="add/hostgroup"><i class="glyph-more-items"></i> Hostgroup</a></li>
+                                    <li><a href="add/servicegroup"><i class="glyph-more-items"></i> Servicegroup</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </div>
-                    <div id="bulk" class="hide">
-                        <h5>Bulk Actions</h5>
+                    <div id="bulk">
                         <ul class="nav nav-list">
+                            <li class="nav-header">Bulk Actions</li>
                             <li><a href="/objectbrowser/bulk/delete"><i class="icon-trash"></i> Delete</a></li>
                             <li><a href="/objectbrowser/bulk/update"><i class="glyph-pencil"></i> Update Field</a></li>
                         </ul>
@@ -278,27 +285,26 @@
                 </div>
 
                 <div class="block">
+                    <h4>Object Counts</h4>
                     <table style="width: 100%" id="objectoverview">
                         <thead>
                         <tr>
                             <th>Type</th>
-                            <th>Active</th>
-                            <th>Inactive</th>
+                            <th>#</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for i in object_types %}
                             <tr class="{% cycle 'even' 'odd' %}">
-                                <td><a href="search?object_type={{ i.name }}">{{ i.name }}</a></td>
-                                <td class="center"><a href="search?object_type={{ i.name }}&register=1">{{ i.active }}</a></td>
-                                <td class="center"><a href="search?object_type={{ i.name }}&register=0">{{ i.inactive }}</a></td>
+                                <td><strong>{{ i.name }}</strong></td>
+                                <td class="center">{{ i.active }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
 
                 </div>
-                <div class="block" id="log" style="height: 150px;overflow: auto">
+                <div class="block hide" id="log" style="height: 150px;overflow: auto">
 
                 </div>
             </div>
