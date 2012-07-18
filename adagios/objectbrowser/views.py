@@ -245,8 +245,8 @@ def _edit_service( request, c):
     try: c['command_line'] = service.get_effective_command_line()
     except: c['errors'].append( "Configuration error while looking up command_line")
 
-    try: c['effective_servicegroups'] = service.get_effective_servicegroups()
-    except: c['errors'].append( "Configuration error while looking up servicegroups")
+    #try: c['effective_servicegroups'] = service.get_effective_servicegroups()
+    #except: c['errors'].append( "Configuration error while looking up servicegroups")
     
     try: c['effective_contacts'] = service.get_effective_contacts()
     except: c['errors'].append( "Configuration error while looking up contacts")
@@ -407,3 +407,21 @@ def add_service(request):
 
     return render_to_response('add_service.html', c,context_instance = RequestContext(request))
  
+def edit_many(request):
+    """ Edit multiple objects with one post """
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = []
+    c['errors'] = []
+    objects = Model.Timeperiod.objects.all
+    c['objects'] = objects
+    c['form'] = EditManyForm(objects=objects)
+
+    if request.method == "POST":
+        c['form'] = EditManyForm(objects=objects,data=request.POST)
+        if c['form'].is_valid():
+            c['form'].save()
+            for i in c['form'].changed_objects:
+                c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+
+    return render_to_response('edit_many.html', c, context_instance = RequestContext(request))

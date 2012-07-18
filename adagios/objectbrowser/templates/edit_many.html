@@ -1,0 +1,43 @@
+{% extends "adagios_standard.html" %}
+{% block title %}Bulk edit{% endblock %}
+{% block smallheader %}edit{% endblock %}
+{% block largeheader %}Many objects{% endblock %}
+{% block nav1 %}Object Browser{% endblock %}
+
+{%  block content %}
+    Massa sniðugt. Haka við öll objectin sem á að edita og svo skrifa inn attribute name og new value
+    <h2>quirks</h2>
+    <ul>
+    <li>Þarf að posta inn í þetta url hvaða items á að edita (hidden field sem er með name=hidden_OBJECTID </li>
+    <li>Vantar logic sem hakar sjálfkrafa í viðeigandi box á þessu formi </li>
+    <li>Leyfa edit á fleiru en einu field í einu </li>
+
+    </ul>
+    {{  form.errors }}
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+    {% include "bootstrap_fields.html" with fields=form %}
+    <table border=1>
+        <tr>
+            <th></th>
+            <th>object type</th>
+            <th>description</th>
+            <th>filename</th>
+        </tr>
+        {% for obj in objects %}
+            <tr>
+                <td>
+                    <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
+                    <input type="checkbox" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                </td>
+                <td>{{ obj.object_type }}</td>
+                <td>{{ obj.description }}</td>
+                <td>{{ obj.filename }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </form>
+
+{%  endblock %}

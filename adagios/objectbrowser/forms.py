@@ -196,3 +196,36 @@ class GeekEditObjectForm(forms.Form):
 class AddServiceToHostForm(forms.Form):
     host_name = forms.ChoiceField(choices=ALL_HOSTS)
     service = forms.ChoiceField(choices=INACTIVE_SERVICES)
+
+class EditManyForm(forms.Form):
+    """ To make changes to multiple objects at once """
+    attribute_name = forms.CharField()
+    new_value = forms.CharField()
+    def __init__(self, objects=[],*args, **kwargs):
+        self.objects = []
+        self.all_objects = []
+        self.changed_objects = []
+        super(EditManyForm, self).__init__(*args,**kwargs)
+
+    def save(self):
+        for i in self.changed_objects:
+            key = self.cleaned_data['attribute_name']
+            value = self.cleaned_data['new_value']
+            i[key] = value
+            i.save()
+    def clean(self):
+        #self.cleaned_data = {}
+        for k,v in self.data.items():
+            print "datum", k, v
+            if k.startswith('hidden_'):
+                self.cleaned_data[k] = v
+                obj = Model.ObjectDefinition.objects.get_by_id(v)
+                if obj not in self.all_objects:
+                    self.all_objects.append( obj )
+            if k.startswith('change_'):
+                self.cleaned_data[k] = v
+                object_id = k[ len("change_"): ]
+                obj = Model.ObjectDefinition.objects.get_by_id(object_id)
+                if obj not in self.changed_objects:
+                    self.changed_objects.append( obj )
+        return self.cleaned_data
