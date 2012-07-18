@@ -19,6 +19,33 @@
         // Show service tab
         $('#objecttabs a:[href="#service"]').tab('show');
 
+
+
+        $('table#servicetable').adagios_ob_dataTable(
+            [
+                { "sTitle": "Name" },
+                { "sTitle": "Host" },
+                { "sTitle": "Command" }
+            ]).adagios_ob_dtPopulate('service', [
+            {
+                "cName": "service_description",
+                "cAltName": "name",
+                "icon": "glyph-computer-service"
+            },
+            { "cName": "host_name" },
+            {
+                "cName": "check_command",
+                "truncate": 16
+            }
+        ]).adagios_ob_dtPopulate('servicegroup', [
+            {
+                "cName": "servicegroup_name",
+                "cAltName": "name",
+                "icon": "glyph-more-items"
+            },
+            { "cName": "host_name" },
+            { "cName": "check_command" }
+        ]);
         /*
         Create the command table and populate it
          */
@@ -102,35 +129,6 @@
                 ]
         );
 
-
-        $('table#servicetable').adagios_ob_dataTable(
-            [
-                { "sTitle": "Name" },
-                { "sTitle": "Host" },
-                { "sTitle": "Command" }
-            ]).adagios_ob_dtPopulate('service', [
-            {
-                "cName": "service_description",
-                "cAltName": "name",
-                "icon": "glyph-computer-service"
-            },
-            { "cName": "host_name" },
-            {
-                "cName": "check_command",
-                "truncate": 16
-            }
-        ]).adagios_ob_dtPopulate('servicegroup', [
-            {
-                "cName": "servicegroup_name",
-                "cAltName": "name",
-                "icon": "glyph-more-items"
-            },
-            { "cName": "host_name" },
-            { "cName": "check_command" }
-        ]);
-
-
-
         $('#timeperiodtable').adagios_ob_dataTable(
             [
                 { "sTitle": "Name" },
@@ -167,6 +165,7 @@
             // e.target // activated tab
             // e.relatedTarget // previous tab
 
+            return true;
         });
 
 
