@@ -90,7 +90,7 @@ def list_object_types(request):
                 else:
                     active += 1
             c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
-    c['gitlog'] = gitlog(dirname(Model.cfg_file))
+    c['gitlog'] = gitlog(dirname(Model.cfg_file or Model.config.cfg_file))
     return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
 def geek_edit( request, object_id ):
@@ -150,7 +150,7 @@ def advanced_edit(request, object_id):
     
     return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
              
-def view_object( request, object_id=None, object_type=None, shortname=None, object_instance=None):
+def view_object( request, object_id=None, object_type=None, shortname=None):
     """ View details about one specific pynag object """
     c = {}
     c.update(csrf(request))
@@ -166,6 +166,10 @@ def view_object( request, object_id=None, object_type=None, shortname=None, obje
             c['error_summary'] = 'Unable to get object'
             c['error'] = e
             return render_to_response('error.html', c, context_instance = RequestContext(request))
+    elif object_type is not None and shortname is None:
+        # Specifying only object_type indicates this is a new object
+        otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
+        o = otype()
     elif object_type is not None and shortname is not None:
         # Its also valid to specify object type and shortname
         # TODO: if multiple objects are found, display a list
@@ -187,8 +191,9 @@ def view_object( request, object_id=None, object_type=None, shortname=None, obje
             c['form'].save()
             m.append("Object Saved to %s" % o['filename'])
         else:
+            print "not saved"
             c['errors'].append( "Problem reading form input")      
-        return HttpResponseRedirect( reverse('objectbrowser.views.view_object', args=[o.get_id()] ) )
+        return HttpResponseRedirect( reverse('objectbrowser.views.view_object', kwargs={'object_id':o.get_id()} ) )
     else:
         c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
 
