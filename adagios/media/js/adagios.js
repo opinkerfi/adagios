@@ -23,24 +23,19 @@ jQuery(function($) {
     });
 });
 
-// ObjectBrowser fade in of bulk action
-function ob_mass_select_change() {
-    $('#bulk').fadeIn();
-}
-
 /*
  Object Browser, This runs whenever "Run Check Plugin" is clicked
 
- It resets the color of the OK/WARNING/CRITICAL/UNKOWN button
+ It resets the color of the OK/WARNING/CRITICAL/UNKNOWN button
  Runs a REST call to run the check_command and fetch the results
 
  Calling button/href needs to have data-object-id="12312abc...."
  */
 function ob_run_check_command() {
     // Fetch the calling object
-    modal = $(this);
+    var modal = $(this);
     // Get the object_id
-    id = modal.attr('data-object-id');
+    var id = modal.attr('data-object-id');
 
     // Reset the class on the button
     $('#run_check_plugin #pluginstate').removeClass("label-important");
@@ -98,13 +93,13 @@ function ob_run_check_command() {
      example, aoColumns = [ { 'sTitle': 'Contact Name'}, { 'sTitle': 'Alias' } ]
 
      */
-    $.fn.adagios_ob_dataTable = function(aoColumns, jsonFields, object_type) {
+    $.fn.adagios_ob_dataTable = function(aoColumns) {
         // Option column
         aoColumns.unshift({ "sTitle": '', 'sWidth': '32px' });
 
         return this.each(function() {
             //alert('this id ' + $(this).attr('id'));
-            dt = $(this).dataTable( {
+            var dt = $(this).dataTable( {
                 "aoColumns": aoColumns,
                 "sPaginationType": "bootstrap",
                 "sScrollY": "260px",
@@ -113,8 +108,7 @@ function ob_run_check_command() {
                 "bPaginate": true,
                 // Callback which assigns tooltips to visible pages
                 "fnDrawCallback": function( oSettings ) {
-                    var a = oSettings;
-                    //$("[rel=tooltip]").tooltip();
+                    $("[rel=tooltip]").tooltip();
                 }
             });
             $(this).data('datatable', dt);
@@ -137,14 +131,13 @@ function ob_run_check_command() {
      */
     $.fn.adagios_ob_dtPopulate = function(object_type, jsonFields) {
         return this.each(function() {
-            //alert('tgtdt: ' + targetDataTable);
             $('#log').append('Populating ' + object_type + $(this).attr('id') + '<br/>');
 
-            var jsonqueryfields = ['id'];
+            var json_query_fields = ['id'];
             $.each(jsonFields, function(k, field){
-                jsonqueryfields.push(field.cName);
+                json_query_fields.push(field['cName']);
                 if ("cAltName" in field) {
-                    jsonqueryfields.push(field.cAltName);
+                    json_query_fields.push(field['cAltName']);
                 }
             });
             var dtData = [];
@@ -153,13 +146,12 @@ function ob_run_check_command() {
             $.getJSON("/rest/pynag/json/get_objects",
                 {
                     object_type: object_type,
-                    with_fields: jsonqueryfields.join()
+                    with_fields: json_query_fields.join()
                 },
                 function(data) {
                     var count = data.length;
                     dtData = [];
                     $.each(data, function(i, item){
-                        // Create the initial action cell in front of the row data
                         var field_array =
                             ['\
     <a href="' + BASE_URL + '/objectbrowser/delete?id=' + item['id'] + '">\
@@ -172,24 +164,24 @@ function ob_run_check_command() {
                             if ("icon" in field) {
                                 cell += "<i class=\"" + field.icon + "\"></i> ";
                             }
-                            if (item[field.cName]) {
-                                field_value = item[field.cName];
+                            if (item[field['cName']]) {
+                                field_value = item[field['cName']];
                             } else {
                                 if (item[field.cAltName]) {
-                                    field_value = item[field.cAltName];
+                                    field_value = item[field['cAltName']];
                                 }
                             }
                             field_value = field_value.replace("\"", "&quot;");
                             field_value = field_value.replace(">", "&gt;");
                             field_value = field_value.replace("<", "&lt;");
-                            if ("truncate" in field && field_value.length > (field.truncate + 3)) {
-                                cell += "<abbr rel=\"tooltip\" title=\"" + field_value + "\">" + field_value.substr(0, field.truncate) + " ...</abbr>";
+                            if ("truncate" in field && field_value.length > (field['truncate'] + 3)) {
+                                cell += "<abbr rel=\"tooltip\" title=\"" + field_value + "\">" + field_value.substr(0, field['truncate']) + " ...</abbr>";
                             } else {
                                 cell += field_value;
                             }
                             cell += "</a>";
                             field_array.push(cell);
-                            if (field.cName == jsonFields[jsonFields.length - 1].cName) {
+                            if (field['cName'] == jsonFields[jsonFields.length - 1]['cName']) {
                                 dtData.push(field_array);
                                 count--;
                             }
@@ -200,7 +192,7 @@ function ob_run_check_command() {
                     targetDataTable.fnAddData(dtData);
                     targetDataTable.fnSort( [ [1,'asc'] ] );
                     $("[rel=tooltip]").tooltip();
-                }).error(function(jqXHR, textStatus, errorThrown) {
+                }).error(function(jqXHR) {
                     targetDataTable = $(this).data('datatable');
                     targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
                 });
