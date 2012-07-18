@@ -38,11 +38,11 @@ class AddGroupForm(forms.Form):
     force = forms.BooleanField(required=False)
 
 class AddHostForm(forms.Form):
-    host_name = forms.CharField()
-    address = forms.CharField()
+    host_name = forms.CharField(help_text="Name of the host to add")
+    address = forms.CharField(help_text="IP Address of this host")
     #description = forms.CharField()
-    group_name = forms.ChoiceField()
-    force = forms.BooleanField(required=False)
+    group_name = forms.ChoiceField(help_text="host/contact group to put this host in")
+    force = forms.BooleanField(required=False, help_text="Overwrite host if it already exists.")
     def clean(self):
         if self.cleaned_data.has_key('host_name'):
             host_name = self.cleaned_data['host_name']
@@ -61,9 +61,9 @@ class AddHostForm(forms.Form):
 
 class AddTemplateForm(forms.Form):
     # Attributes
-    host_name = forms.ChoiceField()
-    template_name = forms.ChoiceField()
-    force = forms.BooleanField(required=False)
+    host_name = forms.ChoiceField(help_text="Add templates to this host")
+    template_name = forms.ChoiceField(help_text="what template to add")
+    force = forms.BooleanField(required=False, help_text="Overwrites templates if they already exist")
     def __init__(self,*args,**kwargs):
         super(AddTemplateForm, self).__init__(*args, **kwargs)
         
@@ -93,11 +93,12 @@ class AddTemplateForm(forms.Form):
         return result
 
 class InstallAgentForm(forms.Form):
-    remote_host = forms.CharField()
-    username = forms.CharField(initial='root')
-    password = forms.CharField(required=False)
-    windows_domain = forms.CharField(required=False)
-    install_method = forms.ChoiceField( initial='ssh', choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
+    remote_host = forms.CharField(help_text="Host or ip address")
+    username = forms.CharField(initial='root', help_text="Log into remote machine with as")
+    password = forms.CharField(required=False, help_text="Leave idle if using kerberos or ssh keys")
+    windows_domain = forms.CharField(required=False, help_text="If remote machine is running a windows domain")
+    install_method = forms.ChoiceField( initial='ssh',
+        choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
     
 class EditTemplateForm(forms.Form):
 #    register = forms.BooleanField()
