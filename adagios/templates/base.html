@@ -114,6 +114,18 @@
     <div class="container content">
 
 {% block adagios_hausinn %}{% endblock %}
+        {%  for error in errors %}
+            <div class="alert">
+                <button class="close" data-dismiss="alert">×</button>
+                <strong>Warning!</strong> {{  error }}
+            </div>
+        {%  endfor %}
+        {%  for message in messages %}
+            <div class="alert alert-success">
+                <button class="close" data-dismiss="alert">×</button>
+                <strong>Warning!</strong> {{  error }}
+            </div>
+        {%  endfor %}
 {% block content %}{% endblock %}
 
     </div> <!-- /container -->
