@@ -1,10 +1,10 @@
 /*
-Allow radio inputs as button in regular form
-http://dan.doezema.com/2012/03/twitter-bootstrap-radio-button-form-inputs/
+ Allow radio inputs as button in regular form
+ http://dan.doezema.com/2012/03/twitter-bootstrap-radio-button-form-inputs/
 
-This stops regular posting for buttons and assigns values to a hidden input
-to enable buttons as a radio.
-*/
+ This stops regular posting for buttons and assigns values to a hidden input
+ to enable buttons as a radio.
+ */
 jQuery(function($) {
     $('div.btn-group[data-toggle-name=*]').each(function(){
         var group   = $(this);
@@ -28,13 +28,14 @@ function ob_mass_select_change() {
     $('#bulk').fadeIn();
 }
 
-/* Object Browser, This runs whenever "Run Check Plugin" is clicked
+/*
+ Object Browser, This runs whenever "Run Check Plugin" is clicked
 
  It resets the color of the OK/WARNING/CRITICAL/UNKOWN button
  Runs a REST call to run the check_command and fetch the results
 
  Calling button/href needs to have data-object-id="12312abc...."
-  */
+ */
 function ob_run_check_command() {
     // Fetch the calling object
     modal = $(this);
@@ -50,40 +51,161 @@ function ob_run_check_command() {
 
     // Run the command and fetch the output JSON via REST
     $.getJSON("/rest/pynag/json/run_check_command",
-	{
-		object_id: id
-	},
-	function(data) {
-        // Default to unknown if data[0] is less than 3
-		var statusLabel = 'label-inverse';
-		var statusString = 'Unknown';
-		if (data[0] == 2) {
-			statusLabel = 'label-important';
-			statusString = 'Critical';
-		}
-		if (data[0] == 1) {
-			statusLabel = 'label-warning';
-			statusString = 'Warning';
-		}
-		if (data[0] == 0) {
-			statusLabel = 'label-success';
-			statusString = 'OK';
-		}
-        // Set the correct class for state coloring box
-        $('#run_check_plugin #pluginstate').addClass(statusLabel);
+        {
+            object_id: id
+        },
+        function(data) {
+            // Default to unknown if data[0] is less than 3
+            var statusLabel = 'label-inverse';
+            var statusString = 'Unknown';
+            if (data[0] == 2) {
+                statusLabel = 'label-important';
+                statusString = 'Critical';
+            }
+            if (data[0] == 1) {
+                statusLabel = 'label-warning';
+                statusString = 'Warning';
+            }
+            if (data[0] == 0) {
+                statusLabel = 'label-success';
+                statusString = 'OK';
+            }
+            // Set the correct class for state coloring box
+            $('#run_check_plugin #pluginstate').addClass(statusLabel);
 
-        // Fill it up with the correct status
-        $('#run_check_plugin #pluginstate').html(statusString);
+            // Fill it up with the correct status
+            $('#run_check_plugin #pluginstate').html(statusString);
 
-        // Put the plugin output in the correct div
-        $('#run_check_plugin #pluginoutput').html(data[1]);
+            // Put the plugin output in the correct div
+            $('#run_check_plugin #pluginoutput').html(data[1]);
 
-        // Show the refresh button
-	    $('#run_check_plugin_refresh').show();
+            // Show the refresh button
+            $('#run_check_plugin_refresh').show();
 
-        // Assign this command to the newly shown refresh button
-        $('#run_check_plugin_refresh').click(ob_run_check_command);
-	});
+            // Assign this command to the newly shown refresh button
+            $('#run_check_plugin_refresh').click(ob_run_check_command);
+        });
     // Stop the button from POST'ing
     return false;
 }
+
+(function( $ ) {
+
+    /*
+     Creates a dataTable for adagios objects
+
+     aoColumns are used primarily for Titles
+     example, aoColumns = [ { 'sTitle': 'Contact Name'}, { 'sTitle': 'Alias' } ]
+
+     */
+    $.fn.adagios_ob_dataTable = function(aoColumns, jsonFields, object_type) {
+        // Option column
+        aoColumns.unshift({ "sTitle": '', 'sWidth': '32px' });
+
+        return this.each(function() {
+            //alert('this id ' + $(this).attr('id'));
+            dt = $(this).dataTable( {
+                "aoColumns": aoColumns,
+                "sPaginationType": "bootstrap",
+                "sScrollY": "260px",
+                "bAutoWidth": false,
+                "bScrollCollapse": false,
+                "bPaginate": true,
+                // Callback which assigns tooltips to visible pages
+                "fnDrawCallback": function( oSettings ) {
+                    var a = oSettings;
+                    //$("[rel=tooltip]").tooltip();
+                }
+            });
+            $(this).data('datatable', dt);
+
+            return this;
+        });
+    }
+})(jQuery);
+
+(function( $ ) {
+
+    /*
+     Populates the datatable
+
+     jsonFields are used for describing which fields to fetch via json and how to handle them
+     example, jsonFields = [ { 'cName': "command_name", 'icon_class': "glyph-computer-proces" }, ... ]
+
+     object_type is one of contact, command, host, service, timeperiod
+     example, object_type = host
+     */
+    $.fn.adagios_ob_dtPopulate = function(object_type, jsonFields) {
+        return this.each(function() {
+            //alert('tgtdt: ' + targetDataTable);
+            $('#log').append('Populating ' + object_type + $(this).attr('id') + '<br/>');
+
+            var jsonqueryfields = ['id'];
+            $.each(jsonFields, function(k, field){
+                jsonqueryfields.push(field.cName);
+                if ("cAltName" in field) {
+                    jsonqueryfields.push(field.cAltName);
+                }
+            });
+            var dtData = [];
+            var targetDataTable = $(this).data('datatable');
+
+            $.getJSON("/rest/pynag/json/get_objects",
+                {
+                    object_type: object_type,
+                    with_fields: jsonqueryfields.join()
+                },
+                function(data) {
+                    var count = data.length;
+                    dtData = [];
+                    $.each(data, function(i, item){
+                        // Create the initial action cell in front of the row data
+                        var field_array =
+                            ['\
+    <a href="' + BASE_URL + '/objectbrowser/delete?id=' + item['id'] + '">\
+        <i class="icon-trash"></i>\
+    </a>\
+    <input rel="ob_mass_select" type="checkbox">'];
+                        $.each(jsonFields, function(k, field) {
+                            var cell = '<a href="' + BASE_URL + '/objectbrowser/id=' + item['id'] + '">';
+                            var field_value = "";
+                            if ("icon" in field) {
+                                cell += "<i class=\"" + field.icon + "\"></i> ";
+                            }
+                            if (item[field.cName]) {
+                                field_value = item[field.cName];
+                            } else {
+                                if (item[field.cAltName]) {
+                                    field_value = item[field.cAltName];
+                                }
+                            }
+                            field_value = field_value.replace("\"", "&quot;");
+                            field_value = field_value.replace(">", "&gt;");
+                            field_value = field_value.replace("<", "&lt;");
+                            if ("truncate" in field && field_value.length > (field.truncate + 3)) {
+                                cell += "<abbr rel=\"tooltip\" title=\"" + field_value + "\">" + field_value.substr(0, field.truncate) + " ...</abbr>";
+                            } else {
+                                cell += field_value;
+                            }
+                            cell += "</a>";
+                            field_array.push(cell);
+                            if (field.cName == jsonFields[jsonFields.length - 1].cName) {
+                                dtData.push(field_array);
+                                count--;
+                            }
+                        });
+                    });
+                }).success(function() {
+
+                    targetDataTable.fnAddData(dtData);
+                    targetDataTable.fnSort( [ [1,'asc'] ] );
+                    $("[rel=tooltip]").tooltip();
+                }).error(function(jqXHR, textStatus, errorThrown) {
+                    targetDataTable = $(this).data('datatable');
+                    targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
+                });
+            return this;
+        });
+    };
+})( jQuery );
+
