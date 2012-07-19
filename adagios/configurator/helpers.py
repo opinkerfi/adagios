@@ -8,6 +8,7 @@ Convenient stateless functions for pynag
 
 from pynag import Model
 from pynag import Parsers
+from socket import gethostbyname_ex
 _config = Parsers.config()
 _config.parse()
 maincfg_values = _config.maincfg_values
@@ -117,3 +118,12 @@ def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None'
     elif append.lower() == 'true': append=True
     elif append.lower() == 'none': append=None
     return _config._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
+
+
+def dnslookup(host_name):
+    try:
+        (name, aliaslist, addresslist) = gethostbyname_ex(host_name)
+    except:
+        pass
+
+    return { 'host': name, 'aliaslist': aliaslist, 'addresslist': addresslist }

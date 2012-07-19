@@ -14,15 +14,15 @@ urlpatterns = patterns('',
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^adagios/api/host/(?P<host_name>.*)\.(?P<ext>.+)$', 'configurator.views.api_host'),
     (r'^adagios/api/get_templates\.(?P<ext>.+)$', 'configurator.views.api_get_templates'),
-    (r'^adagios/api/gethostbyname/(?P<host_name>.*)$', 'configurator.views.api_gethostbyname'), 
     (r'^adagios/$', 'configurator.views.index'),
     (r'^adagios/addhost$', 'configurator.views.addhost'),
     (r'^objectbrowser', include('objectbrowser.urls')),
     (r'^okconfig', include('okconfig_.urls')),
     (r'^misc', include('misc.urls')),
-    (r'^rest/okconfig', include('rest.urls'), {'module_name':'okconfig'}),
     (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
-    (r'^rest/pynag', include('rest.urls'), {'module_name':'configurator.helpers'}),
+    (r'^rest', include('rest.urls')),
+    #(r'^rest/okconfig', include('rest.urls'), {'module_name':'okconfig'}),
+    #(r'^rest/pynag', include('rest.urls'), {'module_name':'configurator.helpers'}),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:

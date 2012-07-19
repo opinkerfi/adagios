@@ -147,16 +147,6 @@ def api_host(request, host_name=None, ext='xml'):
 
 	return NotImplementedError
 
-def api_gethostbyname(request, host_name=None):
-	import socket
-	
-	host = ''
-	try:
-		host = socket.gethostbyname(host_name)
-	except:
-		pass
-	
-	return HttpResponse(json.dumps({'host': host}), mimetype='application/json') 
 
 
 

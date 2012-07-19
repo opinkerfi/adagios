@@ -22,10 +22,12 @@ def _load(module_name):
 
 @csrf_exempt
 def handle_request(request, module_name, attribute, format):
+    print "module_name: %s attribute: %s format: %s" % (module_name, attribute, format)
     m = _load(module_name)
     # TODO: Only allow function calls if method == POST
     members = {}
     for k,v in inspect.getmembers(m):
+        print k
         members[k] = v
     item = members[attribute]
     docstring = inspect.getdoc(item)
@@ -74,13 +76,21 @@ def handle_request(request, module_name, attribute, format):
             result = xml.marshal.generic.dumps(result)
             mimetype='application/xml'
     elif format == 'txt':
-        result = str(result)
+        try:
+            txtresult = ''
+            for o in result:
+                txtresult += "-"*64 + "\n"
+                for k, v in o.iteritems():
+                    txtresult += "%-20s %s\n" % (k, v)
+            result = str(txtresult)
+        except:
+            result = str(result)
         mimetype='text/plain'
     else:
         result = str(result)
         mimetype='text/plain'  
     return HttpResponse(result, mimetype=mimetype)
-def index( request, module_name ):
+def index( request, module_name=None ):
     m = _load(module_name)
     gets,puts = [],[]
     blacklist = ( 'argv', 'environ', 'exit', 'path', 'putenv', 'getenv', )
@@ -122,5 +132,5 @@ class CallFunctionForm(forms.Form):
         while len(defaults) > 0:
             value = defaults.pop()
             field = args.pop()
-            self.fields[field].initial = value 
-        
+            self.fields[field].initial = value
+
