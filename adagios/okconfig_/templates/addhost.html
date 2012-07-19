@@ -4,15 +4,34 @@
 {% block largeheader %}Host{% endblock %}
 {% block nav1 %}okconfig{% endblock %}
 
+{% block footer %}
+    <script src="/media/chosen/chosen.jquery.js" type="text/javascript"></script>
+    <script>
+
+        $('select').chosen();
+        $('#id_host_name').focusout(function() {
+            if ($('#id_address').val() == "") {
+                $.getJSON('/{{ BASE_URL }}rest/pynag/json/dnslookup',
+                        {
+                            host_name: $(this).val()
+                        },
+                        function(data) {
+                            $('#id_address').val(data['addresslist'][0]);
+                        }
+                );
+            }
+        });
+
+
+    </script>
+{% endblock %}
 
 <label class="control-label" for="host_name" rel="tooltip" title="{{ form.host_name.label }}" data-content="eg web01.example.com">{{ form.host_name.label }}</label>
 <div class="controls"> <!-- class inherited -->
     {{ form.host_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
 </div>
 
-
 {% block content %}
-
 	<form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
