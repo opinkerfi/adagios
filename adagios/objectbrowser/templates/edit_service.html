@@ -235,7 +235,7 @@
 
             <h5>Diagnostics</h5>
             <ul class="nav nav-list">
-              {% if command_line %}
+              {% if command_line and form.host_name.value and form.register != '0' %}
               <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
               {% endif %}
               <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
