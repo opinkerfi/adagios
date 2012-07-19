@@ -1,8 +1,106 @@
-{% extends "adagios_standard.html" %}
+{% extends "base.html" %}
 {% block title %}Adagios - Flunder{% endblock %}
-{% block smallheader %}This is{% endblock %}
-{% block largeheader %}My header{% endblock %}
 
 {% block content %}
- Hello world
+    <div class="row">
+        <div class="span12">
+            <div class="block">
+                <h2>
+                    <i class="icon-th-large"></i> <small>Object</small> Inheritance
+                </h2>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span3">
+            <div class="block">
+                <div>
+                <h4><small>Host</small></h4>
+                    <h4 class="center">tandoori.opensource.is</h4>
+                    <h6>Configuration Parameters</h6>
+                    <table class="center" style="width: 100%">
+                        <tbody>
+                        <tr>
+                            <td>host_name</td>
+                            <td>tandoori</td>
+                        </tr>
+                        <tr>
+                            <td>use</td>
+                            <td>generic-host</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <div class="block_nw" style="width: 300px">
+                <div style="background: #eee">
+                <h4><small>Host template</small></h4>
+                    <h4 class="center">generic-host</h4>
+                    </div>
+                    <br/>
+                    <h6>Configuration Parameters</h6>
+                    <table class="center" style="width: 240px">
+                        <tbody>
+                        <tr>
+                            <td>name</td>
+                            <td>generic-host</td>
+                        </tr>
+                        <tr>
+                            <td>notifications_enabled</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>event_handler_enabled</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>flap_detection_enabled</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>failure_prediction_enabled</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>process_perf_data</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>retain_status_information</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>retain_nonstatus_information</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>notification_period</td>
+                            <td>24x7</td>
+                        </tr>
+                        <tr>
+                            <td>register</td>
+                            <td>0</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--
+                 name                            generic-host    ; The name of this host template
+    notifications_enabled           1       	; Host notifications are enabled
+    event_handler_enabled           1       	; Host event handler is enabled
+    flap_detection_enabled          1       	; Flap detection is enabled
+    failure_prediction_enabled      1       	; Failure prediction is enabled
+    process_perf_data               1       	; Process performance data
+    retain_status_information       1       	; Retain status information across program restarts
+    retain_nonstatus_information    1       	; Retain non-status information across program restarts
+    notification_period		24x7		; Send host notifications at any time
+    register                        0       	; DONT REGISTER THIS DEFINITION - ITS NOT A REAL HOST, JUST A TEMPLATE!
+    -->
+    </div>
+    Hello world
 {% endblock %}
