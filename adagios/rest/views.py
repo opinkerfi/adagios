@@ -22,12 +22,10 @@ def _load(module_name):
 
 @csrf_exempt
 def handle_request(request, module_name, attribute, format):
-    print "module_name: %s attribute: %s format: %s" % (module_name, attribute, format)
     m = _load(module_name)
     # TODO: Only allow function calls if method == POST
     members = {}
     for k,v in inspect.getmembers(m):
-        print k
         members[k] = v
     item = members[attribute]
     docstring = inspect.getdoc(item)
