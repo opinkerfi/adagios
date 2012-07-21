@@ -9,7 +9,8 @@ urlpatterns = patterns('',
     (r'^/addtemplate/?', 'okconfig_.views.addtemplate'),
     (r'^/addhost/?', 'okconfig_.views.addhost'),
     (r'^/install_agent/?', 'okconfig_.views.install_agent'),
-    (r'^/edit/(?P<host_name>.+)$', 'okconfig_.views.edit'),    
+    (r'^/edit/?$', 'okconfig_.views.choose_host'),
+    (r'^/edit/(?P<host_name>.+)$', 'okconfig_.views.edit'),
     (r'^/verify_okconfig/?', 'okconfig_.views.verify_okconfig'),
 )
  
