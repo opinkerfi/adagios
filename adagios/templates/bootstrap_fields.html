@@ -7,11 +7,10 @@
             <label class="control-label" for="{{ field.name }}">
                 {{ field.label }}
             </label>
-            <div class="controls" id="{{ field.name }}_field">
+            <div class="controls" id="{{ field.name }}_field" rel="tooltip" title="{{ field.help_text }}">
                 {{ field }}
-                <span class="help-inline">{{ field.help_text }}</span>
                 {% for err in field.errors %}
-                    <p class="help-block error">{{ err }}</p>
+                    <p class="help-inline error">{{ err }}</p>
                 {% endfor %}
             </div>
         </div>
