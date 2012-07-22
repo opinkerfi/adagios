@@ -17,10 +17,12 @@
 
 from django.shortcuts import render_to_response, redirect
 from django.core import serializers
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
 from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
+
+from django.core.urlresolvers import reverse
 
 import forms
 #import okconfig.forms
@@ -203,7 +205,21 @@ def edit(request, host_name):
         myforms.append( form )
     c['forms'] = myforms
     return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
- 
+
+def choose_host(request):
+    "Simple form that lets you choose one host to edit"
+    c = { }
+    c.update(csrf(request))
+    if request.method == 'GET':
+        c['form'] = forms.ChooseHostForm(initial=request.GET)
+    elif request.method == 'POST':
+        c['form'] = forms.ChooseHostForm(data=request.POST)
+        if c['form'].is_valid():
+            host_name = c['form'].cleaned_data['host_name']
+            return HttpResponseRedirect( reverse("okconfig_.views.edit", args=[host_name] ) )
+    return render_to_response('choosehost.html', c, context_instance=RequestContext(request))
+
+
 def scan_network(request):
     c = {}
     c['errors'] = []

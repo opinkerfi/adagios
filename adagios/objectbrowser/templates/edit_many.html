@@ -5,15 +5,13 @@
 {% block nav1 %}Object Browser{% endblock %}
 
 {%  block content %}
-    Massa sniðugt. Haka við öll objectin sem á að edita og svo skrifa inn attribute name og new value
-    <h2>quirks</h2>
+    Welcome to the bulk edit form! Things to note:
     <ul>
-    <li>Þarf að posta inn í þetta url hvaða items á að edita (hidden field sem er með name=hidden_OBJECTID </li>
-    <li>Vantar logic sem hakar sjálfkrafa í viðeigandi box á þessu formi </li>
-    <li>Leyfa edit á fleiru en einu field í einu </li>
+    <li>If you reach here via GET request you will get a bulk edit of all timeperiods </li>
+    <li>If posting into this form, make sure to include change_OBJECTID into post data for every item you want to post </li>
+    <li>Once you reach here you have the option to uncheck any item you do not want to change</li>
 
     </ul>
-    {{  form.errors }}
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
     {% include "bootstrap_fields.html" with fields=form %}
     <table border=1>
@@ -27,7 +25,7 @@
             <tr>
                 <td>
                     <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
-                    <input type="checkbox" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                    <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
                 </td>
                 <td>{{ obj.object_type }}</td>
                 <td>{{ obj.description }}</td>

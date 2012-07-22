@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError
 import socket
 from pynag import Model
 
+all_hosts = map(lambda x: (x, x), helpers.get_host_names())
+
 class ScanNetworkForm(forms.Form):
     network_address = forms.CharField()
     def clean_network_address(self):
@@ -99,7 +101,9 @@ class InstallAgentForm(forms.Form):
     windows_domain = forms.CharField(required=False, help_text="If remote machine is running a windows domain")
     install_method = forms.ChoiceField( initial='ssh',
         choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
-    
+
+class ChooseHostForm(forms.Form):
+    host_name = forms.ChoiceField(choices=all_hosts)
 class EditTemplateForm(forms.Form):
 #    register = forms.BooleanField()
 #    service_description = forms.CharField()

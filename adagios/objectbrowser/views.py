@@ -413,11 +413,20 @@ def edit_many(request):
     c.update(csrf(request))
     c['messages'] = []
     c['errors'] = []
-    objects = Model.Timeperiod.objects.all
-    c['objects'] = objects
+    c['objects'] = objects = []
     c['form'] = EditManyForm(objects=objects)
 
+    if request.method == 'GET':
+        # We only call get when we are testing stuff
+        c['objects'] = Model.Timeperiod.objects.all
     if request.method == "POST":
+        # Post items starting with "hidden_" will be displayed on the resulting web page
+        # Post items starting with "change_" will be modified
+        for i in request.POST.keys():
+            if i.startswith('change_'):
+                my_id = i[ len('change_'): ]
+                my_obj = ObjectDefinition.objects.get_by_id( my_id )
+                objects.append( my_obj )
         c['form'] = EditManyForm(objects=objects,data=request.POST)
         if c['form'].is_valid():
             c['form'].save()
