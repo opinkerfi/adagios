@@ -1,0 +1,18 @@
+{% extends "adagios_standard.html" %}
+{% block title %}Edit host{% endblock %}
+{% block smallheader %}Edit{% endblock %}
+{% block largeheader %}Host thresholds{% endblock %}
+{% block nav1 %}okconfig{% endblock %}
+
+
+
+{% block content %}
+Please choose a host.
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </form>
+
+{% endblock %}
