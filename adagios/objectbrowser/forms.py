@@ -15,10 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django import forms
-#from django.forms import *
+from django.utils.safestring import mark_safe
+from django.utils.encoding import smart_str
+
 from pynag import Model
 from pynag.Model.all_attributes import object_definitions
-from django.utils.encoding import smart_str
 from pynag.Model import ObjectDefinition
 
 
@@ -59,6 +60,20 @@ class PynagChoiceField(forms.MultipleChoiceField):
             value = value.strip('+')
             return value.split(',')
         return value
+
+class PynagRadioWidget(forms.widgets.HiddenInput):
+    ''' Special Widget designed to make Nagios attributes with 0/1 values look like on/off buttons '''
+    def render(self, name, value, attrs=None):
+        output = super(self.__class__, self).render(name, value, attrs)
+        prefix = """
+        <div class="btn-group" data-toggle-name="%s" data-toggle="buttons-radio">
+          <button type="button" value="1" class="btn btn-primary">On</button>
+          <button type="button" value="0" class="btn btn-primary">Off</button>
+          <button type="button" value="" class="btn">Not set</button>
+        </div>
+        """ % name
+        output += prefix
+        return mark_safe(output)
 
 class PynagForm(forms.Form):
     def clean(self):
@@ -145,7 +160,7 @@ class PynagForm(forms.Form):
         elif field_name.endswith('notification_options'):
             field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':
-            field = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.RadioSelect)
+            field = forms.CharField(widget=PynagRadioWidget)
         else:
             # Fallback to a default charfield
             field = forms.CharField()
