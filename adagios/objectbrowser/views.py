@@ -434,3 +434,18 @@ def edit_many(request):
                 c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
 
     return render_to_response('edit_many.html', c, context_instance = RequestContext(request))
+
+def delete_object(request, object_id):
+    ''' View to Delete a single object definition '''
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = []
+    c['errors'] = []
+    c['object'] = my_obj = Model.ObjectDefinition.objects.get_by_id(object_id)
+    if request.method == 'POST':
+        my_obj.delete()
+        print "my_obj deleted"
+        return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) )
+    return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
+
+
