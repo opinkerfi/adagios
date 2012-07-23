@@ -90,46 +90,92 @@
 
             <!-- wrapper for scrollable items -->
             <ul class="nav nav-tabs" id="objecttab">
+
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+                <li><a href="#general" data-toggle="tab">General</a></li>
 		    </ul>
             <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
                 <div class="tab-content">
-                    <div class="tab-pane" id="advanced">
+                    <div class="tab-pane" id="general">
                         <form action="#" method="post">
 
-                            {% csrf_token %}
-                            <fieldset>
-                        	{% for field in form %}
-
-
-                                <label class="control-label" for="{{ field.name }}">{{ field.label }}{% if field.help %} <abbr rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}"><i class="icon-question-sign"></i></abbr> {% endif %}</label>
-                                <div class="controls" id="advanced_field">
-                                    {{ field }}
+                            <label class="control-label" for="register">Register</label>
+                            <div class="controls" id="advanced_field">
+                                <input type="hidden" name="register" id="id_register" />
+                                <div class="btn-group" data-toggle-name="register" data-toggle="buttons-radio">
+                                    <button type="button" value="1" class="btn btn-primary">On</button>
+                                    <button type="button" value="0" class="btn btn-primary">Off</button>
+                                    <button type="button" value="" class="btn">Not set</button>
                                 </div>
 
-                        	{% endfor %}
-                            </fieldset>
-                            <!-- Display all members of a specific group -->
-	                        {% if effective_members %}
-	                                <div class="effective_members">
-	                                <fieldset id="id_effective_members" class="attribute_{{object_type}}">
-	                                  <legend>Effective Members</legend>
-	                                        {% for m in effective_members %}
-	                                          <p>
-	                                            <label><a href="id={{ m.id }}">{{m.description}}</a></label>
-	                                          </p>
-	                                        {% endfor %}
-	                                </fieldset>
-	                                </div>
-	                        {% endif %}
-	    
-                            <div class="form-actions">
-                                <button class="btn btn-primary" type="submit">Save changes</button>
-                                <button class="btn">Cancel</button>
                             </div>
-                         </form>
+
+                            <div>
+                            <label class="control-label" >Object Type: </label>
+                                <div class="controls">
+                                    <label>{{  my_object.object_type  }}</label>
+                                </div>
+
+
+                            </div>
+                            <label class="control-label" >Filename: </label>
+                            <div class="controls">
+                             <label>{{  my_object.filename  }}</label>
+                            </div>
+
+                            <label class="control-label" for="name">Object Name</label>
+                            <div class="controls" id="advanced_field">
+                                <input type="text" name="name" id="id_name" />
+                            </div>
+
+                            <label class="control-label" for="use">Inherits from: </label>
+                            <div class="controls" id="advanced_field">
+                                <input type="text" name="use" id="id_use" />
+                            </div>
+
+                        </form>
                     </div>
+
+                    <div class="tab-pane" id="advanced">
+                        <!-- All Attributes -->
+                        <h2>All Attributes</h2>
+                        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                            {% include "bootstrap_fields.html" with fields=advanced_form %}
+                            <div class="form-actions">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
+                        </form>
+
+                        <!-- Object info -->
+                        <h2>Object Info</h2>
+                        <label class="control-label" >Object Type: </label>
+                        <div class="controls">
+                            <label>{{  my_object.object_type  }}</label>
+                        </div>
+
+                        </div>
+                        <label class="control-label" >Filename: </label>
+                        <div class="controls">
+                            <label>{{  my_object.filename  }}</label>
+                        </div>
+
+
+                        <!-- Display all members of a specific group -->
+                        {% if effective_members %}
+                                <div class="effective_members">
+                                <fieldset id="id_effective_members" class="attribute_{{object_type}}">
+                                  <legend>Effective Members</legend>
+                                        {% for m in effective_members %}
+                                          <p>
+                                            <label><a href="id={{ m.id }}">{{m.description}}</a></label>
+                                          </p>
+                                        {% endfor %}
+                                </fieldset>
+                                </div>
+                        {% endif %}
+
+                    </div> <!-- End of advanced tab -->
                 </div>
 
             </form>

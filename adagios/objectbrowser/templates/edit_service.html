@@ -196,30 +196,45 @@
                     </div>
             </form>
                     <div class="tab-pane" id="advanced">
-                        <form action="#" method="post">
+                        <!-- Object info -->
+                        <h2>Object Info</h2>
+                        <label class="control-label" >Object Type: </label>
+                        <div class="controls">
+                            <label>{{  my_object.object_type  }}</label>
+                        </div>
 
-                            {% csrf_token %}
-                        	{% for field in advanced_form %}
+                        <label class="control-label" >Filename: </label>
+                        <div class="controls">
+                            <label>{{  my_object.filename  }}</label>
+                        </div>
 
-
-                            <fieldset>
-                                <label class="control-label" for="{{ field.name }}">{{ field.label }}{% if field.help %} <abbr rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}"><i class="icon-question-sign"></i></abbr> {% endif %}</label>
-                                <div class="controls" id="advanced_field">
-                                    {{ field }}
+                        <h2>All Attributes</h2>
+                            <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                                {% include "bootstrap_fields.html" with fields=advanced_form %}
+                                <div class="form-actions">
+                                    <button class="btn btn-primary" type="submit">Submit</button>
                                 </div>
-                            </fieldset>
-<!--
-                        	<div class="{{ field.field.widget.attrs.class }}">
-                        		<p><label> {{ field.label }} </label>
-                        		{{ field }} {{ field.errors }} {{ field.help_text }} </p>
-                        	</div> -->
-                        	{% endfor %}
-                            <div class="form-actions">
-                                <button class="btn btn-primary" type="submit">Save changes</button>
-                                <button class="btn">Cancel</button>
+                            </form>
+
+
+
+
+
+                        <!-- Display all members of a specific group -->
+                        {% if effective_members %}
+                            <div class="effective_members">
+                                <fieldset id="id_effective_members" class="attribute_{{object_type}}">
+                                    <legend>Effective Members</legend>
+                                    {% for m in effective_members %}
+                                        <p>
+                                            <label><a href="id={{ m.id }}">{{m.description}}</a></label>
+                                        </p>
+                                    {% endfor %}
+                                </fieldset>
                             </div>
-                         </form>
+                        {% endif %}
                     </div>
+
                 </div>
         </div>
     </div>
@@ -228,8 +243,11 @@
             <h5>Actions</h5>
             <ul class="nav nav-list">
               <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
-              <li><a href="#nag"><i class="icon-fire"></i> Open in Nagios</a></li>
-              <li><a href="#nag"><i class="glyph-charts"></i> View Graphs</a></li>
+              <li>
+                  <a href="http://eftirlit.ok.is/nagios/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
+                  <i class="icon-fire"></i> Open in Nagios</a>
+              </li>
+              <li><a href="{{ my_object.action_url }}"><i class="glyph-charts"></i> View Graphs</a></li>
             </ul>
 
 

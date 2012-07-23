@@ -4,7 +4,37 @@
 {% block largeheader %}Template{% endblock %}
 {% block nav1 %}okconfig{% endblock %}
 
+{% block footer %}
+    <script src="/media/chosen/chosen.jquery.js" type="text/javascript"></script>
 
+    <script>
+        $('select').chosen();
+        $('select#id_template_name').change(function() {
+            $.getJSON('{{ BASE_URL }}/rest/pynag/json/get_objects',
+                    {
+                        object_type: 'service',
+                        name__startswith: 'okc-' + $(this).val() + '-',
+                        with_fields: 'service_description'
+                    },
+                    function(data) {
+                        $('#template_services').html('');
+                        var sorted = data.slice(0).sort(function(a, b) {
+                            return a - b;
+                        })
+                        $.each(sorted, function(k, s) {
+                            if (s['service_description'] != "null" &&
+                                    s['service_description'] != "none" &&
+                                    s['service_description'] != "null") {
+                                $('#template_services').append('"' + s['service_description'] + "'<br/>");
+                            }
+
+                        });
+                    }
+            );
+        });
+
+    </script>
+{% endblock %}
 
 {% block content %}
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
@@ -13,5 +43,8 @@
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
     </form>
+    <div id="template_services">
+
+    </div>
 
 {% endblock %}
