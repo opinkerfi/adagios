@@ -5,7 +5,7 @@
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
     var currenttab = '#service';
-    var currenttable = '#servicetable';
+    var currenttable = '#service';
 
 
     $(document).ready(function() {
@@ -21,35 +21,35 @@
 
 
 
-        $('table#servicetable').adagios_ob_dataTable(
+        $('table#service').adagios_ob_dataTable(
             [
-                { "sTitle": "Name" },
                 { "sTitle": "Host" },
-                { "sTitle": "Command" }
+                { "sTitle": "Name" },
+                { "sTitle": "Command" },
             ]).adagios_ob_dtPopulate('service', [
+            { "cName": "host_name" },
             {
                 "cName": "service_description",
                 "cAltName": "name",
                 "icon": "glyph-computer-service"
             },
-            { "cName": "host_name" },
             {
                 "cName": "check_command",
                 "truncate": 16
             }
         ]).adagios_ob_dtPopulate('servicegroup', [
+            { "cName": "host_name" },
             {
                 "cName": "servicegroup_name",
                 "cAltName": "name",
                 "icon": "glyph-more-items"
             },
-            { "cName": "host_name" },
             { "cName": "check_command" }
-        ]);
+        ]).dataTable().fnFilter(1, "servicegro");
         /*
         Create the command table and populate it
          */
-        $('#commandtable').adagios_ob_dataTable(
+        $('table#command').adagios_ob_dataTable(
                 [
                     { "sTitle": "Command Name" },
                     { "sTitle": "Command Line" }
@@ -70,7 +70,7 @@
 
 
         /* Create the CONTACT objec datatable */
-        $('#contacttable').adagios_ob_dataTable(
+        $('table#contact').adagios_ob_dataTable(
                 [
                     { "sTitle": "Contact Name" },
                     { "sTitle": "Alias" },
@@ -101,7 +101,7 @@
 
 
         /* Create the CONTACT objec datatable */
-        $('#hosttable').adagios_ob_dataTable(
+        $('table#host').adagios_ob_dataTable(
                 [
                     { "sTitle": "Name" },
                     { "sTitle": "Address" },
@@ -129,7 +129,7 @@
                 ]
         );
 
-        $('#timeperiodtable').adagios_ob_dataTable(
+        $('table#timeperiod').adagios_ob_dataTable(
             [
                 { "sTitle": "Name" },
                 { "sTitle": "Alias" }
@@ -144,13 +144,13 @@
 
         $(window).bind('resize', function () {
             /* This blows, couldn't find a good way to do this - tommi */
-            $(currenttable).dataTable().fnAdjustColumnSizing();
+            $("table#" + currenttable).dataTable().fnAdjustColumnSizing();
             $(currenttab).tab('show');
         } );
 
         $('a[data-toggle="tab"]').on('shown', function (e) {
             currenttab = $(e.target).attr('href');
-            currenttable = $(e.target).attr('href') + 'table';
+            currenttable = 'table' + $(e.target).attr('href');
             /* For some reason I have to loop through everything, weird.
              $(currenttable).dataTable().fnAdjustColumnSizing();
              */
@@ -174,7 +174,6 @@
     </script>
 {% endblock %}
 {% block content %}
-
     <div class="row">
         <div class="span12">
             <div class="block">
@@ -204,7 +203,7 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="command">
-                            <table id="commandtable" class="table table-striped">
+                            <table id="command" class="table table-striped">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -212,7 +211,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="contact">
-                            <table id="contacttable" class="table table-striped">
+                            <table id="contact" class="table table-striped">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -220,7 +219,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="host">
-                            <table id="hosttable" class="table table-striped">
+                            <table id="host" class="table table-striped">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -228,7 +227,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="service">
-                            <table id="servicetable" class="table table-striped">
+                            <table id="service" class="table table-striped">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -236,7 +235,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="timeperiod">
-                            <table id="timeperiodtable" class="table table-striped">
+                            <table id="timeperiod" class="table table-striped">
                                 <thead>
                                 </thead>
                                 <tbody>

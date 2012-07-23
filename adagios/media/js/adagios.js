@@ -95,7 +95,20 @@ function ob_run_check_command() {
      */
     $.fn.adagios_ob_dataTable = function(aoColumns) {
         // Option column
-        aoColumns.unshift({ "sTitle": '', 'sWidth': '32px' });
+        aoColumns.unshift(
+            {
+                "sTitle": "register",
+                "bVisible": false
+            },
+            {
+                "sTitle": "object_type",
+                "bVisible": false
+            },
+            {
+                "sTitle": '', 'sWidth': '32px'
+            });
+
+
 
         return this.each(function() {
             //alert('this id ' + $(this).attr('id'));
@@ -106,12 +119,38 @@ function ob_run_check_command() {
                 "bAutoWidth": false,
                 "bScrollCollapse": false,
                 "bPaginate": true,
+                "sDom": '<"toolbar' + $(this).attr('id') + '">frtip',
                 // Callback which assigns tooltips to visible pages
                 "fnDrawCallback": function( oSettings ) {
                     $("[rel=tooltip]").tooltip();
                 }
             });
+            dt.fnFilter("^" + $(this).attr('id') + "$", 1, true);
+            dt.fnFilter("1", 0);
+            $(".toolbar" + $(this).attr('id')).html("<strong>Show:</strong> Templates \
+            <input data-target='" + $(this).attr('id') + "' name='bong' type='checkbox' id='template" + $(this).attr('id') + "'>\
+            Groups <input data-target='" + $(this).attr('id') + "' name='bong' type='checkbox' id='groups" + $(this).attr('id') + "'>\
+            ");
             $(this).data('datatable', dt);
+            $("#template" + $(this).attr('id')).on('click', function() {
+                //alert($(this).attr('data-target'));
+                if ($(this).attr('checked')) {
+                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("", 0);
+                } else {
+                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("1", 0);
+                }
+                return true;
+            });
+            $("#groups" + $(this).attr('id')).on('click', function() {
+                //alert($(this).attr('data-target'));
+                if ($(this).attr('checked')) {
+                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("", 1, true);
+                } else {
+                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("^" + $(this).attr('data-target') +"$", 1, true);
+                }
+                return true;
+            });
+
 
             return this;
         });
@@ -133,11 +172,16 @@ function ob_run_check_command() {
         return this.each(function() {
             $('#log').append('Populating ' + object_type + $(this).attr('id') + '<br/>');
 
-            var json_query_fields = ['id'];
+            var json_query_fields = ['id', 'register'];
             $.each(jsonFields, function(k, field){
-                json_query_fields.push(field['cName']);
+                if ('cName' in field) {
+                    json_query_fields.push(field['cName']);
+                }
                 if ("cAltName" in field) {
                     json_query_fields.push(field['cAltName']);
+                }
+                if ("cHidden" in field) {
+                    json_query_fields.push(field['cHidden']);
                 }
             });
             var dtData = [];
@@ -153,7 +197,7 @@ function ob_run_check_command() {
                     dtData = [];
                     $.each(data, function(i, item){
                         var field_array =
-                            ['\
+                            [item['register'], object_type, '\
     <a href="' + BASE_URL + '/objectbrowser/delete?id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
@@ -188,9 +232,8 @@ function ob_run_check_command() {
                         });
                     });
                 }).success(function() {
-
                     targetDataTable.fnAddData(dtData);
-                    targetDataTable.fnSort( [ [1,'asc'] ] );
+                    targetDataTable.fnSort( [ [3,'asc'], [4, 'asc'] ] );
                     $("[rel=tooltip]").tooltip();
                 }).error(function(jqXHR) {
                     targetDataTable = $(this).data('datatable');
