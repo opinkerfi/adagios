@@ -76,6 +76,9 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
         return mark_safe(output)
 
 class PynagForm(forms.Form):
+    register = forms.CharField(required=False,widget=PynagRadioWidget)
+    name = forms.CharField(required=False, label="Object Name")
+    use = forms.CharField(required=False, label="Inherit Attributes From")
     def clean(self):
         for k,v in self.cleaned_data.items():
             if k in MULTICHOICE_FIELDS and self.simple == False:
