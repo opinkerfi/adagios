@@ -154,7 +154,7 @@ function ob_run_check_command() {
                     $.each(data, function(i, item){
                         var field_array =
                             ['\
-    <a href="' + BASE_URL + '/objectbrowser/delete?id=' + item['id'] + '">\
+    <a href="' + BASE_URL + '/objectbrowser/delete_object/id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
     <input rel="ob_mass_select" type="checkbox">'];
