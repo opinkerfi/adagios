@@ -19,8 +19,6 @@
         // Show service tab
         $('#objecttabs a:[href="#service"]').tab('show');
 
-
-
         $('table#service').adagios_ob_dataTable(
             [
                 { "sTitle": "Host" },
@@ -45,7 +43,7 @@
                 "icon": "glyph-more-items"
             },
             { "cName": "check_command" }
-        ]).dataTable().fnFilter(1, "servicegro");
+        ]);
         /*
         Create the command table and populate it
          */
