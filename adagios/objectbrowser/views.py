@@ -94,7 +94,7 @@ def list_object_types(request):
     return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
 def geek_edit( request, object_id ):
-    ''' Function handles POST requests for the geek edit form '''
+    """ Function handles POST requests for the geek edit form """
     c = {}
     c.update(csrf(request))
     c['messages'] = m = []
@@ -112,7 +112,7 @@ def geek_edit( request, object_id ):
 
     
     if request.method == 'POST':
-        'Manual edit of the form'
+        # Manual edit of the form
         form = GeekEditObjectForm(data=request.POST, pynag_object=o)
         if form.is_valid():
             form.save()
