@@ -36,7 +36,7 @@ def settings(request):
 	return render_to_response('settings.html', c)
 
 def contact_us( request ):
-	''' Bring a small form that has a "contact us" form on it '''
+	""" Bring a small form that has a "contact us" form on it """
 	c={}
 	c.update(csrf(request))
 	if request.method == 'GET':

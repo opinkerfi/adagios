@@ -1,4 +1,4 @@
-'''
+"""
 Rest Easy - The simplest rest module on the planet
 
 This Django Module provides GENERIC rest functionality to any module.
@@ -10,4 +10,4 @@ Add this to your main urls.py
 ######
 
 You can now access any attribute and call any function of the os module.
-'''
+"""
