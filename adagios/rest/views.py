@@ -41,7 +41,7 @@ def handle_request(request, module_name, attribute, format):
             c['form'] = CallFunctionForm(function=item, initial=request.GET)
             c['docstring'] = docstring
             if not request.GET.items():
-            	return render_to_response('function_form.html', c, context_instance = RequestContext(request))
+                return render_to_response('function_form.html', c, context_instance = RequestContext(request))
             # Handle get parameters
 	    arguments = {}
             for k, v in request.GET.items():
@@ -74,21 +74,13 @@ def handle_request(request, module_name, attribute, format):
             result = xml.marshal.generic.dumps(result)
             mimetype='application/xml'
     elif format == 'txt':
-        try:
-            txtresult = ''
-            for o in result:
-                txtresult += "-"*64 + "\n"
-                for k, v in o.iteritems():
-                    txtresult += "%-20s %s\n" % (k, v)
-            result = str(txtresult)
-        except:
-            result = str(result)
+        result = str(result)
         mimetype='text/plain'
     else:
         result = str(result)
         mimetype='text/plain'  
     return HttpResponse(result, mimetype=mimetype)
-def index( request, module_name=None ):
+def index( request, module_name ):
     m = _load(module_name)
     gets,puts = [],[]
     blacklist = ( 'argv', 'environ', 'exit', 'path', 'putenv', 'getenv', )
