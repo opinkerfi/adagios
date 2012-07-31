@@ -17,148 +17,177 @@
         } );
 
         // Show service tab
-        $('#objecttabs a:[href="#service"]').tab('show');
+        var anchor = document.location.href.split('#')[1];
+        if (anchor == undefined) {
+            anchor = 'service';
+        }
 
-        $('table#service').adagios_ob_dataTable(
-            [
-                { "sTitle": "Host" },
-                { "sTitle": "Name" },
-                { "sTitle": "Command" },
-            ]).adagios_ob_dtPopulate('service', [
-            { "cName": "host_name" },
-            {
-                "cName": "service_description",
-                "cAltName": "name",
-                "icon": "glyph-computer-service"
-            },
-            {
-                "cName": "check_command",
-                "truncate": 16
-            }
-        ]).adagios_ob_dtPopulate('servicegroup', [
-            { "cName": "host_name" },
-            {
-                "cName": "servicegroup_name",
-                "cAltName": "name",
-                "icon": "glyph-more-items"
-            },
-            { "cName": "check_command" }
-        ]);
-        /*
-        Create the command table and populate it
-         */
-        $('table#command').adagios_ob_dataTable(
+
+        $('#objecttabs a:[href="#' + anchor + '"]').tab('show');
+
+        $('table#service').adagios_ob_configure_dataTable(
+                [
+                    { "sTitle": "Host" },
+                    { "sTitle": "Name" },
+                    { "sTitle": "Command" }
+                ],
+                [
+                    {
+                        "object_type": 'service',
+                        "rows": [
+                            { "cName": "host_name" },
+                            {
+                                "cName": "service_description",
+                                "cAltName": "name",
+                                "icon": "glyph-computer-service"
+                            },
+                            {
+                                "cName": "check_command",
+                                "truncate": 16
+                            }
+                        ]
+                    },
+                    {
+                        "object_type": 'servicegroup',
+                        "rows": [
+                            { "cName": "host_name" },
+                            {
+                                "cName": "servicegroup_name",
+                                "cAltName": "name",
+                                "icon": "glyph-more-items"
+                            },
+                            { "cName": "check_command" }
+                        ]
+                    }
+
+                ]
+        );
+        $('table#command').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Command Name" },
                     { "sTitle": "Command Line" }
-                ]
-        ).adagios_ob_dtPopulate('command',
+                ],
                 [
                     {
-                        "cName": "command_name",
-                        "icon": "glyph-computer-proces"
-                    },
-                    {
-                        "cName": "command_line",
-                        "truncate": 40
+                        'object_type': 'command',
+                        'rows': [
+                            {
+                                "cName": "command_name",
+                                "icon": "glyph-computer-proces"
+                            },
+                            {
+                                "cName": "command_line",
+                                "truncate": 40
+                            }
+                        ]
                     }
                 ]
         );
 
-
-
-        /* Create the CONTACT objec datatable */
-        $('table#contact').adagios_ob_dataTable(
+        $('table#contact').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Contact Name" },
                     { "sTitle": "Alias" },
                     { "sTitle": "E-Mail" }
-                ]
-        ).adagios_ob_dtPopulate('contact',
+                ],
                 [
                     {
-                        "cName": "contact_name",
-                        "cAltName": "name",
-                        "icon": "glyph-woman"
+                        'object_type': 'contact',
+                        'rows': [
+                            {
+                                "cName": "contact_name",
+                                "cAltName": "name",
+                                "icon": "glyph-woman"
+                            },
+                            { "cName": "alias" },
+                            { "cName": "email" }
+                        ]
                     },
-                    { "cName": "alias" },
-                    { "cName": "email" }
-                ]
-        ).adagios_ob_dtPopulate('contactgroup',
-
-                [
                     {
-                        "cName": "contactgroup_name",
-                        "cAltName": "name",
-                        "icon": "glyph-adress-book"
-                    },
-                    { "cName": "alias" },
-                    { "cName": "email" }
+                        'object_type': 'contactgroup',
+                        'rows': [
+                            {
+                                "cName": "contactgroup_name",
+                                "cAltName": "name",
+                                "icon": "glyph-adress-book"
+                            },
+                            { "cName": "alias" },
+                            { "cName": "email" }
+                        ]
+                    }
                 ]
         );
-
-
-        /* Create the CONTACT objec datatable */
-        $('table#host').adagios_ob_dataTable(
+        $('table#host').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Name" },
                     { "sTitle": "Address" },
                     { "sTitle": "Alias" }
-                ]
-        ).adagios_ob_dtPopulate('host',
+                ],
                 [
                     {
-                        "cName": "host_name",
-                        "cAltName": "name",
-                        "icon": "glyph-computer-locked"
+                        'object_type': 'host',
+                        'rows': [
+                            {
+                                "cName": "host_name",
+                                "cAltName": "name",
+                                "icon": "glyph-computer-locked"
+                            },
+                            { "cName": "address" },
+                            { "cName": "alias" }
+                        ]
                     },
-                    { "cName": "address" },
-                    { "cName": "alias" }
-                ]
-        ).adagios_ob_dtPopulate('hostgroup',
-                [
                     {
-                        "cName": "hostgroup_name",
-                        "cAltName": "name",
-                        "icon": "glyph-more-items"
-                    },
-                    { "cName": "address" },
-                    { "cName": "alias" }
+                        'object_type': 'hostgroup',
+                        'rows': [
+                            {
+                                "cName": "hostgroup_name",
+                                "cAltName": "name",
+                                "icon": "glyph-more-items"
+                            },
+                            { "cName": "address" },
+                            { "cName": "alias" }
+                        ]
+                    }
                 ]
         );
+        $('table#timeperiod').adagios_ob_configure_dataTable(
+                [
+                    { "sTitle": "Name" },
+                    { "sTitle": "Alias" }
+                ],
+                [
+                    {
+                        'object_type': 'timeperiod',
+                        'rows': [
+                            {
+                                "cName": "timeperiod_name",
+                                "cAltName": "name",
+                                "icon": "glyph-clock"
+                            },
+                            { "cName": "alias" }
+                        ]
+                    }
+                ]
+        );
+        $('table#' + anchor).adagios_ob_render_dataTable();
 
-        $('table#timeperiod').adagios_ob_dataTable(
-            [
-                { "sTitle": "Name" },
-                { "sTitle": "Alias" }
-            ]).adagios_ob_dtPopulate('timeperiod', [
-            {
-                "cName": "timeperiod_name",
-                "cAltName": "name",
-                "icon": "glyph-clock"
-            },
-            { "cName": "alias" }
-        ]);
 
         $(window).bind('resize', function () {
             /* This blows, couldn't find a good way to do this - tommi */
             $("table#" + currenttable).dataTable().fnAdjustColumnSizing();
             $(currenttab).tab('show');
         } );
-
+        $('a[data-toggle="tab"]').on('show', function (e) {
+            //alert($(e.target).attr('href'));
+            if ( ! $.fn.DataTable.fnIsDataTable($('table' + $(e.target).attr('href'))[0])) {
+                $('table' + $(e.target).attr('href')).adagios_ob_render_dataTable();
+            }
+            return true;
+        });
         $('a[data-toggle="tab"]').on('shown', function (e) {
             currenttab = $(e.target).attr('href');
             currenttable = 'table' + $(e.target).attr('href');
-            /* For some reason I have to loop through everything, weird.
-             $(currenttable).dataTable().fnAdjustColumnSizing();
-             */
-            $(currenttable).dataTable().fnAdjustColumnSizing();
-            /*
-             var tables = $.fn.dataTable.fnTables();
-             for ( var i = 0 ; i<tables.length ; i++ ) {
-             $(tables[i]).dataTable().fnAdjustColumnSizing(true);
-             }
-             */
+            document.location.hash = $(e.target).attr('href');
             $('#log').append("Set current tab " + currenttable + '<br/>');
             // e.target // activated tab
             // e.relatedTarget // previous tab
@@ -201,6 +230,7 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="command">
+                            <div id="loading"><h3>Loading...</h3></div>
                             <table id="command" class="table table-striped">
                                 <thead>
                                 </thead>
@@ -209,6 +239,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="contact">
+                            <div id="loading"><h3>Loading...</h3></div>
                             <table id="contact" class="table table-striped">
                                 <thead>
                                 </thead>
@@ -217,6 +248,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="host">
+                            <div id="loading"><h3>Loading...</h3></div>
                             <table id="host" class="table table-striped">
                                 <thead>
                                 </thead>
@@ -225,6 +257,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="service">
+                            <div id="loading"><h3>Loading...</h3></div>
                             <table id="service" class="table table-striped">
                                 <thead>
                                 </thead>
@@ -233,6 +266,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="timeperiod">
+                            <div id="loading"><h3>Loading...</h3></div>
                             <table id="timeperiod" class="table table-striped">
                                 <thead>
                                 </thead>
@@ -319,9 +353,11 @@
                 <h5 style="border-bottom: 1px solid #ccc">Most Recent Changes</h5>
                 <table class="log">
                     <thead>
-                    <th>Time</th>
-                    <th>User</th>
-                    <th>What</th>
+                    <tr>
+                        <th>Time</th>
+                        <th>User</th>
+                        <th>What</th>
+                    </tr>
                     </thead>
                     <tbody>
 

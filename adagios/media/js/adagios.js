@@ -93,88 +93,43 @@ function ob_run_check_command() {
      example, aoColumns = [ { 'sTitle': 'Contact Name'}, { 'sTitle': 'Alias' } ]
 
      */
-    $.fn.adagios_ob_dataTable = function(aoColumns) {
+    $.fn.adagios_ob_configure_dataTable = function (aoColumns, fetch) {
         // Option column
         aoColumns.unshift(
             {
-                "sTitle": "register",
-                "bVisible": false
+                "sTitle":"register",
+                "bVisible":false
             },
             {
-                "sTitle": "object_type",
-                "bVisible": false
+                "sTitle":"object_type",
+                "bVisible":false
             },
             {
-                "sTitle": '', 'sWidth': '32px'
+                "sTitle":'', 'sWidth':'32px'
             });
+        var $this = $(this);
 
 
+        $this.data('fetch', fetch);
+        $this.data('aoColumns', aoColumns);
 
-        return this.each(function() {
-            //alert('this id ' + $(this).attr('id'));
-            var dt = $(this).dataTable( {
-                "aoColumns": aoColumns,
-                "sPaginationType": "bootstrap",
-                "sScrollY": "260px",
-                "bAutoWidth": false,
-                "bScrollCollapse": false,
-                "bPaginate": true,
-		"iDisplayLength": 48,
-                "sDom": '<"toolbar' + $(this).attr('id') + '">frtip',
-                // Callback which assigns tooltips to visible pages
-                "fnDrawCallback": function( oSettings ) {
-                    $("[rel=tooltip]").tooltip();
-                }
-            });
-            dt.fnFilter("^" + $(this).attr('id') + "$", 1, true);
-            dt.fnFilter("1", 0);
-            $(".toolbar" + $(this).attr('id')).html("<strong>Show:</strong> Templates \
-            <input data-target='" + $(this).attr('id') + "' name='bong' type='checkbox' id='template" + $(this).attr('id') + "'>\
-            Groups <input data-target='" + $(this).attr('id') + "' name='bong' type='checkbox' id='groups" + $(this).attr('id') + "'>\
-            ");
-            $(this).data('datatable', dt);
-            $("#template" + $(this).attr('id')).on('click', function() {
-                //alert($(this).attr('data-target'));
-                if ($(this).attr('checked')) {
-                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("", 0);
-                } else {
-                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("1", 0);
-                }
-                return true;
-            });
-            $("#groups" + $(this).attr('id')).on('click', function() {
-                //alert($(this).attr('data-target'));
-                if ($(this).attr('checked')) {
-                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("", 1, true);
-                } else {
-                    $('table#' + $(this).attr('data-target')).dataTable().fnFilter("^" + $(this).attr('data-target') +"$", 1, true);
-                }
-                return true;
-            });
+        return $this;
+    };
 
+    $.fn.adagios_ob_render_dataTable = function (aoColumns, fetch) {
+        var $this = $(this);
 
-            return this;
-        });
-    }
-})(jQuery);
+        $this.dtData = [];
+        $this.fetch = $this.data('fetch', fetch);
+        $this.aoColumns = $this.data('aoColumns', aoColumns);
+        $this.jsonqueries = $this.fetch.length;
+        $.each($this.fetch, function (f, v) {
 
-(function( $ ) {
-
-    /*
-     Populates the datatable
-
-     jsonFields are used for describing which fields to fetch via json and how to handle them
-     example, jsonFields = [ { 'cName': "command_name", 'icon_class': "glyph-computer-proces" }, ... ]
-
-     object_type is one of contact, command, host, service, timeperiod
-     example, object_type = host
-     */
-    $.fn.adagios_ob_dtPopulate = function(object_type, jsonFields) {
-        return this.each(function() {
+            var object_type = v['object_type'];
             $('#log').append('Populating ' + object_type + $(this).attr('id') + '<br/>');
 
             var json_query_fields = ['id', 'register'];
-            $.each(jsonFields, function(k, field){
+            $.each(v['rows'], function (k, field) {
                 if ('cName' in field) {
                     json_query_fields.push(field['cName']);
                 }
@@ -185,25 +140,22 @@ function ob_run_check_command() {
                     json_query_fields.push(field['cHidden']);
                 }
             });
-            var dtData = [];
-            var targetDataTable = $(this).data('datatable');
 
             $.getJSON("/rest/pynag/json/get_objects",
                 {
-                    object_type: object_type,
-                    with_fields: json_query_fields.join()
+                    object_type:object_type,
+                    with_fields:json_query_fields.join()
                 },
-                function(data) {
+                function (data) {
                     var count = data.length;
-                    dtData = [];
-                    $.each(data, function(i, item){
+                    $.each(data, function (i, item) {
                         var field_array =
                             [item['register'], object_type, '\
     <a href="' + BASE_URL + '/objectbrowser/delete_object/id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
     <input rel="ob_mass_select" type="checkbox">'];
-                        $.each(jsonFields, function(k, field) {
+                        $.each(v['rows'], function (k, field) {
                             var cell = '<a href="' + BASE_URL + '/objectbrowser/id=' + item['id'] + '">';
                             var field_value = "";
                             if ("icon" in field) {
@@ -212,7 +164,7 @@ function ob_run_check_command() {
                             if (item[field['cName']]) {
                                 field_value = item[field['cName']];
                             } else {
-                                if (item[field.cAltName]) {
+                                if (item[field['cAltName']]) {
                                     field_value = item[field['cAltName']];
                                 }
                             }
@@ -226,22 +178,89 @@ function ob_run_check_command() {
                             }
                             cell += "</a>";
                             field_array.push(cell);
-                            if (field['cName'] == jsonFields[jsonFields.length - 1]['cName']) {
-                                dtData.push(field_array);
+                            if (field['cName'] == v['rows'][v['rows'].length - 1]['cName']) {
+                                $this.dtData.push(field_array);
                                 count--;
                             }
                         });
                     });
-                }).success(function() {
-                    targetDataTable.fnAddData(dtData);
-                    targetDataTable.fnSort( [ [3,'asc'], [4, 'asc'] ] );
-                    $("[rel=tooltip]").tooltip();
-                }).error(function(jqXHR) {
+                }).success(function () {
+                    //targetDataTable.fnAddData(dtData);
+
+                    $this.jsonqueries = $this.jsonqueries - 1;
+
+                    //alert($this.jsonqueries);
+                    if ($this.jsonqueries == 0) {
+                        $("[rel=tooltip]").tooltip();
+                        //alert('predtData: ' + $this.dtData[0])
+                        $this.data('dtData', $this.dtData);
+
+                        $this.adagios_ob_dtPopulate();
+                    }
+                }).error(function (jqXHR) {
+                    /* TODO - fix this to a this style */
                     targetDataTable = $(this).data('datatable');
                     targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
                 });
             return this;
         });
+    };
+
+    /*
+     Populates the datatable
+
+     jsonFields are used for describing which fields to fetch via json and how to handle them
+     example, jsonFields = [ { 'cName': "command_name", 'icon_class': "glyph-computer-proces" }, ... ]
+
+     object_type is one of contact, command, host, service, timeperiod
+     example, object_type = host
+     */
+    $.fn.adagios_ob_dtPopulate = function() {
+        var $this = $(this);
+        var dtData = $this.data('dtData');
+        var aoColumns = $this.data('aoColumns');
+        $('#' + $this.attr('id') + ' #loading').hide();
+        var dt = $this.dataTable( {
+            "aoColumns": aoColumns,
+            "sPaginationType": "bootstrap",
+            "sScrollY": "260px",
+            "bAutoWidth": false,
+            "bScrollCollapse": false,
+            "bPaginate": true,
+            "iDisplayLength": 48,
+            "aaData": dtData,
+            "sDom": '<"toolbar' + $this.attr('id') + '">frtip',
+            // Callback which assigns tooltips to visible pages
+            "fnDrawCallback": function() {
+                $("[rel=tooltip]").tooltip();
+            }
+        });
+        dt.fnFilter("^" + $this.attr('id') + "$", 1, true);
+        dt.fnFilter("1", 0);
+        $(".toolbar" + $this.attr('id')).html("<strong>Show:</strong> Templates \
+            <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='template" + $this.attr('id') + "'>\
+            Groups <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='groups" + $this.attr('id') + "'>\
+            ");
+        $("#template" + $this.attr('id')).on('click', function(e) {
+            var $target = $(e.target);
+            if ($target.attr('checked')) {
+                $('table#' + $target.attr('data-target')).dataTable().fnFilter("", 0);
+            } else {
+                $('table#' + $target.attr('data-target')).dataTable().fnFilter("1", 0);
+            }
+            return true;
+        });
+        $("#groups" + $this.attr('id')).on('click', function(e) {
+            var $target = $(e.target);
+            if ($target.attr('checked')) {
+                $('table#' + $target.attr('data-target')).dataTable().fnFilter("", 1, true);
+            } else {
+                $('table#' + $target.attr('data-target')).dataTable().fnFilter("^" + $target.attr('data-target') +"$", 1, true);
+            }
+            return true;
+        });
+        dt.fnSort( [ [3,'asc'], [4, 'asc'] ] );
+        //return this.each(function() {
     };
 })( jQuery );
 
