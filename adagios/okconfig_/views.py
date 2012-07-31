@@ -117,7 +117,7 @@ def addtemplate(request, host_name=None):
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
 def verify_okconfig(request):
-    ''' Checks if okconfig is properly set up. '''
+    """ Checks if okconfig is properly set up. """
     c = {}
     c['errors'] = []
     c['okconfig_checks'] = okconfig.verify()
@@ -127,7 +127,7 @@ def verify_okconfig(request):
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
 def install_agent(request):
-    ''' Installs an okagent on a remote host '''
+    """ Installs an okagent on a remote host """
     c = {}
     c['errors'] = []
     c['messages'] = []
@@ -153,7 +153,7 @@ def install_agent(request):
             c['errors'].append('invalid input')
     return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
 def edit(request, host_name):
-    ''' Edit all the Service "__MACROS" for a given host '''
+    """ Edit all the Service "__MACROS" for a given host """
     from pynag import Model
 
     c = { }
@@ -169,7 +169,7 @@ def edit(request, host_name):
             if k.count('::') < 2: continue
 
 def edit(request, host_name):
-    ''' Edit all the Service "__MACROS" for a given host '''
+    """ Edit all the Service "__MACROS" for a given host """
     from pynag import Model
 
     c = { }
@@ -207,7 +207,7 @@ def edit(request, host_name):
     return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
 
 def choose_host(request):
-    "Simple form that lets you choose one host to edit"
+    """Simple form that lets you choose one host to edit"""
     c = { }
     c.update(csrf(request))
     if request.method == 'GET':

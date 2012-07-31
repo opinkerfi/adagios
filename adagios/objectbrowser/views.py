@@ -24,6 +24,7 @@ from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 import sys
+import os
 from os.path import dirname
 
 from pynag.Model import ObjectDefinition
@@ -121,9 +122,9 @@ def geek_edit( request, object_id ):
             m.append( "Failed to save object")
     else:
         form = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
-    
+
     # Lets return the user to the general edit_object form
-    return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[o.get_id()] ) )
+    return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
 
 def advanced_edit(request, object_id):
     ''' Handles POST only requests for the "advanced" object edit form. '''
@@ -147,9 +148,9 @@ def advanced_edit(request, object_id):
             m.append("Object Saved to %s" % o['filename'])
         else:
             c['errors'].append( "Problem reading form input")
-    
+
     return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[o.get_id()] ) )
-             
+
 def edit_object( request, object_id=None, object_type=None, shortname=None):
     """ View details about one specific pynag object """
     c = {}
@@ -183,7 +184,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
             return render_to_response('error.html', c, context_instance = RequestContext(request))
     else:
         raise ValueError("Object not found")
-    
+
     if request.method == 'POST':
         # User is posting data into our form
         c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
@@ -200,7 +201,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
     c['my_object'] = o
     c['geek_edit'] = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     c['advanced_form'] = PynagForm( pynag_object=o, initial=o._original_attributes, simple=True )
-    
+
     # Some type of objects get a little special treatment:
     if o['object_type'] == 'host':
         return _edit_host(request, c)
@@ -208,7 +209,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
         return _edit_service(request, c)
     elif o['object_type'] == 'contact':
         return _edit_contact(request, c)
-    
+
     # Here we have all sorts of extra information that can be stuffed into the template,
     # Some of these do not apply for every type of object, hence the try/except
     try: c['command_line'] = o.get_effective_command_line()
@@ -225,7 +226,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
     except: pass
     try: c['effective_members'] = o.get_effective_members()
     except: pass
-    
+
     return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
 
 def _edit_contactgroup( request, c):
@@ -247,13 +248,13 @@ def _edit_service( request, c):
 
     #try: c['effective_servicegroups'] = service.get_effective_servicegroups()
     #except: c['errors'].append( "Configuration error while looking up servicegroups")
-    
+
     try: c['effective_contacts'] = service.get_effective_contacts()
     except: c['errors'].append( "Configuration error while looking up contacts")
-    
+
     try: c['effective_contactgroups'] = service.get_effective_contact_groups()
     except: c['errors'].append( "Configuration error while looking up contact_groups")
-    
+
     try: c['object_macros'] = service.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
     return render_to_response('edit_service.html', c, context_instance = RequestContext(request))
@@ -261,25 +262,25 @@ def _edit_host( request, c):
     """ This is a helper function to edit_object """
     host = c['my_object']
     if not c.has_key('errors'): c['errors'] = []
-    
+
     try: c['effective_services'] = host.get_effective_services()
     except: c['errors'].append( "Configuration error while looking up services")
-    
+
     try: c['command_line'] = host.get_effective_command_line()
     except: c['errors'].append( "Configuration error while looking up command_line")
-    
+
     try: c['effective_hostgroups'] = host.get_effective_hostgroups()
     except: c['errors'].append( "Configuration error while looking up hostgroups")
-    
+
     try: c['effective_contacts'] = host.get_effective_contacts()
     except: c['errors'].append( "Configuration error while looking up contacts")
-    
+
     try: c['effective_contactgroups'] = host.get_effective_contact_groups()
     except: c['errors'].append( "Configuration error while looking up contact_groups")
-    
+
     try: c['object_macros'] = host.get_all_macros()
     except: c['errors'].append( "Configuration error while looking up macros")
-    
+
     return render_to_response('edit_host.html', c, context_instance = RequestContext(request))
 
 def config_health( request  ):
@@ -287,20 +288,20 @@ def config_health( request  ):
     c['messages'] = m = []
     c['object_health'] = s = {}
     c['booleans'] = {}
-    services_no_description = Service.objects.filter(register="1", service_description=None)
+    services_no_description = Model.Service.objects.filter(register="1", service_description=None)
     hosts_without_contacts = []
     hosts_without_services =[]
     objects_with_invalid_parents = []
     services_without_contacts = []
     services_using_hostgroups = []
     services_without_icon_image = []
-    for i in ObjectDefinition.objects.all:
+    for i in Model.ObjectDefinition.objects.all:
         continue
         try:
             i.get_parents()
         except ValueError:
             objects_with_invalid_parents.append(i)
-    for i in Host.objects.filter(register="1"):
+    for i in Model.Host.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 hosts_without_contacts.append(i)
             try:
@@ -308,7 +309,7 @@ def config_health( request  ):
                     hosts_without_services.append(i)
             except:
                 pass
-    for i in Service.objects.filter(register="1"):
+    for i in Model.Service.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 services_without_contacts.append(i)
             if i['hostgroups'] is not None:
@@ -321,7 +322,7 @@ def config_health( request  ):
     import okconfig
     c['booleans']['OKConfig is installed and working'] = okconfig.is_valid()
     s['Parser errors'] = Model.config.errors
-    s['Services with no "service_description"'] = services_no_description            
+    s['Services with no "service_description"'] = services_no_description
     s['Hosts without any contacts'] = hosts_without_contacts
     s['Services without any contacts'] = services_without_contacts
     s['Objects with invalid "use" attribute'] = objects_with_invalid_parents
@@ -340,14 +341,17 @@ def show_plugins(request):
     missing_plugins = []
     existing_plugins = []
     finished = []
-    services = Service.objects.all
+    services = Model.Service.objects.all
     common_interpreters = ['perl','python','sh','bash']
     for s in services:
         if not 'check_command' in s._defined_attributes: continue
         check_command = s.check_command.split('!')[0]
         if check_command in finished: continue
         finished.append( check_command )
-        command_line = s.get_effective_command_line()
+        try:
+            command_line = s.get_effective_command_line()
+        except KeyError:
+            continue
         if command_line is None: continue
         command_line = command_line.split()
         command_name = command_line.pop(0)
@@ -379,7 +383,7 @@ def view_nagios_cfg(request):
     c = {'filename': Model.config.cfg_file, 'content': Model.config.maincfg_values}
     c['content'].sort()
     return render_to_response('edit_configfile.html', c, context_instance = RequestContext(request))
-    
+
 def add_service(request):
     c = {}
     c.update(csrf(request))
@@ -394,7 +398,7 @@ def add_service(request):
             host = Model.Host.objects.get_by_shortname(host_name)
             service = form.cleaned_data['service']
             new_service = Model.Service()
-            new_service.host_name = host_name   
+            new_service.host_name = host_name
             new_service.use = service
             new_service.set_filename(host.get_filename())
             new_service.reload_object()
@@ -406,7 +410,7 @@ def add_service(request):
             return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[new_service.get_id()] ) )
 
     return render_to_response('add_service.html', c,context_instance = RequestContext(request))
- 
+
 def edit_many(request):
     """ Edit multiple objects with one post """
     c = {}

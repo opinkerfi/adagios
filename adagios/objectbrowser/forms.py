@@ -47,7 +47,7 @@ INACTIVE_SERVICES = map(lambda x: (x.name, x.name),
 INACTIVE_SERVICES.sort()
 
 class PynagChoiceField(forms.MultipleChoiceField):
-    ''' multichoicefields that accepts comma seperated input as values '''
+    """ multichoicefields that accepts comma seperated input as values """
     def __init__(self, *args, **kwargs):
         self.__prefix = ''
         self.data = kwargs.get('data')
@@ -62,7 +62,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
         return value
 
 class PynagRadioWidget(forms.widgets.HiddenInput):
-    ''' Special Widget designed to make Nagios attributes with 0/1 values look like on/off buttons '''
+    """ Special Widget designed to make Nagios attributes with 0/1 values look like on/off buttons """
     def render(self, name, value, attrs=None):
         output = super(self.__class__, self).render(name, value, attrs)
         prefix = """
@@ -188,7 +188,7 @@ class PynagForm(forms.Form):
         
         return field
     def add_css_tag(self, field, css_tag):
-        ''' Add a CSS tag to the widget of a specific field '''
+        """ Add a CSS tag to the widget of a specific field """
         if not field.widget.attrs.has_key('class'):
             field.widget.attrs['class'] = ''
             field.css_tag = ''

@@ -123,8 +123,6 @@ def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None'
 def dnslookup(host_name):
     try:
         (name, aliaslist, addresslist) = gethostbyname_ex(host_name)
+        return { 'host': name, 'aliaslist': aliaslist, 'addresslist': addresslist }
     except Exception, e:
-	print e
         return { 'error': str(e) }
-
-    return { 'host': name, 'aliaslist': aliaslist, 'addresslist': addresslist }
