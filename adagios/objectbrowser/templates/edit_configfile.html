@@ -1,5 +1,5 @@
-{% extends "configurator/base.html" %}
-{% block title %}{{ filename }}{% endblock %}
+{% extends "base.html" %}
+{% block title %}Adagios - Edit nagios.cfg{% endblock %}
 
 {% block content %}
 
@@ -14,7 +14,7 @@
 	</tr>
 	{% for k,v in content %}
 		<tr>
-			<td ">{{k}}</td>
+			<td>{{ k }}</td>
 			{% if k == 'cfg_file' %}
 				<td align="left"><a href="search?filename={{v}}">{{v}}</a></td>
 			{% else %}

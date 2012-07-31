@@ -24,6 +24,7 @@ from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 import sys
+import os
 from os.path import dirname
 
 from pynag.Model import ObjectDefinition
@@ -287,20 +288,20 @@ def config_health( request  ):
     c['messages'] = m = []
     c['object_health'] = s = {}
     c['booleans'] = {}
-    services_no_description = Service.objects.filter(register="1", service_description=None)
+    services_no_description = Model.Service.objects.filter(register="1", service_description=None)
     hosts_without_contacts = []
     hosts_without_services =[]
     objects_with_invalid_parents = []
     services_without_contacts = []
     services_using_hostgroups = []
     services_without_icon_image = []
-    for i in ObjectDefinition.objects.all:
+    for i in Model.ObjectDefinition.objects.all:
         continue
         try:
             i.get_parents()
         except ValueError:
             objects_with_invalid_parents.append(i)
-    for i in Host.objects.filter(register="1"):
+    for i in Model.Host.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 hosts_without_contacts.append(i)
             try:
@@ -308,7 +309,7 @@ def config_health( request  ):
                     hosts_without_services.append(i)
             except:
                 pass
-    for i in Service.objects.filter(register="1"):
+    for i in Model.Service.objects.filter(register="1"):
             if i['contacts'] is None and i['contact_groups'] is None:
                 services_without_contacts.append(i)
             if i['hostgroups'] is not None:
@@ -340,14 +341,17 @@ def show_plugins(request):
     missing_plugins = []
     existing_plugins = []
     finished = []
-    services = Service.objects.all
+    services = Model.Service.objects.all
     common_interpreters = ['perl','python','sh','bash']
     for s in services:
         if not 'check_command' in s._defined_attributes: continue
         check_command = s.check_command.split('!')[0]
         if check_command in finished: continue
         finished.append( check_command )
-        command_line = s.get_effective_command_line()
+        try:
+            command_line = s.get_effective_command_line()
+        except KeyError:
+            continue
         if command_line is None: continue
         command_line = command_line.split()
         command_name = command_line.pop(0)

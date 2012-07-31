@@ -1,6 +1,6 @@
 from django import forms
 import okconfig
-from configurator import helpers
+from misc import helpers
 import re
 from django.core.exceptions import ValidationError
 import socket
