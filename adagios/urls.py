@@ -9,7 +9,7 @@ from django.views.static import serve
 
 urlpatterns = patterns('',
     # Example:
-    (r'^$', 'misc.views.index'),
+    url(r'^$', 'misc.views.index', name="home"),
     (r'^contact_us$', 'misc.views.contact_us'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^objectbrowser', include('objectbrowser.urls')),

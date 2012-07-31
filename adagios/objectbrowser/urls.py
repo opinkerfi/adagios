@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     #(r'/(?P<attribute_name>.+)=(?P<attribute_value>.+?)/?$', 'objectbrowser.views.list_objects'),
 
     # By default, lets just display a list of object_types available
-    (r'^/$', 'objectbrowser.views.list_object_types'),
+    url(r'^/$', 'objectbrowser.views.list_object_types', name="objectbrowser"),
     (r'^/search/?$', 'objectbrowser.views.list_objects'),
     (r'^/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object'),
     (r'/edit_object/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object'),

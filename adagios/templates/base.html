@@ -56,7 +56,7 @@
             <a class="brand" href="{% url misc.views.index %}">Adagios</a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li>
+                    <li class="{% if urlname == "home"%}active{% endif %}">
                         <a href="{% url misc.views.index %}"><i class="icon-home icon-white"></i> Home</a>
                     </li>
 
@@ -82,12 +82,12 @@
 
 
                     <!-- Object Browser -->
-                    <li>
-                        <a href="{% url objectbrowser.views.list_object_types %}"><i class="icon-list icon-white"></i> Object Browser</a>
+                    <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
+                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="icon-list icon-white"></i> Object Browser</a>
                     </li>
 
                     <!-- Nagios -->
-                    <li class="active">
+                    <li>
                         <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i>Monitor</a>
                     </li>
 
