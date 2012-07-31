@@ -119,6 +119,7 @@ function ob_run_check_command() {
                 "bAutoWidth": false,
                 "bScrollCollapse": false,
                 "bPaginate": true,
+		"iDisplayLength": 48,
                 "sDom": '<"toolbar' + $(this).attr('id') + '">frtip',
                 // Callback which assigns tooltips to visible pages
                 "fnDrawCallback": function( oSettings ) {
