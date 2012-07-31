@@ -292,15 +292,15 @@
 
                                 <ul class="dropdown-menu">
                                     <li class="nav-header">Objects</li>
-                                    <li><a href="add/command"><i class="glyph-computer-proces"></i> Command</a></li>
-                                    <li><a href="add/contact"><i class="glyph-woman"></i> Contact</a></li>
-                                    <li><a href="add/host"><i class="glyph-computer-locked"></i> Host</a></li>
-                                    <li><a href="add/service"><i class="glyph-computer-service"></i> Service</a></li>
-                                    <li><a href="add/timeperiod"><i class="glyph-clock"></i> Timeperiod</a></li>
+                                    <li><a href="{% url addobject object_type="command" %}"><i class="glyph-computer-proces"></i> Command</a></li>
+                                    <li><a href="{% url addobject object_type="contact" %}"><i class="glyph-woman"></i> Contact</a></li>
+                                    <li><a href="{% url addobject object_type="host" %}"><i class="glyph-computer-locked"></i> Host</a></li>
+                                    <li><a href="{% url addobject object_type="service" %}"><i class="glyph-computer-service"></i> Service</a></li>
+                                    <li><a href="{% url addobject object_type="timeperiod" %}"><i class="glyph-clock"></i> Timeperiod</a></li>
                                     <li class="nav-header">Object Groups</li>
-                                    <li><a href="add/contactgroup"><i class="glyph-adress-book"></i> Contactgroup</a></li>
-                                    <li><a href="add/hostgroup"><i class="glyph-more-items"></i> Hostgroup</a></li>
-                                    <li><a href="add/servicegroup"><i class="glyph-more-items"></i> Servicegroup</a></li>
+                                    <li><a href="{% url addobject object_type="contactgroup" %}"><i class="glyph-adress-book"></i> Contactgroup</a></li>
+                                    <li><a href="{% url addobject object_type="hostgroup" %}"><i class="glyph-more-items"></i> Hostgroup</a></li>
+                                    <li><a href="{% url addobject object_type="servicegroup" %}"><i class="glyph-more-items"></i> Servicegroup</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -308,8 +308,8 @@
                     <div id="bulk">
                         <ul class="nav nav-list">
                             <li class="nav-header">Bulk Actions</li>
-                            <li><a href="/objectbrowser/bulk/delete"><i class="icon-trash"></i> Delete</a></li>
-                            <li><a href="/objectbrowser/edit_many"><i class="glyph-pencil"></i> Update Field</a></li>
+                            <li><a href="{%  url bulk_delete %}"><i class="icon-trash"></i> Delete</a></li>
+                            <li><a href="{%  url edit_many %}"><i class="glyph-pencil"></i> Update Field</a></li>
                         </ul>
                     </div>
 

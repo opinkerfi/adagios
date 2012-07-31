@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.conf import settings
 
 urlpatterns = patterns('',
@@ -13,8 +13,8 @@ urlpatterns = patterns('',
     (r'^/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object'),
     (r'/edit_object/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object'),
     (r'/delete_object/id=(?P<object_id>.+)$', 'objectbrowser.views.delete_object'),
-    (r'/edit_many/?$', 'objectbrowser.views.edit_many'),
-    (r'^/add/(?P<object_type>.+)$', 'objectbrowser.views.edit_object'),
+    url(r'/edit_many/?$', 'objectbrowser.views.edit_many', name='edit_many'),
+    url(r'^/add/(?P<object_type>.+)$', 'objectbrowser.views.edit_object', name="addobject"),
     (r'/edit_object/object_type=(?P<object_type>.+)/shortname=(?P<shortname>.+)$', 'objectbrowser.views.edit_object'),
     (r'/confighealth/?$', 'objectbrowser.views.config_health'),
     (r'/parents/?$', 'objectbrowser.views.view_parents'),
