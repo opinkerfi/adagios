@@ -195,11 +195,22 @@
             return true;
         });
 
-
+        $('a[href="#edit_many"]').on('click', function (e) {
+            var params = {};
+            var $form = $('form[name="edit_many"]');
+            $('table input:checked').each(function(index) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'change_' + $(this).attr('name'),
+                    value: '1'}).appendTo($form);
+            });
+            $form.submit();
+            e.preventDefault();
+        });
     } );
 
     </script>
-{% endblock %}
+{% endblock %}:
 {% block content %}
     <div class="row">
         <div class="span12">
@@ -308,10 +319,13 @@
                     <div id="bulk">
                         <ul class="nav nav-list">
                             <li class="nav-header">Bulk Actions</li>
-                            <li><a href="{%  url delete_many %}"><i class="icon-trash"></i> Delete</a></li>
-                            <li><a href="{%  url edit_many %}"><i class="glyph-pencil"></i> Update Field</a></li>
+                            <li><a href="#delete_many"><i class="icon-trash"></i> Delete</a></li>
+                            <li><a href="#edit_many"><i class="glyph-pencil"></i> Update Field</a></li>
                         </ul>
                     </div>
+                    <form name="edit_many" action="{% url edit_many %}" method="post">
+                        {% csrf_token %}
+                    </form>
 
                 </div>
 

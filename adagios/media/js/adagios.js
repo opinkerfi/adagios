@@ -161,7 +161,7 @@ function ob_run_check_command() {
     <a href="' + BASE_URL + '/objectbrowser/delete_object/id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
-    <input rel="ob_mass_select" type="checkbox">'];
+    <input rel="ob_mass_select" name="' + item['id'] + '" type="checkbox">'];
                         $.each(v['rows'], function (k, field) {
                             var cell = '<a href="' + BASE_URL + '/objectbrowser/id=' + item['id'] + '">';
                             var field_value = "";
@@ -274,4 +274,3 @@ function ob_run_check_command() {
         //return this.each(function() {
     };
 })( jQuery );
-
