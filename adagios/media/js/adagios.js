@@ -249,7 +249,6 @@ function ob_run_check_command() {
 
                     } else {
                         $('a.bulk').addClass('inactive');
-
                     }
                 });
             }
@@ -278,6 +277,12 @@ function ob_run_check_command() {
             }
             var checked = $('input[rel="ob_mass_select"]:checked').length;
             $('#bulkselected').html(checked);
+            if (checked > 0) {
+                $('a.bulk').removeClass('inactive');
+
+            } else {
+                $('a.bulk').addClass('inactive');
+            }
             e.preventDefault();
         });
         $("#template" + $this.attr('id')).on('click', function (e) {
