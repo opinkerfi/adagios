@@ -453,3 +453,5 @@ def delete_object(request, object_id):
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
 
 
+def delete_many(request, object_ids):
+    return NotImplementedError

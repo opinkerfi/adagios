@@ -3,7 +3,19 @@
 {% block smallheader %}edit{% endblock %}
 {% block largeheader %}Many objects{% endblock %}
 {% block nav1 %}Object Browser{% endblock %}
-
+{% block footer %}
+    <script>
+        $('table#many').dataTable( {
+                    "sPaginationType": "bootstrap",
+                    "sScrollY": "260px",
+                    "bAutoWidth": false,
+                    "bScrollCollapse": true,
+                    "bPaginate": false,
+                    "sDom": 'rtp'
+                }
+        );
+    </script>
+{% endblock %}
 {%  block content %}
     Welcome to the bulk edit form! Things to note:
     <ul>
@@ -13,26 +25,34 @@
 
     </ul>
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        <div>
     {% include "bootstrap_fields.html" with fields=form %}
-    <table border=1>
-        <tr>
-            <th></th>
-            <th>object type</th>
-            <th>description</th>
-            <th>filename</th>
-        </tr>
-        {% for obj in objects %}
+        <table id="many">
+            <thead>
             <tr>
-                <td>
-                    <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
-                    <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
-                </td>
-                <td>{{ obj.object_type }}</td>
-                <td>{{ obj.description }}</td>
-                <td>{{ obj.filename }}</td>
+                <th></th>
+                <th>Object Type</th>
+                <th>Description</th>
+                <th>Filename</th>
             </tr>
-        {% endfor %}
-    </table>
+            </thead>
+            <tbody>
+            {% for obj in objects %}
+                <tr>
+                    <td>
+                        <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
+                        <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                    </td>
+                    <td>{{ obj.object_type }}</td>
+                    <td>{{ obj.description }}</td>
+                    <td>{{ obj.filename }}</td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+        </div>
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
