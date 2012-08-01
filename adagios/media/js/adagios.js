@@ -241,10 +241,22 @@ function ob_run_check_command() {
             // Callback which assigns tooltips to visible pages
             "fnDrawCallback":function () {
                 $("[rel=tooltip]").tooltip();
+                $('input').click(function() {
+                    var checked = $('input[rel="ob_mass_select"]:checked').length;
+                    $('#bulkselected').html(checked);
+                    if (checked > 0) {
+                        $('a.bulk').removeClass('inactive');
+
+                    } else {
+                        $('a.bulk').addClass('inactive');
+
+                    }
+                });
             }
         });
         dt.fnFilter("^" + $this.attr('id') + "$", 1, true);
         dt.fnFilter("1", 0);
+
         $(".toolbar" + $this.attr('id')).html("<strong>Show:</strong> Templates \
             <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='template" + $this.attr('id') + "'>\
             Groups <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='groups" + $this.attr('id') + "'>\

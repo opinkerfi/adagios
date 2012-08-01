@@ -195,9 +195,11 @@
             return true;
         });
 
-        $('a[href="#edit_many"]').on('click', function (e) {
+        $('a.bulk').on('click', function (e) {
             var params = {};
-            var $form = $('form[name="edit_many"]');
+            var swhat = $(e.target).attr('data-target');
+            var $form = $('form[name="bulk"]');
+            $form.attr('action', swhat);
             $('table input:checked').each(function(index) {
                 $('<input>').attr({
                     type: 'hidden',
@@ -316,14 +318,14 @@
                             </li>
                         </ul>
                     </div>
-                    <div id="bulk">
+                    <div>
                         <ul class="nav nav-list">
-                            <li class="nav-header">Bulk Actions</li>
-                            <li><a href="#delete_many"><i class="icon-trash"></i> Delete</a></li>
-                            <li><a href="#edit_many"><i class="glyph-pencil"></i> Update Field</a></li>
+                            <li class="nav-header">Bulk Actions (<span id="bulkselected">0</span>)</li>
+                            <li><a href="#bulk" data-target="{% url delete_many %}" class="bulk inactive"><i class="icon-trash"></i> Delete</a></li>
+                            <li><a href="#bulk" data-target="{% url edit_many %}" class="bulk inactive"><i class="glyph-pencil"></i> Update Field</a></li>
                         </ul>
                     </div>
-                    <form name="edit_many" action="{% url edit_many %}" method="post">
+                    <form name="bulk" action="{% url edit_many %}" method="post">
                         {% csrf_token %}
                     </form>
 

@@ -178,7 +178,7 @@ table.table th, table.table td {
 }
 
 
-#bulk a {
+a.inactive {
     color: #5c5c5c;
 }
 
