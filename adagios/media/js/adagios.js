@@ -254,13 +254,32 @@ function ob_run_check_command() {
                 });
             }
         });
+
         dt.fnFilter("^" + $this.attr('id') + "$", 1, true);
         dt.fnFilter("1", 0);
 
         $(".toolbar" + $this.attr('id')).html("<strong>Show:</strong> Templates \
             <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='template" + $this.attr('id') + "'>\
             Groups <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='groups" + $this.attr('id') + "'>\
-            ");
+            " + '<button class="btn-mini btn-info" id="selectall">Select Visible <input type="checkbox" /></button>');
+        $('button#selectall').on('click', function(e) {
+            var $checkbox = $('button#selectall input');
+            if ($checkbox.attr('checked') == undefined) {
+                $checkbox.attr('checked', 'checked');
+                $('.tab-pane.active .dataTable input').each(function() {
+                    $(this).attr('checked', 'checked')
+
+                });
+            } else {
+                $checkbox.removeAttr('checked');
+                $('.tab-pane.active .dataTable input').each(function() {
+                    $(this).removeAttr('checked');
+                });
+            }
+            var checked = $('input[rel="ob_mass_select"]:checked').length;
+            $('#bulkselected').html(checked);
+            e.preventDefault();
+        });
         $("#template" + $this.attr('id')).on('click', function (e) {
             var $target = $(e.target);
             if ($target.attr('checked')) {

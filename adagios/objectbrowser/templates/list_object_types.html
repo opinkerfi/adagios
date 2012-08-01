@@ -175,8 +175,8 @@
 
         $(window).bind('resize', function () {
             /* This blows, couldn't find a good way to do this - tommi */
-            $("table#" + currenttable).dataTable().fnAdjustColumnSizing();
-            $(currenttab).tab('show');
+            $(".tab-pane.active table").dataTable().fnAdjustColumnSizing();
+            //$(currenttab).tab('show');
         } );
         $('a[data-toggle="tab"]').on('show', function (e) {
             //alert($(e.target).attr('href'));
