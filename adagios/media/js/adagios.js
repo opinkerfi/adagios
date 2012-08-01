@@ -23,6 +23,13 @@ jQuery(function($) {
     });
 });
 
+
+$.extend( $.fn.dataTableExt.oStdClasses, {
+    "sSortAsc": "header headerSortDown",
+    "sSortDesc": "header headerSortUp",
+    "sSortable": "header"
+} );
+
 /*
  Object Browser, This runs whenever "Run Check Plugin" is clicked
 
@@ -220,18 +227,19 @@ function ob_run_check_command() {
         var dtData = $this.data('dtData');
         var aoColumns = $this.data('aoColumns');
         $('#' + $this.attr('id') + ' #loading').hide();
-        var dt = $this.dataTable( {
-            "aoColumns": aoColumns,
-            "sPaginationType": "bootstrap",
-            "sScrollY": "260px",
-            "bAutoWidth": false,
-            "bScrollCollapse": false,
-            "bPaginate": true,
-            "iDisplayLength": 48,
-            "aaData": dtData,
-            "sDom": '<"toolbar' + $this.attr('id') + '">frtip',
+        var dt;
+        dt = $this.dataTable({
+            "aoColumns":aoColumns,
+            "sPaginationType":"bootstrap",
+            "sScrollY":"260px",
+            "bAutoWidth":false,
+            "bScrollCollapse":false,
+            "bPaginate":true,
+            "iDisplayLength":48,
+            "aaData":dtData,
+            "sDom":'<"toolbar' + $this.attr('id') + '">frtip',
             // Callback which assigns tooltips to visible pages
-            "fnDrawCallback": function() {
+            "fnDrawCallback":function () {
                 $("[rel=tooltip]").tooltip();
             }
         });
@@ -241,7 +249,7 @@ function ob_run_check_command() {
             <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='template" + $this.attr('id') + "'>\
             Groups <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='groups" + $this.attr('id') + "'>\
             ");
-        $("#template" + $this.attr('id')).on('click', function(e) {
+        $("#template" + $this.attr('id')).on('click', function (e) {
             var $target = $(e.target);
             if ($target.attr('checked')) {
                 $('table#' + $target.attr('data-target')).dataTable().fnFilter("", 0);
@@ -250,16 +258,19 @@ function ob_run_check_command() {
             }
             return true;
         });
-        $("#groups" + $this.attr('id')).on('click', function(e) {
+        $("#groups" + $this.attr('id')).on('click', function (e) {
             var $target = $(e.target);
             if ($target.attr('checked')) {
                 $('table#' + $target.attr('data-target')).dataTable().fnFilter("", 1, true);
             } else {
-                $('table#' + $target.attr('data-target')).dataTable().fnFilter("^" + $target.attr('data-target') +"$", 1, true);
+                $('table#' + $target.attr('data-target')).dataTable().fnFilter("^" + $target.attr('data-target') + "$", 1, true);
             }
             return true;
         });
-        dt.fnSort( [ [3,'asc'], [4, 'asc'] ] );
+        dt.fnSort([
+            [3, 'asc'],
+            [4, 'asc']
+        ]);
         //return this.each(function() {
     };
 })( jQuery );
