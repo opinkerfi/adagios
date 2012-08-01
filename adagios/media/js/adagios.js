@@ -6,7 +6,7 @@
  to enable buttons as a radio.
  */
 jQuery(function($) {
-    $('div.btn-group[data-toggle-name=*]').each(function(){
+    $('div.btn-group[data-toggle-name="*"]').each(function(){
         var group   = $(this);
         var form    = group.parents('form').eq(0);
         var name    = group.attr('data-toggle-name');
@@ -151,14 +151,14 @@ function ob_run_check_command() {
             $.getJSON("/rest/pynag/json/get_objects",
                 {
                     object_type:object_type,
-                    with_fields:json_query_fields.join()
+                    with_fields:json_query_fields.join(",")
                 },
                 function (data) {
                     var count = data.length;
                     $.each(data, function (i, item) {
                         var field_array =
                             [item['register'], object_type, '\
-    <a href="' + BASE_URL + '/objectbrowser/delete_object/id=' + item['id'] + '">\
+    <a href="' + BASE_URL + 'objectbrowser/delete_object/id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
     <input rel="ob_mass_select" name="' + item['id'] + '" type="checkbox">'];
