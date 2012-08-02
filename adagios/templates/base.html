@@ -57,7 +57,7 @@
             <div class="nav-collapse">
                 <ul class="nav">
                     <li class="{% if urlname == "home"%}active{% endif %}">
-                        <a href="{% url misc.views.index %}"><i class="icon-home icon-white"></i> Home</a>
+                        <a href="{% url home %}"><i class="icon-home icon-white"></i> Home</a>
                     </li>
 
 
@@ -149,6 +149,8 @@
         </div>
     {% endif %}
     {% block content %}{% endblock %}
+
+    {%  block sidebar %}{%  endblock %}
 
 </div> <!-- /container -->
 

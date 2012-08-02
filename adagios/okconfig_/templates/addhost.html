@@ -1,8 +1,20 @@
-{% extends "adagios_standard.html" %}
+{% extends "base_okconfig.html" %}
 {% block title %}Add Host{% endblock %}
 {% block smallheader %}Add{% endblock %}
 {% block largeheader %}Host{% endblock %}
-{% block nav1 %}okconfig{% endblock %}
+
+
+{% block content %}
+    <br/>
+	<form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+	</form>
+{% endblock %}
+
+
 
 {% block footer %}
     <script src="/media/chosen/chosen.jquery.js" type="text/javascript"></script>
@@ -24,16 +36,4 @@
 
 
     </script>
-{% endblock %}
-
-{% block content %}
-    <br/>
-	<form action="#" method="post" class="form-horizontal">{% csrf_token %}
-        {% include "bootstrap_fields.html" with fields=form %}
-        <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </div>
-	</form>
-
-
 {% endblock %}
