@@ -22,7 +22,6 @@ class ScanNetworkForm(forms.Form):
             if not self.isValidIPAddress(addr):raise ValidationError("not a valid ip address")
         return self.cleaned_data['network_address']
     def isValidHostname(self,hostname):
-        print hostname
         if len(hostname) > 255:
             return False
         if hostname[-1:] == ".":
@@ -98,9 +97,7 @@ class EditTemplateForm(forms.Form):
         self.description = service['service_description']
         self.command_line = service.get_effective_command_line()
         macros = []
-        #print service.get_all_macros()
         for macro,value in service.get_all_macros().items() :
-            #print "MACRO: %s - %s" % (macro, value)
             if macro.startswith('$_SERVICE') or macro.startswith('S$ARG'):
                 macros.append(macro)
         fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'register')

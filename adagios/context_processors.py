@@ -5,8 +5,6 @@ def resolve_urlname(request):
     from django.core.urlresolvers import resolve
     try:
         res = resolve(request.path)
-    	print res.url_name
-
         if res:
             return {'urlname' : res.url_name}
     except:

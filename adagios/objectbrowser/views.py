@@ -448,7 +448,6 @@ def delete_object(request, object_id):
     c['object'] = my_obj = Model.ObjectDefinition.objects.get_by_id(object_id)
     if request.method == 'POST':
         my_obj.delete()
-        print "my_obj deleted"
         return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) )
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
 

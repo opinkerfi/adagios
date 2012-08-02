@@ -144,8 +144,7 @@ def install_agent(request):
             domain = f.cleaned_data['windows_domain']
             try:
                 status,out,err = okconfig.install_okagent(remote_host=host, domain=domain, username=user, password=passw, install_method=method)
-                print "STATUS: ",status,out,err
-                c['exit_status'] =  status 
+                c['exit_status'] =  status
                 c['stdout'] =  out 
                 c['stderr']=  err
             except Exception,e:
@@ -174,8 +173,6 @@ def edit(request, host_name):
             if attribute.startswith("$ARG"): continue
             attribute = attribute.replace('$_SERVICE', "_")
             attribute = attribute.replace('$', "")
-            if attribute == 'register':
-                print k, v
             for i in services:
                 if i['service_description'] == service_description:
                     if i[attribute] != v:
@@ -183,7 +180,6 @@ def edit(request, host_name):
                         i.save()
     myforms =[]       
     for service in services:
-        print "service: %s\t %s" % (service.service_description, service.get_filename()) 
         initial = {}
         initial['service_description'] = service['service_description']
         initial['register'] = service['register'] == "1"

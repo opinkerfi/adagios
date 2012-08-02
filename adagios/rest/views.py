@@ -45,7 +45,6 @@ def handle_request(request, module_name, attribute, format):
             # Handle get parameters
 	    arguments = {}
             for k, v in request.GET.items():
-                #print "%s = %s (%s)" % (k,v, type(v))
                 # TODO: Is it safe to turn all digits to int ?
                 #if str(v).isdigit(): v = int(float(v))
                 arguments[str(k)] = str(v)
@@ -57,7 +56,6 @@ def handle_request(request, module_name, attribute, format):
         else:
             arguments = {} #request.POST.items()
             for k, v in request.POST.items():
-                #print "%s = %s (%s)" % (k,v, type(v))
                 # TODO: Is it safe to turn all digits to int ?
                 #if str(v).isdigit(): v = int(float(v))
                 arguments[str(k)] = str(v)

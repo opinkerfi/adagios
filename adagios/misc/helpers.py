@@ -15,10 +15,7 @@ maincfg_values = _config.maincfg_values
 cfg_file = _config.cfg_file
 
 def _get_dict(x):
-    #print "deleted"
-    #print type(x)
     x.__delattr__('objects')
-    #del x._original_attributes['meta']
     return x._original_attributes
 #__dict__
 #_get_dict = lambda x: del (x.objects)
