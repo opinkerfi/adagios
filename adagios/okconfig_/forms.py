@@ -44,6 +44,7 @@ class AddHostForm(forms.Form):
     address = forms.CharField(help_text="IP Address of this host")
     #description = forms.CharField()
     group_name = forms.ChoiceField(help_text="host/contact group to put this host in")
+    templates = forms.MultipleChoiceField(choices=map( lambda x: (x, x), okconfig.get_templates()),  help_text="Add standard template of checks to this host")
     force = forms.BooleanField(required=False, help_text="Overwrite host if it already exists.")
     def clean(self):
         if self.cleaned_data.has_key('host_name'):

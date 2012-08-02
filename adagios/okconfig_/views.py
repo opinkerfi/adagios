@@ -77,10 +77,11 @@ def addhost(request):
             host_name = f.cleaned_data['host_name']
             group_name = f.cleaned_data['group_name']
             address = f.cleaned_data['address']
+            templates = f.cleaned_data['templates']
             #description = f.cleaned_data['description']
             force = f.cleaned_data['force']
             try:
-                c['filelist'] = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force)
+                c['filelist'] = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force,templates=templates)
                 c['host_name'] = host_name
                 return addcomplete(request, c)
             except Exception, e:
