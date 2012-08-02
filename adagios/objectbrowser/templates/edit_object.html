@@ -92,50 +92,10 @@
             <ul class="nav nav-tabs" id="objecttab">
 
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
-                <li><a href="#general" data-toggle="tab">General</a></li>
 		    </ul>
             <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
                 <div class="tab-content">
-                    <div class="tab-pane" id="general">
-                        <form action="#" method="post">
-
-                            <label class="control-label" for="register">Register</label>
-                            <div class="controls" id="advanced_field">
-                                <input type="hidden" name="register" id="id_register" />
-                                <div class="btn-group" data-toggle-name="register" data-toggle="buttons-radio">
-                                    <button type="button" value="1" class="btn btn-primary">On</button>
-                                    <button type="button" value="0" class="btn btn-primary">Off</button>
-                                    <button type="button" value="" class="btn">Not set</button>
-                                </div>
-
-                            </div>
-
-                            <div>
-                            <label class="control-label" >Object Type: </label>
-                                <div class="controls">
-                                    <label>{{  my_object.object_type  }}</label>
-                                </div>
-
-
-                            </div>
-                            <label class="control-label" >Filename: </label>
-                            <div class="controls">
-                             <label>{{  my_object.filename  }}</label>
-                            </div>
-
-                            <label class="control-label" for="name">Object Name</label>
-                            <div class="controls" id="advanced_field">
-                                <input type="text" name="name" id="id_name" />
-                            </div>
-
-                            <label class="control-label" for="use">Inherits from: </label>
-                            <div class="controls" id="advanced_field">
-                                <input type="text" name="use" id="id_use" />
-                            </div>
-
-                        </form>
-                    </div>
 
                     <div class="tab-pane" id="advanced">
                         <!-- All Attributes -->
@@ -146,19 +106,6 @@
                                 <button class="btn btn-primary" type="submit">Submit</button>
                             </div>
                         </form>
-
-                        <!-- Object info -->
-                        <h2>Object Info</h2>
-                        <label class="control-label" >Object Type: </label>
-                        <div class="controls">
-                            <label>{{  my_object.object_type  }}</label>
-                        </div>
-
-                        </div>
-                        <label class="control-label" >Filename: </label>
-                        <div class="controls">
-                            <label>{{  my_object.filename  }}</label>
-                        </div>
 
 
                         <!-- Display all members of a specific group -->
@@ -181,55 +128,7 @@
             </form>
         </div>
     </div>
-    <div class="span3">
-        <div class="block">
-            <h5>Actions</h5>
-            <ul class="nav nav-list">
-              <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
-              <li><a href="#nag"><i class="icon-fire"></i> Open in Nagios</a></li>
-              <li><a href="#nag"><i class="glyph-charts"></i> View Graphs</a></li>
-            </ul>
-
-
-            <h5>Diagnostics</h5>
-            <ul class="nav nav-list">
-              <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
-              <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="modal hide" id="run_check_plugin">
-        <div class="modal-header">
-            <h3>Run Check Plugin</h3>
-        </div>
-        <div class="modal-body">
-		Running check plugin...
-        </div>
-        <div class="modal-footer">
-            <button id="run_check_plugin_refresh" class="btn hide" data-dismiss="modal"><i class="icon-refresh"></i> Refresh</button>
-            <button class="btn" data-dismiss="modal">Close</button>
-        </div>
-    </div>
-    <div class="modal hide" id="geek_edit">
-        <form action="geek_edit/id={{my_object.id}}" method="post">{% csrf_token %}
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Geek Edit</h3>
-            </div>
-            <div class="modal-body">
-                <p>
-                    <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
-                        {{ geek_edit }}
-                    </fieldset>
-                    <strong>Filename:</strong> {{ my_object.filename }}
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal">Close</button>
-                <button class="btn btn-primary" type="submit">Save changes</button>
-            </div>
-        </form>
-   </div>
+    {% include "snippets/sidebar.html" %}
 </div>
 	
 {% else %}

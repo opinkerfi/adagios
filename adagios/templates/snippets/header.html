@@ -1,0 +1,84 @@
+<!-- snippets/header.html starts. This is the top navigation header on our page -->
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+
+            <!-- Logo in top nav -->
+            <a class="brand" href="{% url misc.views.index %}">Adagios</a>
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li class="{% if urlname == "home"%}active{% endif %}">
+                        <a href="{% url home %}"><i class="icon-home icon-white"></i> Home</a>
+                    </li>
+
+
+                    <!-- Wizards drop down -->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#"><i class="icon-edit icon-white"></i> Wizards <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url okconfig_.views.addhost %}">Add Host</a></li>
+                            <li><a href="{% url okconfig_.views.addtemplate %}">Add Template to Host</a></li>
+                            <li><a href="{% url objectbrowser.views.add_service %}">Add Service</a></li>
+                            <li><a href="{% url okconfig_.views.choose_host %}">Edit Host</a></li>
+                            <li><a href="{% url okconfig_.views.addgroup %}">Add Group</a></li>
+                            <li><a href="{% url okconfig_.views.install_agent %}">Install Agent</a></li>
+                            <li><a href="{% url okconfig_.views.scan_network %}"">Scan Network</a></li>
+                        </ul>
+                    </li>
+
+
+
+
+                    <!-- Object Browser -->
+                    <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
+                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="icon-list icon-white"></i> Object Browser</a>
+                    </li>
+
+                    <!-- Nagios -->
+                    <li>
+                        <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i>Monitor</a>
+                    </li>
+
+                </ul>
+
+
+
+
+                <!-- Right aligned navbar - MISC -->
+                <ul class="nav pull-right">
+                    <li>
+                        <a data-toggle="modal"
+                           href="#warnings">
+                            <div class="badge{% if errors|length %} badge-warning{% endif %}">{{ errors|length }} Problem{% if errors|length > 1 %}s{% endif %}</div>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#"><i class="icon-barcode icon-white"></i> Misc <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#bug">Report Bug</a></li>
+                            <li><a href="#donate">Donate</a></li>
+                            <li><a href="{%  url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
+                            <li><a href="{%  url objectbrowser.views.view_nagios_cfg %}">Edit nagios.cfg</a></li>
+                            <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- snippets/header.html ends -->

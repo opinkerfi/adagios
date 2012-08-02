@@ -1,0 +1,16 @@
+<!-- templates/adagios_hausinn.html starts -->
+<ul class="breadcrumb">
+    <li>
+        <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+    </li>
+    <li>
+        {% block nav1 %}
+            block=nav1
+        {% endblock %}
+        <span class="divider">/</span>
+    </li>
+</ul>
+<h2>
+    <i class="icon-th-large"></i> <small>{% block smallheader %}block=smallheader{% endblock%} </small> {% block largeheader %}block=largeheader{% endblock %}
+</h2>
+<!-- templates/adagios_hausinn.html ends -->
