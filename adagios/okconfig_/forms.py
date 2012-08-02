@@ -7,6 +7,8 @@ import socket
 from pynag import Model
 
 all_hosts = map(lambda x: (x, x), helpers.get_host_names())
+all_templates = map(lambda x: (x, x), okconfig.get_templates())
+all_groups = map( lambda x: (x,x), okconfig.get_groups() )
 
 class ScanNetworkForm(forms.Form):
     network_address = forms.CharField()
@@ -42,9 +44,8 @@ class AddGroupForm(forms.Form):
 class AddHostForm(forms.Form):
     host_name = forms.CharField(help_text="Name of the host to add")
     address = forms.CharField(help_text="IP Address of this host")
-    #description = forms.CharField()
-    group_name = forms.ChoiceField(help_text="host/contact group to put this host in")
-    templates = forms.MultipleChoiceField(choices=map( lambda x: (x, x), okconfig.get_templates()),  help_text="Add standard template of checks to this host")
+    group_name = forms.ChoiceField(initial="default",choices=all_groups, help_text="host/contact group to put this host in")
+    templates = forms.MultipleChoiceField(choices=all_templates,  help_text="Add standard template of checks to this host")
     force = forms.BooleanField(required=False, help_text="Overwrite host if it already exists.")
     def clean(self):
         if self.cleaned_data.has_key('host_name'):
@@ -53,33 +54,13 @@ class AddHostForm(forms.Form):
             if not force and host_name in helpers.get_host_names():
                 raise forms.ValidationError("Host name %s already exists, use force to overwrite" % host_name)
         return forms.Form.clean(self)
-    def __init__(self, *args, **kwargs):
-        super(AddHostForm, self).__init__(*args,**kwargs)
-        
-        # Set choices and initial values for the groups field
-        groups = map( lambda x: (x,x), okconfig.get_groups() )
-        if self.fields['group_name'].initial is None:
-            self.fields['group_name'].initial = "default"
-        self.fields['group_name'].choices = groups
 
 class AddTemplateForm(forms.Form):
     # Attributes
-    host_name = forms.ChoiceField(help_text="Add templates to this host")
-    template_name = forms.ChoiceField(help_text="what template to add")
+    host_name = forms.ChoiceField(choices=all_hosts, help_text="Add templates to this host")
+    template_name = forms.ChoiceField(choices=all_templates,help_text="what template to add")
     force = forms.BooleanField(required=False, help_text="Overwrites templates if they already exist")
-    def __init__(self,*args,**kwargs):
-        super(AddTemplateForm, self).__init__(*args, **kwargs)
-        
-        # Create choices for our hosts and templates
-        hosts = helpers.get_host_names()
-        hosts = map(lambda x: (x, x), hosts)
-        
-        templates = okconfig.get_templates()
-        templates = map( lambda x: (x, x), templates )        
-        
-        self.fields['host_name'].choices = hosts
-        self.fields['template_name'].choices = templates
-        
+
     def clean(self):
         result = super(AddTemplateForm, self).clean()
         cleaned_data = self.cleaned_data

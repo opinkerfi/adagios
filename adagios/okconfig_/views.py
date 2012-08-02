@@ -83,7 +83,7 @@ def addhost(request):
             try:
                 c['filelist'] = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force,templates=templates)
                 c['host_name'] = host_name
-                return addcomplete(request, c)
+                return HttpResponseRedirect( reverse('okconfig_.views.edit', args=[host_name] ) )
             except Exception, e:
                 c['errors'].append( "error adding host: %s" % e ) 
         else:
@@ -153,21 +153,6 @@ def install_agent(request):
         else:
             c['errors'].append('invalid input')
     return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
-def edit(request, host_name):
-    """ Edit all the Service "__MACROS" for a given host """
-    from pynag import Model
-
-    c = { }
-    c.update(csrf(request))
-    c['hostname'] = host_name
-    
-    # Get all services of that host that contain a service_description
-    services = Model.Service.objects.filter(host_name=host_name,service_description__contains='')
-    
-    # All the form fields have an id of HOST::SERVICE::ATTRIBUTE so we have to split it
-    if request.method == 'POST':
-        for k,v in request.POST.items():
-            if k.count('::') < 2: continue
 
 def edit(request, host_name):
     """ Edit all the Service "__MACROS" for a given host """
