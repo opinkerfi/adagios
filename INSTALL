@@ -1,43 +1,29 @@
-#
-# At this point, you should only install adagios if you are a tester or a developer
-# It is an extremely good idea to change your /etc/nagios/ into a git repository
-# So you can track any changes made to configuration files
-
-# Installation instructions for RHEL 5.x
+# INSTALLATION INSTRUCTIONS FOR RHEL6
+# ***********************************
 
 
-# Install version control utilities
-yum install -y git subversion
-
-# Install adagios from repository
-cd /opt
-git clone http://opensource.is/git/adagios.git
-
-# Install pynag from repository
-svn checkout http://pynag.googlecode.com/svn/trunk/ pynag
-echo 'export PYTHONPATH="/opt/pynag:/opt/okconfig"' > /etc/profile.d/pythonpath.sh
-
-# Make sure new environment variables are set
-source /etc/profile
+# Install yum repos
+# =================
+rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
+rpm -Uhv http://opensource.is/repo/ok-release-10-1.el6.noarch.rpm
 
 
-# Install nagios so adagios has at least some configuration files to play with
-yum install -i nagios
+# Install Pre-requisits
+# =====================
+# Adagios requires nagios to be installed on the local computer.
+# okconfig is also a vital part of adagios, and brings in tons
+# of plugins and methods to deploy agents.
+yum install -y nagios okconfig
+yum install -y git # don't ask. just do it
 
 
-# Install dependencies
-yum install -y python-json pip-python fping
-pip-python install django
+# Turn of selinux
+# ===============
+# Currently selinux does not allow apache to write to /etc/nagios/ directory
+setenforce 0
 
 
-# If you run adagios as a user, make sure it can read (and possibly write) to all nagios config files, error handling is lacking in cases where it doesnt have required permissions
+# Install adagios
+# ===============
+yum install -y adagios
 
-useradd adagios -G nagios -d /opt/adagios
-chown -R adagios /opt/adagios
-su - adagios
-python manage.py runserver
-
-
-# Now try to access http://yourhost:8000
-#
-#
