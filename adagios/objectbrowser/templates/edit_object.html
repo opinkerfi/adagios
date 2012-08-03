@@ -1,8 +1,10 @@
-{% extends "base.html" %}
+{% extends "base_objectbrowser.html" %}
 {% block title %}Adagios - {{ my_object.object_type }} {{ my_object.shortname }}{% endblock %}
+{% block smallheader %}Edit{% endblock %}
+{% block largeheader %}{{ my_object.object_type }}{% endblock %}
 
-{% block head %}
-{% endblock %}
+
+
 
 {% block footer %}
     <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
@@ -54,43 +56,13 @@
         $('#run_check_plugin').on('show', function () {
 	    run_check_command();
         });
-
-	
-
-
     </script>
 {%  endblock %}
 
 {% block content %}
-
     {% if my_object %}
-<div class="row">
-    <div class="span12">
-        <div class="block">
-            <ul class="breadcrumb">
-                <li>
-                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
-                </li>
-                <li>
-                    <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
-                </li>
-            </ul>
-            <h2>
-                <i class="icon-th-large"></i> <small>{{ my_object.object_type }}</small> {{ my_object.shortname }}
-            </h2>
-        </div>
-    </div>
-</div>
-
-
-
-<div class="row">
-    <div class="span9">
-        <div class="block">
-
             <!-- wrapper for scrollable items -->
             <ul class="nav nav-tabs" id="objecttab">
-
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 		    </ul>
             <form class="form-horizontal" action="#" method="POST">
@@ -124,13 +96,8 @@
 
                     </div> <!-- End of advanced tab -->
                 </div>
-
             </form>
-        </div>
-    </div>
-    {% include "snippets/sidebar.html" %}
-</div>
-	
+
 {% else %}
 	<p>Object not found </p>
 {% endif %}
