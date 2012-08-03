@@ -17,7 +17,7 @@
         }
         @media (max-width: 979px) {
           body {
-            padding-top: 0px;
+            padding-top: 0;
           }
         }
     </style>
@@ -74,7 +74,7 @@
                             <li><a href="{% url okconfig_.views.choose_host %}">Edit Host</a></li>
                             <li><a href="{% url okconfig_.views.addgroup %}">Add Group</a></li>
                             <li><a href="{% url okconfig_.views.install_agent %}">Install Agent</a></li>
-                            <li><a href="{% url okconfig_.views.scan_network %}"">Scan Network</a></li>
+                            <li><a href="{% url okconfig_.views.scan_network %}">Scan Network</a></li>
                         </ul>
                     </li>
 
@@ -110,8 +110,10 @@
                            href="#"><i class="icon-barcode icon-white"></i> Misc <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#bug">Report Bug</a></li>
-                            <li><a href="#donate">Donate</a></li>
+                            <li><a href="http://opensource.is/adagios/newticket?type=defect">Report Bug</a></li>
+                            <li><a href="http://opensource.is/adagios/newticket?type=enhancement">Make Suggestion</a></li>
+                            <li><a href="http://opensource.is/adagios/">Project Webpage</a></li>
+                            <li class="divider"></li>
                             <li><a href="{%  url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
                             <li><a href="{%  url objectbrowser.views.view_nagios_cfg %}">Edit nagios.cfg</a></li>
                             <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
@@ -130,7 +132,7 @@
     {% block adagios_hausinn %}{% endblock %}
     {% if errors|length %}
         <div class="modal hide fade" id="warnings">
-            <div class="modal-header"><h3>Errors Found: {{ errors|length }}</span></div>
+            <div class="modal-header"><h3>Errors Found: {{ errors|length }}</h3></div>
             <div class="modal-body alert">
                 {%  for error in errors %}
                     <div>
