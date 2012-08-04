@@ -171,6 +171,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
         # Specifying only object_type indicates this is a new object
         otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
         o = otype()
+        c['form'] = PynagForm( pynag_object=o,initial=request.GET )
     elif object_type is not None and shortname is not None:
         # Its also valid to specify object type and shortname
         # TODO: if multiple objects are found, display a list
@@ -194,10 +195,8 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
             return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
         else:
             c['errors'].append( "Could not validate form input")
-    else:
+    if 'form' not in c:
         c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
-
-    c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
     c['my_object'] = o
     c['geek_edit'] = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     c['advanced_form'] = PynagForm( pynag_object=o, initial=o._original_attributes, simple=True )
@@ -209,77 +208,60 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
         return _edit_service(request, c)
     elif o['object_type'] == 'contact':
         return _edit_contact(request, c)
-
-    # Here we have all sorts of extra information that can be stuffed into the template,
-    # Some of these do not apply for every type of object, hence the try/except
-    try: c['command_line'] = o.get_effective_command_line()
-    except: pass
-    try: c['object_macros'] = o.get_all_macros()
-    except: pass
-    try: c['effective_hostgroups'] = o.get_effective_hostgroups()
-    except: pass
-    try: c['effective_contacts'] = o.get_effective_contacts()
-    except: pass
-    try: c['effective_contactgroups'] = o.get_effective_contact_groups()
-    except: pass
-    try: c['effective_contactgroups'] = o.get_effective_contactgroups()
-    except: pass
-    try: c['effective_members'] = o.get_effective_members()
-    except: pass
+    elif o['object_type'] == 'timeperiod':
+        return render_to_response('edit_timeperiod.html', c, context_instance = RequestContext(request))
 
     return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
 
 def _edit_contactgroup( request, c):
     """ This is a helper function to edit_object """
     try: c['effective_members'] = c['my_object'].get_effective_members()
-    except: pass
+    except KeyError, e: c['errors'].append( "Could not find contact: %s" % str(e))
+
     return render_to_response('edit_contactgroup.html', c, context_instance = RequestContext(request))
+
 def _edit_contact( request, c):
     """ This is a helper function to edit_object """
     try: c['effective_contactgroups'] = c['my_object'].get_effective_contactgroups()
-    except: pass
+    except KeyError, e: c['errors'].append( "Could not find contact: %s" % str(e))
+
     return render_to_response('edit_contact.html', c, context_instance = RequestContext(request))
 
 def _edit_service( request, c):
     """ This is a helper function to edit_object """
     service = c['my_object']
-    try: c['command_line'] = service.get_effective_command_line()
-    except: c['errors'].append( "Configuration error while looking up command_line")
+    c['command_line'] = service.get_effective_command_line()
+    c['object_macros'] = service.get_all_macros()
 
-    #try: c['effective_servicegroups'] = service.get_effective_servicegroups()
-    #except: c['errors'].append( "Configuration error while looking up servicegroups")
+    try: c['effective_servicegroups'] = service.get_effective_servicegroups()
+    except KeyError, e: c['errors'].append( "Could not find servicegroup: %s" % str(e))
 
     try: c['effective_contacts'] = service.get_effective_contacts()
-    except: c['errors'].append( "Configuration error while looking up contacts")
+    except KeyError, e: c['errors'].append( "Could not find contact: %s" % str(e))
 
     try: c['effective_contactgroups'] = service.get_effective_contact_groups()
-    except: c['errors'].append( "Configuration error while looking up contact_groups")
+    except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
 
-    try: c['object_macros'] = service.get_all_macros()
-    except: c['errors'].append( "Configuration error while looking up macros")
+
     return render_to_response('edit_service.html', c, context_instance = RequestContext(request))
 def _edit_host( request, c):
     """ This is a helper function to edit_object """
     host = c['my_object']
+    c['command_line'] = host.get_effective_command_line()
+    c['object_macros'] = host.get_all_macros()
     if not c.has_key('errors'): c['errors'] = []
 
     try: c['effective_services'] = host.get_effective_services()
-    except: c['errors'].append( "Configuration error while looking up services")
-
-    try: c['command_line'] = host.get_effective_command_line()
-    except: c['errors'].append( "Configuration error while looking up command_line")
+    except KeyError, e: c['errors'].append( "Could not find service: %s" % str(e))
 
     try: c['effective_hostgroups'] = host.get_effective_hostgroups()
-    except: c['errors'].append( "Configuration error while looking up hostgroups")
+    except KeyError, e: c['errors'].append( "Could not find hostgroup: %s" % str(e))
 
     try: c['effective_contacts'] = host.get_effective_contacts()
-    except: c['errors'].append( "Configuration error while looking up contacts")
+    except KeyError, e: c['errors'].append( "Could not find contact: %s" % str(e))
 
     try: c['effective_contactgroups'] = host.get_effective_contact_groups()
-    except: c['errors'].append( "Configuration error while looking up contact_groups")
-
-    try: c['object_macros'] = host.get_all_macros()
-    except: c['errors'].append( "Configuration error while looking up macros")
+    except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
 
     return render_to_response('edit_host.html', c, context_instance = RequestContext(request))
 
@@ -295,27 +277,6 @@ def config_health( request  ):
     services_without_contacts = []
     services_using_hostgroups = []
     services_without_icon_image = []
-    for i in Model.ObjectDefinition.objects.all:
-        continue
-        try:
-            i.get_parents()
-        except ValueError:
-            objects_with_invalid_parents.append(i)
-    for i in Model.Host.objects.filter(register="1"):
-            if i['contacts'] is None and i['contact_groups'] is None:
-                hosts_without_contacts.append(i)
-            try:
-                if i.get_effective_services() == []:
-                    hosts_without_services.append(i)
-            except:
-                pass
-    for i in Model.Service.objects.filter(register="1"):
-            if i['contacts'] is None and i['contact_groups'] is None:
-                services_without_contacts.append(i)
-            if i['hostgroups'] is not None:
-                services_using_hostgroups.append(i)
-            if i['icon_image'] is None:
-                services_without_icon_image.append(i)
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
     c['errors'] = Model.config.errors
@@ -364,21 +325,6 @@ def show_plugins(request):
     c['existing_plugins'] = existing_plugins
     return render_to_response('show_plugins.html', c, context_instance = RequestContext(request))
 
-def view_parents(request):
-    c = {}
-    parents = {}
-    hosts = Host.objects.all
-    for h in hosts:
-        for parent in h.get_parents():
-            name = parent.name
-            if not parents.has_key( name ):
-                parents[ name ] = {'children':[], 'num_children':0, 'name':name}
-            parents[name]['children'].append ( h )
-            parents[name]['num_children'] += 1
-    c['parents'] = []
-    for i in parents.keys():
-        c['parents'].append( parents[i] )
-    return render_to_response('parents.html', c, context_instance = RequestContext(request))
 def view_nagios_cfg(request):
     c = {'filename': Model.config.cfg_file, 'content': Model.config.maincfg_values}
     c['content'].sort()
