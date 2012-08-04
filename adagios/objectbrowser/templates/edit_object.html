@@ -4,61 +4,6 @@
 {% block largeheader %}{{ my_object.shortname }}{% endblock %}
 
 
-
-
-{% block footer %}
-    <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-
-        $('#objecttab a:first').tab('show');
-        $(document).ready(function() {
-
-
-
-            $("[rel=tooltip]").popover();
-            $("#popover").popover();
-            $('#general select').chosen();
-            $('#notifications select').chosen();
-            $('#monitoring select').chosen();
-
-	});
-	function run_check_command() {
-	    $.getJSON("/rest/pynag/json/run_check_command",
-		{
-			object_id: '{{my_object.id}}'
-		},
-		function(data) {
-			var statusLabel = 'label-inverse';
-			var statusString = 'Unknown';
-			if (data[0] == 2) {
-				statusLabel = 'label-important';
-				statusString = 'Critical';
-			}
-			if (data[0] == 1) {
-				statusLabel = 'label-warning';
-				statusString = 'Warning';
-			}
-			if (data[0] == 0) {
-				statusLabel = 'label-success';
-				statusString = 'OK';
-			}
-			$('#run_check_plugin div.modal-body').html('<div class="row"><span class="span2">Status:</span><span class="span2 label ' + statusLabel + '">' + statusString + '</span></div><div class="row"><span class="span2">Plugin Output:</span><span class="span2">' + data[1] + '</span></div>');
-			$('#run_check_plugin_refresh').show();
-		}
-		
-	    );
-	}
-	$('#run_check_plugin_refresh').click(function() {
-	    $('#run_check_plugin div.modal-body').html('Rerunning plugin');
-	    run_check_command();
-	    return false;
-	});
-        $('#run_check_plugin').on('show', function () {
-	    run_check_command();
-        });
-    </script>
-{%  endblock %}
-
 {% block content %}
     {% if my_object %}
             <!-- wrapper for scrollable items -->
@@ -98,11 +43,12 @@
                 </div>
             </form>
 
-{% else %}
-	<p>Object not found </p>
-{% endif %}
+    {% else %}
+        <p>Object not found </p>
+    {% endif %}
+
+{% endblock content %}
 
 
-
-
-{% endblock %}
+{% block footer %}{{ block.super }}{% endblock footer %}
+{% block sidebar %}{{ block.super }}{% endblock sidebar %}
