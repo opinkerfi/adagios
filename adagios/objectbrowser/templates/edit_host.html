@@ -10,24 +10,6 @@
 {% block content %}
 
     {% if my_object %}
-<div class="row">
-    <div class="span12">
-        <div class="block">
-            <ul class="breadcrumb">
-                <li>
-                    <a href="{% url home %}">Home</a> <span class="divider">/</span>
-                </li>
-                <li>
-                    <a href="{% url objectbrowser %}">Object Browser</a> <span class="divider">/</span>
-                </li>
-            </ul>
-            <h2>
-                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.shortname }}
-            </h2>
-        </div>
-    </div>
-</div>
-
         <!-- wrapper for scrollable items -->
         <ul class="nav nav-tabs" id="objecttab">
             <li><a href="#general" data-toggle="tab">General</a></li>
