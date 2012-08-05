@@ -23,25 +23,83 @@
 {% block sidebar %}
     <h5>Actions</h5>
     <ul class="nav nav-list">
+
         <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
+
+        {% if my_object.object_type == 'service' %}
         <li>
-            <a href="http://eftirlit.ok.is/nagios/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
+            <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
                 <i class="icon-fire"></i> Open in Nagios</a>
         </li>
-        <li><a href="{{ my_object.action_url }}"><i class="glyph-charts"></i> View Graphs</a></li>
-    </ul>
+        {% endif %}
 
+        {% if my_object.object_type == 'host' %}
+            <li>
+                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}">
+                    <i class="icon-fire"></i> Open in Nagios</a>
+            </li>
+        {% endif %}
+
+        <li><a href="{{ my_object.action_url }}"><i class="glyph-charts"></i> View Graphs</a></li>
+
+    </ul>
 
     <h5>Diagnostics</h5>
     <ul class="nav nav-list">
         {% if command_line and form.host_name.value and form.register != '0' %}
             <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
         {% endif %}
-        <li><a href="#nag"><i class="icon-random"></i> View "use" inheritance tree</a></li>
     </ul>
+    <hr/>
+    {% if effective_parents %}
+        <h5>Parents</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_parents %}
+                <li><a href="{% url edit_object i.id %}">{{ i.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_services %}
+        <h5>Related services</h5>
+        <ul class="nav nav-list">
+        {% for i in effective_services %}
+         <li><a href="{% url edit_object i.id %}">{{ i.service_description }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
 
-
-
+    {% if effective_contactgroups %}
+        <h5>Contactgroups</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_contactgroups %}
+                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_hostgroups %}
+        <h5>Hostgroups</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_hostgroups %}
+                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_hosts %}
+        <h5>Hosts</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_hosts %}
+                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_contacts %}
+        <h5>Contacts</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_contacts %}
+                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
     <div class="modal hide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}">
         <div class="modal-header">
