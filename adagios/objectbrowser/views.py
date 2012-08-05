@@ -30,6 +30,8 @@ from os.path import dirname
 from pynag.Model import ObjectDefinition
 from pynag import Model
 from pynag.Model import EventHandlers
+
+from adagios import settings
 from forms import *
 
 from log import *
@@ -157,6 +159,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
     c.update(csrf(request))
     c['messages'] = m = []
     c['errors'] = []
+    c['nagios_url'] = settings.nagios_url
     # Get our object
     if object_id is not None:
         # If object id was specified
@@ -200,6 +203,14 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
     c['my_object'] = o
     c['geek_edit'] = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
     c['advanced_form'] = PynagForm( pynag_object=o, initial=o._original_attributes, simple=True )
+
+
+    try: c['effective_hosts'] = o.get_effective_hosts()
+    except KeyError, e: c['errors'].append( "Could not find host: %s" % str(e))
+    except AttributeError: pass
+
+    try: c['effective_parents'] = o.get_effective_parents()
+    except KeyError, e: c['errors'].append( "Could not find parent: %s" % str(e))
 
     # Some type of objects get a little special treatment:
     if o['object_type'] == 'host':
