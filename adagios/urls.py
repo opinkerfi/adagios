@@ -10,7 +10,7 @@ from django.views.static import serve
 urlpatterns = patterns('',
     # Example:
     url(r'^$', 'misc.views.index', name="home"),
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name="media"),
     (r'^objectbrowser', include('objectbrowser.urls')),
     (r'^okconfig', include('okconfig_.urls')),
     (r'^misc', include('misc.urls')),

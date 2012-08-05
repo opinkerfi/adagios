@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block footer %}
-    <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
+    <script src="{% url media path="chosen/chosen.jquery.js" %}" type="text/javascript"></script>
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
         $('#objecttab a:first').tab('show');
@@ -69,10 +69,10 @@
         <div class="block">
             <ul class="breadcrumb">
                 <li>
-                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                    <a href="{% url home %}">Home</a> <span class="divider">/</span>
                 </li>
                 <li>
-                    <a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a> <span class="divider">/</span>
+                    <a href="{% url objectbrowser %}">Object Browser</a> <span class="divider">/</span>
                 </li>
             </ul>
             <h2>

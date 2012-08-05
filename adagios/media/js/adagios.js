@@ -52,7 +52,7 @@ function ob_run_check_command() {
     $('#run_check_plugin #pluginoutput').html("Executing check plugin");
 
     // Run the command and fetch the output JSON via REST
-    $.getJSON("/rest/pynag/json/run_check_command",
+    $.getJSON(BASE_URL + "rest/pynag/json/run_check_command",
         {
             object_id: id
         },
@@ -147,8 +147,7 @@ function ob_run_check_command() {
                     json_query_fields.push(field['cHidden']);
                 }
             });
-
-            $.getJSON("/rest/pynag/json/get_objects",
+            $.getJSON("../rest/pynag/json/get_objects",
                 {
                     object_type:object_type,
                     with_fields:json_query_fields.join(",")
@@ -158,12 +157,12 @@ function ob_run_check_command() {
                     $.each(data, function (i, item) {
                         var field_array =
                             [item['register'], object_type, '\
-    <a href="' + BASE_URL + 'objectbrowser/delete_object/id=' + item['id'] + '">\
+    <a href="delete_object/id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
     <input rel="ob_mass_select" name="' + item['id'] + '" type="checkbox">'];
                         $.each(v['rows'], function (k, field) {
-                            var cell = '<a href="' + BASE_URL + '/objectbrowser/id=' + item['id'] + '">';
+                            var cell = '<a href="id=' + item['id'] + '">';
                             var field_value = "";
                             if ("icon" in field) {
                                 cell += "<i class=\"" + field.icon + "\"></i> ";
@@ -206,8 +205,8 @@ function ob_run_check_command() {
                     }
                 }).error(function (jqXHR) {
                     /* TODO - fix this to a this style */
-                    targetDataTable = $(this).data('datatable');
-                    targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
+                    //targetDataTable = $(this).data('datatable');
+                    //targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
                 });
             return this;
         });

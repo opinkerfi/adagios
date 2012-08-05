@@ -12,11 +12,11 @@
         <div class="block">
             <ul class="breadcrumb">
                 <li>
-                    <a href="{{ BASE_URL }}">Home</a> <span class="divider">/</span>
+                    <a href="{% url home %}">Home</a> <span class="divider">/</span>
                 </li>
                 <li>
                     {% block nav1 %}
-			<a href="{{ BASE_URL }}/objectbrowser/">Object Browser</a>
+			<a href="{% url home %}/objectbrowser/">Object Browser</a>
 		    {% endblock %}
                     <span class="divider">/</span>
                 </li>
