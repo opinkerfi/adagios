@@ -19,6 +19,8 @@ from django import forms
 
 from django.core.mail import send_mail
 
+from adagios import settings
+
 TOPIC_CHOICES = (
 	('general', 'General Suggestion'),
 	('bug', 'I think i have found a bug'),
@@ -53,10 +55,10 @@ class ContactUsForm(forms.Form):
 		""" % (topic,sender,message)
 		send_mail(subject, msg, from_address, to_address, fail_silently=False)
 class AdagiosSettingsForm(forms.Form):
-	configuration_file = forms.CharField(initial='/etc/nagios/nagios.cfg')
-	configuration_host = forms.CharField(initial='localhost')
-	git_commit_on_changes = forms.BooleanField(initial=True)
-	log_to_file_on_changes = forms.BooleanField(initial=True)
+	configuration_file = forms.CharField(required=False, initial=settings.nagios_config, help_text="Path to nagios configuration file. Leave empty for automatic discovery.")
+	nagios_url = forms.CharField(required=False, initial=settings.nagios_url, help_text="URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi.")
+	git_commit_on_changes = forms.BooleanField(required=False, initial=settings.enable_githandler, help_text="If set. Adagios will commit any changes it makes to git repository.")
+	log_to_file_on_changes = forms.BooleanField(required=False, initial=settings.enable_loghandler, help_text="If set. Adagios will log any changes it makes to a file.")
 
 	
 class OkconfigEditTemplateForm(forms.Form):
