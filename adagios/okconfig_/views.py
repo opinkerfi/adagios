@@ -25,10 +25,12 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
 import forms
-#import okconfig.forms
 
 import okconfig
 import okconfig.network_scan
+from pynag import Model
+
+
 
 def addcomplete(request, c={}):
     return render_to_response('addcomplete.html', c,context_instance=RequestContext(request))
@@ -155,7 +157,6 @@ def install_agent(request):
 
 def edit(request, host_name):
     """ Edit all the Service "__MACROS" for a given host """
-    from pynag import Model
 
     c = { }
     c.update(csrf(request))
