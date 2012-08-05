@@ -45,11 +45,11 @@ function ob_run_check_command() {
     var id = modal.attr('data-object-id');
 
     // Reset the class on the button
-    $('#run_check_plugin #pluginstate').removeClass("label-important");
-    $('#run_check_plugin #pluginstate').removeClass("label-warning");
-    $('#run_check_plugin #pluginstate').removeClass("label-success");
-    $('#run_check_plugin #pluginstate').html("Pending");
-    $('#run_check_plugin #pluginoutput').html("Executing check plugin");
+    $('#run_check_plugin #state').removeClass("label-important");
+    $('#run_check_plugin #state').removeClass("label-warning");
+    $('#run_check_plugin #state').removeClass("label-success");
+    $('#run_check_plugin #state').html("Pending");
+    $('#run_check_plugin #output pre').html("Executing check plugin");
 
     // Run the command and fetch the output JSON via REST
     $.getJSON(BASE_URL + "rest/pynag/json/run_check_command",
@@ -73,14 +73,22 @@ function ob_run_check_command() {
                 statusString = 'OK';
             }
             // Set the correct class for state coloring box
-            $('#run_check_plugin #pluginstate').addClass(statusLabel);
+            $('#run_check_plugin #state').addClass(statusLabel);
 
             // Fill it up with the correct status
-            $('#run_check_plugin #pluginstate').html(statusString);
+            $('#run_check_plugin #state').html(statusString);
 
             // Put the plugin output in the correct div
-            $('#run_check_plugin #pluginoutput').html(data[1]);
+            if (data[1]) {
+                $('#run_check_plugin div#output pre').html(data[1]);
+            } else {
+                $('#run_check_plugin #output pre').html("No data received on stdout");
+            }
 
+            if (data[2]) {
+                $('#run_check_plugin #error pre').html(data[2]);
+                $('#run_check_plugin div#error').show();
+            }
             // Show the refresh button
             $('#run_check_plugin_refresh').show();
 

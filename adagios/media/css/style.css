@@ -179,3 +179,12 @@ a.inactive {
     background-color: #EEEEEE;
     color: #404040;
 }
+
+.modal.wide {
+    width: 780px;
+    margin-left: -390px; /* -(width / 2) */
+}
+
+#run_check_plugin div.label {
+    width: 100px;
+}
