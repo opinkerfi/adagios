@@ -9,6 +9,17 @@
 
 {% block content %}
 
+<div class="row">
+    <div class="span12">
+        <div class="block">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="{% url home %}">Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="{% url objectbrowser %}">Object Browser</a> <span class="divider">/</span>
+                </li>
+            </ul>
     {% if my_object %}
             <!-- wrapper for scrollable items -->
             <ul class="nav nav-tabs" id="objecttab">

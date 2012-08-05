@@ -10,7 +10,7 @@
     <meta name="author" content="Tomas Edwardsson, Pall Sigurdsson">
 
     <!-- Le styles -->
-    <link href="{{ MEDIA_URL }}css/style.css" rel="stylesheet">
+    <link href="{% url media path="css/style.css" %}" rel="stylesheet">
     <style>
         body {
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -28,13 +28,13 @@
     <![endif]-->
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="{{ MEDIA_URL }}ico/favicon.ico">
+    <link rel="shortcut icon" href="{% url media path="ico/favicon.ico" %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114"
-          href="{{ MEDIA_URL }}ico/apple-touch-icon-114-precomposed.png">
+          href="{% url media path="ico/apple-touch-icon-114-precomposed.png" %}">
     <link rel="apple-touch-icon-precomposed" sizes="72x72"
-          href="{{ MEDIA_URL }}ico/apple-touch-icon-72-precomposed.png">
+          href="{% url media path="ico/apple-touch-icon-72-precomposed.png" %}">
     <link rel="apple-touch-icon-precomposed"
-          href="{{ MEDIA_URL }}ico/apple-touch-icon-57-precomposed.png">
+          href="{% url media path="ico/apple-touch-icon-57-precomposed.png" %}">
 
 
     {%  block head %}{% endblock %}
@@ -83,29 +83,29 @@
 <!-- Le javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="{{ MEDIA_URL }}js/jquery.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-transition.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-alert.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-modal.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-dropdown.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-scrollspy.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-tab.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-tooltip.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-popover.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-button.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-collapse.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-carousel.js"></script>
-<script src="{{ MEDIA_URL }}js/bootstrap-typeahead.js"></script>
-
-<script src="{{ MEDIA_URL }}js/jquery.dataTables.min.js"></script>
-<script src="{{ MEDIA_URL }}js/datatables-bootstrap-pagination.js"></script>
-
-<script src="{{ MEDIA_URL }}js/adagios.js"></script>
-
 <script>
-    var BASE_URL = "{{ BASE_URL }}";
-    var MEDIA_URL = "{{ MEDIA_URL }}";
+    var BASE_URL = "{% url home %}";
+    var MEDIA_URL = "{% url media path="" %}";
 </script>
+<script src="{% url media path="js/jquery.js" %}"></script>
+<script src="{% url media path="js/bootstrap-transition.js" %}"></script>
+<script src="{% url media path="js/bootstrap-alert.js" %}"></script>
+<script src="{% url media path="js/bootstrap-modal.js" %}"></script>
+<script src="{% url media path="js/bootstrap-dropdown.js" %}"></script>
+<script src="{% url media path="js/bootstrap-scrollspy.js" %}"></script>
+<script src="{% url media path="js/bootstrap-tab.js" %}"></script>
+<script src="{% url media path="js/bootstrap-tooltip.js" %}"></script>
+<script src="{% url media path="js/bootstrap-popover.js" %}"></script>
+<script src="{% url media path="js/bootstrap-button.js" %}"></script>
+<script src="{% url media path="js/bootstrap-collapse.js" %}"></script>
+<script src="{% url media path="js/bootstrap-carousel.js" %}"></script>
+<script src="{% url media path="js/bootstrap-typeahead.js" %}"></script>
+
+<script src="{% url media path="js/jquery.dataTables.min.js" %}"></script>
+<script src="{% url media path="js/datatables-bootstrap-pagination.js" %}"></script>
+
+<script src="{% url media path="js/adagios.js" %}"></script>
+
 {% block footer %}{% endblock %}
 
 <!--

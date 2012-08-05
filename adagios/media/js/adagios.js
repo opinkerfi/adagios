@@ -45,14 +45,14 @@ function ob_run_check_command() {
     var id = modal.attr('data-object-id');
 
     // Reset the class on the button
-    $('#run_check_plugin #pluginstate').removeClass("label-important");
-    $('#run_check_plugin #pluginstate').removeClass("label-warning");
-    $('#run_check_plugin #pluginstate').removeClass("label-success");
-    $('#run_check_plugin #pluginstate').html("Pending");
-    $('#run_check_plugin #pluginoutput').html("Executing check plugin");
+    $('#run_check_plugin #state').removeClass("label-important");
+    $('#run_check_plugin #state').removeClass("label-warning");
+    $('#run_check_plugin #state').removeClass("label-success");
+    $('#run_check_plugin #state').html("Pending");
+    $('#run_check_plugin #output pre').html("Executing check plugin");
 
     // Run the command and fetch the output JSON via REST
-    $.getJSON("/rest/pynag/json/run_check_command",
+    $.getJSON(BASE_URL + "rest/pynag/json/run_check_command",
         {
             object_id: id
         },
@@ -73,14 +73,22 @@ function ob_run_check_command() {
                 statusString = 'OK';
             }
             // Set the correct class for state coloring box
-            $('#run_check_plugin #pluginstate').addClass(statusLabel);
+            $('#run_check_plugin #state').addClass(statusLabel);
 
             // Fill it up with the correct status
-            $('#run_check_plugin #pluginstate').html(statusString);
+            $('#run_check_plugin #state').html(statusString);
 
             // Put the plugin output in the correct div
-            $('#run_check_plugin #pluginoutput').html(data[1]);
+            if (data[1]) {
+                $('#run_check_plugin div#output pre').html(data[1]);
+            } else {
+                $('#run_check_plugin #output pre').html("No data received on stdout");
+            }
 
+            if (data[2]) {
+                $('#run_check_plugin #error pre').html(data[2]);
+                $('#run_check_plugin div#error').show();
+            }
             // Show the refresh button
             $('#run_check_plugin_refresh').show();
 
@@ -147,8 +155,7 @@ function ob_run_check_command() {
                     json_query_fields.push(field['cHidden']);
                 }
             });
-
-            $.getJSON("/rest/pynag/json/get_objects",
+            $.getJSON("../rest/pynag/json/get_objects",
                 {
                     object_type:object_type,
                     with_fields:json_query_fields.join(",")
@@ -158,12 +165,12 @@ function ob_run_check_command() {
                     $.each(data, function (i, item) {
                         var field_array =
                             [item['register'], object_type, '\
-    <a href="' + BASE_URL + 'objectbrowser/delete_object/id=' + item['id'] + '">\
+    <a href="delete_object/id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
     <input rel="ob_mass_select" name="' + item['id'] + '" type="checkbox">'];
                         $.each(v['rows'], function (k, field) {
-                            var cell = '<a href="' + BASE_URL + '/objectbrowser/id=' + item['id'] + '">';
+                            var cell = '<a href="id=' + item['id'] + '">';
                             var field_value = "";
                             if ("icon" in field) {
                                 cell += "<i class=\"" + field.icon + "\"></i> ";
@@ -206,8 +213,8 @@ function ob_run_check_command() {
                     }
                 }).error(function (jqXHR) {
                     /* TODO - fix this to a this style */
-                    targetDataTable = $(this).data('datatable');
-                    targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
+                    //targetDataTable = $(this).data('datatable');
+                    //targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
                 });
             return this;
         });
