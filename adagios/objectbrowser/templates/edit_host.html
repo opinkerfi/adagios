@@ -59,6 +59,9 @@
                 </div>
 
                 <div class="tab-pane" id="monitoring">
+                    {% if command_line and form.host_name.value and form.register != '0' %}
+                        <pre>{{ command_line }}</pre>
+                    {% endif %}
                     <fieldset>
 
                         <label class="control-label" for="check_command" rel="tooltip" title="{{ form.check_command.label }}" data-content="Command executed when the service check runs">{{ form.check_command.label }}</label>
