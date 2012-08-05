@@ -67,13 +67,16 @@
                            href="#"><i class="icon-barcode icon-white"></i> Misc <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#bug">Report Bug</a></li>
-                            <li><a href="#donate">Donate</a></li>
+                            <li><a href="http://opensource.is/adagios/newticket?type=defect">Report Bug</a></li>
+                            <li><a href="http://opensource.is/adagios/newticket?type=enhancement">Make Suggestion</a></li>
+                            <li><a href="http://opensource.is/adagios/">Project Webpage</a></li>
+                            <li class="divider"></li>
                             <li><a href="{%  url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
                             <li><a href="{%  url objectbrowser.views.view_nagios_cfg %}">Edit nagios.cfg</a></li>
                             <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
+                            <li><a href="{%  url misc.views.settings %}">Settings</a></li>
                         </ul>
-                    </li>
+                   </li>
                 </ul>
             </div>
         </div>

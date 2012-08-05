@@ -33,7 +33,23 @@ def settings(request):
 		c['form'] = forms.AdagiosSettingsForm(data=request.POST)
 		if c['form'].is_valid():
 			c['form'].save()
-	return render_to_response('settings.html', c)
+	return render_to_response('settings.html', c, context_instance = RequestContext(request))
+
+def contact_us( request ):
+	""" Bring a small form that has a "contact us" form on it """
+	c={}
+	c.update(csrf(request))
+	if request.method == 'GET':
+		form = forms.ContactUsForm(initial=request.GET)
+	else:
+		form = forms.ContactUsForm(data=request.POST)
+		if form.is_valid():
+			form.save()
+			c['thank_you'] = True
+			c['sender'] = form.cleaned_data['sender']
+		
+	c['form'] = form
+	return render_to_response('contact_us.html', c,  context_instance = RequestContext(request))
 
 def nagios(request):
 	c = {}

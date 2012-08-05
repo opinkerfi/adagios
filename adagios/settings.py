@@ -114,3 +114,29 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.resolve_urlname',
     "django.contrib.messages.context_processors.messages")
 
  
+
+
+# Adagios specific configuration options
+
+# nagios_config - Path to your nagios configuration file
+# If set, adagios will use this file to manage your object
+# definitions. If set to None, adagios will search most common
+# paths like /etc/nagios/nagios.cfg for it
+#nagios_config = "/etc/nagios/nagios.cfg"
+nagios_config = None
+
+# This should be the URL to your nagios server. If set, then
+# Adagios can link you directly from configuration to live object.
+# If you don't need this feature. Set nagios_url to '' or None
+#nagios_url = "http://mynagiosserver/nagios"
+nagios_url = "/nagios"
+
+
+# enable_githandler - If set to true, and your /etc/nagios/ directory
+# is a git repository. adagios will automatically commit changes when
+# they are made.
+enable_githandler = True
+
+# enable_loghandler - If set to true, all changes adagios makes to 
+# object definitions will be logged to a file.
+enable_loghandler = False

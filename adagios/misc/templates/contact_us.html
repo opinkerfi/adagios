@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+
+
+{% if thank_you %}
+<h1>Thank you!</h1>
+Thank you for submitting your suggestion. We very much appreciate it. feel free to <a href="contact_us?sender={{sender}}"> make another suggestion.</a>
+
+{% endif %}
+
+
+
+
+{% if form %}
+<div class="okconfig_add ui-tabs ui-widget ui-widget-content ui-corner-all">
+	<form action="contact_us" method="post">{% csrf_token %}
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+			<a href="#host">Contact Us</a>
+		</li>
+	</ul>
+	{{ form.as_p }}
+		<p>
+    	<INPUT id="zesubmit" type="submit" value="Submit">
+	</form>
+	</fieldset>
+</div>
+
+<script>
+$('#zesubmit').button();
+</script>
+
+
+<p>
+<fieldset id="enhancement_request1" class="enhancement_request">
+	  <legend>Example Suggestion</legend>
+	  <pre>
+	  I often configure network parenting for hosts but it is a very tedious task.
+	  
+	  It would be awesome if Adagios provided an easier way to configure parenting.
+	  
+	  For example, one dialog where you can see all hosts that have no parents.
+	  
+	  this alone would help a lot.
+	  </pre>
+</fieldset>
+<p>
+<fieldset id="bug_report_example1" class="bug_report_example">
+	  <legend>Example Bug Report</legend>
+	  <pre>
+	  I think i have found a bug inside object browser.
+	  
+	  Steps to reproduce:
+	  1. Click a service
+	  2. Make a modification and save
+	  3. Check the field you just changed
+	  
+	  What happens:
+	  The object was saved, but when you browse you still see the old value
+	  
+	  What should happen:
+	  Adagios should refresh the newly saved information and display the new changes 
+	  </pre>
+</fieldset>
+{% endif %}
+
+{% endblock %}
+    

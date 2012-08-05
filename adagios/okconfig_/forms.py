@@ -7,7 +7,7 @@ import socket
 from pynag import Model
 
 all_hosts = map(lambda x: (x, x), helpers.get_host_names())
-all_templates = map(lambda x: (x, x), okconfig.get_templates())
+all_templates = map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates())
 all_groups = map( lambda x: (x,x), okconfig.get_groups() )
 
 class ScanNetworkForm(forms.Form):
@@ -43,9 +43,13 @@ class AddGroupForm(forms.Form):
 class AddHostForm(forms.Form):
     host_name = forms.CharField(help_text="Name of the host to add")
     address = forms.CharField(help_text="IP Address of this host")
-    group_name = forms.ChoiceField(initial="default",choices=all_groups, help_text="host/contact group to put this host in")
-    templates = forms.MultipleChoiceField(choices=all_templates,  help_text="Add standard template of checks to this host")
+    group_name = forms.ChoiceField(initial="default", help_text="host/contact group to put this host in")
+    templates = forms.MultipleChoiceField( required=False, help_text="Add standard template of checks to this host" )
     force = forms.BooleanField(required=False, help_text="Overwrite host if it already exists.")
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['group_name'].choices = choices=map( lambda x: (x,x), okconfig.get_groups() )
+        self.fields['templates'].choices = map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates() )
     def clean(self):
         if self.cleaned_data.has_key('host_name'):
             host_name = self.cleaned_data['host_name']
@@ -59,7 +63,9 @@ class AddTemplateForm(forms.Form):
     host_name = forms.ChoiceField(choices=all_hosts, help_text="Add templates to this host")
     template_name = forms.ChoiceField(choices=all_templates,help_text="what template to add")
     force = forms.BooleanField(required=False, help_text="Overwrites templates if they already exist")
-
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['templates'] = map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates() )
     def clean(self):
         result = super(AddTemplateForm, self).clean()
         cleaned_data = self.cleaned_data

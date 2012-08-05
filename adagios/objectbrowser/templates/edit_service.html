@@ -1,63 +1,15 @@
-{% extends "base.html" %}
-{% block title %}Adagios - Service {{ my_object.shortname }}{% endblock %}
+{% extends "edit_object.html" %}
+{% block title %}{{ block.super }}{% endblock %}
 
-{% block head %}
-{% endblock %}
+{% block head %}{{ block.super }}{% endblock %}
 
-{% block footer %}
-    <script src="{% url media path="chosen/chosen.jquery.js" %}" type="text/javascript"></script>
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
-    $('#objecttab a:first').tab('show');
-    $(document).ready(function() {
-        // Popovers
-        $("[rel=tooltip]").popover();
-        $("#popover").popover();
+{% block sidebar %}{{ block.super }}{% endblock %}
 
-        // Use chosen dropdowns for everything but the Advanced tab
-        $('#general select').chosen();
-        $('#notifications select').chosen();
-        $('#monitoring select').chosen();
-
-        // run_check_plugin
-        $('#run_check_plugin').on('show', ob_run_check_command);
-	});
-
-    </script>
-{%  endblock %}
 
 {% block content %}
 
-<div class="row">
-    <div class="span12">
-        <div class="block">
-            <ul class="breadcrumb">
-                <li>
-                    <a href="{% url home %}">Home</a> <span class="divider">/</span>
-                </li>
-                <li>
-                    <a href="{% url objectbrowser %}">Object Browser</a> <span class="divider">/</span>
-                </li>
-            </ul>
-    {% if my_object %}
-            <h2>
-                <i class="icon-th-large"></i> <small>Service</small> {{ my_object.shortname }}
-    {% else %}
-            <h2 class="error">
-                <i class="icon-th-large"></i> <small>Service</small> ID not found
-    {% endif %}
-            </h2>
-        </div>
-    </div>
-</div>
-
-    {% if my_object %}
-
-
-<div class="row">
-    <div class="span9">
-        <div class="block">
-
+   {% if my_object %}
             <!-- wrapper for scrollable items -->
             <ul class="nav nav-tabs" id="objecttab">
                 <li><a href="#general" data-toggle="tab">General</a></li>
@@ -105,6 +57,9 @@
                     </div>
 		
                     <div class="tab-pane" id="monitoring">
+                        {% if command_line and form.host_name.value and form.register != '0' %}
+                            <pre>{{ command_line }}</pre>
+                        {% endif %}
                         <fieldset>
 
                             <label class="control-label" for="check_command" rel="tooltip" title="{{ form.check_command.label }}" data-content="Command executed when the service check runs">{{ form.check_command.label }}</label>
@@ -195,52 +150,16 @@
                         </div>
                     </div>
             </form>
-                    <div class="tab-pane" id="advanced">
-                        <!-- Object info -->
-                        <h2>Object Info</h2>
-                        <label class="control-label" >Object Type: </label>
-                        <div class="controls">
-                            <label>{{  my_object.object_type  }}</label>
+
+            <div class="tab-pane" id="advanced">
+                    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                        {% include "bootstrap_fields.html" with fields=advanced_form %}
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Submit</button>
                         </div>
-
-                        <label class="control-label" >Filename: </label>
-                        <div class="controls">
-                            <label>{{  my_object.filename  }}</label>
-                        </div>
-
-                        <h2>All Attributes</h2>
-                            <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-                                {% include "bootstrap_fields.html" with fields=advanced_form %}
-                                <div class="form-actions">
-                                    <button class="btn btn-primary" type="submit">Submit</button>
-                                </div>
-                            </form>
-
-
-
-
-
-                        <!-- Display all members of a specific group -->
-                        {% if effective_members %}
-                            <div class="effective_members">
-                                <fieldset id="id_effective_members" class="attribute_{{object_type}}">
-                                    <legend>Effective Members</legend>
-                                    {% for m in effective_members %}
-                                        <p>
-                                            <label><a href="id={{ m.id }}">{{m.description}}</a></label>
-                                        </p>
-                                    {% endfor %}
-                                </fieldset>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                </div>
+                    </form>
+            </div>
         </div>
-    </div>
-    {%  include "snippets/sidebar.html" %}
-</div>
-	
 {% else %}
 	<p>Object not found </p>
 {% endif %}
@@ -249,3 +168,27 @@
 
 
 {% endblock %}
+
+
+
+{% block footer %}
+    <script src="{{ MEDIA_URL }}chosen/chosen.jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#objecttab a:first').tab('show');
+        $(document).ready(function() {
+            // Popovers
+            $("[rel=tooltip]").popover();
+            $("#popover").popover();
+
+            // Use chosen dropdowns for everything but the Advanced tab
+            $('#general select').chosen();
+            $('#notifications select').chosen();
+            $('#monitoring select').chosen();
+
+            // run_check_plugin
+            $('#run_check_plugin').on('show', ob_run_check_command);
+        });
+
+    </script>
+{%  endblock %}

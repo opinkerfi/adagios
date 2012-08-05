@@ -1,0 +1,48 @@
+{% extends "edit_object.html" %}
+{% block title %}{{  block.super }}{% endblock %}
+
+{% block head %}{{ block.super }} {% endblock %}
+
+{% block footer %}{{ block.super }}{% endblock %}
+
+{% block sidebar %}{{ block.super }}{% endblock %}
+
+{% block content %}
+
+    {% if my_object %}
+
+            <!-- wrapper for scrollable items -->
+            <ul class="nav nav-tabs" id="objecttab">
+                <li><a href="#timeperiod" data-toggle="tab">timeperiod</a></li>
+		    </ul>
+        <form action="geek_edit/id={{my_object.id}}" method="post">{% csrf_token %}
+                <div class="tab-content">
+
+                    <div class="tab-pane" id="timeperiod">
+                        <form action="#" method="post">
+
+                            {% csrf_token %}
+                            <p>
+                            <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
+                                {{ geek_edit }}
+                            </fieldset>
+                            <strong>Filename:</strong> {{ my_object.filename }}
+
+                            <div class="form-actions">
+                                <button class="btn btn-primary" type="submit">Save changes</button>
+                                <button class="btn">Cancel</button>
+                            </div>
+                         </form>
+                    </div>
+                </div>
+
+            </form>
+
+{% else %}
+	<p>Object not found </p>
+{% endif %}
+
+
+
+
+{% endblock %}
