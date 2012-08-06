@@ -27,10 +27,10 @@
         <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
 
         {% if my_object.object_type == 'service' %}
-        <li>
-            <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
-                <i class="icon-fire"></i> Open in Nagios</a>
-        </li>
+            <li>
+                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
+                    <i class="icon-fire"></i> Open in Nagios</a>
+            </li>
         {% endif %}
 
         {% if my_object.object_type == 'host' %}
@@ -62,9 +62,9 @@
     {% if effective_services %}
         <h5>Related services</h5>
         <ul class="nav nav-list">
-        {% for i in effective_services %}
-         <li><a href="{% url edit_object i.id %}">{{ i.service_description }}</a></li>
-        {% endfor %}
+            {% for i in effective_services %}
+                <li><a href="{% url edit_object i.id %}">{{ i.service_description }}</a></li>
+            {% endfor %}
         </ul>
     {% endif %}
 
@@ -101,22 +101,25 @@
         </ul>
     {% endif %}
 
-    <div class="modal hide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}">
+    <div class="modal wide hide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}">
         <div class="modal-header">
             <h3>Run Check Plugin</h3>
-            <div class="well">{{ command_line }}</div>
-            <div class="row-fluid">
-                <div class="span2">Status:</div>
-                <div class="span2 label" id="pluginstate">Pending</div>
-            </div>
-            <div class="row-fluid">
-                <div class="span2">Plugin Output:</div>
-            </div>
+            <dl class="dl-horizontal">
+                <dt>Status</dt>
+                <dd><div class="label" id="state">Pending</div></dd>
+                <dt>Command</dt>
+                <dd>{{ command_line }}</dd>
+            </dl>
         </div>
         <div class="modal-body">
-            <div class="row-fluid">
-                <div class="span8" style="height: 250px">
-                    <pre id="pluginoutput">Executing check plugin</pre>
+            <h4>Plugin Output</h4>
+            <div id="output">
+                <pre>Executing check plugin</pre>
+            </div>
+            <div id="error" class="hide">
+                <div class="alert alert-error">
+                    Plugin output (standard error)
+                    <pre></pre>
                 </div>
             </div>
         </div>

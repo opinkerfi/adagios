@@ -16,9 +16,9 @@
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         }
         @media (max-width: 979px) {
-          body {
-            padding-top: 0px;
-          }
+            body {
+                padding-top: 0;
+            }
         }
     </style>
 
@@ -58,7 +58,7 @@
                 <!-- block adagios_hausinn starts -->
                 {% block adagios_hausinn %}
                     {% include "snippets/adagios_hausinn.html" %}
-                    {% endblock %}
+                {% endblock %}
                 <!-- block adagios_hausinn ends -->
             </div>
         </div>
@@ -86,7 +86,7 @@
 
     {% if errors|length %}
         <div class="modal hide fade" id="warnings">
-            <div class="modal-header"><h3>Errors Found: {{ errors|length }}</span></div>
+            <div class="modal-header"><h3>Errors Found: {{ errors|length }}</h3></div>
             <div class="modal-body alert">
                 {%  for error in errors %}
                     <div>
