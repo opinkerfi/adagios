@@ -74,7 +74,6 @@
             </div>
         </div>
 
-        <!-- Start of okconfig_/templates/snippets/sidebar.html -->
         <div class="span3">
             <div class="block">
                 <!-- block sidebar starts -->
@@ -84,26 +83,8 @@
         </div>
     </div>
 
-    {% if errors|length %}
-        <div class="modal hide fade" id="warnings">
-            <div class="modal-header"><h3>Errors Found: {{ errors|length }}</h3></div>
-            <div class="modal-body alert">
-                {%  for error in errors %}
-                    <div>
-                        <strong>Warning!</strong> {{  error }}
-                    </div>
-                {%  endfor %}
-                {%  for message in messages %}
-                    <div class="alert alert-success">
-                        <strong>Warning!</strong> {{  error }}
-                    </div>
-                {%  endfor %}
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    {% endif %}
+    {% block sidebar2 %} {% endblock %}
+
 
 </div> <!-- /container -->
 
