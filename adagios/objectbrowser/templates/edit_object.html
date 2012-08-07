@@ -6,42 +6,42 @@
 
 {% block content %}
     {% if my_object %}
-            <!-- wrapper for scrollable items -->
-            <ul class="nav nav-tabs" id="objecttab">
-			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
-		    </ul>
-            <form class="form-horizontal" action="#" method="POST">
+        <!-- wrapper for scrollable items -->
+        <ul class="nav nav-tabs" id="objecttab">
+            <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+        </ul>
+        <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
-                <div class="tab-content">
+            <div class="tab-content">
 
-                    <div class="tab-pane" id="advanced">
-                        <!-- All Attributes -->
-                        <h2>All Attributes</h2>
-                        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-                            {% include "bootstrap_fields.html" with fields=advanced_form %}
-                            <div class="form-actions">
-                                <button class="btn btn-primary" type="submit">Submit</button>
-                            </div>
-                        </form>
+                <div class="tab-pane" id="advanced">
+                    <!-- All Attributes -->
+                    <h2>All Attributes</h2>
+                    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                        {% include "bootstrap_fields.html" with fields=advanced_form %}
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </form>
 
 
-                        <!-- Display all members of a specific group -->
-                        {% if effective_members %}
-                                <div class="effective_members">
-                                <fieldset id="id_effective_members" class="attribute_{{object_type}}">
-                                  <legend>Effective Members</legend>
-                                        {% for m in effective_members %}
-                                          <p>
-                                            <label><a href="id={{ m.id }}">{{m.description}}</a></label>
-                                          </p>
-                                        {% endfor %}
-                                </fieldset>
-                                </div>
-                        {% endif %}
+                    <!-- Display all members of a specific group -->
+                    {% if effective_members %}
+                        <div class="effective_members">
+                            <fieldset id="id_effective_members" class="attribute_{{object_type}}">
+                                <legend>Effective Members</legend>
+                                {% for m in effective_members %}
+                                    <p>
+                                        <label><a href="id={{ m.id }}">{{m.description}}</a></label>
+                                    </p>
+                                {% endfor %}
+                            </fieldset>
+                        </div>
+                    {% endif %}
 
-                    </div> <!-- End of advanced tab -->
-                </div>
-            </form>
+                </div> <!-- End of advanced tab -->
+            </div>
+        </form>
 
     {% else %}
         <p>Object not found </p>

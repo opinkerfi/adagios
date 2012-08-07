@@ -124,22 +124,20 @@ function ob_run_check_command() {
             });
         var $this = $(this);
 
-
         $this.data('fetch', fetch);
         $this.data('aoColumns', aoColumns);
 
         return $this;
     };
 
-    $.fn.adagios_ob_render_dataTable = function (aoColumns, fetch) {
+    $.fn.adagios_ob_render_dataTable = function () {
         var $this = $(this);
 
         $this.dtData = [];
-        $this.fetch = $this.data('fetch', fetch);
-        $this.aoColumns = $this.data('aoColumns', aoColumns);
+        $this.fetch = $this.data('fetch');
+        $this.aoColumns = $this.data('aoColumns');
         $this.jsonqueries = $this.fetch.length;
         $.each($this.fetch, function (f, v) {
-
             var object_type = v['object_type'];
             $('#log').append('Populating ' + object_type + $(this).attr('id') + '<br/>');
 
@@ -239,12 +237,13 @@ function ob_run_check_command() {
             "aoColumns":aoColumns,
             "sPaginationType":"bootstrap",
             "sScrollY":"260px",
-            "bAutoWidth":false,
+            // "bAutoWidth":true,
             "bScrollCollapse":false,
             "bPaginate":true,
             "iDisplayLength":48,
             "aaData":dtData,
-            "sDom":'<"toolbar' + $this.attr('id') + '">frtip',
+            //"sDom":'<"toolbar' + $this.attr('id') + '">frtip',
+            "sDom": "<'row-fluid'<'span6'<'toolbar" + $this.attr('id') + "'>>'<'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             // Callback which assigns tooltips to visible pages
             "fnDrawCallback":function () {
                 $("[rel=tooltip]").tooltip();

@@ -1,26 +1,11 @@
 
-@import url(bootstrap.css);
-@import url(bootstrap-responsive.css);
+@import url(../bootstrap/css/bootstrap.min.css);
+@import url(../bootstrap/css/bootstrap-responsive.min.css);
 @import url(glyph-free.css);
-@import url(jquery.dataTables.css);
+@import url(../datatables/css/jquery.dataTables.css);
+@import url(../datatables/DT_bootstrap.css);
 @import url(../chosen/chosen.css);
 
-
-/* Modifications to paths in jquery DataTables */
-.paginate_enabled_previous { background: url('../img/jquery-datatables/back_enabled.png') no-repeat top left; }
-.paginate_enabled_previous:hover { background: url('../img/jquery-datatables/back_enabled_hover.png') no-repeat top left; }
-.paginate_disabled_previous { background: url('../img/jquery-datatables/back_disabled.png') no-repeat top left; }
-
-.paginate_enabled_next { background: url('../img/jquery-datatables/forward_enabled.png') no-repeat top right; }
-.paginate_enabled_next:hover { background: url('../img/jquery-datatables/forward_enabled_hover.png') no-repeat top right; }
-.paginate_disabled_next { background: url('../img/jquery-datatables/forward_disabled.png') no-repeat top right; }
-
-.sorting { background: url('../img/jquery-datatables/sort_both.png') no-repeat center right; }
-.sorting_asc { background: url('../img/jquery-datatables/sort_asc.png') no-repeat center right; }
-.sorting_desc { background: url('../img/jquery-datatables/sort_desc.png') no-repeat center right; }
-
-.sorting_asc_disabled { background: url('../img/jquery-datatables/sort_asc_disabled.png') no-repeat center right; }
-.sorting_desc_disabled { background: url('../img/jquery-datatables/sort_desc_disabled.png') no-repeat center right; }
 
 body {
 	background: url('../img/bak.jpg');
@@ -54,7 +39,6 @@ body {
 }
 .block {
   background: #fff;
-  width: 100%;
   margin: 6px;
   padding: 6px;
   -moz-box-shadow:    1px 1px 2px 3px #666;
@@ -63,7 +47,6 @@ body {
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
-
 }
 .block_nw {
   background: #fff;
@@ -152,13 +135,6 @@ table.table thead .sorting_desc_disabled {
 	*cursor: hand;
 }
 
-
-table.table thead .sorting { background: url('../img/jquery-datatables/sort_both.png') no-repeat center right; }
-table.table thead .headerSortUp { background: url('../img/jquery-datatables/sort_asc.png') no-repeat center right; }
-table.table thead .sorting_desc { background: url('../img/jquery-datatables/sort_desc.png') no-repeat center right; }
-
-table.table thead .sorting_asc_disabled { background: url('../img/jquery-datatables/sort_asc_disabled.png') no-repeat center right; }
-table.table thead .sorting_desc_disabled { background: url('../img/jquery-datatables/sort_desc_disabled.png') no-repeat center right; }
 
 table.dataTable th:active {
 	outline: none;

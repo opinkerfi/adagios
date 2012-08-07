@@ -6,7 +6,7 @@
 
     var currenttab = '#service';
     var currenttable = '#service';
-    var BASE_URL = "{{ BASE_URL }}";
+    var BASE_URL = "{% url home %}";
 
 
     $(document).ready(function() {
@@ -173,10 +173,12 @@
         $('table#' + anchor).adagios_ob_render_dataTable();
 
 
-        $(window).bind('resize', function () {
-            /* This blows, couldn't find a good way to do this - tommi */
-            $(".tab-pane.active table").dataTable().fnAdjustColumnSizing();
-            //$(currenttab).tab('show');
+        $(window).resize(function () {
+            /* Resize the heading row of datatables*/
+            var table = $.fn.dataTable.fnTables(true);
+            if ( table.length > 0 ) {
+              $(table).dataTable().fnAdjustColumnSizing();
+            }
         } );
         $('a[data-toggle="tab"]').on('show', function (e) {
             //alert($(e.target).attr('href'));
@@ -215,7 +217,7 @@
     </script>
 {% endblock %}:
 {% block content %}
-    <div class="row">
+    <div class="row-fluid">
         <div class="span12">
             <div class="block">
                 <ul class="breadcrumb">
@@ -232,7 +234,7 @@
     </div>
     {% if object_types %}
 
-        <div class="row">
+        <div class="row-fluid">
             <div class="span9">
                 <div class="block">
                     <ul class="nav nav-tabs" id="objecttabs">
@@ -364,7 +366,7 @@
         <p>List of object types not found </p>
     {% endif %}
 
-    <div class="row">
+    <div class="row-fluid">
         <div class="span12">
             <div class="block">
                 <h5 style="border-bottom: 1px solid #ccc">Most Recent Changes</h5>
