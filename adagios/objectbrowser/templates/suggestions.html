@@ -3,7 +3,7 @@
 
 {% block content %}
 
-
+<h2>Sanity checks</h2>
 {% if booleans %}
 <table border=1>
 	<tr>
@@ -20,7 +20,8 @@
 </table>
 
 {% if object_health %}
-	<h1>Object Health</h1>
+<div>
+	<h2>Object Health</h2>
 	<table border=1>
 	<tr>
 		<th>Description</th>
@@ -32,26 +33,32 @@
 			<td>{{ v|length }}</td>
 		</tr>
 	{% endfor %}
-	</ul>
+    </table>
+</div>
 {% endif %}
 
 {% if errors %}
 <!-- Display a list of config errors -->
-<h1>Parsing Errors</h1>
-<table>
+<div>
+    <h2>Parsing Errors</h2>
+<table border=1>
 	<tr>
 		<th>Filename</th>
 		<th>Error</th>
-		<th>Actions</th>
+		<th colspan=3>Actions</th>
 
 	</tr>
 {% for i in errors %}
 	<tr>
 		<td><a href="/objectbrowser/search?filename={{ i.filename }}">{{ i.filename }}</a></td>
 		<td>{{ i.message }}</td>
-		<td><a href="#">Delete Object</a> | <a href="#">Create Reference</a> | <a href="#">Manually Edit</a> |</td>
+		<td><a href="{{ objectbrowser }}/delete_object?id={{ i.item }}">Delete Object</a> </td>
+        <td> <a href="#">Create Reference</a></td>
+        <td> <a href="#">Manually Edit</a> </td>
 	</tr>
 {% endfor %}
 </table>
+</div>
 {% endif %}
+
 {% endblock %}
