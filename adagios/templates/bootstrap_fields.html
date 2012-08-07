@@ -4,10 +4,10 @@
     {% for field in fields %}
         <!- Field {{ field.label }} -->
         <div class="control-group {% if field.errors %}error{% endif %} {% if field.required %}required{% endif %}">
-            <label class="control-label" for="{{ field.name }}">
+            <label class="control-label" for="{{ field.name }}" rel="tooltip" title="{{ field.help_text }}">
                 {{ field.label }}
             </label>
-            <div class="controls" id="{{ field.name }}_field" rel="tooltip" title="{{ field.help_text }}">
+            <div class="controls" id="{{ field.name }}_field">
                 {{ field }}
                 {% for err in field.errors %}
                     <p class="help-inline error">{{ err }}</p>

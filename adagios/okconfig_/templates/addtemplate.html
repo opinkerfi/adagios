@@ -4,35 +4,7 @@
 {% block largeheader %}Template{% endblock %}
 
 {% block footer %}
-    <script src="{% url media path="chosen/chosen.jquery.js" %}" type="text/javascript"></script>
-
-    <script>
-        $('select').chosen();
-        $('select#id_template_name').change(function() {
-            $.getJSON('{% url rest/pynag %}json/get_objects',
-                    {
-                        object_type: 'service',
-                        name__startswith: 'okc-' + $(this).val() + '-',
-                        with_fields: 'service_description'
-                    },
-                    function(data) {
-                        $('#template_services').html('');
-                        var sorted = data.slice(0).sort(function(a, b) {
-                            return a - b;
-                        })
-                        $.each(sorted, function(k, s) {
-                            if (s['service_description'] != "null" &&
-                                    s['service_description'] != "none" &&
-                                    s['service_description'] != "null") {
-                                $('#template_services').append('"' + s['service_description'] + "'<br/>");
-                            }
-
-                        });
-                    }
-            );
-        });
-
-    </script>
+    {{ block.super }}
 {% endblock %}
 
 {% block content %}
@@ -43,7 +15,5 @@
         </div>
     </form>
     <div id="template_services">
-
     </div>
-
 {% endblock %}

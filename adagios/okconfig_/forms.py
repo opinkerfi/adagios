@@ -65,7 +65,7 @@ class AddTemplateForm(forms.Form):
     force = forms.BooleanField(required=False, help_text="Overwrites templates if they already exist")
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['templates'] = map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates() )
+        self.fields['template_name'].choices = map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates() )
     def clean(self):
         result = super(AddTemplateForm, self).clean()
         cleaned_data = self.cleaned_data

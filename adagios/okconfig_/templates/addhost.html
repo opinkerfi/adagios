@@ -17,9 +17,9 @@
 
 
 {% block footer %}
-    <script src="{% url media path="chosen/chosen.jquery.js" %}" type="text/javascript"></script>
+    {{ block.super }}
+    <!-- DNS lookup for the address field -->
     <script>
-
         $('select').chosen();
         $('#id_host_name').focusout(function() {
             if ($('#id_address').val() == "") {
@@ -33,7 +33,6 @@
                 );
             }
         });
-
-
     </script>
+
 {% endblock %}
