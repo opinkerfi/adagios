@@ -336,7 +336,7 @@ def show_plugins(request):
     c['existing_plugins'] = existing_plugins
     return render_to_response('show_plugins.html', c, context_instance = RequestContext(request))
 
-def view_nagios_cfg(request):
+def edit_nagios_cfg(request):
     c = {'filename': Model.config.cfg_file, 'content': Model.config.maincfg_values}
     c['content'].sort()
     return render_to_response('edit_configfile.html', c, context_instance = RequestContext(request))
