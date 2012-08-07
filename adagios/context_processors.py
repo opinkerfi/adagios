@@ -1,4 +1,5 @@
 
+
 def resolve_urlname(request):
     """Allows us to see what the matched urlname for this
     request is within the template"""
@@ -6,6 +7,6 @@ def resolve_urlname(request):
     try:
         res = resolve(request.path)
         if res:
-            return {'urlname' : res.url_name}
-    except:
+            return {'urlname': res.url_name}
+    except Exception:
         return {}
