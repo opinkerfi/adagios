@@ -1,0 +1,47 @@
+{% extends "edit_object.html" %}
+{% block title %}{{  block.super }}{% endblock %}
+
+{% block head %}{{ block.super }} {% endblock %}
+
+{% block footer %}{{ block.super }}{% endblock %}
+
+{% block sidebar %}{{ block.super }}{% endblock %}
+
+{% block content %}
+    {% if my_object %}
+        <!-- wrapper for scrollable items -->
+        <ul class="nav nav-tabs" id="objecttab">
+            <li><a href="#general" data-toggle="tab">General</a></li>
+        </ul>
+        <form class="form-horizontal" action="#" method="POST">
+            {% csrf_token %}
+            <div class="tab-content">
+
+                <div class="tab-pane" id="general">
+                    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+
+                        <label class="control-label" for="command_name" rel="tooltip" title="{{ form.command_name.label }}" data-content="{{ form.command_name.help_text }}">{{ form.command_name.label }}</label>
+                        <div class="controls"> <!-- class inherited -->
+                            {{ form.command_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
+                        </div>
+
+                        <label class="control-label" for="command_line" rel="tooltip" title="{{ form.command_line.label }}" data-content="{{ form.command_line.help_text }}">{{ form.command_line.label }}</label>
+                        <div class="controls"> <!-- class inherited -->
+                            {{ form.command_line }} <!-- <i class="glyph-more-windows"></i> Inherited -->
+                        </div>
+
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div> <!-- End of general tab -->
+
+            </div>
+        </form>
+
+    {% else %}
+        <p>Object not found </p>
+    {% endif %}
+
+{% endblock content %}

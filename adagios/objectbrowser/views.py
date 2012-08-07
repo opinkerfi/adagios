@@ -35,12 +35,7 @@ from adagios import settings
 from forms import *
 
 from log import *
-
-try:
-    # Hook up git event handler
-    Model.eventhandlers.append(Model.EventHandlers.GitEventHandler(dirname(Model.cfg_file), 'adagios', 'tommi'))
-except Exception, e:
-    pass
+import adagios
 
 def home(request):
     return redirect('adagios')
@@ -143,7 +138,7 @@ def advanced_edit(request, object_id):
         return render_to_response('error.html', c, context_instance = RequestContext(request))
 
     if request.method == 'POST':
-        "User is posting data into our form "
+        # User is posting data into our form
         c['advanced_form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST, simple=True )
         if c['advanced_form'].is_valid():
             c['advanced_form'].save()
@@ -212,17 +207,32 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
     try: c['effective_parents'] = o.get_effective_parents()
     except KeyError, e: c['errors'].append( "Could not find parent: %s" % str(e))
 
-    # Some type of objects get a little special treatment:
-    if o['object_type'] == 'host':
-        return _edit_host(request, c)
+    # Every object type has some special treatment, so lets resort
+    # to appropriate helper function
+    if False:
+        pass
+    elif o['object_type'] == 'servicegroup':
+        return _edit_servicegroup(request, c)
+    elif o['object_type'] == 'hostdependency':
+        return _edit_hostdependency(request, c)
     elif o['object_type'] == 'service':
         return _edit_service(request, c)
+    elif o['object_type'] == 'contactgroup':
+        return _edit_contactgroup(request, c)
+    elif o['object_type'] == 'hostgroup':
+        return _edit_hostgroup(request, c)
+    elif o['object_type'] == 'host':
+        return _edit_host(request, c)
     elif o['object_type'] == 'contact':
         return _edit_contact(request, c)
+    elif o['object_type'] == 'command':
+        return _edit_command(request, c)
+    elif o['object_type'] == 'servicedependency':
+        return _edit_servicedependency(request, c)
     elif o['object_type'] == 'timeperiod':
-        return render_to_response('edit_timeperiod.html', c, context_instance = RequestContext(request))
-
-    return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
+        return _edit_timeperiod(request, c)
+    else:
+        return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
 
 def _edit_contactgroup( request, c):
     """ This is a helper function to edit_object """
@@ -253,8 +263,28 @@ def _edit_service( request, c):
     try: c['effective_contactgroups'] = service.get_effective_contact_groups()
     except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
 
-
     return render_to_response('edit_service.html', c, context_instance = RequestContext(request))
+
+def _edit_contactgroup( request, c):
+    """ This is a helper function to edit_object """
+    return render_to_response('edit_contactgroup.html', c, context_instance = RequestContext(request))
+def _edit_hostgroup( request, c):
+    """ This is a helper function to edit_object """
+    return render_to_response('edit_hostgroup.html', c, context_instance = RequestContext(request))
+def _edit_servicegroup( request, c):
+    """ This is a helper function to edit_object """
+    return render_to_response('edit_servicegroup.html', c, context_instance = RequestContext(request))
+def _edit_command( request, c):
+    """ This is a helper function to edit_object """
+    return render_to_response('edit_command.html', c, context_instance = RequestContext(request))
+def _edit_hostdependency( request, c):
+    """ This is a helper function to edit_object """
+    return render_to_response('edit_hostdepedency.html', c, context_instance = RequestContext(request))
+def _edit_timeperiod( request, c):
+    """ This is a helper function to edit_object """
+    return render_to_response('edit_timeperiod.html', c, context_instance = RequestContext(request))
+
+
 def _edit_host( request, c):
     """ This is a helper function to edit_object """
     host = c['my_object']

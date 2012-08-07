@@ -53,8 +53,18 @@ class PynagChoiceField(forms.MultipleChoiceField):
         self.data = kwargs.get('data')
         super(PynagChoiceField, self).__init__(*args, **kwargs)
     def clean(self,value):
-        return self.__prefix + ','.join(value)
+        """
+        Changes list into a comma separated string. Removes duplicates.
+        """
+        tmp = []
+        for i in value:
+            if i not in tmp:
+                tmp.append(i)
+        return self.__prefix + tmp
     def prepare_value(self, value):
+        """
+        Takes a comma separated string, removes + if it is prefixed so. Returns a list
+        """
         if type(value) == type(''):
             if value.startswith('+'): self.__prefix = '+'
             value = value.strip('+')
@@ -76,18 +86,24 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
         return mark_safe(output)
 
 class PynagForm(forms.Form):
-    register = forms.CharField(required=False,widget=PynagRadioWidget)
+    register = forms.CharField(required=False)
     name = forms.CharField(required=False, label="Object Name")
-    use = forms.CharField(required=False, label="Inherit Attributes From")
+    use = forms.CharField(required=False, label="Use")
     def clean(self):
         for k,v in self.cleaned_data.items():
             if k in MULTICHOICE_FIELDS and self.simple == False:
+                # Put the + back in there if needed
                 if self.pynag_object.get(k,'').startswith('+'):
                     v = self.cleaned_data[k] = "+%s"%(v)
+            # TODO: What are we doing in the following line?
             if k not in self.data.keys(): self.cleaned_data.pop(k)
+            # If value is empty and attribute was never defined to begin with
             elif k in self.undefined_attributes and v == '': self.cleaned_data.pop(k)
+            # If value is the same as it was before
             elif v == self.pynag_object[k]: self.cleaned_data.pop(k)
+            # If value is empty and pynag object is defines as None
             elif v == '' and self.pynag_object[k] is None: self.cleaned_data.pop(k)
+            # If we get here, something is supposed to be modified
             else:
                 self.cleaned_data[k] = smart_str(v)
         return self.cleaned_data
@@ -99,7 +115,7 @@ class PynagForm(forms.Form):
                 self.fields[k] = self.get_pynagField(k, css_tag="defined_attribute")
                 self.fields[k].value = v
         self.pynag_object.save()
-    def __init__(self, pynag_object, simple=False,show_defined_attributes=True,show_inherited_attributes=True,show_undefined_attributes=True, show_radiobuttons=True,*args, **kwargs):
+    def __init__(self, pynag_object, simple=False,*args, **kwargs):
         self.pynag_object = pynag_object
         self.simple = simple
         super(forms.Form,self).__init__(*args, **kwargs)
