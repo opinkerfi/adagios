@@ -105,7 +105,8 @@ INSTALLED_APPS = (
     'adagios.misc',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.resolve_urlname', 
+TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.resolve_urlname',
+    'adagios.context_processors.get_httpuser',
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
