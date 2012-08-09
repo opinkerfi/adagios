@@ -17,9 +17,9 @@
 			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 		    </ul>
-            <form class="form-horizontal" action="#" method="POST">
-            {% csrf_token %}
-                <div class="tab-content">
+            <div class="tab-content">
+                <form class="form-horizontal" action="#" method="POST">
+                    {% csrf_token %}
                     <div class="tab-pane" id="general">
                         <fieldset>
 
@@ -123,34 +123,20 @@
                             </div>
 
                     </div>
+            </form>
                     <div class="tab-pane" id="advanced">
-                        <form action="#" method="post">
-
-                            {% csrf_token %}
-                        	{% for field in form %}
-
-
-                            <fieldset>
-                                <label class="control-label" for="{{ field.name }}">{{ field.label }}{% if field.help %} <abbr rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}"><i class="icon-question-sign"></i></abbr> {% endif %}</label>
-                                <div class="controls" id="advanced_field">
-                                    {{ field }}
-                                </div>
-                            </fieldset>
-<!--
-                        	<div class="{{ field.field.widget.attrs.class }}">
-                        		<p><label> {{ field.label }} </label>
-                        		{{ field }} {{ field.errors }} {{ field.help_text }} </p>
-                        	</div> -->
-                        	{% endfor %}
+                        <!-- All Attributes -->
+                        <h2>All Attributes</h2>
+                        <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
+                            {% include "bootstrap_fields.html" with fields=advanced_form %}
                             <div class="form-actions">
-                                <button class="btn btn-primary" type="submit">Save changes</button>
-                                <button class="btn">Cancel</button>
+                                <button class="btn btn-primary" type="submit">Submit</button>
                             </div>
-                         </form>
+                        </form>
                     </div>
                 </div>
 
-            </form>
+
 
 {% else %}
 	<p>Object not found </p>

@@ -60,7 +60,8 @@ class PynagChoiceField(forms.MultipleChoiceField):
         for i in value:
             if i not in tmp:
                 tmp.append(i)
-        return self.__prefix + tmp
+        value = self.__prefix + ','.join(tmp)
+        return value
     def prepare_value(self, value):
         """
         Takes a comma separated string, removes + if it is prefixed so. Returns a list
@@ -90,35 +91,35 @@ class PynagForm(forms.Form):
     name = forms.CharField(required=False, label="Object Name")
     use = forms.CharField(required=False, label="Use")
     def clean(self):
-        for k,v in self.cleaned_data.items():
-            if k in MULTICHOICE_FIELDS and self.simple == False:
+        cleaned_data = super(self.__class__, self).clean()
+        for k,v in cleaned_data.items():
+            if k in MULTICHOICE_FIELDS:
                 # Put the + back in there if needed
                 if self.pynag_object.get(k,'').startswith('+'):
-                    v = self.cleaned_data[k] = "+%s"%(v)
-            # TODO: What are we doing in the following line?
-            if k not in self.data.keys(): self.cleaned_data.pop(k)
-            # If value is empty and attribute was never defined to begin with
-            elif k in self.undefined_attributes and v == '': self.cleaned_data.pop(k)
-            # If value is the same as it was before
-            elif v == self.pynag_object[k]: self.cleaned_data.pop(k)
-            # If value is empty and pynag object is defines as None
-            elif v == '' and self.pynag_object[k] is None: self.cleaned_data.pop(k)
-            # If we get here, something is supposed to be modified
-            else:
-                self.cleaned_data[k] = smart_str(v)
-        return self.cleaned_data
+                    v = cleaned_data[k] = "+%s"%(v)
+        return cleaned_data
     def save(self):
-        for k,v in self.cleaned_data.items():
-            k,v = str(k), str(v)
-            if self.pynag_object[k] != v:
-                self.pynag_object[k] = v
-                self.fields[k] = self.get_pynagField(k, css_tag="defined_attribute")
-                self.fields[k].value = v
+        for k in self.changed_data:
+            # Ignore fields that did not appear in the POST at all
+            if k not in self.data and k not in MULTICHOICE_FIELDS:
+                continue
+            # If value is empty, we assume it is to be removed
+            value = self.cleaned_data[k]
+            if value == '':
+                value = None
+            # Sometimes attributes slide in changed_data without having
+            # been modified, lets ignore those
+            if self.pynag_object[k] == value:
+                continue
+            # If we reach here, it is save to modify our pynag object.
+            self.pynag_object[k] = value
+            # Additionally, update the field for the return form
+            self.fields[k] = self.get_pynagField(k, css_tag="defined_attribute")
+            self.fields[k].value = value
         self.pynag_object.save()
-    def __init__(self, pynag_object, simple=False,*args, **kwargs):
+    def __init__(self, pynag_object ,*args, **kwargs):
         self.pynag_object = pynag_object
-        self.simple = simple
-        super(forms.Form,self).__init__(*args, **kwargs)
+        super(self.__class__,self).__init__(*args, **kwargs)
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
         defined_attributes = sorted( self.pynag_object._defined_attributes.keys() )
@@ -132,10 +133,7 @@ class PynagForm(forms.Form):
             self.undefined_attributes.append( i )
         # Find out which attributes to show
         for field_name in defined_attributes + inherited_attributes + self.undefined_attributes:
-            if self.simple:
-                self.fields[field_name] = self.get_pynagField(field_name)
-            else:
-                self.fields[field_name] = self.get_pynagField(field_name)
+            self.fields[field_name] = self.get_pynagField(field_name)
         return
     def get_pynagField(self, field_name, css_tag=""):
         """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
@@ -143,11 +141,13 @@ class PynagForm(forms.Form):
         object_type = self.pynag_object['object_type']
         definitions = object_definitions.get( object_type ) or {}
         options = definitions.get(field_name) or {}
-        
-        # Find out what type of field to create from the field_name
-        # If this is the advanved_edit form, then all fields are charfields
-        if self.simple == True:
-            field = forms.CharField()
+
+        # Find out what type of field to create from the field_name.
+        # Lets assume charfield in the beginning
+        field = forms.CharField()
+
+        if False == True:
+            pass
         elif field_name in ('contact_groups','contactgroups','contactgroup_members'):
                 all_groups = Model.Contactgroup.objects.filter(contactgroup_name__contains="")
                 choices = map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups)
@@ -180,10 +180,7 @@ class PynagForm(forms.Form):
             field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':
             field = forms.CharField(widget=PynagRadioWidget)
-        else:
-            # Fallback to a default charfield
-            field = forms.CharField()
-        
+
         # No prettyprint for macros
         if field_name.startswith('_'):
             field.label = field_name
@@ -210,7 +207,46 @@ class PynagForm(forms.Form):
             field.css_tag = ''
         field.widget.attrs['class'] += " " + css_tag 
         field.css_tag += " " + css_tag
-        
+
+
+class AdvancedEditForm(forms.Form):
+    """ A form for pynag.Model.Objectdefinition
+
+    This form will display a charfield for every attribute of the objectdefinition
+
+    "Every" attribute means:
+    * Every defined attribute
+    * Every inherited attribute
+    * Every attribute that is defined in nagios object definition html
+
+    """
+    register = forms.CharField(required=False)
+    name = forms.CharField(required=False, label="Object Name")
+    use = forms.CharField(required=False, label="Use")
+    __prefix = "advanced" # This prefix will go on every field
+    def save(self):
+        for k in self.changed_data:
+            value = self.cleaned_data[k]
+            # same as original, lets ignore that
+            if self.pynag_object[k] == value:
+                continue
+            if value == '':
+                value = None
+
+            # If we reach here, it is save to modify our pynag object.
+            self.pynag_object[k] = value
+        self.pynag_object.save()
+    def __init__(self, pynag_object ,*args, **kwargs):
+        self.pynag_object = pynag_object
+        super(self.__class__,self).__init__(*args, prefix=self.__prefix, **kwargs)
+
+        # Lets find out what attributes to create
+        object_type = pynag_object['object_type']
+        all_attributes = sorted( object_definitions.get(object_type).keys() )
+        for field_name in self.pynag_object.keys() + all_attributes:
+            if field_name == 'meta': continue
+            self.fields[field_name] = forms.CharField(required=False,label=field_name)
+
 class GeekEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
     def __init__(self,pynag_object=None, *args,**kwargs):

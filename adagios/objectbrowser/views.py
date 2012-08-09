@@ -88,7 +88,10 @@ def list_object_types(request):
                 else:
                     active += 1
             c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
-    c['gitlog'] = gitlog(dirname(Model.cfg_file or Model.config.cfg_file))
+    try:
+        c['gitlog'] = gitlog(dirname(Model.cfg_file or Model.config.cfg_file))
+    except Exception:
+        c['gitlog'] = None
     return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
 def geek_edit( request, object_id ):
@@ -107,8 +110,6 @@ def geek_edit( request, object_id ):
         c['error_summary'] = 'Unable to find object'
         c['error'] = e
         return render_to_response('error.html', c, context_instance = RequestContext(request))
-
-    
     if request.method == 'POST':
         # Manual edit of the form
         form = GeekEditObjectForm(data=request.POST, pynag_object=o)
@@ -116,10 +117,11 @@ def geek_edit( request, object_id ):
             form.save()
             m.append("Object Saved manually to '%s'" % o['filename'])
         else:
-            m.append( "Failed to save object")
+            c['errors'].append( "Problem with saving object")
     else:
         form = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
 
+    c['geek_edit'] = form
     # Lets return the user to the general edit_object form
     return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
 
@@ -132,6 +134,7 @@ def advanced_edit(request, object_id):
     # Get our object
     try:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
+        c['my_object'] = o
     except Exception, e:
         c['error_summary'] = 'Unable to get object'
         c['error'] = e
@@ -139,14 +142,15 @@ def advanced_edit(request, object_id):
 
     if request.method == 'POST':
         # User is posting data into our form
-        c['advanced_form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST, simple=True )
+        c['advanced_form'] = AdvancedEditForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
         if c['advanced_form'].is_valid():
             c['advanced_form'].save()
             m.append("Object Saved to %s" % o['filename'])
         else:
             c['errors'].append( "Problem reading form input")
+            return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
 
-    return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[o.get_id()] ) )
+    return HttpResponseRedirect( reverse('edit_object', args=[o.get_id()] ) )
 
 def edit_object( request, object_id=None, object_type=None, shortname=None):
     """ View details about one specific pynag object """
@@ -197,7 +201,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
         c['form'] = PynagForm( pynag_object=o, initial=o._original_attributes )
     c['my_object'] = o
     c['geek_edit'] = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
-    c['advanced_form'] = PynagForm( pynag_object=o, initial=o._original_attributes, simple=True )
+    c['advanced_form'] = AdvancedEditForm( pynag_object=o, initial=o._original_attributes )
 
 
     try: c['effective_hosts'] = o.get_effective_hosts()

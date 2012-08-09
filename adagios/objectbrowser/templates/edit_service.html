@@ -17,11 +17,11 @@
             <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
             <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
         </ul>
-        <form class="form-horizontal" action="#" method="POST">
-            {% csrf_token %}
-            <div class="tab-content">
+        <div class="tab-content">
+
+
                 <div class="tab-pane" id="general">
-                    <fieldset>
+                    <form class="form-horizontal" action="#" method="POST">{% csrf_token %}        <fieldset>
 
                         <label class="control-label" for="host_name" rel="tooltip" title="{{ form.host_name.label }}" data-content="eg web01.example.com">{{ form.host_name.label }}</label>
                         <div class="controls"> <!-- class inherited -->
@@ -109,7 +109,6 @@
                     </div>
                 </div>
 
-
                 <div class="tab-pane" id="notifications">
                     <fieldset>
 
@@ -150,17 +149,18 @@
                     </div>
                 </div>
 
+            </form>
 
                 <div class="tab-pane" id="advanced">
-                    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                    <form action="{%  url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                         {% include "bootstrap_fields.html" with fields=advanced_form %}
                         <div class="form-actions">
                             <button class="btn btn-primary" type="submit">Submit</button>
                         </div>
                     </form>
                 </div>
-            </div>
-        </form>
+        </div>
+
     {% else %}
         <p>Object not found </p>
     {% endif %}
