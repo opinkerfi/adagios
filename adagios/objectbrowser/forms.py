@@ -87,9 +87,6 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
         return mark_safe(output)
 
 class PynagForm(forms.Form):
-    register = forms.CharField(required=False)
-    name = forms.CharField(required=False, label="Object Name")
-    use = forms.CharField(required=False, label="Use")
     def clean(self):
         cleaned_data = super(self.__class__, self).clean()
         for k,v in cleaned_data.items():
@@ -125,6 +122,7 @@ class PynagForm(forms.Form):
         defined_attributes = sorted( self.pynag_object._defined_attributes.keys() )
         inherited_attributes = sorted( self.pynag_object._inherited_attributes.keys() )
         all_attributes = sorted( object_definitions.get(object_type).keys() )
+        all_attributes += ['name','use','register']
         # Calculate what attributes are "undefined"
         self.undefined_attributes = []
         for i in all_attributes:
@@ -150,32 +148,32 @@ class PynagForm(forms.Form):
             pass
         elif field_name in ('contact_groups','contactgroups','contactgroup_members'):
                 all_groups = Model.Contactgroup.objects.filter(contactgroup_name__contains="")
-                choices = map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups)
+                choices = sorted( map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups) )
                 field = PynagChoiceField(choices=choices)
         elif field_name == 'use':
             all_objects = self.pynag_object.objects.filter(name__contains='')
-            choices = sorted( map(lambda x: (x.name, x.name), all_objects) )
-            field = PynagChoiceField(choices=choices)
+            choices = map(lambda x: (x.name, x.name), all_objects)
+            field = PynagChoice1Field(choices=sorted(choices))
         elif field_name == 'servicegroups':
             all_groups = Model.Servicegroup.objects.filter(servicegroup_name__contains='')
             choices = map(lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
-            field = PynagChoiceField(choices=choices)
+            field = PynagChoiceField(choices=sorted(choices))
         elif field_name == 'hostgroups':
             all_groups = Model.Hostgroup.objects.filter(hostgroup_name__contains='')
             choices = map(lambda x: (x.hostgroup_name, x.hostgroup_name), all_groups)
-            field = PynagChoiceField(choices=choices)
+            field = PynagChoiceField(choices=sorted(choices))
         elif field_name in ('contacts','members'):
             all = Model.Contact.objects.filter(contact_name__contains='')
-            choices = sorted( map(lambda x: (x.contact_name, x.contact_name), all) )
-            field = PynagChoiceField(choices=choices)
+            choices = map(lambda x: (x.contact_name, x.contact_name), all)
+            field = PynagChoiceField(choices=sorted(choices))
         elif field_name.endswith('_period'):
             all = Model.Timeperiod.objects.filter(timeperiod_name__contains='')
             choices = map(lambda x: (x.timeperiod_name, x.timeperiod_name), all)
-            field = forms.ChoiceField(choices=choices)
+            field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_commands'):
             all = Model.Command.objects.filter(command_name__contains='')
             choices = map(lambda x: (x.command_name, x.command_name), all)
-            field = forms.ChoiceField(choices=choices)            
+            field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_options'):
             field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':

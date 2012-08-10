@@ -17,9 +17,9 @@
 			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 		    </ul>
+        <form class="form-horizontal" action="#" method="POST">
+            {% csrf_token %}
             <div class="tab-content">
-                <form class="form-horizontal" action="#" method="POST">
-                    {% csrf_token %}
                     <div class="tab-pane" id="general">
                         <fieldset>
 
@@ -98,6 +98,7 @@
                             <div class="controls">
                                 {{ form.host_notifications_enabled }}
                             </div>
+
                             <label class="control-label" for="host_notification_commands" rel="tooltip" title="{{ form.host_notification_commands.label }}" data-content="eg 1 or 0">{{ form.host_notification_commands.label }}</label>
                             <div class="controls">
                                 {{ form.host_notification_commands }}

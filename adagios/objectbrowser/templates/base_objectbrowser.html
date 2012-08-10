@@ -128,6 +128,7 @@
             <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
+    {% if my_object %}
     <div class="modal hide fade" id="geek_edit">
         <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
             <div class="modal-header">
@@ -147,6 +148,7 @@
             </div>
         </form>
     </div>
+    {% endif %}
 {% endblock %}
 
 
