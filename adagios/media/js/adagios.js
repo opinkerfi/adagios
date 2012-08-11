@@ -94,6 +94,9 @@ function ob_run_check_command() {
 
             // Assign this command to the newly shown refresh button
             $('#run_check_plugin_refresh').click(ob_run_check_command);
+        }).error(function (jqXHR) {
+            /* TODO - fix this to a this style */
+            alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
         });
     // Stop the button from POST'ing
     return false;

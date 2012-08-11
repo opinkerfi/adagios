@@ -101,7 +101,7 @@
         </ul>
     {% endif %}
 
-    <div class="modal hide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}">
+    <div class="modal hide wide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}">
         <div class="modal-header">
             <h3>Run Check Plugin</h3>
             <dl class="dl-horizontal">
@@ -167,40 +167,13 @@
             $('#notifications select').chosen();
             $('#monitoring select').chosen();
 
-        });
-        function run_check_command() {
-            $.getJSON("/rest/pynag/json/run_check_command",
-                    {
-                        object_id: '{{my_object.id}}'
-                    },
-                    function(data) {
-                        var statusLabel = 'label-inverse';
-                        var statusString = 'Unknown';
-                        if (data[0] == 2) {
-                            statusLabel = 'label-important';
-                            statusString = 'Critical';
-                        }
-                        if (data[0] == 1) {
-                            statusLabel = 'label-warning';
-                            statusString = 'Warning';
-                        }
-                        if (data[0] == 0) {
-                            statusLabel = 'label-success';
-                            statusString = 'OK';
-                        }
-                        $('#run_check_plugin div.modal-body').html('<div class="row-fluid"><span class="span2">Status:</span><span class="span2 label ' + statusLabel + '">' + statusString + '</span></div><div class="row-fluid"><span class="span2">Plugin Output:</span><span class="span2">' + data[1] + '</span></div>');
-                        $('#run_check_plugin_refresh').show();
-                    }
 
-            );
-        }
-        $('#run_check_plugin_refresh').click(function() {
-            $('#run_check_plugin div.modal-body').html('Rerunning plugin');
-            run_check_command();
-            return false;
-        });
-        $('#run_check_plugin').on('show', function () {
-            run_check_command();
+            $('#run_check_plugin_refresh').click(function() {
+                $('#run_check_plugin div.modal-body').html('Rerunning plugin');
+                ob_run_check_command();
+                return false;
+            });
+            $('#run_check_plugin').on('show', ob_run_check_command);
         });
     </script>
 {%  endblock %}

@@ -172,24 +172,4 @@
 
 
 
-{% block footer %}
-    <script src="{% url media path="chosen/chosen.jquery.js" %}" type="text/javascript"></script>
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-
-        $('#objecttab a:first').tab('show');
-        $(document).ready(function() {
-            // Popovers
-            $("[rel=tooltip]").popover();
-            $("#popover").popover();
-
-            // Use chosen dropdowns for everything but the Advanced tab
-            $('#general select').chosen();
-            $('#notifications select').chosen();
-            $('#monitoring select').chosen();
-
-            // run_check_plugin
-            $('#run_check_plugin').on('show', ob_run_check_command);
-        });
-
-    </script>
-{%  endblock %}
+{% block footer %}{{ block.super }}{%  endblock %}
