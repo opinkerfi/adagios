@@ -2,7 +2,7 @@
 {# Usage: {% include "boostrap_snippet.html" with fields=my_form %} #}
 <fieldset>
     {% for field in fields %}
-        <!- Field {{ field.label }} -->
+        <!-- Field {{ field.label }} -->
         <div class="control-group {% if field.errors %}error{% endif %} {% if field.required %}required{% endif %}">
             <label class="control-label" for="{{ field.name }}" rel="tooltip" title="{{ field.help_text }}">
                 {{ field.label }}
