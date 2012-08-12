@@ -274,6 +274,23 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
         $('#run_check_plugin #state').html("Pending");
         $('#run_check_plugin #output pre').html("Executing check plugin");
 
+
+        var plugin_execution_time = $("#run_check_plugin div.progress").attr('data-timer');
+        if (plugin_execution_time > 1) {
+            $("#run_check_plugin div.progress").show();
+            var bar = $("#run_check_plugin div.bar");
+            var step = 0;
+            var steps = (plugin_execution_time / 20) * 100;
+            function updateTimer() {
+                step += 1;
+                $("#run_check_plugin div.bar").css('width', step * 5 + "%");
+                if (step < 20) {
+                    setTimeout(updateTimer, step * steps);
+                }
+            }
+            updateTimer();
+        }
+
         // Run the command and fetch the output JSON via REST
         $.getJSON(BASE_URL + "rest/pynag/json/run_check_command",
             {
@@ -303,17 +320,18 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
 
                 // Put the plugin output in the correct div
                 if (data[1]) {
-                    $('#run_check_plugin div#output pre').html(data[1]);
+                    $('#run_check_plugin div#output pre').text(data[1]);
                 } else {
                     $('#run_check_plugin #output pre').html("No data received on stdout");
                 }
 
                 if (data[2]) {
-                    $('#run_check_plugin #error pre').html(data[2]);
+                    $('#run_check_plugin #error pre').text(data[2]);
                     $('#run_check_plugin div#error').show();
                 }
                 // Show the refresh button
                 $('#run_check_plugin_refresh').show();
+                $("#run_check_plugin div.progress").hide();
 
                 // Assign this command to the newly shown refresh button
                 $('#run_check_plugin_refresh').click(function() {

@@ -30,6 +30,7 @@ from os.path import dirname
 from pynag.Model import ObjectDefinition
 from pynag import Model
 from pynag.Model import EventHandlers
+from pynag.Parsers import status
 
 from adagios import settings
 from forms import *
@@ -257,6 +258,9 @@ def _edit_service( request, c):
     service = c['my_object']
     c['command_line'] = service.get_effective_command_line()
     c['object_macros'] = service.get_all_macros()
+    s = status()
+    s.parse()
+    c['status'] = s.get_servicestatus(service['host_name'], service['service_description'])
 
     try: c['effective_servicegroups'] = service.get_effective_servicegroups()
     except KeyError, e: c['errors'].append( "Could not find servicegroup: %s" % str(e))
