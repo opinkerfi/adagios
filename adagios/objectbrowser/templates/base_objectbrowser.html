@@ -168,12 +168,14 @@
             $('#monitoring select').chosen();
 
 
-            $('#run_check_plugin_refresh').click(function() {
-                $('#run_check_plugin div.modal-body').html('Rerunning plugin');
-                ob_run_check_command();
+            $('#run_check_plugin_refresh').click(function(e) {
+                $('#run_check_plugin div#output pre').html('Rerunning plugin');
+                $(this).adagios_ob_run_check_command();
                 return false;
             });
-            $('#run_check_plugin').on('show', ob_run_check_command);
+            $('#run_check_plugin').on('show', function() {
+                $(this).adagios_ob_run_check_command();
+            });
         });
     </script>
 {%  endblock %}

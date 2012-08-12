@@ -30,77 +30,7 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
     "sSortable": "header"
 } );
 
-/*
- Object Browser, This runs whenever "Run Check Plugin" is clicked
 
- It resets the color of the OK/WARNING/CRITICAL/UNKNOWN button
- Runs a REST call to run the check_command and fetch the results
-
- Calling button/href needs to have data-object-id="12312abc...."
- */
-function ob_run_check_command() {
-    // Fetch the calling object
-    var modal = $(this);
-    // Get the object_id
-    var id = modal.attr('data-object-id');
-
-    // Reset the class on the button
-    $('#run_check_plugin #state').removeClass("label-important");
-    $('#run_check_plugin #state').removeClass("label-warning");
-    $('#run_check_plugin #state').removeClass("label-success");
-    $('#run_check_plugin #state').html("Pending");
-    $('#run_check_plugin #output pre').html("Executing check plugin");
-
-    // Run the command and fetch the output JSON via REST
-    $.getJSON(BASE_URL + "rest/pynag/json/run_check_command",
-        {
-            object_id: id
-        },
-        function(data) {
-            // Default to unknown if data[0] is less than 3
-            var statusLabel = 'label-inverse';
-            var statusString = 'Unknown';
-            if (data[0] == 2) {
-                statusLabel = 'label-important';
-                statusString = 'Critical';
-            }
-            if (data[0] == 1) {
-                statusLabel = 'label-warning';
-                statusString = 'Warning';
-            }
-            if (data[0] == 0) {
-                statusLabel = 'label-success';
-                statusString = 'OK';
-            }
-            // Set the correct class for state coloring box
-            $('#run_check_plugin #state').addClass(statusLabel);
-
-            // Fill it up with the correct status
-            $('#run_check_plugin #state').html(statusString);
-
-            // Put the plugin output in the correct div
-            if (data[1]) {
-                $('#run_check_plugin div#output pre').html(data[1]);
-            } else {
-                $('#run_check_plugin #output pre').html("No data received on stdout");
-            }
-
-            if (data[2]) {
-                $('#run_check_plugin #error pre').html(data[2]);
-                $('#run_check_plugin div#error').show();
-            }
-            // Show the refresh button
-            $('#run_check_plugin_refresh').show();
-
-            // Assign this command to the newly shown refresh button
-            $('#run_check_plugin_refresh').click(ob_run_check_command);
-        }).error(function (jqXHR) {
-            /* TODO - fix this to a this style */
-            alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
-        });
-    // Stop the button from POST'ing
-    return false;
-}
 
 (function( $ ) {
 
@@ -318,4 +248,82 @@ function ob_run_check_command() {
         ]);
         //return this.each(function() {
     };
+    /*
+     Object Browser, This runs whenever "Run Check Plugin" is clicked
+
+     It resets the color of the OK/WARNING/CRITICAL/UNKNOWN button
+     Runs a REST call to run the check_command and fetch the results
+
+     Calling button/href needs to have data-object-id="12312abc...."
+     */
+
+    $.fn.adagios_ob_run_check_command = function() {
+        // Fetch the calling object
+        var modal = $(this);
+        // Get the object_id
+        var id = modal.attr('data-object-id');
+
+        if (! id) {
+            alert("Error, no data-object-id for run command");
+            return false;
+        }
+        // Reset the class on the button
+        $('#run_check_plugin #state').removeClass("label-important");
+        $('#run_check_plugin #state').removeClass("label-warning");
+        $('#run_check_plugin #state').removeClass("label-success");
+        $('#run_check_plugin #state').html("Pending");
+        $('#run_check_plugin #output pre').html("Executing check plugin");
+
+        // Run the command and fetch the output JSON via REST
+        $.getJSON(BASE_URL + "rest/pynag/json/run_check_command",
+            {
+                object_id: id
+            },
+            function(data) {
+                // Default to unknown if data[0] is less than 3
+                var statusLabel = 'label-inverse';
+                var statusString = 'Unknown';
+                if (data[0] == 2) {
+                    statusLabel = 'label-important';
+                    statusString = 'Critical';
+                }
+                if (data[0] == 1) {
+                    statusLabel = 'label-warning';
+                    statusString = 'Warning';
+                }
+                if (data[0] == 0) {
+                    statusLabel = 'label-success';
+                    statusString = 'OK';
+                }
+                // Set the correct class for state coloring box
+                $('#run_check_plugin #state').addClass(statusLabel);
+
+                // Fill it up with the correct status
+                $('#run_check_plugin #state').html(statusString);
+
+                // Put the plugin output in the correct div
+                if (data[1]) {
+                    $('#run_check_plugin div#output pre').html(data[1]);
+                } else {
+                    $('#run_check_plugin #output pre').html("No data received on stdout");
+                }
+
+                if (data[2]) {
+                    $('#run_check_plugin #error pre').html(data[2]);
+                    $('#run_check_plugin div#error').show();
+                }
+                // Show the refresh button
+                $('#run_check_plugin_refresh').show();
+
+                // Assign this command to the newly shown refresh button
+                $('#run_check_plugin_refresh').click(function() {
+                    $(this).adagios_ob_run_check_command();
+                });
+            }).error(function (jqXHR) {
+                /* TODO - fix this to a this style */
+                alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
+            });
+        // Stop the button from POST'ing
+        return this;
+    }
 })( jQuery );
