@@ -6,6 +6,24 @@
 
 {% block sidebar %}{{ block.super }}{% endblock %}
 
+{% block adagios_hausinn %}
+
+        {{ block.super }}
+
+        {% if status %}
+            <div class="row-fluid">
+                <!-- offset don't work on fluid grid system for now -->
+                <div class="span1"><div class="servicestate label
+                {% if status.current_state == "0" %}label-success{% elif status.current_state == "1" %}label-warning{% elif status.current_state == "2" %}label-important{% else %}label-inverse{% endif %}
+                " id="state">{{ status_text }}</div></div>
+                <div class="span11"><div class="label label-inverse">{{ status.plugin_output}}</div></div>
+            </div>
+
+        {% endif %}
+
+
+
+{% endblock %}
 
 {% block content %}
 

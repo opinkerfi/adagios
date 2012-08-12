@@ -258,9 +258,22 @@ def _edit_service( request, c):
     service = c['my_object']
     c['command_line'] = service.get_effective_command_line()
     c['object_macros'] = service.get_all_macros()
-    s = status()
-    s.parse()
-    c['status'] = s.get_servicestatus(service['host_name'], service['service_description'])
+    # Get the current status from Nagios
+    try:
+        s = status()
+        s.parse()
+        c['status'] = s.get_servicestatus(service['host_name'], service['service_description'])
+        current_state = c['status']['current_state']
+        if current_state == "0":
+            c['status_text'] = 'OK'
+        elif current_state == "1":
+            c['status_text'] = 'Warning'
+        elif current_state == "2":
+            c['status_text'] = 'Critical'
+        else:
+            c['status_text'] = 'Unknown'
+    except Exception:
+        pass
 
     try: c['effective_servicegroups'] = service.get_effective_servicegroups()
     except KeyError, e: c['errors'].append( "Could not find servicegroup: %s" % str(e))
