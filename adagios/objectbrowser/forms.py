@@ -178,6 +178,12 @@ class PynagForm(forms.Form):
             field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':
             field = forms.CharField(widget=PynagRadioWidget)
+            # Set wider inputs in form
+            self.add_css_tag(field=field, css_tag="span11")
+        else:
+            # Set wider inputs in form
+            self.add_css_tag(field=field, css_tag="span11")
+        # TODO, select fields are still not wide enough
 
         # No prettyprint for macros
         if field_name.startswith('_'):
@@ -185,7 +191,7 @@ class PynagForm(forms.Form):
         
         # If any CSS tag was given, add it to the widget
         self.add_css_tag(field=field, css_tag=css_tag)
-        
+
         if options.has_key('required'):
             self.add_css_tag(field=field, css_tag=options['required'])
             field.required = options['required'] == 'required'
