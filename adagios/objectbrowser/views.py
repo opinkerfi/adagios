@@ -265,13 +265,17 @@ def _edit_service( request, c):
         c['status'] = s.get_servicestatus(service['host_name'], service['service_description'])
         current_state = c['status']['current_state']
         if current_state == "0":
-            c['status_text'] = 'OK'
+            c['status']['text'] = 'OK'
+            c['status']['css_label'] = 'label-success'
         elif current_state == "1":
-            c['status_text'] = 'Warning'
+            c['status']['text'] = 'Warning'
+            c['status']['css_label'] = 'label-warning'
         elif current_state == "2":
-            c['status_text'] = 'Critical'
+            c['status']['text'] = 'Critical'
+            c['status']['css_label'] = 'label-important'
         else:
-            c['status_text'] = 'Unknown'
+            c['status']['text'] = 'Unknown'
+            c['status']['css_label'] = 'label-inverse'
     except Exception:
         pass
 

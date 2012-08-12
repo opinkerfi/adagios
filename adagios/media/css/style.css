@@ -165,3 +165,8 @@ a.inactive {
 div.label.servicestate {
     width: 100px;
 }
+
+/* Disable overflow in twitter bootstrap tabs */
+.tab-content {
+    overflow: hidden;
+}
