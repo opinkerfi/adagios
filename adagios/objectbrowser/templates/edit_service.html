@@ -33,12 +33,10 @@
             <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
             <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
         </ul>
-        <div class="tab-content">
-
-
+        <form class="form-horizontal" action="#" method="POST">{% csrf_token %}
+            <div class="tab-content">
                 <div class="tab-pane" id="general">
-                    <form class="form-horizontal" action="#" method="POST">{% csrf_token %}        <fieldset>
-
+                    <fieldset>
                         <label class="control-label" for="host_name" rel="tooltip" title="{{ form.host_name.label }}" data-content="eg web01.example.com">{{ form.host_name.label }}</label>
                         <div class="controls"> <!-- class inherited -->
                             {{ form.host_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
@@ -163,27 +161,23 @@
                         <button class="btn btn-primary" type="submit">Save changes</button>
                         <button class="btn">Cancel</button>
                     </div>
+
                 </div>
 
-            </form>
+            <div class="tab-pane" id="advanced">
+                <form action="{%  url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
 
-                <div class="tab-pane" id="advanced">
-                    <form action="{%  url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
-                        {% include "bootstrap_fields.html" with fields=advanced_form %}
-                        <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Submit</button>
-                        </div>
-                    </form>
-                </div>
+                    {% include "bootstrap_fields.html" with fields=advanced_form %}
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
-
+        </form>
     {% else %}
         <p>Object not found </p>
     {% endif %}
-
-
-
-
 {% endblock %}
 
 
