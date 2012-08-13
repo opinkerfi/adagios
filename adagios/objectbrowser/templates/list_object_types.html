@@ -366,30 +366,4 @@
         <p>List of object types not found </p>
     {% endif %}
 
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="block">
-                <h5 style="border-bottom: 1px solid #ccc">Most Recent Changes</h5>
-                <table class="log">
-                    <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>User</th>
-                        <th>What</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    {% for logentry in gitlog %}
-                        <tr>
-                            <td>{{ logentry.authortime|date:"j M Y, H:i" }}</td>
-                            <td>{{ logentry.author }} &lt;{{ logentry.authoremail }}&gt;</td>
-                            <td>{{ logentry.comment }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 {% endblock %}
