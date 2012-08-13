@@ -34,7 +34,6 @@
 
 {% block footer %}
     {{ block.super }}
-    <script src="{% url media path="chosen/chosen.jquery.js" %}" type="text/javascript"></script>
     <!-- Use bootstrap style tooltips -->
     <script>
         $(document).ready(function() {
@@ -45,7 +44,6 @@
 
     <!-- Print a list of templates when one is selected -->
     <script>
-        $('select').chosen();
         $('select#id_template_name').change(function() {
             $.getJSON('{% url rest/pynag %}json/get_objects',
                     {
@@ -57,7 +55,7 @@
                         $('#template_services').html('');
                         var sorted = data.slice(0).sort(function(a, b) {
                             return a - b;
-                        })
+                        });
                         $.each(sorted, function(k, s) {
                             if (s['service_description'] != "null" &&
                                     s['service_description'] != "none" &&

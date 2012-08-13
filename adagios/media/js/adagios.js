@@ -345,3 +345,10 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
         return this;
     }
 })( jQuery );
+
+
+$(document).ready(function() {
+    $("[rel=tooltip]").popover();
+    $("#popover").popover();
+    $('select').chosen();
+});
