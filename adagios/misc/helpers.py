@@ -93,6 +93,23 @@ def change_attribute(id, attribute_name, new_value):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
+def copy_object(object_id, recursive=False, **kwargs):
+    """ Copy one objectdefinition.
+
+    Arguments:
+        object_id -- id of the object to be copied
+        recursive -- If True, also copy related child objects
+        **kwargs  -- Any other argument will be treated as an attribute
+                  -- to change on the new object
+    Returns:
+        "Object successfully copied"
+    Examples:
+        copy_object(1234567890, host_name=new_hostname)
+        "Object successfully copied to <filename>"
+    """
+    o = Model.ObjectDefinition.objects.get_by_id(object_id)
+    new_object = o.copy(recursive=recursive, **kwargs)
+    return "Object successfully copied to %s" % new_object.get_filename()
 def run_check_command(object_id):
     ''' Runs the check_command for one specified object
     
