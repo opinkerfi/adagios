@@ -28,9 +28,16 @@ def _get_dict(x):
 
 def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwargs):
     ''' Get any type of object definition in a dict-compatible fashion
-        
+
+        Arguments:
+            object_type (optional) -- Return objects of this type
+            with_fields (optional) -- comma seperated list of objects to show (default=id,shortname,object_type)
+            any other argument is passed on as a filter to pynag
         Examples:
-            get_objects(object_type="host", register="1")
+            # show all active hosts and their ip address
+            get_objects(object_type="host", register="1", with_fields="host_name,address")
+            # show all attributes of all services
+            get_objects(object_type="service", with_fields='*')
         Returns:
             List of ObjectDefinition
     '''
@@ -45,7 +52,11 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
 def object_to_dict(object, attributes="id,shortname,object_type"):
     """ Takes in a specific object definition, returns a hash maps with "attributes" as keys"""
     result = {}
-    for k in attributes.split(','):
+    if not attributes or attributes == '*':
+        attributes=object.keys()
+    else:
+        attributes=attributes.split(',')
+    for k in attributes:
         result[k] = object[k]
     return result
 def get_object(id):
