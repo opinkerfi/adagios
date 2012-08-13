@@ -5,32 +5,78 @@
 
 {% block content %}
 
-<h1>{{ filename }}</h1>
-
-
 {% if content %}
-	<table border=1>
-	<tr>
-		<th >Attribute</th>
-		<th align="left">Value</th>
-	</tr>
-	{% for k,v in content %}
-		<tr>
-			<td>{{ k }}</td>
-			{% if k == 'cfg_file' %}
-				<td align="left"><a href="search?filename={{v}}">{{v}}</a></td>
-			{% else %}
-				{% if k == 'cfg_dir' %}
-					<td align="left"><a href="search?filename__startswith={{v}}">{{v}}</a></td>
-				{% else %}
-					<td align="left">{{v}}</td>
-				{% endif %}
-			{% endif %}
-		</tr>
-	{% endfor %}
-	</table>
+    <form>
+            {% for k in content %}
+
+                <a name="{{ k.key }}"></a>
+                <fieldset>
+                <div class="row-fluid">
+
+                <div class="span4">
+                    <label class="control-label" for="{{ k.key }}">{{ k.key }}</label>
+                {% if k.values %}
+                    {% for v in k.values %}
+                        <input type="text" name="{{ k.key }}" value="{{ v }}"/>
+                        {% endfor %}
+                {% else %}
+                    <input type="text" name="{{ k.key }}" value=""/>
+                {% endif %}
+                </div>
+                <div class="span7">
+                <div id="{{ k.key }}" class="doc hide well">
+                <h4>{{ k.title }}</h4>
+                {% autoescape off %}
+                    <span class="help-block">{{ k.doc }}</span>
+                    {% if k.format %}
+                        <h5>Format:</h5>
+                        <ul><li>
+                        {{ k.format }}</li></ul>
+                    {% endif %}
+                    {% if k.options %}
+                        <h5>Options:</h5>
+                        <ul>
+                    {% for e in k.options %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if k.examples %}
+                        <h5>Examples:</h5>
+                        <ul>
+                    {% for e in k.examples %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endautoescape %}
+                </div>
+                </div>
+                </div>
+                </fieldset>
+
+            {% endfor %}
+        </fieldset>
+    </form>
 {% else %}
 	<p>Config File not found </p>
 {% endif %}
 
+{% endblock %}
+
+{% block footer %}
+
+        <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+    $(document).ready(function() {
+
+        $('input[type=text]').focus(function(e) {
+            $('div.doc').hide();
+            $('#' + $(e.target).attr('name')).show();
+            $(e.target).data('orig-value', $(e.target).attr('value'));
+            return true;
+        });
+    });
+    </script>
 {% endblock %}

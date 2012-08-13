@@ -392,8 +392,36 @@ def show_plugins(request):
     return render_to_response('show_plugins.html', c, context_instance = RequestContext(request))
 
 def edit_nagios_cfg(request):
-    c = {'filename': Model.config.cfg_file, 'content': Model.config.maincfg_values}
-    c['content'].sort()
+    from pynag.Model.all_attributes import main_config
+    c = {'filename': Model.config.cfg_file}
+    c['content'] = []
+
+
+    for key, v in Model.config.maincfg_values:
+        if key not in main_config:
+            c['content'].append({
+                'title': 'No documentation found',
+                'key': key,
+                'values': [v],
+                'doc': 'This seems to be an undefined option and no documentation was found for it. Perhaps it is'
+                       'mispelled.'
+            })
+
+
+    for conf in sorted(main_config):
+        values = []
+        for k, v in Model.config.maincfg_values:
+            if conf == k:
+                values.append(v)
+        c['content'].append({
+            'doc': main_config[conf]['doc'],
+            'title': main_config[conf]['title'],
+            'examples': main_config[conf]['examples'],
+            'format': main_config[conf]['format'],
+            'options': main_config[conf]['options'],
+            'key': conf,
+            'values': values
+        })
     return render_to_response('edit_configfile.html', c, context_instance = RequestContext(request))
 
 def add_service(request):
