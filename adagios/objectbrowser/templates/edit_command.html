@@ -19,18 +19,8 @@
 
                 <div class="tab-pane" id="general">
                     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-
-                        <label class="control-label" for="command_name" rel="tooltip" title="{{ form.command_name.label }}" data-content="{{ form.command_name.help_text }}">{{ form.command_name.label }}</label>
-                        <div class="controls"> <!-- class inherited -->
-                            {{ form.command_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
-                        </div>
-
-                        <label class="control-label" for="command_line" rel="tooltip" title="{{ form.command_line.label }}" data-content="{{ form.command_line.help_text }}">{{ form.command_line.label }}</label>
-                        <div class="controls"> <!-- class inherited -->
-                            {{ form.command_line }} <!-- <i class="glyph-more-windows"></i> Inherited -->
-                        </div>
-
-
+                        {% include "bootstrap_field.html" with field=form.command_name %}
+                        {% include "bootstrap_field.html" with field=form.command_line %}
                         <div class="form-actions">
                             <button class="btn btn-primary" type="submit">Submit</button>
                         </div>

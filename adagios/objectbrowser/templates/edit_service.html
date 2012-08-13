@@ -37,31 +37,11 @@
             <div class="tab-content">
                 <div class="tab-pane" id="general">
                     <fieldset>
-                        <label class="control-label" for="host_name" rel="tooltip" title="{{ form.host_name.label }}" data-content="eg web01.example.com">{{ form.host_name.label }}</label>
-                        <div class="controls"> <!-- class inherited -->
-                            {{ form.host_name }} <!-- <i class="glyph-more-windows"></i> Inherited -->
-                        </div>
-
-                        <label class="control-label" for="service_description" rel="tooltip" title="{{ form.service_description.label }}" data-content="eg Running Services">{{ form.service_description.label }}</label>
-                        <div class="controls">
-                            {{ form.service_description }}
-                        </div>
-
-                        <label class="control-label" for="servicegroups" rel="tooltip" title="{{ form.servicegroups.label }}" data-content="Groups for organizing services">{{ form.servicegroups.label }}</label>
-                        <div class="controls">
-                            {{ form.servicegroups }}
-                        </div>
-
-                        <label class="control-label" for="name" rel="tooltip" title="Name" data-content="Specifies name for this service which enables it to be included with Inherits from (use)">{{ form.name.label }}</label>
-                        <div class="controls">
-                            {{ form.name }}
-                        </div>
-
-                        <label class="control-label" for="use" rel="tooltip" title="Inherits from" data-content="Specifies from which services this service inherits from">Inherits from</label>
-                        <div class="controls">
-                            {{ form.use }}
-                        </div>
-
+                        {% include "bootstrap_field.html" with field=form.host_name %}
+                        {% include "bootstrap_field.html" with field=form.service_description %}
+                        {% include "bootstrap_field.html" with field=form.servicegroups %}
+                        {% include "bootstrap_field.html" with field=form.name %}
+                        {% include "bootstrap_field.html" with field=form.use %}
                     </fieldset>
 
                     <div class="form-actions">
@@ -75,36 +55,12 @@
                         <pre>{{ command_line }}</pre>
                     {% endif %}
                     <fieldset>
-
-                        <label class="control-label" for="check_command" rel="tooltip" title="{{ form.check_command.label }}" data-content="Command executed when the service check runs">{{ form.check_command.label }}</label>
-                        <div class="controls">
-                            {{ form.check_command }}
-                        </div>
-
-                        <label class="control-label" for="max_check_attempts" rel="tooltip" title="{{ form.max_check_attempts.label }}" data-content="How many check failures before notifications are sent">{{ form.max_check_attempts.label }}</label>
-                        <div class="controls">
-                            {{ form.max_check_attempts }}
-                        </div>
-
-                        <label class="control-label" for="check_interval" rel="tooltip" title="{{ form.check_interval.label }}" data-content="Minute interval between checks">{{ form.check_interval.label }}</label>
-                        <div class="controls">
-                            {{ form.check_interval }}
-                        </div>
-
-                        <label class="control-label" for="active_checks_enabled" rel="tooltip" title="{{ form.active_checks_enabled.label }}" data-content="Whether Nagios polls actively for service state">{{ form.active_checks_enabled.label }}</label>
-                        <div class="controls">
-                            {{ form.active_checks_enabled }}
-                        </div>
-
-                        <label class="control-label" for="passive_checks_enabled" rel="tooltip" title="{{ form.passive_checks_enabled.label }}" data-content="Whether Nagios will recieve passive service state from external source">{{ form.passive_checks_enabled.label }}</label>
-                        <div class="controls">
-                            {{ form.passive_checks_enabled }}
-                        </div>
-
-                        <label class="control-label" for="check_period" rel="tooltip" title="{{ form.check_period.label }}" data-content="When Nagios polls for service state">{{ form.check_period.label }}</label>
-                        <div class="controls">
-                            {{ form.check_period }}
-                        </div>
+                        {% include "bootstrap_field.html" with field=form.check_command %}
+                        {% include "bootstrap_field.html" with field=form.max_check_attempts %}
+                        {% include "bootstrap_field.html" with field=form.check_interval %}
+                        {% include "bootstrap_field.html" with field=form.active_checks_enabled %}
+                        {% include "bootstrap_field.html" with field=form.passive_checks_enabled %}
+                        {% include "bootstrap_field.html" with field=form.check_period %}
                     </fieldset>
 
                     <div class="form-actions">
@@ -115,37 +71,12 @@
 
                 <div class="tab-pane" id="notifications">
                     <fieldset>
-
-                        <label class="control-label" for="notification_interval">{{ form.notification_interval.label }}</label>
-                        <div class="controls">
-                            {{ form.notification_interval }}
-                        </div>
-
-                        <label class="control-label" for="first_notification_delay">{{ form.first_notification_delay.label }}</label>
-                        <div class="controls">
-                            {{ form.first_notification_delay }}
-                        </div>
-
-                        <label class="control-label" for="notification_period">{{ form.notification_period.label }}</label>
-                        <div class="controls">
-                            {{ form.notification_period }}
-                        </div>
-
-                        <label class="control-label" for="notification_options">{{ form.notification_options.label }}</label>
-                        <div class="controls">
-                            {{ form.notification_options }}
-                        </div>
-
-                        <label class="control-label" for="contacts">{{ form.contacts.label }}</label>
-                        <div class="controls">
-                            {{ form.contacts }}
-                        </div>
-
-                        <label class="control-label" for="contact_groups">{{ form.contact_groups.label }}</label>
-                        <div class="controls">
-                            {{ form.contact_groups }}
-                        </div>
-
+                        {% include "bootstrap_field.html" with field=form.notification_interval %}
+                        {% include "bootstrap_field.html" with field=form.first_notification_delay %}
+                        {% include "bootstrap_field.html" with field=form.notification_period %}
+                        {% include "bootstrap_field.html" with field=form.notification_options %}
+                        {% include "bootstrap_field.html" with field=form.contact_groups %}
+                        {% include "bootstrap_field.html" with field=form.contacts %}
                     </fieldset>
                     <div class="form-actions">
                         <button class="btn btn-primary" type="submit">Save changes</button>

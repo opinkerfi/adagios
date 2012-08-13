@@ -22,35 +22,11 @@
             <div class="tab-content">
                     <div class="tab-pane" id="general">
                         <fieldset>
-
-                            <label class="control-label" for="contact_name" rel="tooltip" title="{{ form.contact_name.label }}" data-content="eg admin@example.com">{{ form.contact_name.label }}</label>
-                            <div class="controls">
-                                {{ form.contact_name }}
-                            </div>
-                            
-                            <label class="control-label" for="alias" rel="tooltip" title="{{ form.alias.label }}" data-content="eg Full name of contact">{{ form.alias.label }}</label>
-                            <div class="controls">
-                                {{ form.alias }}
-                            </div>
-
-                            <label class="control-label" for="use" rel="tooltip" title="{{ form.use.label }}" data-content="eg generic-contact">{{ form.use.label }}</label>
-                            <div class="controls">
-                                {{ form.use }}
-                            </div>
-
-                            <label class="control-label" for="email" rel="tooltip" title="{{ form.email.label }}" data-content="eg admin@example.com">{{ form.email.label }}</label>
-                            <div class="controls">
-                                {{ form.email }}
-                            </div>
-
-                            <label class="control-label" for="pager" rel="tooltip" title="{{ form.pager.label }}" data-content="eg 00 1234567">{{ form.pager.label }}</label>
-                            <div class="controls">
-                                {{ form.pager }}
-                            </div>
-
-
-                            
-
+                            {% include "bootstrap_field.html" with field=form.contact_name %}
+                            {% include "bootstrap_field.html" with field=form.alias %}
+                            {% include "bootstrap_field.html" with field=form.use %}
+                            {% include "bootstrap_field.html" with field=form.email %}
+                            {% include "bootstrap_field.html" with field=form.pager %}
                         </fieldset>
 
                         <div class="form-actions">
@@ -61,14 +37,9 @@
 		
                     <div class="tab-pane" id="memberof">
                         <fieldset>
+                            {% include "bootstrap_field.html" with field=form.contactgroups %}
 
-
-                            <label class="control-label" for="contactgroups" rel="tooltip" title="{{ form.contactgroups.label }}" data-content="eg select groups this contact belongs to">{{ form.contact_groups.label }}</label>
-                            <div class="controls">
-                                {{ form.contactgroups }}
-                            </div>
-
-                        <!-- Display All Contactgroups if this is that kind of an object -->
+                            <!-- Display All Contactgroups if this is that kind of an object -->
                             <div class="effective_contactgroups">
                             <fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
                               <legend>Effective Contactgroups for this contact</legend>
@@ -93,36 +64,12 @@
 		
                     <div class="tab-pane" id="notifications">
                         <fieldset>
-
-                            <label class="control-label" for="host_notifications_enabled" rel="tooltip" title="{{ form.host_notifications_enabled.label }}" data-content="eg 1 or 0">{{ form.host_notifications_enabled.label }}</label>
-                            <div class="controls">
-                                {{ form.host_notifications_enabled }}
-                            </div>
-
-                            <label class="control-label" for="host_notification_commands" rel="tooltip" title="{{ form.host_notification_commands.label }}" data-content="eg 1 or 0">{{ form.host_notification_commands.label }}</label>
-                            <div class="controls">
-                                {{ form.host_notification_commands }}
-                            </div>
-
-                            <label class="control-label" for="host_notification_period" rel="tooltip" title="{{ form.host_notification_period.label }}" data-content="eg select a timeperiod">{{ form.host_notification_period.label }}</label>
-                            <div class="controls">
-                                {{ form.host_notification_period }}
-                            </div>
-
-                            <label class="control-label" for="service_notifications_enabled" rel="tooltip" title="{{ form.service_notifications_enabled.label }}" data-content="eg 1 or 0">{{ form.service_notifications_enabled.label }}</label>
-                            <div class="controls">
-                                {{ form.service_notifications_enabled }}
-                            </div>
-                            <label class="control-label" for="service_notification_commands" rel="tooltip" title="{{ form.service_notification_commands.label }}" data-content="eg 1 or 0">{{ form.service_notification_commands.label }}</label>
-                            <div class="controls">
-                                {{ form.service_notification_commands }}
-                            </div>
-
-                            <label class="control-label" for="service_notification_period" rel="tooltip" title="{{ form.service_notification_period.label }}" data-content="eg select a timeperiod">{{ form.service_notification_period.label }}</label>
-                            <div class="controls">
-                                {{ form.service_notification_period }}
-                            </div>
-
+                            {% include "bootstrap_field.html" with field=form.host_notifications_enabled %}
+                            {% include "bootstrap_field.html" with field=form.host_notification_commands %}
+                            {% include "bootstrap_field.html" with field=form.host_notification_period %}
+                            {% include "bootstrap_field.html" with field=form.service_notifications_enabled %}
+                            {% include "bootstrap_field.html" with field=form.service_notification_commands %}
+                            {% include "bootstrap_field.html" with field=form.service_notification_period %}
                     </div>
             </form>
                     <div class="tab-pane" id="advanced">

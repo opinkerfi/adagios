@@ -1,19 +1,9 @@
 {# This is a snippet, include it from somewhere else to get simple formfields in bootstrap style output #}
-{# Usage: {% include "boostrap_snippet.html" with fields=my_form %} #}
+{# Usage: {% include "bootstrap_fields.html" with fields=my_form %} #}
+<!-- Snippet bootstrap_fields.html start -->
 <fieldset>
     {% for field in fields %}
-        <!-- Field {{ field.label }} -->
-        <div class="control-group {% if field.errors %}error{% endif %} {% if field.required %}required{% endif %}">
-            <label class="control-label" for="{{ field.name }}" rel="tooltip" title="{{ field.help_text }}">
-                {{ field.label }}
-            </label>
-            <div class="controls" id="{{ field.name }}_field">
-                {{ field }}
-                {% for err in field.errors %}
-                    <p class="help-inline error">{{ err }}</p>
-                {% endfor %}
-            </div>
-        </div>
-
+        {% include "bootstrap_field.html" with field=field %}
     {% endfor %}
 </fieldset>
+<!-- Snippet bootstrap_fields.html end -->

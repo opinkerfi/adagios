@@ -1,0 +1,17 @@
+{# This is a snippet, include it from somewhere else to get single field in a bootstrap friendly way#}
+{# Usage: {% include "boostrap_field.html" with field=my_field %} #}
+{% if field.label %}
+<!-- Field {{ field.label }} -->
+<div class="control-group {% if field.errors %}error{% endif %} {% if field.required %}required{% endif %}">
+    <label class="control-label" for="{{ field.name }}" rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}">
+        {{ field.label }}
+    </label>
+    <div class="controls" id="{{ field.name }}_field">
+        {{ field }}
+        {% for err in field.errors %}
+            <p class="help-inline error">{{ err }}</p>
+        {% endfor %}
+    </div>
+</div>
+{% else %}<h1>ERROR! You tried to include nonexisting field</h1>
+{% endif %}

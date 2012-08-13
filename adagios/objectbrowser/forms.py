@@ -19,7 +19,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
 
 from pynag import Model
-from pynag.Model.all_attributes import object_definitions
+from help_text import object_definitions
 from pynag.Model import ObjectDefinition
 
 
@@ -204,6 +204,12 @@ class PynagForm(forms.Form):
             self.add_css_tag(field=field, css_tag="span11")
         # TODO, select fields are still not wide enough
 
+        # Lets see if there is any help text available for our field
+        if field_name in object_definitions[object_type]:
+            help_text=object_definitions[object_type][field_name].get('help_text', "No help available for this item")
+            field.help_text = help_text
+
+
         # No prettyprint for macros
         if field_name.startswith('_'):
             field.label = field_name
@@ -268,7 +274,10 @@ class AdvancedEditForm(forms.Form):
         all_attributes = sorted( object_definitions.get(object_type).keys() )
         for field_name in self.pynag_object.keys() + all_attributes:
             if field_name == 'meta': continue
-            self.fields[field_name] = forms.CharField(required=False,label=field_name)
+            help_text = ""
+            if field_name in object_definitions[object_type]:
+                help_text=object_definitions[object_type][field_name].get('help_text', "No help available for this item")
+            self.fields[field_name] = forms.CharField(required=False,label=field_name, help_text=help_text)
 
 class GeekEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
@@ -332,3 +341,4 @@ class BulkDeleteForm(BaseBulkForm):
         """ Deletes every object in the form """
         for i in self.changed_objects:
             i.delete()
+
