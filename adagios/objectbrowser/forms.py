@@ -290,21 +290,15 @@ class AddServiceToHostForm(forms.Form):
     host_name = forms.ChoiceField(choices=ALL_HOSTS)
     service = forms.ChoiceField(choices=INACTIVE_SERVICES)
 
-class EditManyForm(forms.Form):
+
+
+class BaseBulkForm(forms.Form):
     """ To make changes to multiple objects at once """
-    attribute_name = forms.CharField()
-    new_value = forms.CharField()
     def __init__(self, objects=[],*args, **kwargs):
         self.objects = []
         self.all_objects = []
         self.changed_objects = []
-        super(EditManyForm, self).__init__(*args,**kwargs)
-    def save(self):
-        for i in self.changed_objects:
-            key = self.cleaned_data['attribute_name']
-            value = self.cleaned_data['new_value']
-            i[key] = value
-            i.save()
+        forms.Form.__init__(self,*args,**kwargs)
     def clean(self):
         #self.cleaned_data = {}
         for k,v in self.data.items():
@@ -320,3 +314,21 @@ class EditManyForm(forms.Form):
                 if obj not in self.changed_objects:
                     self.changed_objects.append( obj )
         return self.cleaned_data
+
+class BulkEditForm(BaseBulkForm):
+    attribute_name = forms.CharField()
+    new_value = forms.CharField()
+    def save(self):
+        for i in self.changed_objects:
+            key = self.cleaned_data['attribute_name']
+            value = self.cleaned_data['new_value']
+            i[key] = value
+            i.save()
+
+class BulkDeleteForm(BaseBulkForm):
+    yes_i_am_sure = forms.BooleanField(label="Yes, i am sure")
+    """ Form used to delete multiple objects at once """
+    def delete(self):
+        """ Deletes every object in the form """
+        for i in self.changed_objects:
+            i.delete()

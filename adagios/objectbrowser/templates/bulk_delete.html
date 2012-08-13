@@ -1,0 +1,64 @@
+{% extends "adagios_standard.html" %}
+{% block title %}Bulk edit{% endblock %}
+{% block smallheader %}bulk{% endblock %}
+{% block largeheader %}Delete objects{% endblock %}
+{% block nav1 %}Object Browser{% endblock %}
+{% block footer %}
+    <script>
+        $('table#many').dataTable( {
+                    "sPaginationType": "bootstrap",
+                    "sScrollY": "260px",
+                    "bAutoWidth": false,
+                    "bScrollCollapse": true,
+                    "bPaginate": false,
+                    "sDom": 'rtp'
+                }
+        );
+    </script>
+{% endblock %}
+{% block content %}
+    {% if success %}
+    <h1>Success! Objects have been deleted.</h1>
+    {% else %}
+    You are about to delete multible objects. Are you sure you want to continue ?
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        <div>
+        <table id="many">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Object Type</th>
+                <th>Description</th>
+                <th>Filename</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in objects %}
+                <tr>
+                    <td>
+                        <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
+                        <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                    </td>
+                    <td>{{ obj.object_type }}</td>
+                    <td>{{ obj.description }}</td>
+                    <td>{{ obj.filename }}</td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+        </div>
+        <div class="form-actions">
+            <label class="control-label" for="yes_i_am_sure" rel="tooltip" title="">
+                Yes, i am sure
+            </label>
+            <div class="controls" id="yes_i_am_sure_field">
+                <input type="checkbox" name="yes_i_am_sure" id="id_yes_i_am_sure" />
+                <button class="btn btn-danger" type="submit">Delete them</button>
+            </div>
+
+        </div>
+    </form>
+    {% endif %}
+{%  endblock %}

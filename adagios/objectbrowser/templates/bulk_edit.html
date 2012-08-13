@@ -1,7 +1,7 @@
 {% extends "adagios_standard.html" %}
 {% block title %}Bulk edit{% endblock %}
-{% block smallheader %}edit{% endblock %}
-{% block largeheader %}Many objects{% endblock %}
+{% block smallheader %}bulk{% endblock %}
+{% block largeheader %}Edit objects{% endblock %}
 {% block nav1 %}Object Browser{% endblock %}
 {% block footer %}
     <script>
@@ -17,13 +17,15 @@
     </script>
 {% endblock %}
 {%  block content %}
-    Welcome to the bulk edit form! Things to note:
-    <ul>
-    <li>If you reach here via GET request you will get a bulk edit of all timeperiods </li>
-    <li>If posting into this form, make sure to include change_OBJECTID into post data for every item you want to post </li>
-    <li>Once you reach here you have the option to uncheck any item you do not want to change</li>
-
-    </ul>
+    {% if success %}
+    <h1>Success! Objects have been changed.</h1>
+    {% endif %}
+    <p>
+    You are about to make changes to multiple objects.
+    <p>
+    Fill in Attribue Name and New Value and they will be changed on
+    all selected items. If object does not currently have this value defined it will be added anyway.
+    <p>
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         <div>
     {% include "bootstrap_fields.html" with fields=form %}
@@ -57,5 +59,4 @@
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
     </form>
-
 {%  endblock %}

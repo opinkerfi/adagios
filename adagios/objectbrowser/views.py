@@ -451,14 +451,14 @@ def add_service(request):
 
     return render_to_response('add_service.html', c,context_instance = RequestContext(request))
 
-def edit_many(request):
+def bulk_edit(request):
     """ Edit multiple objects with one post """
     c = {}
     c.update(csrf(request))
     c['messages'] = []
     c['errors'] = []
     c['objects'] = objects = []
-    c['form'] = EditManyForm(objects=objects)
+    c['form'] = BulkEditForm(objects=objects)
 
     if request.method == 'GET':
         # We only call get when we are testing stuff
@@ -471,13 +471,43 @@ def edit_many(request):
                 my_id = i[ len('change_'): ]
                 my_obj = ObjectDefinition.objects.get_by_id( my_id )
                 objects.append( my_obj )
-        c['form'] = EditManyForm(objects=objects,data=request.POST)
+        c['form'] = BulkEditForm(objects=objects,data=request.POST)
         if c['form'].is_valid():
             c['form'].save()
             for i in c['form'].changed_objects:
                 c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+        c['success'] = "success"
 
-    return render_to_response('edit_many.html', c, context_instance = RequestContext(request))
+    return render_to_response('bulk_edit.html', c, context_instance = RequestContext(request))
+
+def bulk_delete(request):
+    """ Edit delete multiple objects with one post """
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = []
+    c['errors'] = []
+    c['objects'] = objects = []
+    c['form'] = BulkDeleteForm(objects=objects)
+
+    if request.method == 'GET':
+        # We only call get when we are testing stuff
+        c['objects'] = Model.Timeperiod.objects.all
+    if request.method == "POST":
+        # Post items starting with "hidden_" will be displayed on the resulting web page
+        # Post items starting with "change_" will be modified
+        for i in request.POST.keys():
+            if i.startswith('change_'):
+                my_id = i[ len('change_'): ]
+                my_obj = ObjectDefinition.objects.get_by_id( my_id )
+                objects.append( my_obj )
+        c['form'] = BulkDeleteForm(objects=objects,data=request.POST)
+        if c['form'].is_valid():
+            c['form'].delete()
+            c['success'] = "Success"
+            for i in c['form'].changed_objects:
+                c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+
+    return render_to_response('bulk_delete.html', c, context_instance = RequestContext(request))
 
 def delete_object(request, object_id):
     ''' View to Delete a single object definition '''
