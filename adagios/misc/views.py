@@ -25,6 +25,7 @@ import pynag.Model
 from time import mktime
 from datetime import datetime
 from os.path import dirname
+from subprocess import Popen, PIPE
 
 def index(request):
     c = {}
@@ -65,19 +66,29 @@ def gitlog(request):
     """ View that displays a nice log of previous git commits in dirname(config.cfg_file) """
     c = { }
     c['errors'] = []
-    configdir = dirname( pynag.Model.config.cfg_file or '/etc/nagios/')
-    c['configdir'] = configdir
+    nagiosdir = dirname( pynag.Model.config.cfg_file or '/etc/nagios/')
+    c['configdir'] = nagiosdir
+    c['commits'] = result = []
     try:
-        import git
-        repo = git.Repo(configdir)
-        c['commits'] = repo.commits()
-        commit_id = request.GET.get('commit', None)
-        for commit in c['commits']:
-            if commit.id == commit_id:
-                c['commit'] = commit
-    except ImportError:
-        c['errors'].append('Could not import python module git. Make sure your system has package python-git installed.' )
-    except git.InvalidGitRepositoryError:
-        c['errors'].append("'%s' does not seem to be a git repository. No log created." % configdir)
+        fh = Popen(["git", "log" ,"-20", "--pretty=%H:%an:%ae:%at:%s"], cwd=nagiosdir, stdin=None, stdout=PIPE )
+        gitstring = fh.communicate()[0]
+
+        for logline in gitstring.splitlines():
+            hash,author, authoremail, authortime, comment = logline.split(":", 4)
+            result.append( {
+                "hash": hash,
+                "author": author,
+                "authoremail": authoremail,
+                "authortime": datetime.fromtimestamp(float(authortime)),
+                "comment": comment,
+                })
+        # If a single commit was named in querystring, also fetch the diff for that commit
+        commit = request.GET.get('show', False)
+        print commit
+        if commit != False:
+            fh = Popen(["git", "show" , commit], cwd=nagiosdir, stdin=None, stdout=PIPE )
+            c['diff'] = fh.communicate()[0]
+    except Exception, e:
+        c['errors'].append( e )
     return render_to_response('gitlog.html', c, context_instance = RequestContext(request))
 

@@ -20,26 +20,21 @@
         </tr>
         {% for commit in commits %}
             <tr>
-                <td>{{ commit.authored_date.tm_year }}-{{ commit.authored_date.tm_mon }}-{{ commit.authored_date.tm_mday }}</td>
-                <td>{{ commit.summary }} ({{ commit.stats.total.files }} files)</td>
-                <td>{{ commit.author.name }}</td>
-                <td>{{ commit.author.email }}</td>
-                <td><a href="{% url misc.views.gitlog %}?commit={{ commit.id }}">view diff</a></td>
+                <td>{{ commit.authortime }}</td>
+                <td>{{ commit.comment }}</td>
+                <td>{{ commit.author }}</td>
+                <td>{{ commit.authoremail }}</td>
+                <td><a href="{% url misc.views.gitlog %}?show={{ commit.hash }}">view diff</a></td>
             </tr>
         {% endfor %}
         </table>
     {% else %}
         <h2>No git commits found in {{ configdir }}</h2>
     {% endif %}
-
-    {% if commit %}
-        <!-- diff for a single commit -->
-        {% for diff in commit.diffs %}
-            <h3>{{ diff.a_path }}</h3>
-            <pre>
-            {{ diff.diff }}
-            </pre>
-        {% endfor %}
+    {% if diff %}
+        <pre>
+{{ diff }}
+        </pre>
     {% endif %}
 
  {% endblock %}
