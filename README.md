@@ -14,6 +14,7 @@ Components
   - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
   - Pynag - Nagios Configuration Parser
   - Django - Python web framework
+  - Bootstrap - For user interface
 
 Live Demo
 =========
