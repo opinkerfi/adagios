@@ -26,14 +26,23 @@ from pynag.Model import ObjectDefinition
 # These fields are special, they are a comma seperated list, and may or may not have +/- in front of them.
 MULTICHOICE_FIELDS = ('servicegroups','hostgroups','contacts','contact_groups', 'contactgroups', 'use', 'notification_options')
 
-NOTIFICATION_OPTIONS = (
-                        ('w','warning'),
-                        ('c','critical'),
-                        ('r','recovery'),
-                        ('u','unreachable'),
-                        ('d','downtime'),
-                        ('f','flapping'),
-                        )
+SERVICE_NOTIFICATION_OPTIONS = (
+    ('w','warning'),
+    ('c','critical'),
+    ('r','recovery'),
+    ('u','unreachable'),
+    ('d','downtime'),
+    ('f','flapping'),
+)
+
+HOST_NOTIFICATION_OPTIONS = (
+    ('d','down'),
+    ('u','unreachable'),
+    ('r','recovery'),
+    ('f','flapping'),
+    ('s','scheduled_downtime')
+)
+
 
 BOOLEAN_CHOICES = ( ('', 'not set'),('1','1'),('0','0'))
 
@@ -181,8 +190,10 @@ class PynagForm(forms.Form):
             all = Model.Command.objects.filter(command_name__contains='')
             choices = map(lambda x: (x.command_name, x.command_name), all)
             field = forms.ChoiceField(choices=sorted(choices))
-        elif field_name.endswith('notification_options'):
-            field = PynagChoiceField(choices=NOTIFICATION_OPTIONS)
+        elif field_name.endswith('notification_options') and self.pynag_object.object_type =='host':
+            field = PynagChoiceField(choices=HOST_NOTIFICATION_OPTIONS)
+        elif field_name.endswith('notification_options') and self.pynag_object.object_type =='service':
+            field = PynagChoiceField(choices=SERVICE_NOTIFICATION_OPTIONS)
         elif options.get('value') == '[0/1]':
             field = forms.CharField(widget=PynagRadioWidget)
             # Set wider inputs in form
