@@ -93,7 +93,7 @@ def run_check_command(object_id):
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     return o.run_check_command()
 
-def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None', append=False):
+def set_maincfg_attribute(attribute,new_value, old_value='None', append=False):
     """ Sets specific configuration values of nagios.cfg
 	
 	Required Arguments:
@@ -108,6 +108,7 @@ def set_maincfg_attribute(attribute,new_value, old_value='None', filename='None'
 		True	-- If any changes were made
 		False	-- If no changes were made
 	"""
+    filename = _config.cfg_file
     if old_value.lower() == 'none': old_value=None
     if new_value.lower() == 'none': new_value=None
     if filename.lower() == 'none': filename=None
