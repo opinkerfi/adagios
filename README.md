@@ -1,19 +1,25 @@
-ABOUT
+About
 =====
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios.
 
-Design principals:
+Design principals
 ==================
   - No database backend (work with current configuration files and extremely gentle when modifying them)
   - Make common tasks as simple as possible (monitoring a new windows or oracle host should be as easy as 1,2,3)
   - Be a value-add for both novices and nagios experts
   - Assist Nagios admins in keeping configuration files clean and simple
 
+Components
+==========
+  - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
+  - Pynag - Nagios Configuration Parser
+  - Django - Python web framework
+
 Live Demo
 =========
 http://adagios.opensource.is/
 
-INSTALL INSTRUCTIONS
+Install Instructions
 ====================
 These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.
 
@@ -37,4 +43,16 @@ If you plan to access adagios through apache, make sure it is started:
 
 	service httpd restart
 
-Now you should be able to access adagios through http://<host_name>/adagios/
+Now you should be able to access adagios through http://localhost/adagios/
+
+Source Code
+===========
+
+	git clone http://github.com/pynag/pynag.git
+
+Communicate with us
+===================
+
+Mailing list: http://groups.google.com/group/adagios
+
+IRC: #adagios on irc.freenode.net
