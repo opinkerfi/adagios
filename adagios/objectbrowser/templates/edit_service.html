@@ -93,22 +93,12 @@
 
                         <label class="control-label" for="active_checks_enabled" rel="tooltip" title="{{ form.active_checks_enabled.label }}" data-content="Whether Nagios polls actively for service state">{{ form.active_checks_enabled.label }}</label>
                         <div class="controls">
-                            <div class="btn-group" data-toggle-name="active_checks_enabled" data-toggle="buttons-radio">
-                                <button type="button" value="1" class="btn btn-primary">On</button>
-                                <button type="button" value="0" class="btn btn-primary">Off</button>
-                                <button type="button" value="" class="btn">Unset</button>
-                            </div>
-                            <input type="hidden" name="active_checks_enabled" value="{{ form.active_checks_enabled.value }}" />
+                            {{ form.active_checks_enabled }}
                         </div>
 
                         <label class="control-label" for="passive_checks_enabled" rel="tooltip" title="{{ form.passive_checks_enabled.label }}" data-content="Whether Nagios will recieve passive service state from external source">{{ form.passive_checks_enabled.label }}</label>
                         <div class="controls">
-                            <div class="btn-group" data-toggle-name="passive_checks_enabled" data-toggle="buttons-radio">
-                                <button type="button" value="1" class="btn btn-primary">On</button>
-                                <button type="button" value="0" class="btn btn-primary">Off</button>
-                                <button type="button" value="" class="btn">Unset</button>
-                            </div>
-                            <input type="hidden" name="passive_checks_enabled" value="{{ form.passive_checks_enabled.value }}" />
+                            {{ form.passive_checks_enabled }}
                         </div>
 
                         <label class="control-label" for="check_period" rel="tooltip" title="{{ form.check_period.label }}" data-content="When Nagios polls for service state">{{ form.check_period.label }}</label>
