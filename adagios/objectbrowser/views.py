@@ -115,10 +115,15 @@ def geek_edit( request, object_id ):
         # Manual edit of the form
         form = GeekEditObjectForm(data=request.POST, pynag_object=o)
         if form.is_valid():
-            form.save()
-            m.append("Object Saved manually to '%s'" % o['filename'])
+            try:
+                form.save()
+                m.append("Object Saved manually to '%s'" % o['filename'])
+            except IOError, e:
+                c['errors'].append(e)
+                return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
         else:
             c['errors'].append( "Problem with saving object")
+            return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
     else:
         form = GeekEditObjectForm(initial={'definition':o['meta']['raw_definition'], })
 
@@ -145,8 +150,11 @@ def advanced_edit(request, object_id):
         # User is posting data into our form
         c['advanced_form'] = AdvancedEditForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
         if c['advanced_form'].is_valid():
-            c['advanced_form'].save()
-            m.append("Object Saved to %s" % o['filename'])
+            try:
+                c['advanced_form'].save()
+                m.append("Object Saved to %s" % o['filename'])
+            except IOError, e:
+                c['errors'].append(e)
         else:
             c['errors'].append( "Problem reading form input")
             return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
@@ -193,9 +201,12 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
         # User is posting data into our form
         c['form'] = PynagForm( pynag_object=o,initial=o._original_attributes, data=request.POST )
         if c['form'].is_valid():
-            c['form'].save()
-            m.append("Object Saved to %s" % o['filename'])
-            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
+            try:
+                c['form'].save()
+                m.append("Object Saved to %s" % o['filename'])
+                return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
+            except IOError, e:
+                c['errors'].append(e)
         else:
             c['errors'].append( "Could not validate form input")
     if 'form' not in c:
@@ -446,9 +457,12 @@ def bulk_edit(request):
                 objects.append( my_obj )
         c['form'] = BulkEditForm(objects=objects,data=request.POST)
         if c['form'].is_valid():
-            c['form'].save()
-            for i in c['form'].changed_objects:
-                c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+            try:
+                c['form'].save()
+                for i in c['form'].changed_objects:
+                    c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+            except IOError, e:
+                c['errors'].append(e)
         c['success'] = "success"
 
     return render_to_response('bulk_edit.html', c, context_instance = RequestContext(request))
@@ -475,10 +489,13 @@ def bulk_delete(request):
                 objects.append( my_obj )
         c['form'] = BulkDeleteForm(objects=objects,data=request.POST)
         if c['form'].is_valid():
-            c['form'].delete()
-            c['success'] = "Success"
-            for i in c['form'].changed_objects:
-                c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+            try:
+                c['form'].delete()
+                c['success'] = "Success"
+                for i in c['form'].changed_objects:
+                    c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+            except IOError, e:
+                c['errors'].append( e )
 
     return render_to_response('bulk_delete.html', c, context_instance = RequestContext(request))
 
@@ -490,10 +507,9 @@ def delete_object(request, object_id):
     c['errors'] = []
     c['object'] = my_obj = Model.ObjectDefinition.objects.get_by_id(object_id)
     if request.method == 'POST':
-        my_obj.delete()
-        return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) )
+        try:
+            my_obj.delete()
+            return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) )
+        except IOError, e:
+            c['errors'].append( e )
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
-
-
-def delete_many(request, object_ids):
-    return NotImplementedError
