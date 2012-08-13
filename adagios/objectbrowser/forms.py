@@ -57,10 +57,11 @@ INACTIVE_SERVICES.sort()
 
 class PynagChoiceField(forms.MultipleChoiceField):
     """ multichoicefields that accepts comma seperated input as values """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, inline_help_text="Select some options", *args, **kwargs):
         self.__prefix = ''
         self.data = kwargs.get('data')
         super(PynagChoiceField, self).__init__(*args, **kwargs)
+        self.widget.attrs['data-placeholder'] = inline_help_text
     def clean(self,value):
         """
         Changes list into a comma separated string. Removes duplicates.
@@ -165,23 +166,23 @@ class PynagForm(forms.Form):
         elif field_name in ('contact_groups','contactgroups','contactgroup_members'):
                 all_groups = Model.Contactgroup.objects.filter(contactgroup_name__contains="")
                 choices = sorted( map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups) )
-                field = PynagChoiceField(choices=choices)
+                field = PynagChoiceField(choices=choices, inline_help_text="No %s selected" % (field_name))
         elif field_name == 'use':
             all_objects = self.pynag_object.objects.filter(name__contains='')
             choices = map(lambda x: (x.name, x.name), all_objects)
-            field = PynagChoiceField(choices=sorted(choices))
+            field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
         elif field_name == 'servicegroups':
             all_groups = Model.Servicegroup.objects.filter(servicegroup_name__contains='')
             choices = map(lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
-            field = PynagChoiceField(choices=sorted(choices))
+            field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
         elif field_name == 'hostgroups':
             all_groups = Model.Hostgroup.objects.filter(hostgroup_name__contains='')
             choices = map(lambda x: (x.hostgroup_name, x.hostgroup_name), all_groups)
-            field = PynagChoiceField(choices=sorted(choices))
+            field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
         elif field_name in ('contacts','members'):
             all = Model.Contact.objects.filter(contact_name__contains='')
             choices = map(lambda x: (x.contact_name, x.contact_name), all)
-            field = PynagChoiceField(choices=sorted(choices))
+            field = PynagChoiceField(choices=sorted(choices),inline_help_text="No %s selected" % (field_name))
         elif field_name.endswith('_period'):
             all = Model.Timeperiod.objects.filter(timeperiod_name__contains='')
             choices = map(lambda x: (x.timeperiod_name, x.timeperiod_name), all)
@@ -191,9 +192,9 @@ class PynagForm(forms.Form):
             choices = map(lambda x: (x.command_name, x.command_name), all)
             field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_options') and self.pynag_object.object_type =='host':
-            field = PynagChoiceField(choices=HOST_NOTIFICATION_OPTIONS)
+            field = PynagChoiceField(choices=HOST_NOTIFICATION_OPTIONS,inline_help_text="No %s selected" % (field_name))
         elif field_name.endswith('notification_options') and self.pynag_object.object_type =='service':
-            field = PynagChoiceField(choices=SERVICE_NOTIFICATION_OPTIONS)
+            field = PynagChoiceField(choices=SERVICE_NOTIFICATION_OPTIONS,inline_help_text="No %s selected" % (field_name))
         elif options.get('value') == '[0/1]':
             field = forms.CharField(widget=PynagRadioWidget)
             # Set wider inputs in form
