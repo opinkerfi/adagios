@@ -76,13 +76,20 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
     """ Special Widget designed to make Nagios attributes with 0/1 values look like on/off buttons """
     def render(self, name, value, attrs=None):
         output = super(self.__class__, self).render(name, value, attrs)
+        one,zero,unset = "","",""
+        if value == "1":
+            one = "active"
+        elif value == "0":
+            zero = "active"
+        else:
+            unset = "active"
         prefix = """
         <div class="btn-group" data-toggle-name="%s" data-toggle="buttons-radio">
-          <button type="button" value="1" class="btn btn-primary">On</button>
-          <button type="button" value="0" class="btn btn-primary">Off</button>
-          <button type="button" value="" class="btn">Not set</button>
+          <button type="button" value="1" class="btn btn-primary %s">On</button>
+          <button type="button" value="0" class="btn btn-primary %s">Off</button>
+          <button type="button" value="" class="btn %s">Not set</button>
         </div>
-        """ % name
+        """ % (name,one,zero,unset)
         output += prefix
         return mark_safe(output)
 
