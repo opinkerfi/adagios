@@ -424,33 +424,6 @@ def edit_nagios_cfg(request):
         })
     return render_to_response('edit_configfile.html', c, context_instance = RequestContext(request))
 
-def add_service(request):
-    c = {}
-    c.update(csrf(request))
-    c['form'] = AddServiceToHostForm()
-    c['messages'] = []
-    c['errors'] = []
-    c['filename'] = Model.config.cfg_file
-    if request.method == 'POST':
-        c['form'] = form = AddServiceToHostForm(data=request.POST)
-        if form.is_valid():
-            host_name =  form.cleaned_data['host_name']
-            host = Model.Host.objects.get_by_shortname(host_name)
-            service = form.cleaned_data['service']
-            new_service = Model.Service()
-            new_service.host_name = host_name
-            new_service.use = service
-            new_service.set_filename(host.get_filename())
-            new_service.reload_object()
-            new_service.save()
-            #Model.Service.objects.clean_cache()
-            #Model.config = None
-            #Model.Service.objects.get_by_id(new_service.get_id())
-            c['my_object'] = new_service
-            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', args=[new_service.get_id()] ) )
-
-    return render_to_response('add_service.html', c,context_instance = RequestContext(request))
-
 def bulk_edit(request):
     """ Edit multiple objects with one post """
     c = {}

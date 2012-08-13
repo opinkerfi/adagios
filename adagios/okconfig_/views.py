@@ -119,6 +119,36 @@ def addtemplate(request, host_name=None):
             c['errors'].append( 'Could not validate input' ) 
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
+def addservice(request):
+    c = {}
+    c.update(csrf(request))
+    c['form'] = forms.AddServiceToHostForm()
+    c['messages'] = []
+    c['errors'] = []
+    c['filename'] = Model.config.cfg_file
+    if request.method == 'POST':
+        c['form'] = form = forms.AddServiceToHostForm(data=request.POST)
+        if form.is_valid():
+            host_name =  form.cleaned_data['host_name']
+            host = Model.Host.objects.get_by_shortname(host_name)
+            service = form.cleaned_data['service']
+            new_service = Model.Service()
+            new_service.host_name = host_name
+            new_service.use = service
+            new_service.set_filename(host.get_filename())
+            new_service.reload_object()
+
+            # Add custom macros if any were specified
+            for k,v in form.cleaned_data.items():
+                if k.startswith("_"):
+                    new_service[k] = v
+            new_service.save()
+
+            c['my_object'] = new_service
+            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':new_service.get_id() } ) )
+
+    return render_to_response('addservice.html', c,context_instance = RequestContext(request))
+
 def verify_okconfig(request):
     """ Checks if okconfig is properly set up. """
     c = {}

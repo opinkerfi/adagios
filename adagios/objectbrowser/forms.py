@@ -46,15 +46,6 @@ HOST_NOTIFICATION_OPTIONS = (
 
 BOOLEAN_CHOICES = ( ('', 'not set'),('1','1'),('0','0'))
 
-# List of all host_names
-ALL_HOSTS = map(lambda x: (x.host_name, x.host_name),
-                Model.Host.objects.filter(host_name__contains="", register="1"))
-ALL_HOSTS.sort()
-# List of all unregistered services (templates)
-INACTIVE_SERVICES = map(lambda x: (x.name, x.name),
-                        Model.Service.objects.filter(service_description__contains="", name__contains="", register="0"))
-INACTIVE_SERVICES.sort()
-
 class PynagChoiceField(forms.MultipleChoiceField):
     """ multichoicefields that accepts comma seperated input as values """
     def __init__(self, inline_help_text="Select some options", *args, **kwargs):
@@ -294,11 +285,6 @@ class GeekEditObjectForm(forms.Form):
     def save(self):
         definition = self.cleaned_data['definition']
         self.pynag_object.rewrite( str_new_definition=definition )
-
-class AddServiceToHostForm(forms.Form):
-    host_name = forms.ChoiceField(choices=ALL_HOSTS)
-    service = forms.ChoiceField(choices=INACTIVE_SERVICES)
-
 
 
 class BaseBulkForm(forms.Form):

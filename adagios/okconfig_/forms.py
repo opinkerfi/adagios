@@ -10,6 +10,12 @@ all_hosts = map(lambda x: (x, x), helpers.get_host_names())
 all_templates = map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates())
 all_groups = map( lambda x: (x,x), okconfig.get_groups() )
 
+
+# List of all unregistered services (templates)
+inactive_services = map(lambda x: (x.name, x.name),
+    Model.Service.objects.filter(service_description__contains="", name__contains="", register="0"))
+inactive_services.sort()
+
 class ScanNetworkForm(forms.Form):
     network_address = forms.CharField()
     def clean_network_address(self):
@@ -31,8 +37,10 @@ class ScanNetworkForm(forms.Form):
             if allowed.match(x) is False: return False
         return True
     def isValidIPAddress(self, ipaddress):
-        try: socket.inet_aton(ipaddress)
-        except: return False
+        try:
+            socket.inet_aton(ipaddress)
+        except Exception:
+            return False
         return True
 
 class AddGroupForm(forms.Form):
@@ -91,6 +99,11 @@ class InstallAgentForm(forms.Form):
 
 class ChooseHostForm(forms.Form):
     host_name = forms.ChoiceField(choices=all_hosts)
+
+class AddServiceToHostForm(forms.Form):
+    host_name = forms.ChoiceField(choices=all_hosts)
+    service = forms.ChoiceField(choices=inactive_services)
+
 class EditTemplateForm(forms.Form):
 #    register = forms.BooleanField()
 #    service_description = forms.CharField()
