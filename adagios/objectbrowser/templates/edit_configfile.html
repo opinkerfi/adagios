@@ -7,57 +7,57 @@
 
 {% if content %}
     <form>
-            {% for k in content %}
+        {% for k in content %}
+            <a name="{{ k.key }}"></a>
+            <fieldset>
+                <div class="row-fluid" id="{{ k.key }}">
 
-                <a name="{{ k.key }}"></a>
-                <fieldset>
-                <div class="row-fluid">
+                    <div class="span4">
+                        <label class="control-label" for="{{ k.key }}">{{ k.key }}</label>
+                        {% if k.values %}
+                            {% for v in k.values %}
+                                <input type="text" name="{{ k.key }}" value="{{ v }}" />
+                            {% endfor %}
+                        {% else %}
+                            <input type="text" name="{{ k.key }}" value="" />
+                        {% endif %}
+                        <div><span class="label save_status hide"></span></div>
 
-                <div class="span4">
-                    <label class="control-label" for="{{ k.key }}">{{ k.key }}</label>
-                {% if k.values %}
-                    {% for v in k.values %}
-                        <input type="text" name="{{ k.key }}" value="{{ v }}"/>
-                        {% endfor %}
-                {% else %}
-                    <input type="text" name="{{ k.key }}" value=""/>
-                {% endif %}
-                </div>
-                <div class="span7">
-                <div id="{{ k.key }}" class="doc hide well">
-                <h4>{{ k.title }}</h4>
-                {% autoescape off %}
-                    <span class="help-block">{{ k.doc }}</span>
-                    {% if k.format %}
-                        <h5>Format:</h5>
-                        <ul><li>
-                        {{ k.format }}</li></ul>
-                    {% endif %}
-                    {% if k.options %}
-                        <h5>Options:</h5>
-                        <ul>
-                    {% for e in k.options %}
-                        <li>{{ e }}</li>
-                    {% endfor %}
-                        </ul>
-                    {% endif %}
+                    </div>
+                    <div class="span7">
+                        <div id="{{ k.key }}" class="doc hide well">
+                            <h4>{{ k.title }}</h4>
+                            {% autoescape off %}
+                                <span class="help-block">{{ k.doc }}</span>
+                                {% if k.format %}
+                                    <h5>Format:</h5>
+                                    <ul><li>
+                                        {{ k.format }}</li></ul>
+                                {% endif %}
+                                {% if k.options %}
+                                    <h5>Options:</h5>
+                                    <ul>
+                                        {% for e in k.options %}
+                                            <li>{{ e }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
 
-                    {% if k.examples %}
-                        <h5>Examples:</h5>
-                        <ul>
-                    {% for e in k.examples %}
-                        <li>{{ e }}</li>
-                    {% endfor %}
-                        </ul>
-                    {% endif %}
-                {% endautoescape %}
+                                {% if k.examples %}
+                                    <h5>Examples:</h5>
+                                    <ul>
+                                        {% for e in k.examples %}
+                                            <li>{{ e }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            {% endautoescape %}
+                        </div>
+                    </div>
                 </div>
-                </div>
-                </div>
-                </fieldset>
+            </fieldset>
 
-            {% endfor %}
-        </fieldset>
+        {% endfor %}
     </form>
 {% else %}
 	<p>Config File not found </p>
@@ -73,8 +73,38 @@
 
         $('input[type=text]').focus(function(e) {
             $('div.doc').hide();
-            $('#' + $(e.target).attr('name')).show();
+            $('div#' + $(e.target).attr('name')).show();
             $(e.target).data('orig-value', $(e.target).attr('value'));
+            return true;
+        });
+        $('input[type=text]').blur(function(e) {
+            if ($(e.target).data('orig-value') != $(e.target).attr('value')) {
+                var status_div = $('#' + $(e.target).attr('name') + " .save_status");
+                status_div.show();
+                status_div.text("Saving");
+                status_div.removeClass('label-success label-important');
+                $.getJSON(BASE_URL + "rest/pynag/json/set_maincfg_attribute",
+                        {
+                            attribute:$(e.target).attr('name'),
+                            new_value:$(e.target).attr('value'),
+                            old_value:$(e.target).data('orig-value'),
+                            filename:"{{ filename }}",
+                            append:"False"
+                        },
+                        function (data) {
+                            if (data == true) {
+                                status_div.text('Saved');
+                                status_div.addClass('label-success')
+                            } else {
+                                status_div.text('Error saving');
+                                status_div.addClass('label-important')
+                            }
+                        }).error(function (jqXHR) {
+                            alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
+                        });
+            }
+            var orig = $(e.target).data('orig-value');
+            //alert("Change " + $(e.target).attr('name') + " old " + orig + " to " + $(e.target).attr('value'));
             return true;
         });
     });
