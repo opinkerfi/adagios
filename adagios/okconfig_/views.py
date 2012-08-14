@@ -104,7 +104,7 @@ def addtemplate(request, host_name=None):
 
     c['form'] = forms.AddTemplateForm(initial=request.GET )
     if request.method == 'POST':
-        f = forms.AddTemplateForm(request.POST)
+        c['form'] = f = forms.AddTemplateForm(request.POST)
         if f.is_valid():
             host_name = f.cleaned_data['host_name']
             template_name = f.cleaned_data['template_name']
@@ -113,10 +113,10 @@ def addtemplate(request, host_name=None):
                 c['filelist'] = okconfig.addtemplate(host_name=host_name, template_name=template_name,force=force)
                 c['host_name'] = host_name
                 return addcomplete(request, c)
-            except Exception, e:
-                c['errors'] = e
+            except okconfig.OKConfigError, e:
+                c['errors'].append( e )
         else:
-            c['errors'].append( 'Could not validate input' ) 
+            c['errors'].append( 'Could not validate input' )
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
 def addservice(request):
@@ -137,16 +137,17 @@ def addservice(request):
             new_service.use = service
             new_service.set_filename(host.get_filename())
             new_service.reload_object()
+            c['my_object'] = new_service
 
             # Add custom macros if any were specified
             for k,v in form.cleaned_data.items():
                 if k.startswith("_"):
                     new_service[k] = v
-            new_service.save()
-
-            c['my_object'] = new_service
-            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':new_service.get_id() } ) )
-
+            try:
+                new_service.save()
+                return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':new_service.get_id() } ) )
+            except IOError, e:
+                c['errors'].append(e)
     return render_to_response('addservice.html', c,context_instance = RequestContext(request))
 
 def verify_okconfig(request):
