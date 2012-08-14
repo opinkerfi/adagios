@@ -47,14 +47,9 @@ mv %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysc
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
-# Add the "adagios" user
-/usr/sbin/useradd -c "Adagios"  \
-	-s /sbin/nologin -G nagios -r -d / adagios 2> /dev/null || :
-
 %files
 %defattr(-,root,root)
-%doc README 
+%doc README.md 
 %{python_sitelib}/*
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 
