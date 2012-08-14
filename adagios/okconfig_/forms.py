@@ -14,7 +14,8 @@ def get_all_groups():
     return map( lambda x: (x,x), okconfig.get_groups() )
 def get_inactive_services():
     """ List of all unregistered services (templates) """
-    inactive_services = map(lambda x: (x.name, x.name),
+    inactive_services = [('', 'Select a service')]
+    inactive_services += map(lambda x: (x.name, x.name),
         Model.Service.objects.filter(service_description__contains="", name__contains="", register="0"))
     inactive_services.sort()
     return inactive_services

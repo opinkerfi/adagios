@@ -136,7 +136,7 @@ def addservice(request):
             new_service.host_name = host_name
             new_service.use = service
             new_service.set_filename(host.get_filename())
-            new_service.reload_object()
+            #new_service.reload_object()
             c['my_object'] = new_service
 
             # Add custom macros if any were specified
