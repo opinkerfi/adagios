@@ -56,7 +56,7 @@ class AddHostForm(forms.Form):
     host_name = forms.CharField(help_text="Name of the host to add")
     address = forms.CharField(help_text="IP Address of this host")
     group_name = forms.ChoiceField(initial="default", help_text="host/contact group to put this host in")
-    templates = forms.MultipleChoiceField( required=False, help_text="Add standard template of checks to this host" )
+    templates = forms.MultipleChoiceField(required=False, help_text="Add standard template of checks to this host" )
     force = forms.BooleanField(required=False, help_text="Overwrite host if it already exists.")
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -65,13 +65,13 @@ class AddHostForm(forms.Form):
     def clean_host_name(self):
         host_name = self.cleaned_data.get('host_name')
         force = self.cleaned_data.get('force')
-        if not force and host_name not in okconfig.get_hosts():
+        if not force and host_name in okconfig.get_hosts():
             raise ValidationError("Host name %s already exists, use force to overwrite" % host_name)
         return host_name
     def clean_template_name(self):
         template_name = self.cleaned_data.get('template_name')
         force = self.cleaned_data.get('force')
-        if not force and template_name not in okconfig.get_templates().keys():
+        if not force and template_name in okconfig.get_templates().keys():
             raise ValidationError('template_name "%s" does not exist.' % template_name)
         return template_name
 
