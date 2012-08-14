@@ -63,17 +63,17 @@ class AddHostForm(forms.Form):
         self.fields['group_name'].choices = choices=get_all_groups()
         self.fields['templates'].choices=get_all_templates()
     def clean_host_name(self):
-        data = self.cleaned_data.get('host_name')
+        host_name = self.cleaned_data.get('host_name')
         force = self.cleaned_data.get('force')
-        if not force and data not in okconfig.get_hosts():
+        if not force and host_name not in okconfig.get_hosts():
             raise ValidationError("Host name %s already exists, use force to overwrite" % host_name)
-        return data
+        return host_name
     def clean_template_name(self):
-        data = self.cleaned_data.get('template_name')
+        template_name = self.cleaned_data.get('template_name')
         force = self.cleaned_data.get('force')
-        if not force and data not in okconfig.get_templates().keys():
-            raise ValidationError('template_name "%s" does not exist.')
-        return data
+        if not force and template_name not in okconfig.get_templates().keys():
+            raise ValidationError('template_name "%s" does not exist.' % template_name)
+        return template_name
 
 class AddTemplateForm(forms.Form):
     # Attributes
@@ -85,16 +85,16 @@ class AddTemplateForm(forms.Form):
         self.fields['template_name'].choices=get_all_templates()
         self.fields['host_name'].choices=get_all_hosts()
     def clean_host_name(self):
-        data = self.cleaned_data.get('host_name')
+        host_name = self.cleaned_data.get('host_name')
         force = self.cleaned_data.get('force')
-        if force and data not in okconfig.get_hosts():
-            raise ValidationError("Host '%s' does not exist. Use force to overwrite" % (host_name))
-        return data
+        if force and host_name not in okconfig.get_hosts():
+            raise ValidationError("Host '%s' does not exist. Use force to overwrite" % host_name)
+        return host_name
     def clean_template_name(self):
-        data = self.cleaned_data.get('template_name')
-        if data not in okconfig.get_templates().keys():
-            raise ValidationError('template_name "%s" does not exist.')
-        return data
+        template_name = self.cleaned_data.get('template_name')
+        if template_name not in okconfig.get_templates().keys():
+            raise ValidationError('template_name "%s" does not exist.' % template_name)
+        return template_name
 
 class InstallAgentForm(forms.Form):
     remote_host = forms.CharField(help_text="Host or ip address")
