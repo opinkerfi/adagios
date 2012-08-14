@@ -35,7 +35,6 @@ from pynag.Parsers import status
 from adagios import settings
 from forms import *
 
-from log import *
 import adagios
 
 def home(request):
