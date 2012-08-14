@@ -46,7 +46,14 @@
 
                             {% endfor %}
                         </fieldset>
-                        <div id="service_macros" class="hide"></div>
+                        <div id="service_macros" class="hide">
+                            <fieldset>
+                                <legend>Service macros for <span class="service_name"></span></legend>
+                                The following are settings, eg thresholds or access passwords.
+                                <div class="control-group">
+                                </div>
+                            </fieldset>
+                        </div>
                         <div class="form-actions">
                             <button class="btn btn-primary" type="submit">Submit</button>
                         </div>
@@ -80,10 +87,8 @@
                         alert("No data received for name");
                     }
                     var myobj = data[0];
-                    var service_macro_html = '' +
-                            '<fieldset>\n' +
-                            '  <legend>Service macros for ' + $this.val() + '</legend>' +
-                            '  <div class="control-group">';
+                    var service_macro_html = '';
+
 
                     $.each(myobj, function(i, k) {
                         if (i.substring(0, 2) != "__") {
@@ -97,11 +102,11 @@
                                 '</div>';
 
                     });
-                    service_macro_html += '' +
-                            '</div>' +
-                            '</fieldset>';
+
                     if (num_macros) {
-                        $('#service_macros').html(service_macro_html).show();
+                        $('#service_macros .service_name').text($this.val());
+                        $('#service_macros .control-group').html(service_macro_html);
+                        $('#service_macros').show();
                     }
                 }).error(function(jqXHR) {
                     alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
