@@ -2,6 +2,10 @@
 {# Usage: {% include "bootstrap_fields.html" with fields=my_form %} #}
 <!-- Snippet bootstrap_fields.html start -->
 <fieldset>
+    {% if fields.non_field_errors %}
+            {{ fields.non_field_errors  }}
+    {%  endif %}
+
     {% for field in fields %}
         {% include "bootstrap_field.html" with field=field %}
     {% endfor %}

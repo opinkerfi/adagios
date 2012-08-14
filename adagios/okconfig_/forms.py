@@ -117,6 +117,7 @@ class AddServiceToHostForm(forms.Form):
         self.fields['host_name'].choices = get_all_hosts()
         self.fields['service'].choices = get_inactive_services()
 
+
 class EditTemplateForm(forms.Form):
 #    register = forms.BooleanField()
 #    service_description = forms.CharField()

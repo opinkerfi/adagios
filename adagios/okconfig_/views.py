@@ -140,7 +140,7 @@ def addservice(request):
             c['my_object'] = new_service
 
             # Add custom macros if any were specified
-            for k,v in form.cleaned_data.items():
+            for k,v in form.data.items():
                 if k.startswith("_"):
                     new_service[k] = v
             try:
@@ -148,6 +148,8 @@ def addservice(request):
                 return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':new_service.get_id() } ) )
             except IOError, e:
                 c['errors'].append(e)
+        else:
+            c['errors'].append( "Could not validate form")
     return render_to_response('addservice.html', c,context_instance = RequestContext(request))
 
 def verify_okconfig(request):
