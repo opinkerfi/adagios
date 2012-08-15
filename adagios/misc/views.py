@@ -27,6 +27,8 @@ from datetime import datetime
 from os.path import dirname
 from subprocess import Popen, PIPE
 
+import adagios.settings
+
 def index(request):
     c = {}
     return render_to_response('frontpage.html', c, context_instance = RequestContext(request))
@@ -60,6 +62,7 @@ def contact_us( request ):
 
 def nagios(request):
     c = {}
+    c['nagios_url'] = adagios.settings.nagios_url
     return render_to_response('nagios.html', c, context_instance = RequestContext(request))
 
 def gitlog(request):
