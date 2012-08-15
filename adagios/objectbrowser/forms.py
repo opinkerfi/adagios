@@ -116,6 +116,14 @@ class PynagForm(forms.Form):
             # been modified, lets ignore those
             if self.pynag_object[k] == value:
                 continue
+            # Multichoice fields have a special restriction, sometimes they contain
+            # the same values as before but in a different order.
+            if k in MULTICHOICE_FIELDS:
+                original = Model.AttributeList( self.pynag_object[k] )
+                new = Model.AttributeList( value )
+                if sorted(original.fields) == sorted(new.fields):
+                    continue
+            print k, type(value)
             # If we reach here, it is save to modify our pynag object.
             self.pynag_object[k] = value
             # Additionally, update the field for the return form
