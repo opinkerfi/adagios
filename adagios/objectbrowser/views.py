@@ -298,6 +298,9 @@ def _edit_service( request, c):
     try: c['effective_contactgroups'] = service.get_effective_contact_groups()
     except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
 
+    try: c['effective_command'] = service.get_effective_check_command()
+    except KeyError, e: c['errors'].append( "Could not find check_command: %s" % str(e))
+
     return render_to_response('edit_service.html', c, context_instance = RequestContext(request))
 
 def _edit_contactgroup( request, c):
