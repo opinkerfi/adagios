@@ -106,17 +106,15 @@ def addtemplate(request, host_name=None):
     if request.method == 'POST':
         c['form'] = f = forms.AddTemplateForm(request.POST)
         if f.is_valid():
-            host_name = f.cleaned_data['host_name']
-            template_name = f.cleaned_data['template_name']
-            force =f.cleaned_data['force']
             try:
-                c['filelist'] = okconfig.addtemplate(host_name=host_name, template_name=template_name,force=force)
-                c['host_name'] = host_name
+                f.save()
+                c['host_name'] = f.cleaned_data['host_name']
+                c['filelist'] = f.filelist
                 return addcomplete(request, c)
-            except okconfig.OKConfigError, e:
-                c['errors'].append( e )
+            except Exception, e:
+                c['errors'].append(e)
         else:
-            c['errors'].append( 'Could not validate input' )
+            c['errors'].append("Could not validate form")
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
 def addservice(request):

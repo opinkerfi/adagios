@@ -9,7 +9,7 @@ from pynag import Model
 def get_all_hosts():
     return [('','Select a host')] + map(lambda x: (x, x), helpers.get_host_names())
 def get_all_templates():
-    return [('', 'Select a template')] + map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates())
+    return map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates())
 def get_all_groups():
     return map( lambda x: (x,x), okconfig.get_groups() )
 def get_inactive_services():
@@ -62,39 +62,46 @@ class AddHostForm(forms.Form):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.fields['group_name'].choices = choices=get_all_groups()
         self.fields['templates'].choices=get_all_templates()
-    def clean_host_name(self):
+    def clean(self):
+        cleaned_data = super(AddHostForm,self).clean()
+        force = self.cleaned_data.get('force')
         host_name = self.cleaned_data.get('host_name')
-        force = self.cleaned_data.get('force')
+        templates = self.cleaned_data.get('templates')
+        for i in templates:
+            if i not in okconfig.get_templates().keys():
+                self._errors['templates'] = self.error_class( ['template %s was not found'%i] )
         if not force and host_name in okconfig.get_hosts():
-            raise ValidationError("Host name %s already exists, use force to overwrite" % host_name)
-        return host_name
-    def clean_template_name(self):
-        template_name = self.cleaned_data.get('template_name')
-        force = self.cleaned_data.get('force')
-        if not force and template_name in okconfig.get_templates().keys():
-            raise ValidationError('template_name "%s" does not exist.' % template_name)
-        return template_name
+            self._errors['host_name'] = self.error_class(['Host name already exists. Use force to overwrite'])
+        return cleaned_data
+
 
 class AddTemplateForm(forms.Form):
     # Attributes
     host_name = forms.ChoiceField(help_text="Add templates to this host")
-    template_name = forms.ChoiceField(help_text="what template to add")
+    templates = forms.MultipleChoiceField(required=False, help_text="Add standard template of checks to this host" )
     force = forms.BooleanField(required=False, help_text="Overwrites templates if they already exist")
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['template_name'].choices=get_all_templates()
+        self.fields['templates'].choices=get_all_templates()
         self.fields['host_name'].choices=get_all_hosts()
-    def clean_host_name(self):
-        host_name = self.cleaned_data.get('host_name')
+    def clean(self):
+        cleaned_data = super(AddTemplateForm,self).clean()
         force = self.cleaned_data.get('force')
-        if force and host_name not in okconfig.get_hosts():
-            raise ValidationError("Host '%s' does not exist. Use force to overwrite" % host_name)
-        return host_name
-    def clean_template_name(self):
-        template_name = self.cleaned_data.get('template_name')
-        if template_name not in okconfig.get_templates().keys():
-            raise ValidationError('template_name "%s" does not exist.' % template_name)
-        return template_name
+        host_name = self.cleaned_data.get('host_name')
+        templates = self.cleaned_data.get('templates')
+        for i in templates:
+            if i not in okconfig.get_templates().keys():
+                self._errors['templates'] = self.error_class( ['template %s was not found'%i] )
+        if not force and host_name not in okconfig.get_hosts():
+            self._errors['host_name'] = self.error_class(['Host name not found Use force to write template anyway'])
+        return cleaned_data
+    def save(self):
+        host_name = self.cleaned_data['host_name']
+        templates = self.cleaned_data['templates']
+        force = self.cleaned_data['force']
+        self.filelist = []
+        for i in templates:
+            self.filelist+=okconfig.addtemplate(host_name=host_name, template_name=i,force=force)
 
 class InstallAgentForm(forms.Form):
     remote_host = forms.CharField(help_text="Host or ip address")
@@ -129,19 +136,25 @@ class EditTemplateForm(forms.Form):
         # Run through all the all attributes. Add
         # to form everything that starts with "_"
         self.description = service['service_description']
-        self.command_line = service.get_effective_command_line()
-        macros = []
-        for macro,value in service.get_all_macros().items() :
-            if macro.startswith('$_SERVICE') or macro.startswith('S$ARG'):
-                macros.append(macro)
         fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'register')
         self.fields[fieldname] = forms.BooleanField(initial=service['register'], label='register')
         fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'service_description')
         self.fields[fieldname] = forms.CharField(initial=service['service_description'], label='service_description')
-        for k in sorted( macros ):
-            fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
-            label = k.replace('$_SERVICE','')
-            label = label.replace('_', '')
-            label = label.replace('$', '')
-            label = label.capitalize()
-            self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)
+
+        macros = []
+        self.command_line = None
+        try:
+            self.command_line = service.get_effective_command_line()
+            for macro,value in service.get_all_macros().items() :
+                if macro.startswith('$_SERVICE') or macro.startswith('S$ARG'):
+                    macros.append(macro)
+            for k in sorted( macros ):
+                fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
+                label = k.replace('$_SERVICE','')
+                label = label.replace('_', '')
+                label = label.replace('$', '')
+                label = label.capitalize()
+                self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)
+        # KeyError can occur if service has an invalid check_command
+        except KeyError:
+            pass
