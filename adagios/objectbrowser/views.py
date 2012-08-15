@@ -266,7 +266,10 @@ def _edit_contact( request, c):
 def _edit_service( request, c):
     """ This is a helper function to edit_object """
     service = c['my_object']
-    c['command_line'] = service.get_effective_command_line()
+    try:
+        c['command_line'] = service.get_effective_command_line()
+    except KeyError:
+        c['command_line'] = None
     c['object_macros'] = service.get_all_macros()
     # Get the current status from Nagios
     try:
@@ -326,7 +329,10 @@ def _edit_timeperiod( request, c):
 def _edit_host( request, c):
     """ This is a helper function to edit_object """
     host = c['my_object']
-    c['command_line'] = host.get_effective_command_line()
+    try:
+        c['command_line'] = host.get_effective_command_line()
+    except KeyError:
+        c['command_line'] = None
     c['object_macros'] = host.get_all_macros()
     if not c.has_key('errors'): c['errors'] = []
 
