@@ -55,25 +55,22 @@
 
     {% block adagios_hausinn %}{% endblock %}
     {% if errors|length %}
-        <div class="modal hide fade" id="warnings">
-            <div class="modal-header"><h3>Errors Found: {{ errors|length }}</h3></div>
-            <div class="modal-body alert">
-                {%  for error in errors %}
-                    <div>
-                        <strong>Warning!</strong> {{  error }}
-                    </div>
-                {%  endfor %}
-                {%  for message in messages %}
-                    <div class="alert alert-success">
-                        <strong>Warning!</strong> {{  error }}
-                    </div>
-                {%  endfor %}
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal">Close</button>
-            </div>
+    {%  for error in errors %}
+        <div class="alert">
+            <button class="close" data-dismiss="alert">×</button>
+            <strong>Warning!</strong> {{ error }}
         </div>
+    {%  endfor %}
     {% endif %}
+    {% if messages|length %}
+        {%  for message in messages  %}
+            <div class="alert alert-success">
+                <button class="close" data-dismiss="alert alert-success">×</button>
+                <strong>Info!</strong> {{ message }}
+            </div>
+        {%  endfor %}
+    {% endif %}
+
     {% block content %}{% endblock %}
 
     {%  block sidebar %}{%  endblock %}

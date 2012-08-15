@@ -110,6 +110,7 @@ def addtemplate(request, host_name=None):
                 f.save()
                 c['host_name'] = f.cleaned_data['host_name']
                 c['filelist'] = f.filelist
+                c['messages'].append("Template was successfully added to host.")
                 return addcomplete(request, c)
             except Exception, e:
                 c['errors'].append(e)
@@ -192,6 +193,7 @@ def edit(request, host_name):
     c = { }
     c.update(csrf(request))
     c['hostname'] = host_name
+    c['myhost'] = Model.Host.objects.get_by_shortname(host_name)
     
     # Get all services of that host that contain a service_description
     services = Model.Service.objects.filter(host_name=host_name,service_description__contains='')
@@ -257,6 +259,5 @@ def scan_network(request):
                 c['scan_results'] =  okconfig.network_scan.get_all_hosts(network)
                 for i in c['scan_results']: i.check()
             except Exception, e:
-                raise e
                 c['errors'].append("Error running scan")
     return render_to_response('scan_network.html', c, context_instance=RequestContext(request))
