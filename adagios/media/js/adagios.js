@@ -173,7 +173,7 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
             // "bAutoWidth":true,
             "bScrollCollapse":false,
             "bPaginate":true,
-            "iDisplayLength":200,
+            "iDisplayLength":500,
             "aaData":dtData,
             //"sDom":'<"toolbar' + $this.attr('id') + '">frtip',
             "sDom": "<'row-fluid'<'span6'<'toolbar" + $this.attr('id') + "'>>'<'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
