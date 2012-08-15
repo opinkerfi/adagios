@@ -169,11 +169,11 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
         dt = $this.dataTable({
             "aoColumns":aoColumns,
             "sPaginationType":"bootstrap",
-            "sScrollY":"260px",
+            // "sScrollY":"260px",
             // "bAutoWidth":true,
             "bScrollCollapse":false,
             "bPaginate":true,
-            "iDisplayLength":48,
+            "iDisplayLength":200,
             "aaData":dtData,
             //"sDom":'<"toolbar' + $this.attr('id') + '">frtip',
             "sDom": "<'row-fluid'<'span6'<'toolbar" + $this.attr('id') + "'>>'<'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
