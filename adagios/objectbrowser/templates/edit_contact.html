@@ -20,6 +20,8 @@
         <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
             <div class="tab-content">
+
+
                     <div class="tab-pane" id="general">
                         <fieldset>
                             {% include "bootstrap_field.html" with field=form.contact_name %}
@@ -71,7 +73,7 @@
                             {% include "bootstrap_field.html" with field=form.service_notification_commands %}
                             {% include "bootstrap_field.html" with field=form.service_notification_period %}
                     </div>
-            </form>
+                </form>
                     <div class="tab-pane" id="advanced">
                         <!-- All Attributes -->
                         <h2>All Attributes</h2>

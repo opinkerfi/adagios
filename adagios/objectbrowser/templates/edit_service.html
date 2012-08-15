@@ -83,7 +83,7 @@
                     </div>
 
                 </div>
-
+        </form>
             <div class="tab-pane" id="advanced">
                 <form action="{%  url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
 
@@ -94,7 +94,7 @@
                 </form>
             </div>
         </div>
-        </form>
+
     {% else %}
         <p>Object not found </p>
     {% endif %}
