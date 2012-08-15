@@ -24,7 +24,7 @@
                 <td>{{ commit.comment }}</td>
                 <td>{{ commit.author }}</td>
                 <td>{{ commit.authoremail }}</td>
-                <td><a href="{% url misc.views.gitlog %}?show={{ commit.hash }}">view diff</a></td>
+                <td><a href="{% url misc.views.gitlog %}?show={{ commit.hash }}">diff</a></td>
             </tr>
         {% endfor %}
         </table>
