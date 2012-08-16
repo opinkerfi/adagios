@@ -6,6 +6,7 @@
 
 
 {% block content %}
+{% if myhost %}
     <h1>Host {{ myhost.host_name }}</h1>
     <table border=1>
     <tr>
@@ -34,7 +35,8 @@
     <button class="btn btn-success">Install Agent</button>
     <button class="btn btn-success">Run all Service checks</button>
 
-<p></p>
+    <p></p>
+
     <h1>Services of this host:</h1>
     <p></p>
 
@@ -60,9 +62,10 @@
 
     </div>
 
-<form>
-
-    
+</form>
+{% else %}
+    Host not found.
+{% endif %}
 
 {% endblock %}
 

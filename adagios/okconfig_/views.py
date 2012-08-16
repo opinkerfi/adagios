@@ -191,10 +191,15 @@ def edit(request, host_name):
     """ Edit all the Service "__MACROS" for a given host """
 
     c = { }
+    c['errors'] = []
+    c['messages'] = []
     c.update(csrf(request))
     c['hostname'] = host_name
-    c['myhost'] = Model.Host.objects.get_by_shortname(host_name)
-    
+    try:
+        c['myhost'] = Model.Host.objects.get_by_shortname(host_name)
+    except KeyError, e:
+        c['errors'].append("Host %s not found" % e)
+        return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
     # Get all services of that host that contain a service_description
     services = Model.Service.objects.filter(host_name=host_name,service_description__contains='')
     
