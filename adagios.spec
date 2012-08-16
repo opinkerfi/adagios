@@ -36,6 +36,7 @@ Adagios is a web based Nagios configuration interface build to be simple and int
 
 %build
 python setup.py build
+sed "s/python2.7/python%{python_version}/" -i adagios/apache/adagios.conf
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
