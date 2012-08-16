@@ -6,22 +6,67 @@
 
 
 {% block content %}
-<form action="#" method="post" class="form-horizontal">{% csrf_token %}
-    <button class="btn btn-primary" type="submit">Save</button><p></p>
-	
-{% for form in forms %}
-	<table border=1 width=100%>
-		<tr><th><h2>{{ form.description }}</h2> <a href="../../objectbrowser/id={{ form.service.id }}">(edit)</a></th></tr>
-		<tr><td>
-                {% include "bootstrap_fields.html" with fields=form %}
-		</td></tr>
-		<tr><td> {{ form.command_line }} </td></tr>
-	</table> 
-	<br>
-{% endfor %}
+    <h1>Host {{ myhost.host_name }}</h1>
+    <table border=1>
+    <tr>
+        <th>Host Name</th>
+        <td>{{ myhost.host_name }}</td>
+    </tr>
+    <tr>
+        <th>Address</th>
+        <td>{{ my_host.address }}</td>
+    </tr>
+        <tr>
+            <th>Operating system</th>
+            <td>Red Hat Enterprise Linux 6</td>
+        </tr>
+        <tr>
+            <th>Host Status</th>
+            <td><span class="label label-success">PING OK - Packet loss = 0%, RTA = 0.06 ms</span></td>
+        </tr>
+        <tr>
+            <th>Agent Status</th>
+            <td><span class="label label-success">I Seem to be doing fine...</span></td>
+        </tr>
+    </table>
+    <p></p>
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+    <button class="btn btn-success">Install Agent</button>
+    <button class="btn btn-success">Run all Service checks</button>
+
+<p></p>
+    <h1>Services of this host:</h1>
+    <p></p>
+
+    <div class="accordion" id="accordion2">
+        {% for form in forms %}
+
+        <div class="accordion-group">
+
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ form.service.id }}">
+                    <span class="label label-success">OK</span> {{ form.description }}
+                </a>
+            </div>
+            <div id="collapse{{ form.service.id }}" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <pre>{{ form.command_line }}</pre>
+                    {% include "bootstrap_fields.html" with fields=form %}
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
 
 <form>
 
     
 
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    $(".collapse").collapse()
 {% endblock %}
