@@ -9,6 +9,14 @@ Design principals
   - Be a value-add for both novices and nagios experts
   - Assist Nagios admins in keeping configuration files clean and simple
 
+Features
+========
+  - Full view/edit of hosts,services, etc
+  - Tons of pre-bundled plugins and configuration templates
+  - Network scan
+  - Remote installation of linux/windows agents
+  - Full audit of any changes made
+
 Components
 ==========
   - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
@@ -19,6 +27,15 @@ Components
 Live Demo
 =========
 http://adagios.opensource.is/
+
+Project website
+=========
+http://opensource.is/adagios
+
+Source Code
+===========
+
+	git clone http://github.com/pynag/pynag.git
 
 Install Instructions
 ====================
@@ -46,10 +63,6 @@ If you plan to access adagios through apache, make sure it is started:
 
 Now you should be able to access adagios through http://localhost/adagios/
 
-Source Code
-===========
-
-	git clone http://github.com/pynag/pynag.git
 
 Communicate with us
 ===================
