@@ -51,7 +51,7 @@ Next step is to install OK yum repository:
 
 Install needed packages:
 
-	yum install -y nagios okconfig git adagios
+	yum --enablerepo=ok-testing install -y nagios okconfig git adagios
 
 Adagios will not work unless you turn off selinux:
 
