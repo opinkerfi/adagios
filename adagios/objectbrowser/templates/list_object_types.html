@@ -183,6 +183,7 @@
         $('a[data-toggle="tab"]').on('show', function (e) {
             //alert($(e.target).attr('href'));
             if ( ! $.fn.DataTable.fnIsDataTable($('table' + $(e.target).attr('href'))[0])) {
+                console.log('Rendering datatable table' + $(e.target).attr('href'));
                 $('table' + $(e.target).attr('href')).adagios_ob_render_dataTable();
             }
             return true;

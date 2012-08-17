@@ -33,7 +33,33 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
 
 
 (function( $ ) {
-
+    $.fn.dataTableExt.afnFiltering.push(
+        function( oSettings, aData, iDataIndex ) {
+            // Default we show nothing
+            var filter = false;
+            var filter_object = $('div#' + oSettings['sTableId'] + ' a[href="#filter_object"]').hasClass('btn-primary');
+            var filter_template = $('div#' + oSettings['sTableId'] + ' a[href="#filter_template"]').hasClass('btn-primary');
+            var filter_group = $('div#' + oSettings['sTableId'] + ' a[href="#filter_group"]').hasClass('btn-primary');
+            // We are showing templates and this is register=0
+            if (filter_template && aData[0] == '0') {
+                return true;
+            }
+            // We are not showing templates and this is register=0
+            if (!filter_template && aData[0] == '0') {
+                return false;
+            }
+            // We are filtering on object
+            if (filter_object && aData[1] == oSettings.sTableId) {
+                return true;
+            }
+            // We are filtering on groups
+            if (filter_group && aData[1] == oSettings.sTableId + 'group') {
+                return true;
+            }
+            // default no
+            return false;
+        }
+    );
     /*
      Creates a dataTable for adagios objects
 
@@ -173,10 +199,10 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
             // "bAutoWidth":true,
             "bScrollCollapse":false,
             "bPaginate":true,
-            "iDisplayLength":500,
+            "iDisplayLength":200,
             "aaData":dtData,
             //"sDom":'<"toolbar' + $this.attr('id') + '">frtip',
-            "sDom": "<'row-fluid'<'span6'<'toolbar" + $this.attr('id') + "'>>'<'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sDom": "<'row-fluid'<'span1'<'selectall'>>'<'span5'<'toolbar_" + $this.attr('id') + "'>>'<'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             // Callback which assigns tooltips to visible pages
             "fnDrawCallback":function () {
                 $("[rel=tooltip]").tooltip();
@@ -192,24 +218,39 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                 });
             }
         });
+        $(".selectall").html('<label class="checkbox">\
+        <input type="checkbox"> \
+        </label>');
 
-        dt.fnFilter("^" + $this.attr('id') + "$", 1, true);
-        dt.fnFilter("1", 0);
+        $(".toolbar_" + $this.attr('id')).html('<div class="btn-group"></div>');
+        $(".toolbar_" + $this.attr('id') + ' .btn-group'
+            ).append('<a class="btn btn-primary" href="#filter_object"><i class="glyph-computer-service glyph-white"></i> ' + $this.attr('id') + 's</a>');
+        if ($this.attr('id') != 'command' && $this.attr('id') != 'timeperiod') {
+            $(".toolbar_" + $this.attr('id') + ' .btn-group'
+                ).append('<a class="btn" href="#filter_group"><i class="glyph-parents"></i> Groups</a>');
+        }
+        $(".toolbar_" + $this.attr('id') + ' .btn-group'
+            ).append('<a class="btn" href="#filter_template"><i class="glyph-cogwheels"></i> Templates</a>');
+        /* $(".toolbar_" + $this.attr('id')).html("<strong>Show:</strong>");
+        $(".toolbar_" + $this.attr('id')).append($this.attr('id') + " <input type='checkbox' id='select' data-show='" + $this.attr('id') + "' CHECKED>");
+        $(".toolbar_" + $this.attr('id')).append("Templates <input type='checkbox' id='select' data-show='template'>");
+        if ($this.attr('id') != 'command' && $this.attr('id') != 'timeperiod') {
+           $(".toolbar_" + $this.attr('id')).append("Groups <input type='checkbox' id='select' data-show='group'>");
+        } */
 
-        $(".toolbar" + $this.attr('id')).html("<strong>Show:</strong> Templates \
-            <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='template" + $this.attr('id') + "'>\
-            Groups <input data-target='" + $this.attr('id') + "' name='bong' type='checkbox' id='groups" + $this.attr('id') + "'>\
-            " + '<button class="btn-mini btn-info" id="selectall">Select Visible <input type="checkbox" /></button>');
-        $('button#selectall').on('click', function(e) {
-            var $checkbox = $('button#selectall input');
-            if ($checkbox.attr('checked') == undefined) {
-                $checkbox.attr('checked', 'checked');
+        console.log('Assignin click on #' + $this.attr('id') + '.tab-pane .selectall label');
+        $('#' + $this.attr('id') + '.tab-pane .selectall label').on('click', function() {
+            var $checkbox = $('#' + $this.attr('id') + '.tab-pane .selectall input');
+            console.log('#' + $this.attr('id') + '.tab-pane .selectall input');
+
+            if ($checkbox.attr('checked') != undefined) {
+                //$checkbox.attr('checked', 'checked');
                 $('.tab-pane.active .dataTable input').each(function() {
                     $(this).attr('checked', 'checked')
 
                 });
             } else {
-                $checkbox.removeAttr('checked');
+                //$checkbox.removeAttr('checked');
                 $('.tab-pane.active .dataTable input').each(function() {
                     $(this).removeAttr('checked');
                 });
@@ -222,25 +263,24 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
             } else {
                 $('a.bulk').addClass('inactive');
             }
+        });
+        /* When inputs are selected in toolbar, we call redraw on the datatable which calls the filtering routing
+        above */
+        $('[class^="toolbar_"] .btn-group a').on('click', function (e) {
+            var $target = $(this);
             e.preventDefault();
-        });
-        $("#template" + $this.attr('id')).on('click', function (e) {
-            var $target = $(e.target);
-            if ($target.attr('checked')) {
-                $('table#' + $target.attr('data-target')).dataTable().fnFilter("", 0);
+            //alert(e.target.nodeName);
+            if ($target.hasClass('btn-primary')) {
+                $target.removeClass('btn-primary');
+                $target.children().removeClass('glyph-white');
             } else {
-                $('table#' + $target.attr('data-target')).dataTable().fnFilter("1", 0);
+                $target.addClass('btn-primary');
+                $target.children().addClass('glyph-white');
             }
-            return true;
-        });
-        $("#groups" + $this.attr('id')).on('click', function (e) {
-            var $target = $(e.target);
-            if ($target.attr('checked')) {
-                $('table#' + $target.attr('data-target')).dataTable().fnFilter("", 1, true);
-            } else {
-                $('table#' + $target.attr('data-target')).dataTable().fnFilter("^" + $target.attr('data-target') + "$", 1, true);
-            }
-            return true;
+            var object_type = $target.parentsUntil('.tab-content', '.tab-pane').attr('id');
+            $('table#' + object_type).dataTable().fnDraw();
+
+            return false;
         });
         dt.fnSort([
             [3, 'asc'],
