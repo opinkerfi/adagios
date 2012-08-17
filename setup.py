@@ -7,7 +7,7 @@ from distutils.sysconfig import get_python_lib
 
 pkgs_path = get_python_lib()
 app_name = 'adagios'
-version = '1.0.0'
+version = '1.1.0'
 
 def get_filelist(path):
 	"""Returns a list of all files in a given directory"""
