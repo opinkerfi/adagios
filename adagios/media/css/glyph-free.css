@@ -11,6 +11,9 @@
     width: 16px;
 }
 
+.glyph-white {
+    background-image: url("../img/glyph-sprite-white.png");
+}
 
 .glyph-glass {
 	background-position: -0px -0px;
