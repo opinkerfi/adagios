@@ -7,47 +7,32 @@
 
 {% block content %}
 {% if myhost %}
-    <h1>Host {{ myhost.host_name }}</h1>
-    <table border=1>
-    <tr>
-        <th>Host Name</th>
-        <td>{{ myhost.host_name }}</td>
-    </tr>
-    <tr>
-        <th>Address</th>
-        <td>{{ my_host.address }}</td>
-    </tr>
-        <tr>
-            <th>Operating system</th>
-            <td>Red Hat Enterprise Linux 6</td>
-        </tr>
-        <tr>
-            <th>Host Status</th>
-            <td><span class="label label-success">PING OK - Packet loss = 0%, RTA = 0.06 ms</span></td>
-        </tr>
-        <tr>
-            <th>Agent Status</th>
-            <td><span class="label label-success">I Seem to be doing fine...</span></td>
-        </tr>
-    </table>
-    <p></p>
+    <div>
+        <dl class="dl-horizontal">
+            <dt>Host Name</dt>
+            <dd>{{ myhost.host_name }}</dd>
+            <dt>Address</dt>
+            <dd>{{ myhost.address }}</dd>
+            <dt>Status</dt>
+            <dd><span id="host_status" class="label">Pending</span> <span id="host_status_output"></span></dd>
+        </dl>
+    </div>
+
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-    <button class="btn btn-success">Install Agent</button>
-    <button class="btn btn-success">Run all Service checks</button>
 
-    <p></p>
+    <!-- <button class="btn btn-success">Run all Service checks</button> -->
+        <div style="margin: 16px">
+            <a href="{% url okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">Install Agent</a>
+    <h2>Services of this host:</h2>
 
-    <h1>Services of this host:</h1>
-    <p></p>
-
-    <div class="accordion" id="accordion2">
+    <div class="accordion" id="edit_host_services">
         {% for form in forms %}
 
         <div class="accordion-group">
-
+            {% cycle '<div class="span6">' '<div class="row-fluid"><div class="span6">' %}
             <div class="accordion-heading">
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ form.service.id }}">
-                    <span class="label label-success">OK</span> {{ form.description }}
+                    {{ form.description }}
                 </a>
             </div>
             <div id="collapse{{ form.service.id }}" class="accordion-body collapse">
@@ -57,11 +42,12 @@
                     <button class="btn btn-primary" type="submit">Save</button>
                 </div>
             </div>
+            {% cycle '</div>' '</div></div>' %}
         </div>
         {% endfor %}
 
     </div>
-
+    </div>
 </form>
 {% else %}
     Host not found.
@@ -71,5 +57,34 @@
 
 {% block footer %}
     {{ block.super }}
-    $(".collapse").collapse()
+    <script>
+    $(document).ready(function() {
+        {% if myhost %}
+        $.getJSON('{% url rest/pynag %}json/run_check_command',
+                { object_id: '{{ myhost.id }}' },
+                function(data) {
+                    var host_status = $('span#host_status');
+                    var host_status_output = $('span#host_status_output');
+                    host_status_output.text(data[1]);
+                    host_status.addClass('label-success');
+                    if (data[0] == '0') {
+                        host_status.text('OK');
+                        host_status.addClass('label-success');
+                    }
+                    if (data[0] == '1') {
+                        host_status.text('Warning');
+                        host_status.addClass('label-warning');
+                    }
+                    if (data[0] == '2') {
+                        host_status.text('Critical');
+                        host_status.addClass('label-danger');
+                    }
+                }).error(function(jqXHR) {
+                    /* TODO - fix this to a this style */
+                    //alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
+                });
+        {% endif %}
+    });
+    //$(".collapse").collapse()
+    </script>
 {% endblock %}

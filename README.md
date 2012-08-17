@@ -61,9 +61,15 @@ If you plan to access adagios through apache, make sure it is started:
 
 	service httpd restart
 
-Now you should be able to access adagios through http://localhost/adagios/
+It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
+everything in /etc/nagios to the nagios user.
 
-
+	cd /etc/nagios/
+	git init
+	git add .
+	git commit -a -m "Initial commit"
+	chown -R nagios /etc/nagios/*
+	
 Communicate with us
 ===================
 
