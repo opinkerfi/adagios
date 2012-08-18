@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 
 %changelog
+* Sat Aug 18 2012 Pall Sigurdsson <palli@opensource.is> 1.1.0-2
+- removed weird reference to unmangled version (palli@opensource.is)
+
 * Fri Aug 17 2012 Pall Sigurdsson <palli@opensource.is> 1.1.0-1
 - Merge remote-tracking branch 'github/master' (tommi@tommi.org)
 - Fixed okconfig/edit_host (tommi@tommi.org)
