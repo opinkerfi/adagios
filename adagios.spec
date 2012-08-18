@@ -4,18 +4,16 @@
 %endif
 
 %define name adagios
-%define version 1.0.0
-%define unmangled_version 1.0.0
-%define release 1
+%define release 2
 
-Name: %{name}
+Name: adagios
 Version: 1.1.0
 Release: %{release}%{?dist}
 Summary: Adagios web-configuration front-end to nagios 
 Group: Applications/Internet
 License: GPLv2+
 URL: https://adagios.opensource.is/
-Source0: https://adagios.opensource.is/releases/%{name}-%{unmangled_version}.tar.gz
+Source0: https://adagios.opensource.is/releases/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildArch: noarch
 Prefix: %{_prefix}
@@ -32,7 +30,7 @@ Requires: Django
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. 
 
 %prep
-%setup -qn %{name}-%{unmangled_version} -n %{name}-%{unmangled_version}
+%setup -qn %{name}-%{version} -n %{name}-%{version}
 
 %build
 python setup.py build
