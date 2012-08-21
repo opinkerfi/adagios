@@ -123,7 +123,6 @@ class PynagForm(forms.Form):
                 new = Model.AttributeList( value )
                 if sorted(original.fields) == sorted(new.fields):
                     continue
-            print k, type(value)
             # If we reach here, it is save to modify our pynag object.
             self.pynag_object[k] = value
             # Additionally, update the field for the return form
