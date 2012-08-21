@@ -31,6 +31,7 @@ import adagios.settings
 
 def index(request):
     c = {}
+    c['nagios_cfg'] = pynag.Model.config.cfg_file
     return render_to_response('frontpage.html', c, context_instance = RequestContext(request))
 
 def settings(request):
@@ -87,7 +88,6 @@ def gitlog(request):
                 })
         # If a single commit was named in querystring, also fetch the diff for that commit
         commit = request.GET.get('show', False)
-        print commit
         if commit != False:
             fh = Popen(["git", "show" , commit], cwd=nagiosdir, stdin=None, stdout=PIPE )
             c['diff'] = fh.communicate()[0]
