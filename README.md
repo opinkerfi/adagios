@@ -73,7 +73,7 @@ everything in /etc/nagios to the nagios user.
 	git init
 	git add .
 	git commit -a -m "Initial commit"
-	chown -R nagios /etc/nagios/*
+	chown -R nagios /etc/nagios/* /etc/nagios/.git
 
 Congratulations! You are now ready to browse through adagios through http://<servername>/adagios/. By default it
 will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
