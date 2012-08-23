@@ -61,6 +61,11 @@ If you plan to access adagios through apache, make sure it is started:
 
 	service httpd restart
 
+
+Same goes for nagios, start it if it is ready
+
+	service nagios restart
+	
 It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
 everything in /etc/nagios to the nagios user.
 
@@ -69,7 +74,11 @@ everything in /etc/nagios to the nagios user.
 	git add .
 	git commit -a -m "Initial commit"
 	chown -R nagios /etc/nagios/*
-	
+
+Congratulations! You are now ready to browse through adagios through http://<servername>/adagios/. By default it
+will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
+changed in /etc/nagios/passwd)
+
 Communicate with us
 ===================
 
