@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Adagios - {% block title %}block=title?{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Adagios - Nagios Configuration Made Easy">
+    <meta name="author" content="Tomas Edwardsson, Pall Sigurdsson">
+
+    <link href="{% url media path="css/style.css" %}" rel="stylesheet">
+
+
+    {%  block head %}{% endblock %}
+</head>
+
+<body>
+    <!-- block header starts -->
+    {% block header %}
+        <div>
+        {%  include "snippets/header.html" %}
+        </div>
+    {% endblock %}
+    <!-- block header ends -->
+
+    <!-- block content starts -->
+    {% block content %}{%  endblock %}
+    <!-- block content ends -->
+
+    <!-- block footer starts -->
+    {% block footer %}{% endblock %}
+    <!-- block footer ends -->
+</body>
+
+
+</html>
