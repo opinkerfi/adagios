@@ -33,8 +33,16 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
 
 
 (function( $ ) {
+    var obIgnoreTables = [
+        $('table#service')[0], $('table#contact')[0],$('table#host')[0], $('table#command')[0], $('table#timeperiod')[0]
+    ];
     $.fn.dataTableExt.afnFiltering.push(
         function( oSettings, aData, iDataIndex ) {
+            // Disable filter for all tables except obIgnoreTables
+            if ( $.inArray( oSettings.nTable, obIgnoreTables ) == -1 )
+                    {
+                        return true;
+                    }
             // Default we show nothing
             var filter = false;
             var filter_object = $('div#' + oSettings['sTableId'] + ' a[href="#filter_object"]').hasClass('btn-primary');
@@ -79,7 +87,7 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                 "bVisible":false
             },
             {
-                "sTitle":'', 'sWidth':'32px'
+                "sTitle":'<label id="selectall" class="checkbox"><input type="checkbox"></label>', 'sWidth':'32px'
             });
         var $this = $(this);
 
@@ -122,10 +130,11 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                     $.each(data, function (i, item) {
                         var field_array =
                             [item['register'], object_type, '\
+    <input rel="ob_mass_select" name="' + item['id'] + '" type="checkbox">\
     <a href="delete_object/id=' + item['id'] + '">\
         <i class="icon-trash"></i>\
     </a>\
-    <input rel="ob_mass_select" name="' + item['id'] + '" type="checkbox">'];
+    '];
                         $.each(v['rows'], function (k, field) {
                             var cell = '<a href="id=' + item['id'] + '">';
                             var field_value = "";
@@ -202,7 +211,7 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
             "iDisplayLength":200,
             "aaData":dtData,
             //"sDom":'<"toolbar' + $this.attr('id') + '">frtip',
-            "sDom": "<'row-fluid'<'span1'<'selectall'>>'<'span5'<'toolbar_" + $this.attr('id') + "'>>'<'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sDom": "<'row-fluid'<'span7'<'toolbar_" + $this.attr('id') + "'>>'<'span5'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             // Callback which assigns tooltips to visible pages
             "fnDrawCallback":function () {
                 $("[rel=tooltip]").tooltip();
@@ -218,9 +227,8 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                 });
             }
         });
-        $(".selectall").html('<label class="checkbox">\
-        <input type="checkbox"> \
-        </label>');
+        // Unbind sorting on the first visible column
+        $('table#' + $this.attr('id') + ' th:first').unbind('click');
 
         $(".toolbar_" + $this.attr('id')).html('<div class="btn-group"></div>');
         $(".toolbar_" + $this.attr('id') + ' .btn-group'
@@ -238,10 +246,10 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
            $(".toolbar_" + $this.attr('id')).append("Groups <input type='checkbox' id='select' data-show='group'>");
         } */
 
-        console.log('Assignin click on #' + $this.attr('id') + '.tab-pane .selectall label');
-        $('#' + $this.attr('id') + '.tab-pane .selectall label').on('click', function() {
-            var $checkbox = $('#' + $this.attr('id') + '.tab-pane .selectall input');
-            console.log('#' + $this.attr('id') + '.tab-pane .selectall input');
+        console.log('Assignin click on #' + $this.attr('id') + '.tab-pane label#selectall');
+        $('#' + $this.attr('id') + '.tab-pane label#selectall').on('click', function(e) {
+            var $checkbox = $('#' + $this.attr('id') + '.tab-pane #selectall input');
+            console.log('#' + $this.attr('id') + '.tab-pane #selectall input');
 
             if ($checkbox.attr('checked') != undefined) {
                 //$checkbox.attr('checked', 'checked');

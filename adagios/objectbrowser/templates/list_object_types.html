@@ -204,7 +204,7 @@
             var swhat = $(e.target).attr('data-target');
             var $form = $('form[name="bulk"]');
             $form.attr('action', swhat);
-            $('table input:checked').each(function(index) {
+            $('table tbody input:checked').each(function(index) {
                 $('<input>').attr({
                     type: 'hidden',
                     name: 'change_' + $(this).attr('name'),
