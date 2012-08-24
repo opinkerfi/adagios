@@ -86,8 +86,8 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
             unset = "active"
         prefix = """
         <div class="btn-group" data-toggle-name="%s" data-toggle="buttons-radio">
-          <button type="button" value="1" class="btn btn-primary %s">On</button>
-          <button type="button" value="0" class="btn btn-primary %s">Off</button>
+          <button type="button" value="1" class="btn btn %s">On</button>
+          <button type="button" value="0" class="btn btn %s">Off</button>
           <button type="button" value="" class="btn %s">Not set</button>
         </div>
         """ % (name,one,zero,unset)
