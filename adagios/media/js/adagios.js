@@ -87,8 +87,14 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                 "bVisible":false
             },
             {
-                "sTitle":'<label id="selectall" class="checkbox"><input type="checkbox"></label>', 'sWidth':'32px'
+                "sTitle":'<label rel="tooltip" title="Select All" id="selectall" class="checkbox"><input type="checkbox"></label>', 'sWidth':'32px'
             });
+        aoColumns.push(
+            {
+                "sTitle": "Actions",
+                "sWidth": '32px',
+            }
+        );
         var $this = $(this);
 
         $this.data('fetch', fetch);
@@ -130,11 +136,7 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                     $.each(data, function (i, item) {
                         var field_array =
                             [item['register'], object_type, '\
-    <input rel="ob_mass_select" name="' + item['id'] + '" type="checkbox">\
-    <a href="delete_object/id=' + item['id'] + '">\
-        <i class="icon-trash"></i>\
-    </a>\
-    '];
+    <input rel="tooltip" title="Select for bulk actions" id="ob_mass_select" name="' + item['id'] + '" type="checkbox">'];
                         $.each(v['rows'], function (k, field) {
                             var cell = '<a href="id=' + item['id'] + '">';
                             var field_value = "";
@@ -163,6 +165,14 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                                 count--;
                             }
                         });
+                        field_array.push('\
+                            <a rel="tooltip" title="Delete object" href="delete_object/id=' + item['id'] + '">\
+                                <i class="icon-trash"></i>\
+                            </a>\
+                            <a rel="tooltip" title="Copy object" href="copy_object/id=' + item['id'] + '">\
+                                    <i class="glyph-tags"></i>\
+                                </a>\
+                        ');
                     });
                 }).success(function () {
                     //targetDataTable.fnAddData(dtData);
@@ -216,7 +226,7 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
             "fnDrawCallback":function () {
                 $("[rel=tooltip]").tooltip();
                 $('input').click(function() {
-                    var checked = $('input[rel="ob_mass_select"]:checked').length;
+                    var checked = $('input#ob_mass_select:checked').length;
                     $('#bulkselected').html(checked);
                     if (checked > 0) {
                         $('a.bulk').removeClass('inactive');
@@ -263,7 +273,7 @@ $.extend( $.fn.dataTableExt.oStdClasses, {
                     $(this).removeAttr('checked');
                 });
             }
-            var checked = $('input[rel="ob_mass_select"]:checked').length;
+            var checked = $('input#ob_mass_select:checked').length;
             $('#bulkselected').html(checked);
             if (checked > 0) {
                 $('a.bulk').removeClass('inactive');
