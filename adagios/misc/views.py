@@ -28,10 +28,11 @@ from os.path import dirname
 from subprocess import Popen, PIPE
 
 import adagios.settings
-
+from adagios import __version__
 def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file
+    c['version'] = __version__
     return render_to_response('frontpage.html', c, context_instance = RequestContext(request))
 
 def settings(request):

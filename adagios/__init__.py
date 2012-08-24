@@ -1,3 +1,5 @@
+__version__="git-latest"
+
 def startup():
     """ Do some pre-loading and parsing of objects
 

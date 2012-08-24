@@ -1,18 +1,22 @@
 #!/usr/bin/python
 
 '''
-Convenient stateless functions for pynag
+
+Convenient stateless functions for pynag. This module is used by the /rest/ interface of adagios.
+
 '''
 
 
 
 from pynag import Model
 from pynag import Parsers
+from pynag import __version__
 from socket import gethostbyname_ex
 _config = Parsers.config()
 _config.parse()
 maincfg_values = _config.maincfg_values
 cfg_file = _config.cfg_file
+version = __version__
 
 def _get_dict(x):
     x.__delattr__('objects')

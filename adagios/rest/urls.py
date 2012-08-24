@@ -7,4 +7,6 @@ urlpatterns = patterns('',
     (r'^/pynag/(?P<format>.+?)/(?P<attribute>.+)?$', 'rest.views.handle_request', { 'module_name': 'misc.helpers' }),
     (r'^/okconfig/$', 'rest.views.index', {'module_name':'okconfig'}),
     (r'^/okconfig/(?P<format>.+?)/(?P<attribute>.+)?$', 'rest.views.handle_request', {'module_name':'okconfig'}),
+    (r'^/adagios/$', 'rest.views.index', { 'module_name': 'misc.rest' }),
+    (r'^/adagios/(?P<format>.+?)/(?P<attribute>.+)?$', 'rest.views.handle_request', { 'module_name': 'misc.rest' }),
 )
