@@ -11,6 +11,8 @@
         {% for err in field.errors %}
             <p class="help-inline error">{{ err }}</p>
         {% endfor %}
+        <label class="help-block">{{ field.help_text }}</label>
+
     </div>
 </div>
 {% else %}<h1>ERROR! You tried to include nonexisting field</h1>
