@@ -225,7 +225,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
         </div>
 
         """
-    $("#actions a").on "click", (e) ->
+    $("#actions #modify a").on "click", (e) ->
       params = {}
       swhat = $(this).attr('data-target')
       $form = $("form[name=\"bulk\"]")
