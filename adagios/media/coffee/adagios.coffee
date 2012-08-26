@@ -287,6 +287,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $("table#" + object_type).dataTable().fnDraw()
       false
 
+    $("div##{object_type}_filter.dataTables_filter input").addClass "input-medium search-query"
+
     dt.fnSort [[3, "asc"], [4, "asc"]]
 
   
