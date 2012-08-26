@@ -6,6 +6,12 @@
 @import url(../datatables/DT_bootstrap.css);
 @import url(../chosen/chosen.css);
 
+/*
+Fix for dropdown buttons, height to small for some reason
+*/
+.btn-group > .dropdown-toggle {
+    height: 18px;
+}
 
 body {
 	background: url('../img/bak.jpg');
@@ -124,6 +130,7 @@ div.dataTables_paginate {
 table.table {
 	clear: both;
 	margin-bottom: 6px !important;
+    min-height: 300px;
 }
 
 table.table thead .sorting,
@@ -151,10 +158,10 @@ a.inactive {
 }
 
 
-.nav .nav-header {
+/*nav .nav-header {
     background-color: #EEEEEE;
     color: #404040;
-}
+}*/
 
 .modal.wide {
     width: 780px;
@@ -176,4 +183,16 @@ div.label.servicestate {
     padding: 3px 4px 5px 6px;
     height: 98%;
     background-color: #eeeeee;
+}
+
+.capitalize {
+    text-transform:capitalize;
+}
+
+div#objectbrowser .dataTables_wrapper {
+    min-height: 320px;
+}
+
+div#loading {
+    min-height: 320px;
 }
