@@ -77,10 +77,6 @@ $.extend $.fn.dataTableExt.oStdClasses,
       sTitle: """<label rel="tooltip" title="Select All" id="selectall" class="checkbox"><input type="checkbox"></label>"""
       sWidth: "32px"
 
-    aoColumns.push
-      sTitle: "Actions"
-      sWidth: "32px"
-
     $this = $(this)
     $this.data "fetch", fetch
     $this.data "aoColumns", aoColumns
@@ -132,15 +128,6 @@ $.extend $.fn.dataTableExt.oStdClasses,
             if field["cName"] is v["rows"][v["rows"].length - 1]["cName"]
               $this.dtData.push field_array
               count--
-
-          field_array.push """
-            <a rel="tooltip" title="Delete object" href="delete_object/id=#{ item["id"] }">
-              <i class=\"icon-trash\"></i>
-            </a>
-            <a rel="tooltip" title="Copy object" href="copy_object/id=#{ item["id"] }">
-              <i class=\"glyph-tags\"></i>
-            </a>
-            """
       ).success(->
         $this.jsonqueries = $this.jsonqueries - 1
         if $this.jsonqueries is 0
@@ -190,9 +177,18 @@ $.extend $.fn.dataTableExt.oStdClasses,
           checked = $("input#ob_mass_select:checked").length
           $("#bulkselected").html checked
           if checked > 0
-            $("a.bulk").removeClass "inactive"
+            $("#actions #modify").show()
           else
-            $("a.bulk").addClass "inactive"
+            $("#actions #modify").hide()
+          if checked > 1
+            $("#actions #modify a#update").show()
+          else
+            $("#actions #modify a#update").hide()
+          if checked == 1
+            $("#actions #modify a#copy").show()
+          else
+            $("#actions #modify a#copy").hide()
+
 
     )
 
@@ -201,28 +197,48 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     $(".toolbar_#{ object_type }").html """
     <div class="row-fluid">
+      <div class="span12"></div>
     </div>
     """
     if object_type != "command" and object_type != "timeperiod"
-      $(".toolbar_#{ object_type } div.row-fluid").append """
-        <div class="span4">
-          <div id="view_filter" class="btn-group"></div>
-        </div>"""
-    $(".toolbar_#{ object_type } div.row-fluid").append """
-      <div class="span8">
-        <div id="add" class="btn-group">
-          <a href="../../objectbrowser/add/#{ object_type }" class="btn capitalize">
-            Add #{ object_type }
-          </a>
-          <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
-            <i class="caret"></i>
-          </a>
-          <ul class="dropdown-menu nav">
-            <li class="nav-header">Add</li>
-          </ul>
-         </div>
-      </div>
-    """
+      $(".toolbar_#{ object_type } div.row-fluid div.span12").append """
+          <div id="view_filter" class="btn-group pull-left"></div>"""
+
+    $(".toolbar_#{ object_type } div.row-fluid div.span12").append """
+        <div class="pull-left" id="actions">
+          <div id="add" class="btn-group pull-left">
+            <a href="../../objectbrowser/add/#{object_type}" class="btn capitalize">
+              Add #{object_type}
+            </a>
+            <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
+              <i class="caret"></i>
+            </a>
+            <ul class="dropdown-menu nav">
+              <li class="nav-header">Add</li>
+            </ul>
+          </div>
+          <div id="modify" class="btn-group pull-right hide">
+            <a rel="tooltip" id="copy" title="Copy" class="btn" data-target="bulk_copy"><i class="icon-copy"></i></a>
+            <a rel="tooltip" id="update" title="Bulk Update" class="btn hide" data-target="bulk_edit"><i class="glyph-pencil"></i></a>
+            <a rel="tooltip" id="delete" title="Delete" class="btn" data-target="bulk_delete"><i class="glyph-bin"></i></a>
+          </div>
+        </div>
+
+        """
+    $("#actions a").on "click", (e) ->
+      params = {}
+      swhat = $(this).attr('data-target')
+      $form = $("form[name=\"bulk\"]")
+      $form.attr "action", swhat
+      $("table tbody input:checked").each (index) ->
+        $("<input>").attr(
+          type: "hidden"
+          name: "change_" + $(this).attr("name")
+          value: "1"
+        ).appendTo $form
+
+      $form.submit()
+      e.preventDefault()
 
     if (object_type != "command" and object_type != "timeperiod")
       $(".toolbar_#{ object_type } div.row-fluid ul.dropdown-menu").append """
@@ -253,24 +269,26 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $checkbox = $("#" + $this.attr("id") + ".tab-pane #selectall input")
       console.log "#" + $this.attr("id") + ".tab-pane #selectall input"
       unless $checkbox.attr("checked") is `undefined`
-        
-        #$checkbox.attr('checked', 'checked');
         $(".tab-pane.active .dataTable input").each ->
           $(this).attr "checked", "checked"
-
       else
-        
-        #$checkbox.removeAttr('checked');
         $(".tab-pane.active .dataTable input").each ->
           $(this).removeAttr "checked"
 
       checked = $("input#ob_mass_select:checked").length
       $("#bulkselected").html checked
       if checked > 0
-        $("a.bulk").removeClass "inactive"
+        $("#actions #modify").show()
       else
-        $("a.bulk").addClass "inactive"
-
+        $("#actions #modify").hide()
+      if checked > 1
+        $("#actions #modify a#update").show()
+      else
+        $("#actions #modify a#update").hide()
+      if checked == 1
+        $("#actions #modify a#copy").show()
+      else
+        $("#actions #modify a#copy").hide()
     
     # When inputs are selected in toolbar, we call redraw on the datatable which calls the filtering routing
     #        above 
@@ -287,7 +305,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $("table#" + object_type).dataTable().fnDraw()
       false
 
-    $("div##{object_type}_filter.dataTables_filter input").addClass "input-medium search-query"
+    $("div\##{object_type}_filter.dataTables_filter input").addClass "input-medium search-query"
 
     dt.fnSort [[3, "asc"], [4, "asc"]]
 

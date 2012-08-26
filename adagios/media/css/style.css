@@ -196,3 +196,18 @@ div#objectbrowser .dataTables_wrapper {
 div#loading {
     min-height: 320px;
 }
+
+.icon-copy {
+    background-image: url("../img/cp.png");
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: text-top;
+    width: 16px;
+}
+
+[class^="toolbar_"] div div {
+    padding-right: 16px;
+}

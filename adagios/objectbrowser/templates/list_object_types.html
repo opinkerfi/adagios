@@ -199,20 +199,6 @@
             return true;
         });
 
-        $('a.bulk').on('click', function (e) {
-            var params = {};
-            var swhat = $(e.target).attr('data-target');
-            var $form = $('form[name="bulk"]');
-            $form.attr('action', swhat);
-            $('table tbody input:checked').each(function(index) {
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'change_' + $(this).attr('name'),
-                    value: '1'}).appendTo($form);
-            });
-            $form.submit();
-            e.preventDefault();
-        });
     } );
 
     </script>
@@ -296,44 +282,11 @@
             </div>
 
             <div class="span3">
-                <div class="block">
-                    <div>
-                        <ul class="nav nav-list">
-                            <li class="nav-header">Actions</li>
-                            <li class="dropdown">
-                                <a class="dropdown-toggle"
-                                   data-toggle="dropdown"
-                                   href="#">
-                                    <i class="icon-plus-sign"></i> Add Object
-                                </a>
-
-                                <ul class="dropdown-menu">
-                                    <li class="nav-header">Objects</li>
-                                    <li><a href="{% url addobject object_type="command" %}"><i class="glyph-computer-proces"></i> Command</a></li>
-                                    <li><a href="{% url addobject object_type="contact" %}"><i class="glyph-woman"></i> Contact</a></li>
-                                    <li><a href="{% url addobject object_type="host" %}"><i class="glyph-computer-locked"></i> Host</a></li>
-                                    <li><a href="{% url addobject object_type="service" %}"><i class="glyph-computer-service"></i> Service</a></li>
-                                    <li><a href="{% url addobject object_type="timeperiod" %}"><i class="glyph-clock"></i> Timeperiod</a></li>
-                                    <li class="nav-header">Object Groups</li>
-                                    <li><a href="{% url addobject object_type="contactgroup" %}"><i class="glyph-adress-book"></i> Contactgroup</a></li>
-                                    <li><a href="{% url addobject object_type="hostgroup" %}"><i class="glyph-more-items"></i> Hostgroup</a></li>
-                                    <li><a href="{% url addobject object_type="servicegroup" %}"><i class="glyph-more-items"></i> Servicegroup</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <ul class="nav nav-list">
-                            <li class="nav-header">Bulk Actions (<span id="bulkselected">0</span>)</li>
-                            <li><a href="#bulk" data-target="{% url bulk_delete %}" class="bulk inactive"><i class="icon-trash"></i> Delete</a></li>
-                            <li><a href="#bulk" data-target="{% url bulk_edit %}" class="bulk inactive"><i class="glyph-pencil"></i> Update Field</a></li>
-                        </ul>
-                    </div>
-                    <form name="bulk" action="{% url bulk_edit %}" method="post">
+                    <form name="bulk" action="{% url bulk_edit %}" method="post" class="hide">
                         {% csrf_token %}
                     </form>
 
-                </div>
+
 
                 <div class="block">
                     <h4>Object Counts</h4>
