@@ -39,26 +39,20 @@ $.extend $.fn.dataTableExt.oStdClasses,
     return true  if $.inArray(oSettings.nTable, obIgnoreTables) is -1
 
     # Default we show nothing
-    return true if filter_cache[oSettings["sTableId"]] is undefined
-    console.log "filter #{oSettings["sTableId"]}"
-    filter_object = filter_cache[oSettings["sTableId"]]["filter_object"].hasClass("active")
-    filter_template = filter_cache[oSettings["sTableId"]]["filter_template"].hasClass("active")
-    filter_group = filter_cache[oSettings["sTableId"]]["filter_group"].hasClass("active")
-    # filter_template = $("div#" + oSettings["sTableId"] + " a[href=\"#filter_template\"]").hasClass("active")
-    # filter_group = $("div#" + oSettings["sTableId"] + " a[href=\"#filter_group\"]").hasClass("active")
-    
+    object_type = oSettings["sTableId"]
+
+    return true if filter_cache[object_type] is undefined
+
     # We are showing templates and this is register=0
-    return true  if filter_template and aData[0] is "0"
-    
-    # We are not showing templates and this is register=0
-    return false  if not filter_template and aData[0] is "0"
-    
-    # We are filtering on object
-    return true  if filter_object and aData[1] is oSettings.sTableId
-    
-    # We are filtering on groups
-    return true  if filter_group and aData[1] is oSettings.sTableId + "group"
-    
+    if aData[0] is "0" and filter_cache[object_type] is "2"
+      return true
+
+    if filter_cache[object_type] is "1" and aData[1] is "#{object_type}group" and aData[0] != "0"
+      return true
+
+    if filter_cache[object_type] is "0" and aData[1] is object_type and aData[0] != "0"
+      return true
+
     # default no
     false
 
@@ -235,21 +229,17 @@ $.extend $.fn.dataTableExt.oStdClasses,
       <li><a href="../../objectbrowser/add/#{ object_type}group" class="capitalize">#{object_type}group</a></li>
       <li class="divider"></li>"""
       $(".toolbar_#{ object_type } div#view_filter.btn-group").append """
-      <a rel="tooltip" title="Show #{ object_type }s" class="btn active" href="#filter_object">
+      <a rel="tooltip" title="Show #{ object_type }s" class="btn active" data-filter-type="0">
         <i class="glyph-computer-service"></i>
       </a>
-      <a rel="tooltip" title="Show #{ object_type }groups" class="btn" href="#filter_group">
+      <a rel="tooltip" title="Show #{ object_type }groups" class="btn" data-filter-type="1">
         <i class="glyph-parents"></i>
       </a>
-      <a rel="tooltip" title="Show #{ object_type } templates" class="btn" href="#filter_template">
+      <a rel="tooltip" title="Show #{ object_type } templates" class="btn" data-filter-type="2">
         <i class="glyph-cogwheels"></i>
       </a>"""
 
-      filter_cache[object_type] = {
-        filter_object: $("div\##{ object_type } a[href=\"#filter_object\"]"),
-        filter_template: $("div\##{ object_type } a[href=\"#filter_template\"]"),
-        filter_group: $("div\##{ object_type } a[href=\"#filter_group\"]")
-      }
+      filter_cache[object_type] = "0"
 
     for ot in object_types
       if ot is object_type or ot is "#{object_type}group"
@@ -288,13 +278,12 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $target = $(this)
       e.preventDefault()
       return false  if $target.hasClass("active")
+      object_type = $target.parentsUntil(".tab-content", ".tab-pane").attr("id")
       $target.siblings().each ->
         $(this).removeClass "active"
 
       $target.addClass "active"
-      
-      #$target.children().addClass('glyph-white');
-      object_type = $target.parentsUntil(".tab-content", ".tab-pane").attr("id")
+      filter_cache[object_type] = $target.attr('data-filter-type')
       $("table#" + object_type).dataTable().fnDraw()
       false
 
