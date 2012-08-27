@@ -40,17 +40,18 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     # Default we show nothing
     object_type = oSettings["sTableId"]
+    cache_type = filter_cache[object_type]
 
-    return true if filter_cache[object_type] is undefined
+    return true if cache_type is undefined
 
     # We are showing templates and this is register=0
-    if aData[0] is "0" and filter_cache[object_type] is "2"
+    if aData[0] is "0" and cache_type is "2"
       return true
 
-    if filter_cache[object_type] is "1" and aData[1] is "#{object_type}group" and aData[0] != "0"
+    if cache_type is "1" and aData[1] is "#{object_type}group" and aData[0] != "0"
       return true
 
-    if filter_cache[object_type] is "0" and aData[1] is object_type and aData[0] != "0"
+    if cache_type is "0" and aData[1] is object_type and aData[0] != "0"
       return true
 
     # default no
@@ -167,7 +168,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       # "bAutoWidth":true,
       bScrollCollapse: false
       bPaginate: true
-      iDisplayLength: 200
+      iDisplayLength: 100
       aaData: dtData
       sDom: "<'row-fluid'<'span7'<'toolbar_#{ object_type }'>>'<'span5'f>r>t<'row-fluid'<'span6'i><'span6'p>>"
       # Callback which assigns tooltips to visible pages
@@ -180,16 +181,6 @@ $.extend $.fn.dataTableExt.oStdClasses,
             $("#actions #modify").show()
           else
             $("#actions #modify").hide()
-          if checked > 1
-            $("#actions #modify a#update").show()
-          else
-            $("#actions #modify a#update").hide()
-          if checked == 1
-            $("#actions #modify a#copy").show()
-          else
-            $("#actions #modify a#copy").hide()
-
-
     )
 
     # Unbind sorting on the first visible column
@@ -219,7 +210,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
           </div>
           <div id="modify" class="btn-group pull-right hide">
             <a rel="tooltip" id="copy" title="Copy" class="btn" data-target="bulk_copy"><i class="icon-copy"></i></a>
-            <a rel="tooltip" id="update" title="Bulk Update" class="btn hide" data-target="bulk_edit"><i class="glyph-pencil"></i></a>
+            <a rel="tooltip" id="update" title="Edit" class="btn" data-target="bulk_edit"><i class="glyph-pencil"></i></a>
             <a rel="tooltip" id="delete" title="Delete" class="btn" data-target="bulk_delete"><i class="glyph-bin"></i></a>
           </div>
         </div>
@@ -281,15 +272,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
         $("#actions #modify").show()
       else
         $("#actions #modify").hide()
-      if checked > 1
-        $("#actions #modify a#update").show()
-      else
-        $("#actions #modify a#update").hide()
-      if checked == 1
-        $("#actions #modify a#copy").show()
-      else
-        $("#actions #modify a#copy").hide()
-    
+
     # When inputs are selected in toolbar, we call redraw on the datatable which calls the filtering routing
     #        above 
     $("[class^=\"toolbar_\"] div#view_filter.btn-group a").on "click", (e) ->
