@@ -327,6 +327,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     
     # Get the object_id
     id = modal.attr("data-object-id")
+    object_type = modal.attr("data-object-type")
     unless id
       alert "Error, no data-object-id for run command"
       return false
@@ -367,15 +368,23 @@ $.extend $.fn.dataTableExt.oStdClasses,
     , (data) ->
       statusLabel = "label-inverse"
       statusString = "Unknown"
-      if data[0] is 2
-        statusLabel = "label-important"
-        statusString = "Critical"
-      if data[0] is 1
-        statusLabel = "label-warning"
-        statusString = "Warning"
-      if data[0] is 0
-        statusLabel = "label-success"
-        statusString = "OK"
+      if object_type is "host"
+        if data[0] > 1
+          statusLabel = "label-important"
+          statusString = "DOWN"
+        else
+          statusLabel = "label-success"
+          statusString = "UP"
+      else
+        if data[0] is 2
+          statusLabel = "label-important"
+          statusString = "Critical"
+        if data[0] is 1
+          statusLabel = "label-warning"
+          statusString = "Warning"
+        if data[0] is 0
+          statusLabel = "label-success"
+          statusString = "OK"
       $("#run_check_plugin #state").addClass statusLabel
       $("#run_check_plugin #state").html statusString
       if data[1]
