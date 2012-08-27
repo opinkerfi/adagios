@@ -1,7 +1,7 @@
 {% extends "base_objectbrowser.html" %}
-{% block title %}{{ my_object.object_type }} {{ my_object.shortname }}{% endblock %}
+{% block title %}{{ my_object.object_type }} {{ my_object.description }}{% endblock %}
 {% block smallheader %}Edit {{ my_object.object_type }}{% endblock %}
-{% block largeheader %}{{ my_object.shortname }}{% endblock %}
+{% block largeheader %}{{ my_object.description }}{% endblock %}
 
 
 {% block content %}

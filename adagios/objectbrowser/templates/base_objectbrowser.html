@@ -77,7 +77,7 @@
         <h5>Contactgroups</h5>
         <ul class="nav nav-list">
             {% for i in effective_contactgroups %}
-                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -85,7 +85,7 @@
         <h5>Hostgroups</h5>
         <ul class="nav nav-list">
             {% for i in effective_hostgroups %}
-                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -93,7 +93,7 @@
         <h5>Hosts</h5>
         <ul class="nav nav-list">
             {% for i in effective_hosts %}
-                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -101,14 +101,14 @@
         <h5>Contacts</h5>
         <ul class="nav nav-list">
             {% for i in effective_contacts %}
-                <li><a href="{% url edit_object i.id %}">{{ i.shortname }}</a></li>
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
     {% if effective_command %}
         <h5>Check Command</h5>
         <ul class="nav nav-list">
-            <li><a href="{% url edit_object effective_command.id %}">{{ effective_command.shortname }}</a></li>
+            <li><a href="{% url edit_object effective_command.id %}">{{ effective_command.description }}</a></li>
         </ul>
     {% endif %}
 

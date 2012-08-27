@@ -468,7 +468,7 @@ def bulk_edit(request):
             try:
                 c['form'].save()
                 for i in c['form'].changed_objects:
-                    c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+                    c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_description() ))
             except IOError, e:
                 c['errors'].append(e)
         c['success'] = "success"
@@ -501,7 +501,7 @@ def bulk_delete(request):
                 c['form'].delete()
                 c['success'] = "Success"
                 for i in c['form'].changed_objects:
-                    c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_shortname() ))
+                    c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_description() ))
             except IOError, e:
                 c['errors'].append( e )
 
