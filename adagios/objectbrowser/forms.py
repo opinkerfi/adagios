@@ -295,12 +295,30 @@ class GeekEditObjectForm(forms.Form):
 
 
 class BaseBulkForm(forms.Form):
-    """ To make changes to multiple objects at once """
+    """ To make changes to multiple objects at once
+
+    * any POST data that has the name change_<OBJECTID> will be fetched
+    and the ObjectDefinition saved in self.changed_objects
+    * any POST data that has the name hidden_<OBJECTID> will be fetched
+    and the ObjectDefinition saved in self.all_objects
+    """
     def __init__(self, objects=[],*args, **kwargs):
         self.objects = []
         self.all_objects = []
         self.changed_objects = []
         forms.Form.__init__(self,*args,**kwargs)
+        for k,v in self.data.items():
+            if k.startswith('hidden_'):
+                obj = Model.ObjectDefinition.objects.get_by_id(v)
+                if obj not in self.all_objects:
+                    self.all_objects.append( obj )
+            if k.startswith('change_'):
+                object_id = k[ len("change_"): ]
+                obj = Model.ObjectDefinition.objects.get_by_id(object_id)
+                if obj not in self.changed_objects:
+                    self.changed_objects.append( obj )
+                if obj not in self.all_objects:
+                    self.all_objects.append( obj )
     def clean(self):
         #self.cleaned_data = {}
         for k,v in self.data.items():
@@ -326,6 +344,20 @@ class BulkEditForm(BaseBulkForm):
             value = self.cleaned_data['new_value']
             i[key] = value
             i.save()
+
+class BulkCopyForm(BaseBulkForm):
+    attribute_name = forms.CharField()
+    new_value = forms.CharField()
+    def __init__(self, *args, **kwargs):
+        BaseBulkForm.__init__(self,*args,**kwargs)
+        self.fields['attribute_name'].value = "test 2"
+        # Lets take a look at the first item to be copied and suggest a field name to change
+    def save(self):
+        for i in self.changed_objects:
+            key = self.cleaned_data['attribute_name']
+            value = self.cleaned_data['new_value']
+            kwargs = { key:value }
+            i.copy(**kwargs)
 
 class BulkDeleteForm(BaseBulkForm):
     yes_i_am_sure = forms.BooleanField(label="Yes, i am sure")
