@@ -2,7 +2,26 @@
 {% block title %}Install Agent{% endblock %}
 {% block smallheader %}Install{% endblock %}
 {% block largeheader %}Agent{% endblock %}
-
+{% block footer %}
+    <script>
+    $(document).ready(function() {
+        $("label.control-label[for='windows_domain']").parent().hide();
+        if ($("div#install_agent #id_install_method").val() == 'winexe') {
+            $("label.control-label[for='windows_domain']").parent().show();
+        } else {
+            $("label.control-label[for='windows_domain']").parent().hide();
+        }
+        $("div#install_agent").show();
+        $("div#install_agent #id_install_method").on('change', function() {
+            if ($(this).val() == 'winexe') {
+                $("label.control-label[for='windows_domain']").parent().show();
+            } else {
+                $("label.control-label[for='windows_domain']").parent().hide();
+            }
+        });
+    });
+    </script>
+{% endblock %}
 
 
 {% block content %}
@@ -20,12 +39,14 @@ Script output:
 {{ stdout }}
 </pre>
 {% endif %}
-
+<!-- Ugly hack till we can pass css to boostrap_fields -->
+<div id="install_agent" class="hide">
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
     </form>
+</div>
 
 {% endblock %}

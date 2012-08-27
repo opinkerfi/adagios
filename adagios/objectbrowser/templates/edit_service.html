@@ -7,20 +7,14 @@
 {% block sidebar %}{{ block.super }}{% endblock %}
 
 {% block adagios_hausinn %}
-
-        {{ block.super }}
-
-        {% if status %}
-            <div class="row-fluid">
-                <!-- offset don't work on fluid grid system for now -->
-                <div class="span1"><div class="servicestate label {{ status.css_label }}" id="state">{{ status.text }}</div></div>
-                <div class="span11"><div class="label label-inverse">{{ status.plugin_output}}</div></div>
-            </div>
-
-        {% endif %}
-
-
-
+    {{ block.super }}
+    {% if status.text and status.plugin_output %}
+        <div class="row-fluid">
+            <!-- offset don't work on fluid grid system for now -->
+            <div class="span1"><div class="servicestate label {{ status.css_label }}" id="state">{{ status.text }}</div></div>
+            <div class="span11"><div class="label label-inverse">{{ status.plugin_output}}</div></div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block content %}

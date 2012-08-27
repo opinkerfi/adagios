@@ -16,26 +16,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.shortcuts import render_to_response, redirect
-from django.core import serializers
-from django.http import HttpResponse, HttpResponseServerError,\
-    HttpResponseRedirect
-from django.utils import simplejson
+from django.http import  HttpResponseRedirect
 from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
-import sys
 import os
 from os.path import dirname
 
 from pynag.Model import ObjectDefinition
 from pynag import Model
-from pynag.Model import EventHandlers
 from pynag.Parsers import status
 
 from adagios import settings
 from forms import *
-
-import adagios
 
 def home(request):
     return redirect('adagios')
@@ -347,6 +340,20 @@ def _edit_host( request, c):
 
     try: c['effective_contactgroups'] = host.get_effective_contact_groups()
     except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
+
+    try:
+        s = status()
+        s.parse()
+        c['status'] = s.get_hoststatus(host['host_name'])
+        current_state = c['status']['current_state']
+        if int(current_state) < 2:
+            c['status']['text'] = 'UP'
+            c['status']['css_label'] = 'label-success'
+        else:
+            c['status']['text'] = 'DOWN'
+            c['status']['css_label'] = 'label-warning'
+    except Exception:
+        pass
 
     return render_to_response('edit_host.html', c, context_instance = RequestContext(request))
 

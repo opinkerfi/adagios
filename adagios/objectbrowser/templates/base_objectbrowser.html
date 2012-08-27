@@ -112,7 +112,7 @@
         </ul>
     {% endif %}
 
-    <div class="modal hide wide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}">
+    <div class="modal hide wide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}" data-object-type="{{ my_object.object_type }}">
         <div class="modal-header">
             <h3>Run Check Plugin</h3>
             <dl class="dl-horizontal">
@@ -138,7 +138,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button id="run_check_plugin_refresh" class="btn hide" data-object-id="{{ my_object.id }}"><i class="icon-refresh"></i> Refresh</button>
+            <button id="run_check_plugin_refresh" class="btn hide" data-object-id="{{ my_object.id }}" data-object-type="{{ my_object.object_type }}"><i class="icon-refresh"></i> Refresh</button>
             <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
