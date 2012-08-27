@@ -23,6 +23,13 @@
 {% block sidebar %}
     <h5>Actions</h5>
     <ul class="nav nav-list">
+
+        {% if my_object %}
+            <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
+            <li><a href="{%  url objectbrowser.views.copy_object my_object.id %}"><i class="icon-copy"></i> Copy this {{  my_object.object_type }}</a></li>
+            <li><a href="{%  url objectbrowser.views.delete_object my_object.id %}"><i class="icon-trash"></i> Delete this {{  my_object.object_type }}</a></li>
+        {% endif %}
+
         {% if my_object.object_type == 'service' %}
             <li>
                 <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
@@ -40,11 +47,6 @@
         {% if my_object.action_url %}
             <li><a href="{{ my_object.action_url }}"><i class="glyph-charts"></i> View Graphs</a></li>
         {%  endif %}
-
-        {% if my_object %}
-            <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
-            <li><a href="{%  url objectbrowser.views.delete_object my_object.id %}"><i class="icon-trash"></i> Delete</a></li>
-        {% endif %}
 
 
     </ul>
