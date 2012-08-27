@@ -175,7 +175,7 @@ div.label.servicestate {
 
 /* Disable overflow in twitter bootstrap tabs */
 .tab-content {
-    overflow: hidden;
+    overflow: visible;
 }
 
 .selectall .checkbox {
