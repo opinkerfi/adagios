@@ -209,26 +209,32 @@ $.extend $.fn.dataTableExt.oStdClasses,
             </ul>
           </div>
           <div id="modify" class="btn-group pull-right hide">
-            <a rel="tooltip" id="copy" title="Copy" class="btn" data-target="bulk_copy"><i class="icon-copy"></i></a>
-            <a rel="tooltip" id="update" title="Edit" class="btn" data-target="bulk_edit"><i class="glyph-pencil"></i></a>
-            <a rel="tooltip" id="delete" title="Delete" class="btn" data-target="bulk_delete"><i class="glyph-bin"></i></a>
+            <a rel="tooltip" id="copy" title="Copy" class="btn btn-important" data-target-bulk="bulk_copy" data-target="copy"><i class="icon-copy"></i></a>
+            <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit_object"><i class="glyph-pencil"></i></a>
+            <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete_object"><i class="glyph-bin"></i></a>
           </div>
         </div>
 
         """
     $("#actions #modify a").on "click", (e) ->
-      params = {}
-      swhat = $(this).attr('data-target')
-      $form = $("form[name=\"bulk\"]")
-      $form.attr "action", swhat
-      $("table tbody input:checked").each (index) ->
-        $("<input>").attr(
-          type: "hidden"
-          name: "change_" + $(this).attr("name")
-          value: "1"
-        ).appendTo $form
+      checked = $("input#ob_mass_select:checked").length
+      if checked > 1
+        params = {}
+        swhat = $(this).attr('data-target-bulk')
+        $form = $("form[name=\"bulk\"]")
+        $form.attr "action", swhat
+        $("table tbody input:checked").each (index) ->
+          $("<input>").attr(
+            type: "hidden"
+            name: "change_" + $(this).attr("name")
+            value: "1"
+          ).appendTo $form
 
-      $form.submit()
+        $form.submit()
+      else
+        where = $(this).attr('data-target')
+        id = $("table tbody input:checked").attr('name')
+        window.location.href = window.location.href.split("#")[0] + "#{where}/id=#{id}"
       e.preventDefault()
 
     if (object_type != "command" and object_type != "timeperiod")
