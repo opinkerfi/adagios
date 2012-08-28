@@ -57,8 +57,8 @@
                 <ul class="nav pull-right">
                     <li>
                         <a data-toggle="modal"
-                           href="#warnings">
-                            <div class="badge{% if errors|length %} badge-warning{% endif %}">{{ errors|length }} Problem{% if errors|length > 1 %}s{% endif %}</div>
+                           href="#notifications">
+                            <div class="badge{% if notifications|length %} badge-warning{% endif %}">{{ notifications|length }} Notifications{% if notifications|length > 1 %}s{% endif %}</div>
                         </a>
                     </li>
                     <li class="dropdown">
@@ -85,18 +85,16 @@
 </div>
 
 
-{% if errors|length %}
-    <div class="modal hide fade" id="warnings">
-        <div class="modal-header"><h3>Errors Found: {{ errors|length }}</h3></div>
-        <div class="modal-body alert">
-            {%  for error in errors %}
-                <div>
-                    <strong>Warning!</strong> {{  error }}
-                </div>
-            {%  endfor %}
-            {%  for message in messages %}
-                <div class="alert alert-success">
-                    <strong>Warning!</strong> {{  error }}
+    <div class="modal hide fade" id="notifications">
+        <div class="modal-header"><h3>Notifications Found: {{ notifications|length }}</h3></div>
+        <div class="modal-body">
+            {%  for id,notification in notifications.items %}
+                <div class="alert alert-{{ notification.level }}">
+                        <!-- TODO: Tommi, þessi button á ekki að vera <a href> .. ertu með betri leið ? -->
+                        <button type="button" class="close" data-dismiss="alert">
+                            <a href="/rest/adagios/txt/clear_notification?notification_id={{ id }}">×</a>
+                        </button>
+                    <strong>{{ notification.level }}!</strong> {{  notification.message }}
                 </div>
             {%  endfor %}
         </div>
@@ -104,6 +102,5 @@
             <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
-{% endif %}
 
 <!-- snippets/header.html ends -->

@@ -21,5 +21,34 @@ This is a rest interface used by the "/rest/" module that affects adagios direct
 
 '''
 
-from adagios import __version__
+from adagios import __version__, notifications
 version = __version__
+
+
+def add_notification(level="info", message="message"):
+    """ Add a new notification to adagios notification bar.
+
+    Arguments:
+      level   -- pick "info" "success" "error" "danger"
+      message -- Arbitary text message,
+
+    Returns:
+      None
+
+    Examples:
+    >>> add_notification(level="warning", message="Nagios needs to reload")
+    """
+    notification_id = str(message.__hash__())
+    notifications[notification_id] = { "level": level, "message":message }
+
+def clear_notification(notification_id):
+    """ Clear one notification from adagios notification panel """
+    if notification_id in notifications:
+        del notifications[notification_id]
+        return "success"
+    return "not found"
+
+def clear_all_notifications():
+    """ Removes all notifications from adagios notification panel """
+    notifications.clear()
+    return "all notifications cleared"

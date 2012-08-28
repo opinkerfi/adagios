@@ -15,7 +15,6 @@
             <ul class="nav nav-tabs" id="objecttab">
                 <li><a href="#timeperiod" data-toggle="tab">timeperiod</a></li>
 		    </ul>
-        <form action="geek_edit/id={{my_object.id}}" method="post">{% csrf_token %}
                 <div class="tab-content">
 
                     <div class="tab-pane" id="timeperiod">
@@ -36,8 +35,7 @@
                     </div>
                 </div>
 
-            </form>
-
+1
 {% else %}
 	<p>Object not found </p>
 {% endif %}
