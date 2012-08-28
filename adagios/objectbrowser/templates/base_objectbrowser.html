@@ -67,10 +67,15 @@
         </ul>
     {% endif %}
     {% if effective_services %}
-        <h5>Related services</h5>
+        <h5>Services</h5>
         <ul class="nav nav-list">
             {% for i in effective_services %}
-                <li><a href="{% url edit_object i.id %}">{{ i.service_description }}</a></li>
+                <li>
+                    <a href="{% url edit_object i.id %}">
+                        {{ i.service_description }}
+                        {% if i.register == "0" %}(unregistered){% endif %}
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
