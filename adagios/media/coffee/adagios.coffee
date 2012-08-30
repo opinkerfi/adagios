@@ -57,7 +57,17 @@ $.extend $.fn.dataTableExt.oStdClasses,
     # default no
     false
 
-  
+  $.fn.adagios_version = () ->
+    $.get("http://adagios.opensource.is/rest/adagios/txt/version", (data) ->
+      $(this).text data
+      this
+    ).error(->
+      $(this).text "Unknown"
+      this
+    )
+    this
+
+
   #
   #     Creates a dataTable for adagios objects
   #
