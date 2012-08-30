@@ -211,3 +211,7 @@ div#loading {
 [class^="toolbar_"] div div {
     padding-right: 16px;
 }
+
+div#top_status_output {
+    overflow: hidden;
+}
