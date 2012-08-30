@@ -18,37 +18,22 @@
         </dl>
     </div>
 
-    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
 
     <!-- <button class="btn btn-success">Run all Service checks</button> -->
-        <div style="margin: 16px">
-            <a href="{% url okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">Install Agent</a>
+    <div style="margin: 16px">
+        <a href="{% url okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">Install Agent</a>
+    </div>
+
     <h2>Services of this host:</h2>
-
-    <div class="accordion" id="edit_host_services">
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% for form in forms %}
-
-        <div class="accordion-group">
-            {% cycle '<div class="span6">' '<div class="row-fluid"><div class="span6">' %}
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ form.service.id }}">
-                    {{ form.description }}
-                </a>
-            </div>
-            <div id="collapse{{ form.service.id }}" class="accordion-body collapse">
-                <div class="accordion-inner">
-                    <pre>{{ form.command_line }}</pre>
-                    {% include "bootstrap_fields.html" with fields=form %}
-                    <button class="btn btn-primary" type="submit">Save</button>
-                </div>
-            </div>
-            {% cycle '</div>' '</div></div>' %}
-        </div>
+            <hr/><h4>{{ form.description }}</h4><hr/>
+            <pre>{{ form.command_line }}</pre>
+            {% include "bootstrap_fields.html" with fields=form %}
+            <button class="btn btn-primary" type="submit">Save</button>
         {% endfor %}
 
-    </div>
-    </div>
-</form>
+    </form>
 {% else %}
     Host not found.
 {% endif %}

@@ -1,5 +1,6 @@
 __version__="git-latest"
 
+notifications = {}
 def startup():
     """ Do some pre-loading and parsing of objects
 

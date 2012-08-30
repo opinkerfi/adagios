@@ -134,6 +134,7 @@ class PynagForm(forms.Form):
         super(self.__class__,self).__init__(*args, **kwargs)
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
+        print pynag_object
         defined_attributes = sorted( self.pynag_object._defined_attributes.keys() )
         inherited_attributes = sorted( self.pynag_object._inherited_attributes.keys() )
         all_attributes = sorted( object_definitions.get(object_type).keys() )
@@ -292,6 +293,64 @@ class GeekEditObjectForm(forms.Form):
     def save(self):
         definition = self.cleaned_data['definition']
         self.pynag_object.rewrite( str_new_definition=definition )
+
+class CopyObjectForm(forms.Form):
+    """ Form to assist a user to copy a single object definition
+    """
+    def __init__(self, pynag_object, *args, **kwargs):
+        self.pynag_object = pynag_object
+        super(self.__class__, self).__init__(*args,**kwargs)
+
+        # We display different field depending on what type of an object it is
+        object_type = pynag_object['object_type']
+        if object_type == 'host':
+            new_host_name = "%s-copy" % pynag_object.get_description()
+            self.fields['host_name'] = forms.CharField(help_text="Select a new host name for this host", initial=new_host_name)
+            self.fields['address'] = forms.CharField(help_text="Select a new ip address for this host")
+            self.fields['recursive'] = forms.BooleanField(required=False, label="Copy Services",help_text="Check this box if you also want to copy all services of this host.")
+        elif object_type == 'service':
+            new_host_name = "%s-copy" % pynag_object.host_name
+            self.fields['host_name'] = forms.CharField(help_text="Select a new host name for this service", initial=new_host_name)
+        else:
+            field_name = "%s_name" % object_type
+            initial = "%s-copy" % pynag_object[field_name]
+            help_text=object_definitions[object_type][field_name].get('help_text')
+            if help_text == '':
+                help_text = "Please specify a new %s" % field_name
+            self.fields[field_name] = forms.CharField(initial=initial, help_text=help_text)
+    def save(self):
+        # If copy() returns a single object, lets transform it into a list
+        tmp = self.pynag_object.copy(**self.cleaned_data)
+        if not type(tmp) == type([]):
+            tmp = [tmp]
+        self.copied_objects = tmp
+    def _clean_shortname(self):
+        """ Make sure shortname of a particular object does not exist.
+
+        Raise validation error if shortname is found
+        """
+        object_type = self.pynag_object.object_type
+        field_name = "%s_name" % object_type
+        value = self.cleaned_data[field_name]
+        try:
+            self.pynag_object.objects.get_by_shortname(value)
+            raise forms.ValidationError("A %s with %s='%s' already exists." % (object_type, field_name, value))
+        except KeyError:
+            return value
+    def clean_host_name(self):
+        return self._clean_shortname()
+    def clean_timeperiod_name(self):
+        return self._clean_shortname()
+    def clean_command_name(self):
+        return self._clean_shortname()
+    def clean_contactgroup_name(self):
+        return self._clean_shortname()
+    def clean_hostgroup_name(self):
+        return self._clean_shortname()
+    def clean_servicegroup_name(self):
+        return self._clean_shortname()
+    def clean_contact_name(self):
+        return self._clean_shortname()
 
 
 class BaseBulkForm(forms.Form):

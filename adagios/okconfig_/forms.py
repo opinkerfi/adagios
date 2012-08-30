@@ -132,14 +132,12 @@ class EditTemplateForm(forms.Form):
     def __init__(self, service=Model.Service(), *args, **kwargs):
         self.service = service
         super(forms.Form,self).__init__(*args, **kwargs)
-        
+
         # Run through all the all attributes. Add
         # to form everything that starts with "_"
         self.description = service['service_description']
         fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'register')
-        self.fields[fieldname] = forms.BooleanField(initial=service['register'], label='register')
-        fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'service_description')
-        self.fields[fieldname] = forms.CharField(initial=service['service_description'], label='service_description')
+        self.fields[fieldname] = forms.BooleanField(initial=service['register']=="1", label='Enable service check')
 
         macros = []
         self.command_line = None
@@ -151,7 +149,7 @@ class EditTemplateForm(forms.Form):
             for k in sorted( macros ):
                 fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
                 label = k.replace('$_SERVICE','')
-                label = label.replace('_', '')
+                label = label.replace('_', ' ')
                 label = label.replace('$', '')
                 label = label.capitalize()
                 self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)

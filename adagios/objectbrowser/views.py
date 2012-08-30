@@ -105,7 +105,7 @@ def geek_edit( request, object_id ):
         return render_to_response('error.html', c, context_instance = RequestContext(request))
     if request.method == 'POST':
         # Manual edit of the form
-        form = GeekEditObjectForm(data=request.POST, pynag_object=o)
+        form = GeekEditObjectForm(pynag_object=o, data=request.POST)
         if form.is_valid():
             try:
                 form.save()
@@ -504,7 +504,7 @@ def bulk_delete(request):
                 c['form'].delete()
                 c['success'] = "Success"
                 for i in c['form'].changed_objects:
-                    c['messages'].append( "saved changes to %s %s" % (i.object_type, i.get_description() ))
+                    c['messages'].append( "Deleted %s %s" % (i.object_type, i.get_description() ))
             except IOError, e:
                 c['errors'].append( e )
 
@@ -552,7 +552,27 @@ def delete_object(request, object_id):
     if request.method == 'POST':
         try:
             my_obj.delete()
-            return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) )
+            return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) + "#" + my_obj.object_type )
         except IOError, e:
             c['errors'].append( e )
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
+
+def copy_object(request, object_id):
+    ''' View to Copy a single object definition '''
+    c = {}
+    c.update(csrf(request))
+    c['messages'] = []
+    c['errors'] = []
+    c['object'] = my_obj = Model.ObjectDefinition.objects.get_by_id(object_id)
+    if request.method == 'GET':
+        c['form'] = CopyObjectForm(pynag_object=my_obj, initial=request.GET)
+    elif request.method == 'POST':
+        c['form'] = f = CopyObjectForm(pynag_object=my_obj, data=request.POST)
+        if f.is_valid():
+            try:
+                f.save()
+                c['copied_objects'] = f.copied_objects
+                c['success'] = 'success'
+            except IndexError, e:
+                c['errors'].append( e )
+    return render_to_response('copy_object.html', c, context_instance = RequestContext(request))

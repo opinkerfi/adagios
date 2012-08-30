@@ -30,8 +30,21 @@ True
 
 def test(request):
         c = { }
-        from pynag import Model
-        s = Model.Service.objects.all
-        c['config'] = Model.config.errors
+        f = forms.PerfDataForm(initial=request.GET)
+        if request.method == 'POST':
+            f = forms.PerfDataForm(data=request.POST)
+            if f.is_valid():
+                f.save()
+                c['results'] = f.results
+                for i in f.results:
+                    if i.status == "ok":
+                        i.csstag = "success"
+                    elif i.status == "critical":
+                        i.csstag = "danger"
+                    elif i.status == "unknown":
+                        i.csstag = 'info'
+                    else:
+                        i.csstag = i.status
+        c['form'] = f
         return render_to_response('test.html', c, context_instance = RequestContext(request))
 

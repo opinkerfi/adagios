@@ -10,6 +10,7 @@ Convenient stateless functions for pynag. This module is used by the /rest/ inte
 
 from pynag import Model
 from pynag import Parsers
+from pynag import Control
 from pynag import __version__
 from socket import gethostbyname_ex
 _config = Parsers.config()
@@ -148,6 +149,17 @@ def set_maincfg_attribute(attribute,new_value, old_value='None', append=False):
     elif append.lower() == 'true': append=True
     elif append.lower() == 'none': append=None
     return _config._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
+
+def reload_nagios():
+    """ Reloads nagios. Returns "Success" on Success """
+    daemon = Control.daemon(nagios_cfg=Model.config.cfg_file, nagios_init='/etc/init.d/nagios3', nagios_bin='/usr/sbin/nagios3')
+    if daemon.reload() == 0:
+        return "Success"
+    else:
+        return "Failed to reload nagios (do you have enough permission?)"
+def needs_reload():
+    """ Returns True if Nagios server needs to reload configuration """
+    return Model.config.needs_reload()
 
 
 def dnslookup(host_name):

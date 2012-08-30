@@ -13,28 +13,6 @@
             <a class="brand" href="{% url misc.views.index %}">Adagios</a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li class="{% if urlname == "home"%}active{% endif %}">
-                        <a href="{% url home %}"><i class="icon-home icon-white"></i> Home</a>
-                    </li>
-
-
-                    <!-- Wizards drop down -->
-                    <li class="dropdown">
-                        <a class="dropdown-toggle"
-                           data-toggle="dropdown"
-                           href="#"><i class="icon-edit icon-white"></i> Wizards <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{% url okconfig_.views.addhost %}">Add Host</a></li>
-                            <li><a href="{% url okconfig_.views.addtemplate %}">Add Template to Host</a></li>
-                            <li><a href="{% url okconfig_.views.addservice %}">Add Service</a></li>
-                            <li><a href="{% url okconfig_.views.choose_host %}">Edit Host</a></li>
-                            <li><a href="{% url okconfig_.views.addgroup %}">Add Group</a></li>
-                            <li><a href="{% url okconfig_.views.install_agent %}">Install Agent</a></li>
-                            <li><a href="{% url okconfig_.views.scan_network %}">Scan Network</a></li>
-                        </ul>
-                    </li>
-
 
 
 
@@ -48,6 +26,24 @@
                         <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i>Monitor</a>
                     </li>
 
+
+                    <!-- Okconfig drop down -->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#"><i class="icon-edit icon-white"></i> Okconfig <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url okconfig_.views.addhost %}">Add Host</a></li>
+                            <li><a href="{% url okconfig_.views.addtemplate %}">Add Template to Host</a></li>
+                            <li><a href="{% url okconfig_.views.addservice %}">Add Service</a></li>
+                            <li><a href="{% url okconfig_.views.choose_host %}">Edit Host</a></li>
+                            <li><a href="{% url okconfig_.views.addgroup %}">Add Group</a></li>
+                            <li><a href="{% url okconfig_.views.install_agent %}">Install Agent</a></li>
+                            <li><a href="{% url okconfig_.views.scan_network %}">Scan Network</a></li>
+                        </ul>
+                    </li>
+
                 </ul>
 
 
@@ -55,10 +51,18 @@
 
                 <!-- Right aligned navbar - MISC -->
                 <ul class="nav pull-right">
+                    {% if needs_reload %}
+                        <li>
+
+                                <button  class="btn btn-success">
+                                    <a href="{% url misc.views.nagios_service %}"> <i class="icon-refresh"></i> Reload Nagios </a>
+                                </button>
+                        </li>
+                    {% endif %}
                     <li>
                         <a data-toggle="modal"
-                           href="#warnings">
-                            <div class="badge{% if errors|length %} badge-warning{% endif %}">{{ errors|length }} Problem{% if errors|length > 1 %}s{% endif %}</div>
+                           href="#notifications">
+                            <div class="badge{% if notifications|length %} badge-warning{% endif %}">{{ notifications|length }} Notifications{% if notifications|length > 1 %}s{% endif %}</div>
                         </a>
                     </li>
                     <li class="dropdown">
@@ -73,6 +77,7 @@
                             <li class="divider"></li>
                             <li><a href="{%  url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
                             <li><a href="{%  url objectbrowser.views.edit_nagios_cfg %}">Edit nagios.cfg</a></li>
+                            <li><a href="{%  url misc.views.nagios_service %}">Nagios Service</a></li>
                             <li><a href="{%  url misc.views.gitlog %}">Object History</a></li>
                             <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
                             <li><a href="{%  url misc.views.settings %}">Settings</a></li>
@@ -85,18 +90,16 @@
 </div>
 
 
-{% if errors|length %}
-    <div class="modal hide fade" id="warnings">
-        <div class="modal-header"><h3>Errors Found: {{ errors|length }}</h3></div>
-        <div class="modal-body alert">
-            {%  for error in errors %}
-                <div>
-                    <strong>Warning!</strong> {{  error }}
-                </div>
-            {%  endfor %}
-            {%  for message in messages %}
-                <div class="alert alert-success">
-                    <strong>Warning!</strong> {{  error }}
+    <div class="modal hide fade" id="notifications">
+        <div class="modal-header"><h3>Notifications Found: {{ notifications|length }}</h3></div>
+        <div class="modal-body">
+            {%  for id,notification in notifications.items %}
+                <div class="alert alert-{{ notification.level }}">
+                        <!-- TODO: Tommi, þessi button á ekki að vera <a href> .. ertu með betri leið ? -->
+                        <button type="button" class="close" data-dismiss="alert">
+                            <a href="{% url rest/adagios %}txt/clear_notification?notification_id={{ id }}">×</a>
+                        </button>
+                    <strong>{{ notification.level }}!</strong> {{  notification.message }}
                 </div>
             {%  endfor %}
         </div>
@@ -104,6 +107,5 @@
             <button class="btn" data-dismiss="modal">Close</button>
         </div>
     </div>
-{% endif %}
 
 <!-- snippets/header.html ends -->

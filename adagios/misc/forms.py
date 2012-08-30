@@ -18,8 +18,9 @@
 from django import forms
 
 from django.core.mail import send_mail
-
+import os.path
 from adagios import settings
+from pynag import Model, Control
 
 TOPIC_CHOICES = (
 	('general', 'General Suggestion'),
@@ -64,3 +65,34 @@ class AdagiosSettingsForm(forms.Form):
 class OkconfigEditTemplateForm(forms.Form):
 	register = forms.BooleanField()
 	service_description = forms.CharField()
+
+class PerfDataForm(forms.Form):
+    perfdata = forms.CharField()
+    def save(self):
+        from pynag import Model
+        perfdata = self.cleaned_data['perfdata']
+        perfdata = Model.PerfData(perfdata)
+        self.results = perfdata.metrics
+
+COMMAND_CHOICES = [('reload','reload'), ('status','status'),('restart','restart'),('stop','stop'),('start','start')]
+if os.path.isfile('/etc/init.d/nagios3'):
+    NAGIOS_INIT = '/etc/init.d/nagios3'
+else:
+    NAGIOS_INIT = "/etc/init.d/nagios"
+if os.path.isfile('/usr/bin/nagios'):
+    NAGIOS_BIN='/usr/bin/nagios'
+else:
+    NAGIOS_BIN="/usr/sbin/nagios3"
+class NagiosServiceForm(forms.Form):
+    """ Maintains control of the nagios service / reload / restart / etc """
+    path_to_init_script = forms.CharField(help_text="Path to your nagios init script", initial=NAGIOS_INIT)
+    #nagios_binary = forms.CharField(help_text="Path to your nagios binary", initial=NAGIOS_BIN)
+    command = forms.ChoiceField(choices=COMMAND_CHOICES)
+    def save(self):
+        #nagios_bin = self.cleaned_data['nagios_bin']
+        nagios_init = self.cleaned_data['path_to_init_script']
+        command = self.cleaned_data['command']
+        from subprocess import Popen, PIPE
+        p = Popen([nagios_init,command], stdout=PIPE, stderr=PIPE)
+        self.stdout = p.stdout.read()
+        self.stderr = p.stdout.read()

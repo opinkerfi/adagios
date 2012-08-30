@@ -96,3 +96,18 @@ def gitlog(request):
         c['errors'].append( e )
     return render_to_response('gitlog.html', c, context_instance = RequestContext(request))
 
+def nagios_service(request):
+    """ View to restart / reload nagios service """
+    c = {}
+    c['errors'] = []
+    c['messages'] = []
+    if request.method == 'GET':
+        form = forms.NagiosServiceForm(initial=request.GET)
+    else:
+        form = forms.NagiosServiceForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            c['stdout'] = form.stdout
+            c['stderr'] = form.stderr
+    c['form'] = form
+    return render_to_response('nagios_service.html', c, context_instance = RequestContext(request))
