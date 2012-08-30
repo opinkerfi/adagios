@@ -105,7 +105,7 @@ def geek_edit( request, object_id ):
         return render_to_response('error.html', c, context_instance = RequestContext(request))
     if request.method == 'POST':
         # Manual edit of the form
-        form = GeekEditObjectForm(data=request.POST, pynag_object=o)
+        form = GeekEditObjectForm(pynag_object=o, data=request.POST)
         if form.is_valid():
             try:
                 form.save()

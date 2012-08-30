@@ -149,7 +149,7 @@ class EditTemplateForm(forms.Form):
             for k in sorted( macros ):
                 fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], k)
                 label = k.replace('$_SERVICE','')
-                label = label.replace('_', '')
+                label = label.replace('_', ' ')
                 label = label.replace('$', '')
                 label = label.capitalize()
                 self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)

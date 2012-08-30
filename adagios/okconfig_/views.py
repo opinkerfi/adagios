@@ -212,6 +212,13 @@ def edit(request, host_name):
             if attribute.startswith("$ARG"): continue
             attribute = attribute.replace('$_SERVICE', "_")
             attribute = attribute.replace('$', "")
+            # Sometimes register booleanfield comes in as "on" but we need True
+            if attribute == "register":
+                if v == "on" or v == "1" or v == True:
+                    v == "1"
+                else:
+                    v == "0"
+
             for i in services:
                 if i['service_description'] == service_description:
                     if i[attribute] != v:
@@ -219,10 +226,10 @@ def edit(request, host_name):
                         i.save()
     myforms =[]       
     for service in services:
-        initial = {}
-        initial['service_description'] = service['service_description']
-        initial['register'] = service['register'] == "1"
-        form = forms.EditTemplateForm(service=service,initial=initial)
+        #initial = {}
+        #initial['service_description'] = service['service_description']
+        #initial['register'] = service['register'] == "1"
+        form = forms.EditTemplateForm(service=service)
         myforms.append( form )
     c['forms'] = myforms
     return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))

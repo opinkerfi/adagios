@@ -1,0 +1,39 @@
+{% extends "base2.html" %}
+
+{% block title %}Nagios Service{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Nagios Service{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+
+{% block adagios_hausinn %}{{ block.super }}{% endblock %}
+
+{% block content %}
+    {% if status %}
+        <h4>current status of nagios</h4>
+        <pre> {{ status }}</pre>
+    {% endif %}
+    {% if stdout %}
+        <h4>output</h4>
+        <pre>{{ stdout }}</pre>
+    {% endif %}
+    {% if stderr %}
+        <h4>Errors</h4>
+        <pre>{{ stderr }}</pre>
+    {% endif %}
+    {% if form %}
+        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+            {% include "bootstrap_fields.html" with fields=form %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </form>
+    {% else %}
+    No form found
+    {%  endif %}
+{% endblock %}
+
+{% block header %} {{ block.super }} {% endblock %}
+
+{% block sidebar %} {{ block.super }} {% endblock %}
+
+{% block footer %} {{ block.super }} {% endblock %}

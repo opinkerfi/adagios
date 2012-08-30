@@ -55,6 +55,14 @@
 
                 <!-- Right aligned navbar - MISC -->
                 <ul class="nav pull-right">
+                    {% if needs_reload %}
+                        <li>
+
+                                <button  class="btn btn-success">
+                                    <a href="{% url misc.views.nagios_service %}"> <i class="icon-refresh"></i> Reload Nagios </a>
+                                </button>
+                        </li>
+                    {% endif %}
                     <li>
                         <a data-toggle="modal"
                            href="#notifications">
@@ -73,6 +81,7 @@
                             <li class="divider"></li>
                             <li><a href="{%  url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
                             <li><a href="{%  url objectbrowser.views.edit_nagios_cfg %}">Edit nagios.cfg</a></li>
+                            <li><a href="{%  url misc.views.nagios_service %}">Nagios Service</a></li>
                             <li><a href="{%  url misc.views.gitlog %}">Object History</a></li>
                             <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
                             <li><a href="{%  url misc.views.settings %}">Settings</a></li>
@@ -92,7 +101,7 @@
                 <div class="alert alert-{{ notification.level }}">
                         <!-- TODO: Tommi, þessi button á ekki að vera <a href> .. ertu með betri leið ? -->
                         <button type="button" class="close" data-dismiss="alert">
-                            <a href="/rest/adagios/txt/clear_notification?notification_id={{ id }}">×</a>
+                            <a href="{% url rest/adagios %}txt/clear_notification?notification_id={{ id }}">×</a>
                         </button>
                     <strong>{{ notification.level }}!</strong> {{  notification.message }}
                 </div>

@@ -27,7 +27,7 @@
     <h2>Services of this host:</h2>
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% for form in forms %}
-            <hr/><h3>{{ form.description }}</h3><hr/>
+            <hr/><h4>{{ form.description }}</h4><hr/>
             <pre>{{ form.command_line }}</pre>
             {% include "bootstrap_fields.html" with fields=form %}
             <button class="btn btn-primary" type="submit">Save</button>

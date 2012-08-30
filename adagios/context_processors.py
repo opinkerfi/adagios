@@ -29,12 +29,13 @@ def get_notifications(request):
     try:
         warn = "Nagios should be reloaded to apply new configuration changes"
         ok = "Nagios configuration is up to date. Tommi: See TODO in header.html"
-        if pynag.Model.config.needs_reload():
+        needs_reload = pynag.Model.config.needs_reload()
+        if needs_reload:
             add_notification(level="warning", message=warn)
-            clear_notification(notification_id=ok.__hash__())
+            clear_notification(notification_id=str(ok.__hash__()))
         else:
             add_notification(level="success", message=ok)
-            clear_notification(notification_id=warn.__hash__())
+            clear_notification(notification_id=str(warn.__hash__()))
     except Exception, e:
         pass
-    return { "notifications": notifications }
+    return { "notifications": notifications, "needs_reload":needs_reload }

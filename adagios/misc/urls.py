@@ -6,5 +6,6 @@ urlpatterns = patterns('',
     (r'^/settings/?', 'misc.views.settings'),
     (r'^/nagios/?', 'misc.views.nagios'),
     (r'^/gitlog/?', 'misc.views.gitlog'),
+    (r'^/service/?', 'misc.views.nagios_service'),
 )
  

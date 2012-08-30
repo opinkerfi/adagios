@@ -2,12 +2,53 @@
 
 {% block title %}{{ block.super }}{% endblock %}
 {% block smallheader %}{{ block.super }}{% endblock %}
-{% block largeheader %}{{ block.super }}{% endblock %}
+{% block largeheader %}Perfdata Analyzer{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
-{% block content %} {{ block.super }} {% endblock %}
+{% block content %}
+    <h2>Perfdata Analyzer</h2>
+    Is there a problem with your perfdata ?<p>paste your ugly perfdata here and let me help you make it more readable.</p>
+
+    {% if form %}
+        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+            {% include "bootstrap_fields.html" with fields=form %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </form>
+    {% else %}
+    No form found
+    {%  endif %}
+    {% if results %}
+        <table class="table">
+        <tr>
+            <th>label</th>
+            <th>value</th>
+            <th>warning</th>
+            <th>critical</th>
+            <th>unit</th>
+            <th>min value</th>
+            <th>max value</th>
+            <th>status</th>
+        </tr>
+        {% for i in results %}
+            <tr class="alert alert-{{ i.csstag }}">
+                <td>{{ i.label }}</td>
+                <td>{{ i.value }} </td>
+                <td>{{ i.warn }}  </td>
+                <td>{{ i.crit }}  </td>
+                <td> {{ i.uom }}</td>
+                <td>{{ i.min }}   </td>
+                <td>{{ i.max }}   </td>
+                <td><label >{{ i.status }}</label></td>
+            </tr>
+        {% endfor %}
+        </table>
+
+    {% endif %}
+{% endblock %}
 
 {% block header %} {{ block.super }} {% endblock %}
 
