@@ -105,11 +105,11 @@ class AddTemplateForm(forms.Form):
 
 class InstallAgentForm(forms.Form):
     remote_host = forms.CharField(help_text="Host or ip address")
-    install_method = forms.ChoiceField( initial='ssh',
+    install_method = forms.ChoiceField( initial='ssh', help_text="Make sure firewalls are not blocking ports 22(for ssh) or 445(for winexe)",
             choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
-    username = forms.CharField(initial='root', help_text="Log into remote machine with as")
-    password = forms.CharField(required=False, widget=forms.PasswordInput, help_text="Leave idle if using kerberos or ssh keys")
+    username = forms.CharField(initial='root', help_text="Log into remote machine with as this user")
     windows_domain = forms.CharField(required=False, help_text="If remote machine is running a windows domain")
+    password = forms.CharField(required=False, widget=forms.PasswordInput, help_text="Leave empty if using kerberos or ssh keys")
 
 class ChooseHostForm(forms.Form):
     host_name = forms.ChoiceField(help_text="Select one host")
