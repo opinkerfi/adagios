@@ -75,8 +75,7 @@ def handle_request(request, module_name, attribute, format):
         result = str(result)
         mimetype='text/plain'
     else:
-        result = str(result)
-        mimetype='text/plain'  
+        raise BaseException("Unsupported format: '%s'. Valid formats: json xml txt" % format)
     return HttpResponse(result, mimetype=mimetype)
 def index( request, module_name ):
     m = _load(module_name)
