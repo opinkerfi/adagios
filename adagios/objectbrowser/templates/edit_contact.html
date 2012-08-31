@@ -14,7 +14,7 @@
             <ul class="nav nav-tabs" id="objecttab">
                 <li><a href="#general" data-toggle="tab">General</a></li>
 			    <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
-			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+			    <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 		    </ul>
         <form class="form-horizontal" action="#" method="POST">
@@ -36,7 +36,7 @@
                             <button class="btn">Cancel</button>
                         </div>
                     </div>
-		
+
                     <div class="tab-pane" id="memberof">
                         <fieldset>
                             {% include "bootstrap_field.html" with field=form.contactgroups %}
@@ -45,6 +45,9 @@
                             <div class="effective_contactgroups">
                             <fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
                               <legend>Effective Contactgroups for this contact</legend>
+                                    Group membership can be defined in multiple ways, for example by editing the contactgroups "members" attribute.
+                                    For your convenience following is a list of all contactgroups that this contact is "effectively" a member of.
+                                    <p></p>
                                     {% if effective_contactgroups %}
                                       <p>
                                     {% for group in effective_contactgroups %}
@@ -63,8 +66,8 @@
                         </div>
                     </div>
 
-		
-                    <div class="tab-pane" id="notifications">
+
+                    <div class="tab-pane" id="notifications_tab">
                         <fieldset>
                             {% include "bootstrap_field.html" with field=form.host_notifications_enabled %}
                             {% include "bootstrap_field.html" with field=form.host_notification_commands %}
@@ -72,6 +75,12 @@
                             {% include "bootstrap_field.html" with field=form.service_notifications_enabled %}
                             {% include "bootstrap_field.html" with field=form.service_notification_commands %}
                             {% include "bootstrap_field.html" with field=form.service_notification_period %}
+                        </fieldset>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn">Cancel</button>
+                        </div>
                     </div>
                 </form>
                     <div class="tab-pane" id="advanced">
