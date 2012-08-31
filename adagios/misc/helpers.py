@@ -48,11 +48,20 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
     '''
     tmp = Model.ObjectDefinition.objects.filter(object_type=object_type, **kwargs)
     return map( lambda x: object_to_dict(x, attributes=with_fields), tmp)
-''' Get All hosts '''
-#host_names = []
-#for _h in hosts:
-#    if _h.has_key('host_name'):
-#        host_names.append( _h[host_name] )
+
+def servicestatus(with_fields="host_name,service_description,current_state,plugin_output"):
+    """ Returns a list of all active services and their current status """
+    s = Parsers.status()
+    s.parse()
+    fields = with_fields.split(',')
+    result_list = []
+    for serv in s.data['servicestatus']:
+        current_object = {}
+        for k,v in serv.items():
+            if fields == ['*'] or k in fields:
+                current_object[k] = v
+        result_list.append( current_object )
+    return result_list
 
 def object_to_dict(object, attributes="id,shortname,object_type"):
     """ Takes in a specific object definition, returns a hash maps with "attributes" as keys"""
@@ -98,6 +107,30 @@ def change_attribute(id, attribute_name, new_value):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
+def change_service_attribute(identifier, new_value):
+    """
+    Change one service that is identified in the form of:
+    host_name::service_description::attribute_name
+
+    Examples:
+    >>> change_service_attribute("localhost::Ping::service_description", "Ping2")
+
+    Returns:
+        True on success,
+    Raises:
+        Exception on error
+    """
+    tmp = identifier.split('::')
+    if len(tmp) != 3:
+        raise ValueError("identifier must be in the form of host_name::service_description::attribute_name (got %s)" % identifier)
+    host_name,service_description,attribute_name = tmp
+    try:
+        service = Model.Service.objects.get_by_shortname("%s/%s" % (host_name,service_description))
+    except KeyError, e:
+        raise KeyError("Could not find service %s" % e)
+    service[attribute_name] = new_value
+    service.save()
+    return True
 def copy_object(object_id, recursive=False, **kwargs):
     """ Copy one objectdefinition.
 
