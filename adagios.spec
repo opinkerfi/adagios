@@ -21,7 +21,7 @@ Prefix: %{_prefix}
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: pynag >= 0.4.0
+Requires: pynag >= 0.4.5
 Requires: httpd
 Requires: mod_wsgi
 Requires: Django
@@ -42,7 +42,9 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 #chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
 sed -i 's|/usr/lib/python2.7/site-packages|%{python_sitelib}|g' %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
+mkdir -p %{buildroot}%{_sysconfdir}/adagios/conf.d/
 mv %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
+mv %{buildroot}%{python_sitelib}/adagios/etc/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -52,6 +54,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc README.md 
 %{python_sitelib}/*
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
+%config(noreplace) %{_sysconfdir}/adagios/adagios.conf
 
 %changelog
 * Sat Aug 18 2012 Pall Sigurdsson <palli@opensource.is> 1.1.0-2
