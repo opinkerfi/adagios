@@ -46,7 +46,6 @@ mv %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysc
 
 mkdir -p %{buildroot}%{_sysconfdir}/adagios/conf.d/
 mv %{buildroot}%{python_sitelib}/adagios/etc/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
-chown -R nagios %{buildroot}%{_sysconfdir}/adagios/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
