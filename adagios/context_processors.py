@@ -8,15 +8,17 @@ from adagios.misc.rest import add_notification,clear_notification
 def on_page_load(request):
     """ Collection of actions that take place every page load """
     results = {}
-    for k,v in get_httpuser(request).items():
-        results[k] = v
     for k,v in reload_configfile(request).items():
+        results[k] = v
+    for k,v in get_httpuser(request).items():
         results[k] = v
     for k,v in check_nagios_needs_reload(request).items():
         results[k] = v
     for k,v in get_notifications(request).items():
         results[k] = v
     for k,v in resolve_urlname(request).items():
+        results[k] = v
+    for k,v in check_selinux(request).items():
         results[k] = v
 
     return results
@@ -57,9 +59,21 @@ def check_nagios_needs_reload(request):
         raise e
     return { "needs_reload":needs_reload }
 
+def check_selinux(request):
+    """ Check if selinux is enabled and notify user """
+    if not settings.warn_if_selinux_is_active == True:
+        return {}
+    try:
+        if open('/sys/fs/selinux/enforce', 'r').readline().strip() == "1":
+            add_notification(level="warning", message='SELinux is enabled, that is not supported, please disable it, see https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Disabling_SELinux')
+    except Exception:
+        pass
+    return {}
+
 def get_notifications(request):
     """ Returns a hash map of adagios.notifications """
     return { "notifications": notifications  }
+
 
 
 def reload_configfile(request):
