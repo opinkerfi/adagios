@@ -25,20 +25,22 @@ from adagios import __version__, notifications
 version = __version__
 
 
-def add_notification(level="info", message="message"):
+def add_notification(level="info", message="message", notification_id=None):
     """ Add a new notification to adagios notification bar.
 
     Arguments:
       level   -- pick "info" "success" "error" "danger"
       message -- Arbitary text message,
-
+      notification_id (optional) -- Use this if you want to remote
+        remove this notification later via clear_notification()
     Returns:
       None
 
     Examples:
     >>> add_notification(level="warning", message="Nagios needs to reload")
     """
-    notification_id = str(message.__hash__())
+    if not notification_id:
+        notification_id = str(message.__hash__())
     notifications[notification_id] = { "level": level, "message":message }
 
 def clear_notification(notification_id):

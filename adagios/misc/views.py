@@ -21,7 +21,9 @@ from django.template import RequestContext
 import forms
 
 import pynag.Model
-
+import pynag.Utils
+import pynag.Control
+import os.path
 from time import mktime
 from datetime import datetime
 from os.path import dirname
@@ -38,12 +40,16 @@ def index(request):
 def settings(request):
     c = {}
     c.update(csrf(request))
+    c['messages'] = m = []
+    c['errors'] = e = []
     if request.method == 'GET':
-        c['form'] = forms.AdagiosSettingsForm(initial=request.GET)
-    else:
-        c['form'] = forms.AdagiosSettingsForm(data=request.POST)
-        if c['form'].is_valid():
-            c['form'].save()
+        form = forms.AdagiosSettingsForm(initial=request.GET)
+        form.is_valid()
+    elif request.method == 'POST':
+        form = forms.AdagiosSettingsForm(data=request.POST)
+        if form.is_valid():
+                form.save()
+    c['form'] = form
     return render_to_response('settings.html', c, context_instance = RequestContext(request))
 
 def contact_us( request ):
@@ -101,6 +107,9 @@ def nagios_service(request):
     c = {}
     c['errors'] = []
     c['messages'] = []
+    nagios_bin = adagios.settings.nagios_binary
+    nagios_init=adagios.settings.nagios_init_script
+    nagios_cfg=adagios.settings.nagios_config
     if request.method == 'GET':
         form = forms.NagiosServiceForm(initial=request.GET)
     else:
@@ -110,4 +119,6 @@ def nagios_service(request):
             c['stdout'] = form.stdout
             c['stderr'] = form.stderr
     c['form'] = form
+    service = pynag.Control.daemon(nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
+    c['status'] = service.status()
     return render_to_response('nagios_service.html', c, context_instance = RequestContext(request))

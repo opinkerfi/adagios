@@ -1,8 +1,26 @@
 import pynag.Model
 from os import environ
 from platform import node
-from adagios import notifications
+
+from adagios import notifications, settings
 from adagios.misc.rest import add_notification,clear_notification
+
+def on_page_load(request):
+    """ Collection of actions that take place every page load """
+    results = {}
+    for k,v in get_httpuser(request).items():
+        results[k] = v
+    for k,v in reload_configfile(request).items():
+        results[k] = v
+    for k,v in check_nagios_needs_reload(request).items():
+        results[k] = v
+    for k,v in get_notifications(request).items():
+        results[k] = v
+    for k,v in resolve_urlname(request).items():
+        results[k] = v
+
+    return results
+
 
 def resolve_urlname(request):
     """Allows us to see what the matched urlname for this
@@ -22,20 +40,37 @@ def get_httpuser(request):
         i.modified_by = request.META.get('REMOTE_USER', 'anonymous')
     return {}
 
-def get_notifications(request):
-    """ Here we check for different things that the user should be notified of in the
-    notification panel.
-    """
+
+def check_nagios_needs_reload(request):
+    """ Notify user if nagios needs a reload """
     try:
+        # Remove notification if there was any
+        clear_notification("needs_reload")
         warn = "Nagios should be reloaded to apply new configuration changes"
         ok = "Nagios configuration is up to date. Tommi: See TODO in header.html"
         needs_reload = pynag.Model.config.needs_reload()
         if needs_reload:
-            add_notification(level="warning", message=warn)
-            clear_notification(notification_id=str(ok.__hash__()))
+            add_notification(level="warning", message=warn, notification_id="needs_reload")
         else:
-            add_notification(level="success", message=ok)
-            clear_notification(notification_id=str(warn.__hash__()))
+            add_notification(level="success", message=ok, notification_id="needs_reload")
+    except KeyError, e:
+        raise e
+    return { "needs_reload":needs_reload }
+
+def get_notifications(request):
+    """ Returns a hash map of adagios.notifications """
+    return { "notifications": notifications  }
+
+
+def reload_configfile(request):
+    """ Load the configfile from settings.adagios_configfile and put its content in adagios.settings. """
+    try:
+        clear_notification("configfile")
+        locals = {}
+        execfile(settings.adagios_configfile,globals(),locals)
+        for k,v in locals.items():
+            print k, '==', v
+            settings.__dict__[k] = v
     except Exception, e:
-        pass
-    return { "notifications": notifications, "needs_reload":needs_reload }
+        add_notification(level="warning", message=str(e), notification_id="configfile")
+    return {}

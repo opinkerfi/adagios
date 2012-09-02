@@ -3,33 +3,42 @@
 {% block title %}Nagios Service{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Nagios Service{% endblock %}
-{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav1 %}Nagios Service{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
 {% block content %}
-    {% if status %}
-        <h4>current status of nagios</h4>
-        <pre> {{ status }}</pre>
+Service nagios status:
+    {% if status  > 3 %}
+        unknown ("service nagios status" returned {{ status }})
     {% endif %}
-    {% if stdout %}
-        <h4>output</h4>
-        <pre>{{ stdout }}</pre>
+    {% if status  == 0 %}
+        Started
     {% endif %}
-    {% if stderr %}
-        <h4>Errors</h4>
-        <pre>{{ stderr }}</pre>
+    {% if status  == 3 %}
+        Stopped
     {% endif %}
     {% if form %}
         <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-            {% include "bootstrap_fields.html" with fields=form %}
             <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-success" type="submit" name="reload">Reload</button>
+                <button class="btn " type="submit" name="start">Start</button>
+                <button class="btn " type="submit" name="stop">Stop</button>
+                <button class="btn " type="submit" name="restart">Restart</button>
+                <button class="btn " type="submit" name="status">Status</button>
             </div>
         </form>
     {% else %}
     No form found
     {%  endif %}
+    {% if stderr %}
+        <h4>Errors</h4>
+        <pre>{{ stderr }}</pre>
+    {% endif %}
+    {% if stdout %}
+        <h4>output</h4>
+        <pre>{{ stdout }}</pre>
+    {% endif %}
 {% endblock %}
 
 {% block header %} {{ block.super }} {% endblock %}

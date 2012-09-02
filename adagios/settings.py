@@ -5,6 +5,8 @@ TEMPLATE_DEBUG = DEBUG
 
 # Hack to allow relative template paths
 import os
+from glob import glob
+
 djangopath = os.path.dirname(__file__)
 
 ADMINS = (
@@ -105,9 +107,7 @@ INSTALLED_APPS = (
     'adagios.misc',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.resolve_urlname',
-    'adagios.context_processors.get_httpuser',
-    'adagios.context_processors.get_notifications',
+TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
@@ -118,27 +118,26 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.resolve_urlname',
  
 
 
-# Adagios specific configuration options
-
-# nagios_config - Path to your nagios configuration file
-# If set, adagios will use this file to manage your object
-# definitions. If set to None, adagios will search most common
-# paths like /etc/nagios/nagios.cfg for it
-#nagios_config = "/etc/nagios/nagios.cfg"
-nagios_config = None
-
-# This should be the URL to your nagios server. If set, then
-# Adagios can link you directly from configuration to live object.
-# If you don't need this feature. Set nagios_url to '' or None
-#nagios_url = "http://mynagiosserver/nagios"
-nagios_url = "/nagios"
-
-
-# enable_githandler - If set to true, and your /etc/nagios/ directory
-# is a git repository. adagios will automatically commit changes when
-# they are made.
-enable_githandler = True
-
-# enable_loghandler - If set to true, all changes adagios makes to 
-# object definitions will be logged to a file.
+# Adagios specific configuration options. These are just the defaults,
+# Anything put in /etc/adagios.d/adagios.conf will overwrite this.
+nagios_config="/etc/nagios/nagios.cfg"
+nagios_url="/nagios"
+nagios_init_script = "/etc/init.d/nagios"
+nagios_binary = "/usr/bin/nagios"
+enable_githandler=False
 enable_loghandler = False
+warn_if_selinux_is_active = True
+include=""
+
+
+# Load config files from /etc/adagios/
+adagios_configfile = "/etc/adagios/adagios.conf"
+try:
+    execfile(adagios_configfile)
+
+    # if config has any default include, lets include that as well
+    configfiles = glob(include)
+    for configfile in configfiles:
+        execfile(adagios_configfile)
+except Exception:
+    pass
