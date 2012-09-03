@@ -48,7 +48,10 @@ def settings(request):
     elif request.method == 'POST':
         form = forms.AdagiosSettingsForm(data=request.POST)
         if form.is_valid():
+            try:
                 form.save()
+            except IOError, exc:
+                e.append(exc)
     c['form'] = form
     return render_to_response('settings.html', c, context_instance = RequestContext(request))
 

@@ -1,39 +1,53 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block title %}Missing Plugins{% endblock %}
-
+{% block smallheader %}small{% endblock %}
+{% block largeheader %}Missing Plugins{% endblock %}
+{% block nav1 %}
+    block=n
+{% endblock %}
 {% block content %}
 
 
-<div id="accordion">
-	<h3><a href="#">Missing plugins ({{ missing_plugins|length}})</a></h3>
+	<h3 id="missing_plugins">Missing plugins ({{ missing_plugins|length}})</h3>
 	{% if missing_plugins %}
-	<table border="1">
-	{% for check_command, command_line in missing_plugins %}
-	<tr><td>{{ check_command }} </td><td> {{ command_line }}</td></tr>
-	{% endfor %}
+	<table class="table">
+        <tr>
+            <th>check_command</th>
+            <th>Plugin</th>
+        </tr>
+        {% for check_command, command_line in missing_plugins %}
+            <tr>
+                <td>{{ check_command }} </td>
+                <td> {{ command_line }}</td>
+            </tr>
+        {% endfor %}
 	</table>
 	{% endif %}
 
-	<h3><a href="#">Existing plugins ({{ existing_plugins|length}})</a></h3>	
+	<h3 id="existing_plugins">Existing plugins ({{ existing_plugins|length}})</h3>
 	{% if existing_plugins %}
-	<table border="1">
-	{% for check_command, command_line in existing_plugins %}
-	<tr><td>{{ check_command }} </td><td> {{ command_line }}</td></tr>
-	{% endfor %}
-	</table>
+        <table class="table">
+            <tr>
+                <th>check_command</th>
+                <th>Plugin</th>
+            </tr>
+            {% for check_command, command_line in existing_plugins %}
+        	    <tr>
+                    <td>{{ check_command }} </td>
+                    <td> {{ command_line }}</td>
+                </tr>
+	        {% endfor %}
+	    </table>
 	{% endif %}
-</div>
 
 
 
-<script>
-jQuery(document).ready(function(){
-	$('.accordion .head').click(function() {
-		$(this).next().toggle();
-		return false;
-	}).next().hide();
-});
-+$('#accordion').accordion();
-</script>
+{% endblock %}
 
+{% block sidebar %}
+    <h5>Jump to</h5>
+    <ul class="nav nav-list">
+        <li><a href="#missing_plugins">Missing Plugins</a></li>
+        <li><a href="#existing_plugins">Existing Plugins</a></li>
+    </ul>
 {% endblock %}

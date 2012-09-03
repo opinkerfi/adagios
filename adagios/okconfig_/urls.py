@@ -14,4 +14,3 @@ urlpatterns = patterns('',
     (r'^/edit/(?P<host_name>.+)$', 'okconfig_.views.edit'),
     (r'^/verify_okconfig/?', 'okconfig_.views.verify_okconfig'),
 )
- 
