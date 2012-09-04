@@ -216,6 +216,7 @@ class NagiosServiceForm(forms.Form):
         nagios_init = settings.nagios_init_script
         #command = self.cleaned_data['command']
         from subprocess import Popen, PIPE
-        p = Popen([nagios_init,command], stdout=PIPE, stderr=PIPE)
+        command = "%s %s" % (nagios_init, command)
+        p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
         self.stdout = p.stdout.read()
         self.stderr = p.stdout.read()
