@@ -46,7 +46,7 @@ mv %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysc
 
 mkdir -p %{buildroot}%{_sysconfdir}/adagios/conf.d/
 mv %{buildroot}%{python_sitelib}/adagios/etc/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
-
+mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d/
 mv %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
 
 %clean
@@ -58,6 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/*
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 %config(noreplace) %{_sysconfdir}/adagios/adagios.conf
+%config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
 * Sat Aug 18 2012 Pall Sigurdsson <palli@opensource.is> 1.1.0-2
