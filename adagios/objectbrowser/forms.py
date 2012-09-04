@@ -134,7 +134,6 @@ class PynagForm(forms.Form):
         super(self.__class__,self).__init__(*args, **kwargs)
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
-        print pynag_object
         defined_attributes = sorted( self.pynag_object._defined_attributes.keys() )
         inherited_attributes = sorted( self.pynag_object._inherited_attributes.keys() )
         all_attributes = sorted( object_definitions.get(object_type).keys() )

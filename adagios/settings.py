@@ -141,7 +141,6 @@ execfile(adagios_configfile)
 # if config has any default include, lets include that as well
 configfiles = glob(include)
 for configfile in configfiles:
-    print "Loading plugin ", configfile
     execfile(configfile)
 
 for k,v in plugins.items():

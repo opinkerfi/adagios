@@ -33,7 +33,6 @@ def on_page_load(request):
 def activate_plugins(request):
     """ Activates any plugins specified in settings.plugins """
     for k,v in settings.plugins.items():
-        print "activating plugin", k
         add_plugin(name=k,modulepath=v)
     return {'misc_menubar_items':adagios.misc_menubar_items, 'menubar_items':adagios.menubar_items}
 def resolve_urlname(request):

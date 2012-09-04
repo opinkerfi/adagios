@@ -56,8 +56,6 @@ def add_plugin(name="myplugin", modulepath=None):
     )
     adagios.urls.urlpatterns += new_pattern
     # if plugin has menubar items, find them and list them
-    #misc_menubar_items.append( "%s/misc.menuitems.html" % name)
-    print template_dir + "%s_menubar.html" %name
     if os.path.isfile(template_dir + "%s_menubar_misc.html" %name):
         misc_menubar_items.append( "%s_menubar_misc.html" % name)
     if os.path.isfile(template_dir + "%s_menubar.html" %name):
