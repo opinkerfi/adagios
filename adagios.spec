@@ -58,6 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/*
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 %config(noreplace) %{_sysconfdir}/adagios/adagios.conf
+%config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
 * Sat Aug 18 2012 Pall Sigurdsson <palli@opensource.is> 1.1.0-2
