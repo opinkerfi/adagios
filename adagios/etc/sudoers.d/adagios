@@ -1,0 +1,3 @@
+Defaults:nagios    !requiretty
+nagios             ALL = (root) NOPASSWD: /etc/init.d/nagios
+
