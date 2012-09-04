@@ -113,8 +113,6 @@ class PNP4NagiosForm(forms.Form):
     """ This form is responsible for configuring PNP4Nagios. """
     broker_module=forms.CharField(help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
     config_file=forms.CharField(help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
-    make_sure_npcd_service_is_running=forms.BooleanField(required=False,initial=True,help_text="If set, make sure that 'service npcd status' runs successfully")
-    reload_nagios=forms.BooleanField(required=False,initial=True,help_text="If set, reload nagios service after making changes.")
     apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
     action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
     def clean_broker_module(self):

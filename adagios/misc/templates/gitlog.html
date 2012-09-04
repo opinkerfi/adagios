@@ -31,14 +31,14 @@
                     <td>{{ i.filename }}</td>
                 </tr>
             {% endfor %}
-            </table>
+            <tr><td colspan=3>
             <div id="form_control" class="pull-right">
             <input id="git_commit_message" type="text" value="Bulk commit by adagios" name="git_commit_message" />
             <button name="git_commit" type="post" class="btn btn-success">ok, commit selected files</button>
-                <hr>
             </div>
+            </td></tr>
+            </table>
         </form>
-        <hr>
     {% endif %}
     {% if commits %}
         <!-- List of recent commits -->

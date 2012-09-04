@@ -14,7 +14,7 @@
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
-            <button class="btn btn-success" type="submit">Scan Network</button>
+            <button class="pull-right btn btn-success" type="submit">Scan Network</button>
         </div>
     </form>
 
@@ -26,8 +26,8 @@
 
 {% if scan_results %}
 
-<h1>Scan Complete</h1>
-<table border=1 id="scan_results">
+<h2>Scan results:</h2>
+<table class="table" id="scan_results">
   <thead>
 	<tr>
 	 <th>Add</th>

@@ -50,6 +50,9 @@ def clear_notification(notification_id):
         return "success"
     return "not found"
 
+def get_notifications():
+    """ Shows all current notifications """
+    return notifications
 def clear_all_notifications():
     """ Removes all notifications from adagios notification panel """
     notifications.clear()

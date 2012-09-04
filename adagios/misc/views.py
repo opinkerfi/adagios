@@ -19,6 +19,7 @@ from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 import forms
+import os
 
 import pynag.Model
 import pynag.Utils
@@ -166,8 +167,12 @@ def nagios_service(request):
 def pnp4nagios(request):
     """ View to handle integration with pnp4nagios """
     c = {}
-    c['errors'] = []
-    c['messages'] = []
+    c['errors'] = e=  []
+    c['messages'] =m= []
+    if os.system('service npcd status') == 0:
+        m.append('service npcd is running')
+    else:
+        e.append('service npcd is not running')
     if request.method == 'GET':
         form = forms.PNP4NagiosForm(initial=request.GET)
     else:
