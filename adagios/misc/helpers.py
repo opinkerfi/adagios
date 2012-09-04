@@ -131,6 +131,7 @@ def change_service_attribute(identifier, new_value):
     service[attribute_name] = new_value
     service.save()
     return True
+2
 def copy_object(object_id, recursive=False, **kwargs):
     """ Copy one objectdefinition.
 
