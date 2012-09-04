@@ -23,6 +23,7 @@ import forms
 import pynag.Model
 import pynag.Utils
 import pynag.Control
+import pynag.Model.EventHandlers
 import os.path
 from time import mktime
 from datetime import datetime
@@ -76,13 +77,48 @@ def nagios(request):
     c['nagios_url'] = adagios.settings.nagios_url
     return render_to_response('nagios.html', c, context_instance = RequestContext(request))
 
+def map(request):
+    c = {}
+    return render_to_response('map.html', c, context_instance = RequestContext(request))
+
 def gitlog(request):
     """ View that displays a nice log of previous git commits in dirname(config.cfg_file) """
     c = { }
+    c.update(csrf(request))
+    c['messages'] = m = []
     c['errors'] = []
     nagiosdir = dirname( pynag.Model.config.cfg_file or '/etc/nagios/')
-    c['configdir'] = nagiosdir
+    c['nagiosdir'] = nagiosdir
     c['commits'] = result = []
+    if request.method == 'POST':
+        try:
+            git = pynag.Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
+            if 'git_init' in request.POST:
+                git._git_init()
+            elif 'git_commit' in request.POST:
+                filelist = []
+                commit_message = request.POST.get('git_commit_message', "bulk commit by adagios")
+                for i in request.POST:
+                    if i.startswith('commit_'):
+                        filename=i[len('commit_'):]
+                        git._git_add(filename)
+                        filelist.append( filename )
+                if len(filelist) == 0:
+                    raise Exception("No files selected.")
+                git._git_commit(filename=None, message=commit_message, filelist=filelist)
+                m.append("%s files successfully commited." % len(filelist))
+        except Exception, e:
+            c['errors'].append( e )
+    # Check if nagiosdir has a git repo or not
+    try:
+        git = pynag.Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
+        c['uncommited_files'] = git.get_uncommited_files()
+    except pynag.Model.EventHandlers.EventHandlerError, e:
+        if e.errorcode == 128:
+            c['no_git_repo_found'] = True
+
+
+    # Show git history
     try:
         fh = Popen(["git", "log" ,"-20", "--pretty=%H:%an:%ae:%at:%s"], cwd=nagiosdir, stdin=None, stdout=PIPE )
         gitstring = fh.communicate()[0]
@@ -125,3 +161,18 @@ def nagios_service(request):
     service = pynag.Control.daemon(nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
     c['status'] = service.status()
     return render_to_response('nagios_service.html', c, context_instance = RequestContext(request))
+
+
+def pnp4nagios(request):
+    """ View to handle integration with pnp4nagios """
+    c = {}
+    c['errors'] = []
+    c['messages'] = []
+    if request.method == 'GET':
+        form = forms.PNP4NagiosForm(initial=request.GET)
+    else:
+        form = forms.PNP4NagiosForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+    c['form'] = form
+    return render_to_response('pnp4nagios.html', c, context_instance = RequestContext(request))

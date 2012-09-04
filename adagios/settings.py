@@ -91,7 +91,7 @@ TEMPLATE_DIRS = (
     "%s/templates" % (djangopath),
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -101,11 +101,13 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'adagios.okconfig_',
+#    'adagios.okconfig_',
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
-)
+]
+
+#INSTALLED_APPS.append( 'adagios.okconfig_plugin' )
 
 TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     "django.contrib.auth.context_processors.auth",
@@ -129,15 +131,18 @@ enable_loghandler = False
 warn_if_selinux_is_active = True
 include=""
 
+plugins = {}
 
 # Load config files from /etc/adagios/
 adagios_configfile = "/etc/adagios/adagios.conf"
-try:
-    execfile(adagios_configfile)
+execfile(adagios_configfile)
 
-    # if config has any default include, lets include that as well
-    configfiles = glob(include)
-    for configfile in configfiles:
-        execfile(adagios_configfile)
-except Exception:
-    pass
+
+# if config has any default include, lets include that as well
+configfiles = glob(include)
+for configfile in configfiles:
+    print "Loading plugin ", configfile
+    execfile(configfile)
+
+for k,v in plugins.items():
+    INSTALLED_APPS.append( v )

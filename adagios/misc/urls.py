@@ -7,5 +7,7 @@ urlpatterns = patterns('',
     (r'^/nagios/?', 'misc.views.nagios'),
     (r'^/gitlog/?', 'misc.views.gitlog'),
     (r'^/service/?', 'misc.views.nagios_service'),
+    (r'^/map/?', 'misc.views.map'),
+    (r'^/pnp4nagios/?', 'misc.views.pnp4nagios'),
 )
  

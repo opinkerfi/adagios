@@ -25,8 +25,14 @@
                     <li>
                         <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i>Monitor</a>
                     </li>
+                    <!-- Any extra plugins can put an entry in the menubar -->
 
-
+                    {% for i in menubar_items %}
+                        <!-- Plugin menubar for {{ i }} -->
+                        {% include i %}
+                        <!-- End of plugin menubar {{ i }} -->
+                    {% endfor %}
+                    {% if okconfig_enabled %}
                     <!-- Okconfig drop down -->
                     <li class="dropdown">
                         <a class="dropdown-toggle"
@@ -43,7 +49,7 @@
                             <li><a href="{% url okconfig_.views.scan_network %}">Scan Network</a></li>
                         </ul>
                     </li>
-
+                    {% endif %}
                 </ul>
 
 
@@ -51,7 +57,7 @@
 
                 <!-- Right aligned navbar - MISC -->
                 <ul class="nav pull-right">
-                    {% if needs_reload %}
+                    {% if needs_reload_NOT_NEEDED %}
                         <li>
 
                                 <button  class="btn btn-success">
@@ -81,6 +87,14 @@
                             <li><a href="{%  url misc.views.gitlog %}">Object History</a></li>
                             <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
                             <li><a href="{%  url misc.views.settings %}">Settings</a></li>
+                            <li class="divider"></li>
+                            <!-- Any extra plugins can put an entry in the menubar -->
+                            {% for i in misc_menubar_items %}
+                                <!-- Plugin menubar for {{ i }} -->
+                                {% include i %}
+                                <!-- End of plugin menubar {{ i }} -->
+                            {% endfor %}
+
                         </ul>
                    </li>
                 </ul>

@@ -7,10 +7,43 @@
 
 
 {% block content %}
+    {% if no_git_repo_found %}
+        <p class="lead">
+        No git repository found in {{ nagiosdir }}.</p>
+        <form method="post" class="form-horizontal">{% csrf_token %}
+        <button name="git_init" type="post" class="pull-right btn btn-success">Init a new git repo</button>
+        </form>
+    {% endif %}
+    
+    {% if uncommited_files %}
+        <h2>There are uncommited files in your git repo</h2>
+        <form method="post" class="form-horizontal">{% csrf_token %}
+            <table class="table">
+            <tr>
+                <th><input id="check_all" name="check_all" type="checkbox"/></th>
+                <th>status</th>
+                <th>filename</th>
+            </tr>
+            {% for i in uncommited_files %}
+                <tr>
+                    <td><input id="commit_{{ i.filename }}" name="commit_{{ i.filename }}" checked="1" type="checkbox"/></td>
+                    <td>{{ i.status }}</td>
+                    <td>{{ i.filename }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+            <div id="form_control" class="pull-right">
+            <input id="git_commit_message" type="text" value="Bulk commit by adagios" name="git_commit_message" />
+            <button name="git_commit" type="post" class="btn btn-success">ok, commit selected files</button>
+                <hr>
+            </div>
+        </form>
+        <hr>
+    {% endif %}
     {% if commits %}
         <!-- List of recent commits -->
         <h2>Previous changes (via git log)</h2>
-        <table width=100% border=1>
+        <table class="table" >
         <tr>
             <th>Date</th>
             <th>Summary</th>
@@ -29,7 +62,7 @@
         {% endfor %}
         </table>
     {% else %}
-        <h2>No git commits found in {{ configdir }}</h2>
+        <h2>No git commits found in {{ nagiosdir }}</h2>
     {% endif %}
     {% if diff %}
         <pre>

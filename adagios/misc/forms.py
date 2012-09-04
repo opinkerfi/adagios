@@ -71,7 +71,6 @@ class AdagiosSettingsForm(forms.Form):
         if not os.path.isfile( settings.adagios_configfile ):
             open(settings.adagios_configfile, 'w').write()
         for k,v in self.cleaned_data.items():
-            print "saving ", k, v
             Model.config._edit_static_file(attribute=k, new_value=v, filename=settings.adagios_configfile)
             #settings.__dict__[k] = v
     def __init__(self, *args,**kwargs):
@@ -108,6 +107,82 @@ class AdagiosSettingsForm(forms.Form):
                 cleaned_data[k] = str(v)
         return cleaned_data
 
+class PNP4NagiosForm(forms.Form):
+    """ This form is responsible for configuring PNP4Nagios. """
+    broker_module=forms.CharField(help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
+    config_file=forms.CharField(help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
+    make_sure_npcd_service_is_running=forms.BooleanField(required=False,initial=True,help_text="If set, make sure that 'service npcd status' runs successfully")
+    reload_nagios=forms.BooleanField(required=False,initial=True,help_text="If set, reload nagios service after making changes.")
+    apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
+    action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
+    def clean_broker_module(self):
+        """ Raises validation error if filename does not exist """
+        filename = self.cleaned_data['broker_module']
+        if not os.path.exists(filename):
+            raise forms.ValidationError('File not found')
+        return filename
+    def clean_config_file(self):
+        """ Raises validation error if filename does not exist """
+        filename = self.cleaned_data['config_file']
+        if not os.path.exists(filename):
+            raise forms.ValidationError('File not found')
+        return filename
+    def clean_action_url(self):
+        return str(self.cleaned_data['action_url'])
+    def __init__(self, initial={}, *args,**kwargs):
+        my_initial = {}
+        Model.config.parse()
+        maincfg_values=Model.config.maincfg_values
+        self.nagios_configline = None
+        for k,v in Model.config.maincfg_values:
+            if k == 'broker_module' and v.find('npcdmod.o') > 0:
+                self.nagios_configline=v
+                v = v.split()
+                my_initial['broker_module']=v.pop(0)
+                for i in v:
+                    if i.find('config_file=') > -1:
+                        my_initial['config_file']=i.split('=',1)[1]
+        # If view specified any initial values, they overwrite ours
+        for k,v in initial.items():
+            my_initial[k] = v
+        if 'broker_module' not in my_initial:
+            my_initial['broker_module'] = self.get_suggested_npcdmod_path()
+        if 'config_file' not in my_initial:
+            my_initial['config_file'] = self.get_suggested_npcdmod_path()
+        super(self.__class__,self).__init__(initial=my_initial,*args,**kwargs)
+    def get_suggested_npcdmod_path(self):
+        """ Returns best guess for full path to npcdmod.o file """
+        possible_locations = [
+            "/usr/lib/pnp4nagios/npcdmod.o",
+            "/usr/lib64/nagios/brokers/npcdmod.o",
+        ]
+        for i in possible_locations:
+            if os.path.isfile(i):
+                return i
+        return i
+    def get_suggested_npcd_path(self):
+        """ Returns best guess for full path to npcd.cfg file """
+        possible_locations = [
+            "/etc/pnp4nagios/npcd.cfg"
+        ]
+        for i in possible_locations:
+            if os.path.isfile(i):
+                return i
+        return i
+    def save(self):
+        if 'broker_module' in self.changed_data or 'config_file' in self.changed_data or self.nagios_configline is None:
+            v = "%s config_file=%s" % ( self.cleaned_data['broker_module'], self.cleaned_data['config_file'] )
+            Model.config._edit_static_file(attribute="broker_module", new_value=v, old_value = self.nagios_configline, append=True)
+        # TODO: What to do if make sure npcd is running is checked
+        # TODO: What to do if reload nagios is checked
+        if self.cleaned_data['apply_action_url'] == True:
+            action_url = self.cleaned_data['action_url']
+        services = Model.Service.objects.filter(action_url__isnot=action_url)
+        for i in services:
+            if 'action_url' in i._defined_attributes or i.use is None:
+                i.action_url = action_url
+                i.save()
+
 
 class PerfDataForm(forms.Form):
     perfdata = forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
@@ -118,6 +193,7 @@ class PerfDataForm(forms.Form):
         self.results = perfdata.metrics
 
 COMMAND_CHOICES = [('reload','reload'), ('status','status'),('restart','restart'),('stop','stop'),('start','start')]
+
 class NagiosServiceForm(forms.Form):
     """ Maintains control of the nagios service / reload / restart / etc """
     #path_to_init_script = forms.CharField(help_text="Path to your nagios init script", initial=NAGIOS_INIT)

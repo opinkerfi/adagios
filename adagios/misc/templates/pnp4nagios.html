@@ -1,0 +1,23 @@
+{% extends "adagios_standard.html" %}
+{% block title %}PNP4nagios integration{% endblock %}
+{% block nav1 %}PNP4Nagios{% endblock %}
+{% block smallheader %}integration with{% endblock %}
+{% block largeheader %}PNP4Nagios{% endblock %}
+
+
+{% block content %}
+    PNP is an addon to Nagios which analyzes performance data provided by plugins and stores them automatically into RRD-databases (Round Robin Databases, see RRD Tool).
+    <p>
+    This form helps you configure PNP using the so-called "bulk npcmod" method. If you are just here to verify your installation. Click verify at the bottom of the page.
+    </p>
+    {% if form %}
+        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+            {% include "bootstrap_fields.html" with fields=form %}
+            <div class="form-actions">
+                <button class="btn btn-success" type="submit">Save</button>
+            </div>
+        </form>
+
+    {% endif %}
+
+{% endblock %}

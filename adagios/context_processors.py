@@ -1,9 +1,12 @@
 import pynag.Model
+import os
 from os import environ
 from platform import node
 
-from adagios import notifications, settings
+from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
+import adagios
+from pynag import Model
 
 def on_page_load(request):
     """ Collection of actions that take place every page load """
@@ -20,10 +23,19 @@ def on_page_load(request):
         results[k] = v
     for k,v in check_selinux(request).items():
         results[k] = v
+    for k,v in activate_plugins(request).items():
+        results[k] = v
+    for k,v in check_git(request).items():
+        results[k] = v
 
     return results
 
-
+def activate_plugins(request):
+    """ Activates any plugins specified in settings.plugins """
+    for k,v in settings.plugins.items():
+        print "activating plugin", k
+        add_plugin(name=k,modulepath=v)
+    return {'misc_menubar_items':adagios.misc_menubar_items, 'menubar_items':adagios.menubar_items}
 def resolve_urlname(request):
     """Allows us to see what the matched urlname for this
     request is within the template"""
@@ -42,6 +54,22 @@ def get_httpuser(request):
         i.modified_by = request.META.get('REMOTE_USER', 'anonymous')
     return {}
 
+def check_git(request):
+    """ Notify user if there is uncommited data in git repository """
+    nagiosdir = os.path.dirname(pynag.Model.config.cfg_file)
+    if settings.enable_githandler == True:
+        try:
+            git = Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
+            uncommited_files = git.get_uncommited_files()
+            if len(uncommited_files) > 0:
+                add_notification(level="warning", notification_id="uncommited", message="There are %s uncommited uncommited files in %s" % (len(uncommited_files), nagiosdir))
+            else:
+                clear_notification(notification_id="uncommited")
+            clear_notification(notification_id="git_missing")
+        except Model.EventHandlers.EventHandlerError, e:
+            if e.errorcode == 128:
+                add_notification(level="warn", notification_id="git_missing", message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
+    return {}
 
 def check_nagios_needs_reload(request):
     """ Notify user if nagios needs a reload """
@@ -83,7 +111,6 @@ def reload_configfile(request):
         locals = {}
         execfile(settings.adagios_configfile,globals(),locals)
         for k,v in locals.items():
-            print k, '==', v
             settings.__dict__[k] = v
     except Exception, e:
         add_notification(level="warning", message=str(e), notification_id="configfile")
