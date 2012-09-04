@@ -46,7 +46,7 @@ mv %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysc
 
 mkdir -p %{buildroot}%{_sysconfdir}/adagios/conf.d/
 mv %{buildroot}%{python_sitelib}/adagios/etc/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
-
+mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d/
 mv %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
 
 %clean
