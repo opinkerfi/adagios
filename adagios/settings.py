@@ -102,13 +102,10 @@ INSTALLED_APPS = [
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-#    'adagios.okconfig_',
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
 ]
-
-#INSTALLED_APPS.append( 'adagios.okconfig_plugin' )
 
 TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     "django.contrib.auth.context_processors.auth",
