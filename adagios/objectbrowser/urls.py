@@ -1,7 +1,4 @@
 from django.conf.urls import *
-from django.conf.urls.defaults import *
-
-from django.conf import settings
 
 urlpatterns = patterns('',
 
@@ -17,7 +14,7 @@ urlpatterns = patterns('',
     url(r'/bulk_edit/?$', 'objectbrowser.views.bulk_edit', name='bulk_edit'),
     url(r'/bulk_delete/?$', 'objectbrowser.views.bulk_delete', name='bulk_delete'),
     url(r'/bulk_copy/?$', 'objectbrowser.views.bulk_copy', name='bulk_copy'),
-    (r'/edit_object/object_type=(?P<object_type>.+)/shortname=(?P<shortname>.+)$', 'objectbrowser.views.edit_object'),
+    url(r'/edit_object/object_type=(?P<object_type>.+)/shortname=(?P<shortname>.+)$', 'objectbrowser.views.edit_object', name="edit_by_shortname"),
     (r'/confighealth/?$', 'objectbrowser.views.config_health'),
     (r'/plugins/?$', 'objectbrowser.views.show_plugins'),
     (r'/nagios.cfg/?$', 'objectbrowser.views.edit_nagios_cfg'),
