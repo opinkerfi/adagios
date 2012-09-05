@@ -30,14 +30,14 @@
             <li><a href="{%  url objectbrowser.views.delete_object my_object.id %}"><i class="icon-trash"></i> Delete this {{  my_object.object_type }}</a></li>
         {% endif %}
 
-        {% if my_object.object_type == 'service' %}
+        {% if my_object.object_type == 'service' and my_object.register == '1' %}
             <li>
                 <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
                     <i class="icon-fire"></i> Open in Nagios</a>
             </li>
         {% endif %}
 
-        {% if my_object.object_type == 'host' %}
+        {% if my_object.object_type == 'host' and my_object.register == '1' %}
             <li>
                 <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}">
                     <i class="icon-fire"></i> Open in Nagios</a>
