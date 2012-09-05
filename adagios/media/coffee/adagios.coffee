@@ -208,7 +208,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $(".toolbar_#{ object_type } div.row-fluid div.span12").append """
         <div class="pull-left" id="actions">
           <div id="add" class="btn-group pull-left">
-            <a href="../../objectbrowser/add/#{object_type}" class="btn capitalize">
+            <a href="#{BASE_URL}objectbrowser/add/#{object_type}" class="btn capitalize">
               Add #{object_type}
             </a>
             <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
@@ -249,7 +249,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     if (object_type != "command" and object_type != "timeperiod")
       $(".toolbar_#{ object_type } div.row-fluid ul.dropdown-menu").append """
-      <li><a href="../../objectbrowser/add/#{ object_type}group" class="capitalize">#{object_type}group</a></li>
+      <li><a href="#{BASE_URL}objectbrowser/add/#{ object_type}group" class="capitalize">#{object_type}group</a></li>
       <li class="divider"></li>"""
       $(".toolbar_#{ object_type } div#view_filter.btn-group").append """
       <a rel="tooltip" title="Show #{ object_type }s" class="btn active" data-filter-type="0">
@@ -268,7 +268,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       if ot is object_type or ot is "#{object_type}group"
         continue
       $(".toolbar_#{ object_type } div.row-fluid ul.dropdown-menu").append """
-      <li class="capitalize"><a href="../../objectbrowser/add/#{ ot }">#{ ot }</a></li>
+      <li class="capitalize"><a href="#{BASE_URL}objectbrowser/add/#{ ot }">#{ ot }</a></li>
       """
 
     console.log "Assignin click on #" + object_type + ".tab-pane label#selectall"
