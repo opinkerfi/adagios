@@ -129,6 +129,7 @@ class AddServiceToHostForm(forms.Form):
 class EditTemplateForm(forms.Form):
 #    register = forms.BooleanField()
 #    service_description = forms.CharField()
+
     def __init__(self, service=Model.Service(), *args, **kwargs):
         self.service = service
         super(forms.Form,self).__init__(*args, **kwargs)
@@ -137,7 +138,8 @@ class EditTemplateForm(forms.Form):
         # to form everything that starts with "_"
         self.description = service['service_description']
         fieldname="%s::%s::%s" % ( service['host_name'], service['service_description'], 'register')
-        self.fields[fieldname] = forms.BooleanField(initial=service['register']=="1", label='Enable service check')
+        self.fields[fieldname] = forms.BooleanField(required=False,initial=service['register']=="1", label='register')
+        self.register = fieldname
 
         macros = []
         self.command_line = None
@@ -152,7 +154,21 @@ class EditTemplateForm(forms.Form):
                 label = label.replace('_', ' ')
                 label = label.replace('$', '')
                 label = label.capitalize()
-                self.fields[fieldname] = forms.CharField(initial=service.get_macro(k), label=label)
+                self.fields[fieldname] = forms.CharField(required=False,initial=service.get_macro(k), label=label)
         # KeyError can occur if service has an invalid check_command
         except KeyError:
             pass
+    def save(self):
+        for i in self.changed_data:
+            # Changed data comes in the format host_name::service_description::$_SERVICE_PING
+            # We need to change that to just __PING
+            field_name = i.split('::')[2]
+            field_name = field_name.replace('$_SERVICE','_')
+            field_name = field_name.replace('$', '')
+            self.service[field_name] = self.cleaned_data[i]
+        self.service.save()
+        self.service.reload_object()
+        # Lets also update commandline because form is being returned to the user
+        self.command_line = self.service.get_effective_command_line()
+        print self.command_line
+

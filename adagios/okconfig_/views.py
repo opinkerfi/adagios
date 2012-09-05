@@ -195,6 +195,9 @@ def edit(request, host_name):
     c['messages'] = []
     c.update(csrf(request))
     c['hostname'] = host_name
+    c['host_name'] = host_name
+    c['forms'] = myforms = []
+
     try:
         c['myhost'] = Model.Host.objects.get_by_shortname(host_name)
     except KeyError, e:
@@ -202,36 +205,25 @@ def edit(request, host_name):
         return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
     # Get all services of that host that contain a service_description
     services = Model.Service.objects.filter(host_name=host_name,service_description__contains='')
-    
-    # All the form fields have an id of HOST::SERVICE::ATTRIBUTE so we have to split it
-    if request.method == 'POST':
-        for k,v in request.POST.items():
-            if k.count('::') < 2: continue
 
-            host_name,service_description,attribute = k.split('::',2)
-            if attribute.startswith("$ARG"): continue
-            attribute = attribute.replace('$_SERVICE', "_")
-            attribute = attribute.replace('$', "")
-            # Sometimes register booleanfield comes in as "on" but we need True
-            if attribute == "register":
-                if v == "on" or v == "1" or v == True:
-                    v == "1"
-                else:
-                    v == "0"
-
-            for i in services:
-                if i['service_description'] == service_description:
-                    if i[attribute] != v:
-                        i[attribute] = v
-                        i.save()
-    myforms =[]       
-    for service in services:
-        #initial = {}
-        #initial['service_description'] = service['service_description']
-        #initial['register'] = service['register'] == "1"
-        form = forms.EditTemplateForm(service=service)
-        myforms.append( form )
-    c['forms'] = myforms
+    if request.method == 'GET':
+        for service in services:
+            myforms.append( forms.EditTemplateForm(service=service) )
+    elif request.method == 'POST':
+        # All the form fields have an id of HOST::SERVICE::ATTRIBUTE
+        for service in services:
+            form = forms.EditTemplateForm(service=service, data=request.POST)
+            myforms.append(form)
+            if form.is_valid():
+                try:
+                    if form.changed_data != []:
+                        form.save()
+                        c['messages'].append("'%s' successfully saved." % service.get_description() )
+                except Exception, e:
+                    c['errors'].append( "Failed to save service %s: %s" % (service.get_description(), e))
+            else:
+                c['errors'].append('invalid data in %s' % service.get_description())
+        c['forms'] = myforms
     return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
 
 def choose_host(request):

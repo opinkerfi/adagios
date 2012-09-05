@@ -15,7 +15,7 @@ Fix for dropdown buttons, height to small for some reason
 
 body {
 	background: url('../img/bak.jpg');
-    font-size: 12px;
+    font-size: 13px;
 }
 
 [rel=tooltip] {
@@ -90,20 +90,6 @@ a {
     text-decoration: none;
     font-weight: bold;
 }
-
-td {
-    font-size: 11px;
-}
-th {
-    font-size: 11px;
-}
-p {
-  font-size: 12px;
-}
-
-
-
-
 
 div.dataTables_length label {
 	float: left;
