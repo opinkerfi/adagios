@@ -138,6 +138,10 @@ plugins = {}
 adagios_configfile = "/etc/adagios/adagios.conf"
 try:
     execfile(adagios_configfile)
+    # if config has any default include, lets include that as well
+    configfiles = glob(include)
+    for configfile in configfiles:
+        execfile(configfile)
 except IOError, e:
     # Only raise on errors other than file not found (missing config is OK)
     if e.errno != 2:
@@ -147,11 +151,6 @@ except IOError, e:
         # TODO: Should this go someplace?
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
-
-# if config has any default include, lets include that as well
-configfiles = glob(include)
-for configfile in configfiles:
-    execfile(configfile)
-
 for k,v in plugins.items():
     INSTALLED_APPS.append( v )
+
