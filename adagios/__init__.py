@@ -27,7 +27,6 @@ def startup():
         )
     for k,v in settings.plugins.items():
         add_plugin(k,v)
-from django.conf.urls.defaults import *
 
 def add_plugin(name="myplugin", modulepath=None):
     """ Adds a new django application dynamically to adagios.
