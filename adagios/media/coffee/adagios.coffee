@@ -416,7 +416,7 @@ $(document).ready ->
     $this = $(this)
     id = $this.attr 'data-notification-dismiss'
     if id
-      $.post "../../rest/adagios/txt/clear_notification", { notification_id: id }
+      $.post "#{BASE_URL}rest/adagios/txt/clear_notification", { notification_id: id }
       ,(data) ->
         if data == "success"
           $('span#num_notifications').each ->
