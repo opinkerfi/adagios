@@ -43,14 +43,14 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 #chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
 sed -i 's|/usr/lib/python2.7/site-packages|%{python_sitelib}|g' %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
-install -m644 %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
+install %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
 
 mkdir -p %{buildroot}%{_sysconfdir}/adagios/conf.d/
-install -o nagios -m644 %{buildroot}%{python_sitelib}/adagios/etc/adagios/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
-install -o nagios -m644 %{buildroot}%{python_sitelib}/adagios/etc/adagios/conf.d/okconfig.conf %{buildroot}%{_sysconfdir}/adagios/conf.d/
+install %{buildroot}%{python_sitelib}/adagios/etc/adagios/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
+install %{buildroot}%{python_sitelib}/adagios/etc/adagios/conf.d/okconfig.conf %{buildroot}%{_sysconfdir}/adagios/conf.d/
 
 mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d/
-install -m0440 %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
+install %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -59,9 +59,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc README.md 
 %{python_sitelib}/*
-%config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
-%config(noreplace) %{_sysconfdir}/adagios/adagios.conf
-%config(noreplace) %{_sysconfdir}/sudoers.d/adagios
+%attr(0644, root, root) %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
+%attr(0755, root, root) %dir %{_sysconfdir}/adagios
+%attr(0755, root, root) %dir %{_sysconfdir}/adagios/conf.d
+%attr(0644, root, root) %config(noreplace) %{_sysconfdir}/adagios/adagios.conf
+%attr(0644, root, root) %config(noreplace) %{_sysconfdir}/adagios/conf.d/*
+%attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
 * Sat Aug 18 2012 Pall Sigurdsson <palli@opensource.is> 1.1.0-2
