@@ -69,7 +69,7 @@ class AdagiosSettingsForm(forms.Form):
     def save(self):
         # First of all, if configfile does not exist, lets try to create it:
         if not os.path.isfile( settings.adagios_configfile ):
-            open(settings.adagios_configfile, 'w').write()
+            open(settings.adagios_configfile, 'w').write("# Autocreated by adagios")
         for k,v in self.cleaned_data.items():
             Model.config._edit_static_file(attribute=k, new_value=v, filename=settings.adagios_configfile)
             #settings.__dict__[k] = v
