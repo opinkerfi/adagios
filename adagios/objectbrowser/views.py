@@ -372,8 +372,11 @@ def config_health( request  ):
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
     c['errors'] = Model.config.errors
-    import okconfig
-    c['booleans']['OKConfig is installed and working'] = okconfig.is_valid()
+    try:
+        import okconfig
+        c['booleans']['OKConfig is installed and working'] = okconfig.is_valid()
+    except Exception:
+        c['booleans']['OKConfig is installed and working'] = False
     s['Parser errors'] = Model.config.errors
     s['Services with no "service_description"'] = services_no_description
     s['Hosts without any contacts'] = hosts_without_contacts
