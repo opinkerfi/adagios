@@ -6,6 +6,7 @@ TEMPLATE_DEBUG = DEBUG
 # Hack to allow relative template paths
 import os
 from glob import glob
+from warnings import warn
 
 djangopath = os.path.dirname(__file__)
 
@@ -33,7 +34,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'Atlantic/Reykjavik'
+# TIME_ZONE = 'Atlantic/Reykjavik'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -135,7 +136,15 @@ plugins = {}
 
 # Load config files from /etc/adagios/
 adagios_configfile = "/etc/adagios/adagios.conf"
-execfile(adagios_configfile)
+try:
+    execfile(adagios_configfile)
+except IOError, e:
+    # Only raise on errors other than file not found (missing config is OK)
+    if e.errno != 2:
+        raise Exception('Unable to open %s: %s' % (adagios_configfile, e.strerror))
+    # Warn on missing configs
+    else:
+        warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
 
 # if config has any default include, lets include that as well
