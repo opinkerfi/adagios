@@ -59,6 +59,7 @@ class ContactUsForm(forms.Form):
 
 class AdagiosSettingsForm(forms.Form):
     nagios_config = forms.CharField(required=False, initial=settings.nagios_config, help_text="Path to nagios configuration file. i.e. /etc/nagios/nagios.cfg")
+    destination_directory = forms.CharField(required=False, initial=settings.destination_directory, help_text="Where to save new objects that adagios creates.")
     nagios_url = forms.CharField(required=False, initial=settings.nagios_url, help_text="URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi.")
     nagios_init_script = forms.CharField(help_text="Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios")
     nagios_binary = forms.CharField(help_text="Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'")
@@ -108,6 +109,28 @@ class AdagiosSettingsForm(forms.Form):
             elif type(v) == type(False):
                 cleaned_data[k] = str(v)
         return cleaned_data
+
+class EditAllForm(forms.Form):
+    """ This form intelligently modifies all attributes of a specific type.
+
+
+    """
+    def __init__(self, object_type, attribute, new_value, *args, **kwargs):
+        self.object_type = object_type
+        self.attribute = attribute
+        self.new_value = new_value
+        super(self.__class__, self).__init__(self, args, kwargs)
+        filter = {}
+        filter['object_type'] = object_type
+        filter['%s__isnot' % attribute] = new_value
+        items = Model.ObjectDefinition.objects.filter(**filter)
+        interesting_objects = []
+        for i in items:
+            if attribute in i._defined_attributes or i.use is None:
+                interesting_objects.append( i )
+        self.interesting_objects = interesting_objects
+        for i in interesting_objects:
+            self.fields[ 'modify_%s' % i.get_id() ] = forms.BooleanField(required=False,initial=True)
 
 class PNP4NagiosForm(forms.Form):
     """ This form is responsible for configuring PNP4Nagios. """

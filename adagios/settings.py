@@ -127,6 +127,7 @@ nagios_binary = "/usr/bin/nagios"
 enable_githandler=False
 enable_loghandler = False
 warn_if_selinux_is_active = True
+destination_directory="/etc/nagios/adagios/"
 include=""
 
 plugins = {}

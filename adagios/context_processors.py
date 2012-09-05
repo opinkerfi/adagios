@@ -27,7 +27,8 @@ def on_page_load(request):
         results[k] = v
     for k,v in check_git(request).items():
         results[k] = v
-
+    for k,v in check_destination_directory(request).items():
+        results[k] = v
     return results
 
 def activate_plugins(request):
@@ -54,6 +55,22 @@ def get_httpuser(request):
         i.modified_by = request.META.get('REMOTE_USER', 'anonymous')
     return {}
 
+def check_destination_directory(request):
+    """ Check that adagios has a place to store new objects """
+    dest = settings.destination_directory
+    dest_dir_was_found = False
+    for k,v in Model.config.maincfg_values:
+        if k != 'cfg_dir':
+            continue
+        if os.path.normpath(v) == os.path.normpath(dest):
+            dest_dir_was_found=True
+    if not dest_dir_was_found:
+        add_notification(level="warn",notification_id="dest_dir", message="Destination for new objects (%s) is not defined in nagios.cfg" %dest)
+    elif not os.path.isdir(dest):
+        add_notification(level="warn", notification_id="dest_dir", message="Destination directory for new objects (%s) is not found. Please create it." %dest)
+    else:
+        clear_notification(notification_id="dest_dir")
+    return {}
 def check_git(request):
     """ Notify user if there is uncommited data in git repository """
     nagiosdir = os.path.dirname(pynag.Model.config.cfg_file)

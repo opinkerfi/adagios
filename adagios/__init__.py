@@ -16,6 +16,7 @@ def startup():
     from adagios import settings
 
     pynag.Model.cfg_file = settings.nagios_config
+    pynag.Model.pynag_directory = settings.destination_directory
 
     # Pre load objects on startup
     pynag.Model.ObjectDefinition.objects.get_all()
