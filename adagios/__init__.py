@@ -1,5 +1,4 @@
 import os.path
-import adagios
 
 __version__="git-latest"
 
@@ -26,7 +25,7 @@ def startup():
         pynag.Model.eventhandlers.append(
             pynag.Model.EventHandlers.GitEventHandler(os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
         )
-    for k,v in adagios.settings.plugins.items():
+    for k,v in settings.plugins.items():
         add_plugin(k,v)
 from django.conf.urls.defaults import *
 

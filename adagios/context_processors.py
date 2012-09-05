@@ -81,7 +81,8 @@ def check_nagios_needs_reload(request):
         if needs_reload:
             add_notification(level="warning", message=warn, notification_id="needs_reload")
         else:
-            add_notification(level="success", message=ok, notification_id="needs_reload")
+            pass
+            #add_notification(level="success", message=ok, notification_id="needs_reload")
     except KeyError, e:
         raise e
     return { "needs_reload":needs_reload }
