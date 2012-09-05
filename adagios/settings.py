@@ -144,6 +144,7 @@ except IOError, e:
         raise Exception('Unable to open %s: %s' % (adagios_configfile, e.strerror))
     # Warn on missing configs
     else:
+        # TODO: Should this go someplace?
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
 
