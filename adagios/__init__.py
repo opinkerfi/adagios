@@ -49,6 +49,7 @@ def add_plugin(name="myplugin", modulepath=None):
     #adagios.settings.INSTALLED_APPS.append(modulepath)
     # Add plugin to urls
     import adagios.urls
+    from django.conf.urls.defaults import patterns,include
     new_pattern = patterns('',
         (r'^%s'%name, include("%s.urls" % modulepath) ),
     )
@@ -58,7 +59,6 @@ def add_plugin(name="myplugin", modulepath=None):
         misc_menubar_items.append( "%s_menubar_misc.html" % name)
     if os.path.isfile(template_dir + "%s_menubar.html" %name):
         menubar_items.append( "%s_menubar.html" % name)
-
 
 
 try:

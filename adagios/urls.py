@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+
 from django.conf import settings
 
 from django.views.static import serve
@@ -12,7 +13,6 @@ urlpatterns = patterns('',
     url(r'^$', 'misc.views.index', name="home"),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name="media"),
     (r'^objectbrowser', include('objectbrowser.urls')),
-    (r'^okconfig', include('okconfig_.urls')),
     (r'^misc', include('misc.urls')),
     (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
     (r'^rest', include('rest.urls')),

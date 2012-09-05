@@ -22,6 +22,7 @@ This is a rest interface used by the "/rest/" module that affects adagios direct
 '''
 
 from adagios import __version__, notifications
+from adagios.settings import plugins
 version = __version__
 
 
