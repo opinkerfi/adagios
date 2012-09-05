@@ -18,7 +18,7 @@
 {% endblock %}
 {% block content %}
     {% if success %}
-    <h1>Success! Objects have been deleted.</h1>
+    <h3>Objects have been deleted.</h3>
     {% else %}
     You are about to delete multible objects. Are you sure you want to continue ?
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}

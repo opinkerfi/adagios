@@ -35,6 +35,7 @@ def activate_plugins(request):
     for k,v in settings.plugins.items():
         add_plugin(name=k,modulepath=v)
     return {'misc_menubar_items':adagios.misc_menubar_items, 'menubar_items':adagios.menubar_items}
+
 def resolve_urlname(request):
     """Allows us to see what the matched urlname for this
     request is within the template"""
