@@ -133,12 +133,6 @@ table.dataTable th:active {
 	outline: none;
 }
 
-
-table.table th, table.table td {
-    line-height: 12px;
-}
-
-
 a.inactive {
     color: #5c5c5c;
 }

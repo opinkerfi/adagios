@@ -133,7 +133,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
             if "truncate" of field and field_value.length > (field["truncate"] + 3)
               cell += """<abbr rel="tooltip" title=" #{ field_value }">#{ field_value.substr(0, field["truncate"]) } ...</abbr>"""
             else
-              cell += field_value
+              cell += " #{field_value}"
             cell += "</a>"
             field_array.push cell
             if field["cName"] is v["rows"][v["rows"].length - 1]["cName"]
@@ -412,3 +412,16 @@ $(document).ready ->
   $("#popover").popover()
   $("select").chosen()
 
+  $('button[data-dismiss="alert"]').on 'click', (e) ->
+    $this = $(this)
+    id = $this.attr 'data-notification-dismiss'
+    if id
+      $.post "#{BASE_URL}rest/adagios/txt/clear_notification", { notification_id: id }
+      ,(data) ->
+        if data == "success"
+          $('span#num_notifications').each ->
+            num = +$(this).text()
+            $(this).text +num - 1
+        else
+          alert "Unable to dismiss notification for #{id}"
+    true
