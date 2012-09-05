@@ -25,6 +25,7 @@ Requires: pynag >= 0.4.5
 Requires: httpd
 Requires: mod_wsgi
 Requires: Django
+Requires: sudo
 
 %description
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. 
@@ -42,14 +43,14 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 #chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
 sed -i 's|/usr/lib/python2.7/site-packages|%{python_sitelib}|g' %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
-mv %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
+install -m644 %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
 
 mkdir -p %{buildroot}%{_sysconfdir}/adagios/conf.d/
-mv %{buildroot}%{python_sitelib}/adagios/etc/adagios/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
-mv %{buildroot}%{python_sitelib}/adagios/etc/adagios/conf.d/okconfig.conf %{buildroot}%{_sysconfdir}/adagios/conf.d/
+install -o nagios -m644 %{buildroot}%{python_sitelib}/adagios/etc/adagios/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
+install -o nagios -m644 %{buildroot}%{python_sitelib}/adagios/etc/adagios/conf.d/okconfig.conf %{buildroot}%{_sysconfdir}/adagios/conf.d/
 
 mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d/
-mv %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
+install -m0440 %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
