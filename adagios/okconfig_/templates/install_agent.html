@@ -15,8 +15,10 @@
         $("div#install_agent #id_install_method").on('change', function() {
             if ($(this).val() == 'winexe') {
                 $("label.control-label[for='windows_domain']").parent().show();
+                $('#id_username').val("administrator");
             } else {
                 $("label.control-label[for='windows_domain']").parent().hide();
+                $('#id_username').val("root");
             }
         });
     });

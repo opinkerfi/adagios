@@ -108,10 +108,10 @@ def addtemplate(request, host_name=None):
         if f.is_valid():
             try:
                 f.save()
-                c['host_name'] = f.cleaned_data['host_name']
+                c['host_name'] = host_name = f.cleaned_data['host_name']
                 c['filelist'] = f.filelist
                 c['messages'].append("Template was successfully added to host.")
-                return addcomplete(request, c)
+                return HttpResponseRedirect( reverse('okconfig_.views.edit', args=[host_name] ) )
             except Exception, e:
                 c['errors'].append(e)
         else:

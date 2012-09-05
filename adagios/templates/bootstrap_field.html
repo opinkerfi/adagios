@@ -3,7 +3,7 @@
 {% if field.label %}
 <!-- Field {{ field.label }} -->
 <div class="control-group{% if field.errors %} error{% endif %}{% if field.required %} required{% endif %}{% if field.hide  %} hide{% endif %}">
-    <label class="control-label" for="{{ field.name }}" rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}">
+    <label class="control-label" for="{{ field.name }}">
         {{ field.label }}
     </label>
     <div class="controls" id="{{ field.name }}_field">

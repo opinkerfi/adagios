@@ -48,9 +48,9 @@ class ScanNetworkForm(forms.Form):
         return True
 
 class AddGroupForm(forms.Form):
-    group_name = forms.CharField()
-    alias = forms.CharField()
-    force = forms.BooleanField(required=False)
+    group_name = forms.CharField(help_text="Example: databases")
+    alias = forms.CharField(help_text="Human friendly name for the group")
+    force = forms.BooleanField(required=False, help_text="Overwrite group if it already exists.")
 
 class AddHostForm(forms.Form):
     host_name = forms.CharField(help_text="Name of the host to add")
@@ -112,7 +112,7 @@ class InstallAgentForm(forms.Form):
     password = forms.CharField(required=False, widget=forms.PasswordInput, help_text="Leave empty if using kerberos or ssh keys")
 
 class ChooseHostForm(forms.Form):
-    host_name = forms.ChoiceField(help_text="Select one host")
+    host_name = forms.ChoiceField(help_text="Select which host to edit")
     def __init__(self, service=Model.Service(), *args, **kwargs):
         super(forms.Form,self).__init__(*args, **kwargs)
         self.fields['host_name'].choices = get_all_hosts()
@@ -127,9 +127,6 @@ class AddServiceToHostForm(forms.Form):
 
 
 class EditTemplateForm(forms.Form):
-#    register = forms.BooleanField()
-#    service_description = forms.CharField()
-
     def __init__(self, service=Model.Service(), *args, **kwargs):
         self.service = service
         super(forms.Form,self).__init__(*args, **kwargs)

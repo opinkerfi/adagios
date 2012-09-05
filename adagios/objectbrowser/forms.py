@@ -195,12 +195,6 @@ class PynagForm(forms.Form):
             field = PynagChoiceField(choices=SERVICE_NOTIFICATION_OPTIONS,inline_help_text="No %s selected" % (field_name))
         elif options.get('value') == '[0/1]':
             field = forms.CharField(widget=PynagRadioWidget)
-            # Set wider inputs in form
-            self.add_css_tag(field=field, css_tag="span11")
-        else:
-            # Set wider inputs in form
-            self.add_css_tag(field=field, css_tag="span11")
-        # TODO, select fields are still not wide enough
 
         # Lets see if there is any help text available for our field
         if field_name in object_definitions[object_type]:
