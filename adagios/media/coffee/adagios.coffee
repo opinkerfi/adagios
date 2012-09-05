@@ -412,3 +412,16 @@ $(document).ready ->
   $("#popover").popover()
   $("select").chosen()
 
+  $('button[data-dismiss="alert"]').on 'click', (e) ->
+    $this = $(this)
+    id = $this.attr 'data-notification-dismiss'
+    if id
+      $.post "../../rest/adagios/txt/clear_notification", { notification_id: id }
+      ,(data) ->
+        if data == "success"
+          $('span#num_notifications').each ->
+            num = +$(this).text()
+            $(this).text +num - 1
+        else
+          alert "Unable to dismiss notification for #{id}"
+    true
