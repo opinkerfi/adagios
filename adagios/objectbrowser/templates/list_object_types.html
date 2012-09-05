@@ -4,8 +4,8 @@
 {% block footer %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
-    var currenttab = '#service';
-    var currenttable = '#service';
+    var currenttab = '#host';
+    var currenttable = '#host';
     var BASE_URL = "{% url home %}";
 
 
@@ -20,7 +20,7 @@
         // Show service tab
         var anchor = document.location.href.split('#')[1];
         if (anchor == undefined) {
-            anchor = 'service';
+            anchor = 'host';
         }
 
 
@@ -225,8 +225,8 @@
             <div class="span9">
                 <div id="objectbrowser" class="block">
                     <ul class="nav nav-tabs" id="objecttabs">
-                        <li><a href="#service" data-toggle="tab"><i class="glyph-computer-service"></i> Services</a></li>
                         <li><a href="#host" data-toggle="tab"><i class="glyph-computer-locked"></i> Hosts</a></li>
+                        <li><a href="#service" data-toggle="tab"><i class="glyph-computer-service"></i> Services</a></li>
                         <li><a href="#contact" data-toggle="tab"><i class="icon-user"></i>Contacts</a></li>
                         <li><a href="#command" data-toggle="tab"><i class="glyph-computer-proces"></i> Commands</a></li>
                         <li><a href="#timeperiod" data-toggle="tab"><i class="glyph-clock"></i> Timeperiods</a></li>
