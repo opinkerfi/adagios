@@ -133,7 +133,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
             if "truncate" of field and field_value.length > (field["truncate"] + 3)
               cell += """<abbr rel="tooltip" title=" #{ field_value }">#{ field_value.substr(0, field["truncate"]) } ...</abbr>"""
             else
-              cell += field_value
+              cell += " #{field_value}"
             cell += "</a>"
             field_array.push cell
             if field["cName"] is v["rows"][v["rows"].length - 1]["cName"]
