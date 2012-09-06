@@ -79,7 +79,7 @@ def check_git(request):
             git = Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
             uncommited_files = git.get_uncommited_files()
             if len(uncommited_files) > 0:
-                add_notification(level="warning", notification_id="uncommited", message="There are %s uncommited uncommited files in %s" % (len(uncommited_files), nagiosdir))
+                add_notification(level="warning", notification_id="uncommited", message="There are %s uncommited files in %s" % (len(uncommited_files), nagiosdir))
             else:
                 clear_notification(notification_id="uncommited")
             clear_notification(notification_id="git_missing")
