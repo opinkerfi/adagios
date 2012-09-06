@@ -7,7 +7,7 @@
 %define release 2
 
 Name: adagios
-Version: 1.1.0
+Version: 1.1.1
 Release: %{release}%{?dist}
 Summary: Adagios web-configuration front-end to nagios 
 Group: Applications/Internet
@@ -67,6 +67,42 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
+* Thu Sep 06 2012 Pall Sigurdsson <palli@opensource.is> 1.1.1-2
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- reload_nagios button implemented (palli@opensource.is)
+- Fixed multiple replace of adagios and ownership of files (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- added missing okconfig.conf (palli@opensource.is)
+- Modified file permissions on installed files in spec (tommi@tommi.org)
+- path fix in spec file (palli@opensource.is)
+- Removed line height for tables, sticking with defaults (tommi@tommi.org)
+- edithost redesigned, should be fully functional (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- template cleanup (palli@opensource.is)
+- Notify user if selinux is active (Closes #24) (palli@opensource.is)
+- help text improved for install_agent form (palli@opensource.is)
+- Rest module now raises exception if format is invalid. (palli@opensource.is)
+- Submit button added on edit_contact notification tab (palli@opensource.is)
+- Reorganized top navigation items (palli@opensource.is)
+- reload_nagios button implemented (palli@opensource.is)
+- New notification system for notification area on top-right
+  (palli@opensource.is)
+- ObjectBrowser Add/Edit/Delete always visible when something is selected
+  (tommi@tommi.org)
+- bulk copy feature implemented (palli@opensource.is)
+- Made click action more specific (tommi@tommi.org)
+- Moved actions to top of objectbrowser from sidebar and added copy
+  (tommi@tommi.org)
+- Some more objectbrowser filter optimizations (tommi@tommi.org)
+- javascript converted to coffee and tuned objectbrowser and toolbar
+  (tommi@tommi.org)
+- Pynag radiobuttons are now all have the same style (palli@opensource.is)
+- experimental new look for forms (palli@opensource.is)
+- Fixes for numerous usability issues in ObjectBrowser (tommi@tommi.org)
+- Fixed mass select and datatables problems in Objectbrowser (tommi@tommi.org)
+- README updated to include features and link to project page
+  (palli@opensource.is)
+
 * Sat Aug 18 2012 Pall Sigurdsson <palli@opensource.is> 1.1.0-2
 - removed weird reference to unmangled version (palli@opensource.is)
 
