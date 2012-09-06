@@ -60,10 +60,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc README.md 
 %{python_sitelib}/*
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
-%attr(0755, root, root) %dir %{_sysconfdir}/adagios
-%attr(0755, root, root) %dir %{_sysconfdir}/adagios/conf.d
-%attr(0644, root, root) %config(noreplace) %{_sysconfdir}/adagios/adagios.conf
-%attr(0644, root, root) %config(noreplace) %{_sysconfdir}/adagios/conf.d/*
+%attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios
+%attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios/conf.d
+%attr(0664, nagios, nagios) %config(noreplace) %{_sysconfdir}/adagios/adagios.conf
+%attr(0664, nagios, nagios) %config(noreplace) %{_sysconfdir}/adagios/conf.d/*
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
