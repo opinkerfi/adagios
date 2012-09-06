@@ -65,9 +65,9 @@ def check_destination_directory(request):
         if os.path.normpath(v) == os.path.normpath(dest):
             dest_dir_was_found=True
     if not dest_dir_was_found:
-        add_notification(level="warn",notification_id="dest_dir", message="Destination for new objects (%s) is not defined in nagios.cfg" %dest)
+        add_notification(level="warning",notification_id="dest_dir", message="Destination for new objects (%s) is not defined in nagios.cfg" %dest)
     elif not os.path.isdir(dest):
-        add_notification(level="warn", notification_id="dest_dir", message="Destination directory for new objects (%s) is not found. Please create it." %dest)
+        add_notification(level="warning", notification_id="dest_dir", message="Destination directory for new objects (%s) is not found. Please create it." %dest)
     else:
         clear_notification(notification_id="dest_dir")
     return {}
@@ -85,7 +85,7 @@ def check_git(request):
             clear_notification(notification_id="git_missing")
         except Model.EventHandlers.EventHandlerError, e:
             if e.errorcode == 128:
-                add_notification(level="warn", notification_id="git_missing", message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
+                add_notification(level="warning", notification_id="git_missing", message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
     return {}
 
 def check_nagios_needs_reload(request):
