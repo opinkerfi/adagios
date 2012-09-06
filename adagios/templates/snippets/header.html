@@ -90,12 +90,14 @@
         <div class="modal-header"><h3>Notifications: <span id="num_notifications">{{ notifications|length }}</span></h3></div>
         <div class="modal-body">
             {%  for id,notification in notifications.items %}
-                <div class="alert alert-{{ notification.level }}">
-                        <!-- TODO: Tommi, þessi button á ekki að vera <a href> .. ertu með betri leið ? -->
-                        <button type="button" class="close" data-dismiss="alert" data-notification-dismiss="{{ id }}">
-                            ×
-                        </button>
+                <div class="alert alert-{{ notification.level }}" data-notification-dismiss="{{ id }}">
+
                     <strong>{{ notification.level }}!</strong> {{  notification.message }}
+                    <div class="pull-right">
+                        <a href="#" data-dismiss="alert">
+                            Hide
+                        </a>
+                    </div>
                 </div>
             {%  endfor %}
         </div>
