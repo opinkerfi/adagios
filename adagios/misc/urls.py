@@ -9,5 +9,8 @@ urlpatterns = patterns('',
     (r'^/service/?', 'misc.views.nagios_service'),
     (r'^/map/?', 'misc.views.map'),
     (r'^/pnp4nagios/?', 'misc.views.pnp4nagios'),
+    (r'^/status/?$', 'misc.views.status'),
+    (r'^/status/(?P<host_name>.+)/(?P<service_description>.+)/?$', 'misc.views.status_host'),
+    (r'^/status/(?P<host_name>.+)$', 'misc.views.status_host'),
 )
  

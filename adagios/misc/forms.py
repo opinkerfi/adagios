@@ -73,6 +73,7 @@ class AdagiosSettingsForm(forms.Form):
             open(settings.adagios_configfile, 'w').write("# Autocreated by adagios")
         for k,v in self.cleaned_data.items():
             Model.config._edit_static_file(attribute=k, new_value=v, filename=settings.adagios_configfile)
+            self.adagios_configfile = settings.adagios_configfile
             #settings.__dict__[k] = v
     def __init__(self, *args,**kwargs):
         # Since this form is always bound, lets fetch current configfiles and prepare them as post:
@@ -81,6 +82,9 @@ class AdagiosSettingsForm(forms.Form):
         super(self.__class__,self).__init__(*args,**kwargs)
     def clean_nagios_config(self):
         filename = self.cleaned_data['nagios_config']
+        return self.check_file_exists(filename)
+    def clean_destination_directory(self):
+        filename = self.cleaned_data['destination_directory']
         return self.check_file_exists(filename)
     def clean_nagios_init_script(self):
         filename = self.cleaned_data['nagios_init_script']
@@ -96,7 +100,7 @@ class AdagiosSettingsForm(forms.Form):
     def check_file_exists(self, filename):
         """ Raises validation error if filename does not exist """
         if not os.path.exists(filename):
-            raise forms.ValidationError('File not found')
+            raise forms.ValidationError('No such file or directory')
         return filename
 
     def clean(self):

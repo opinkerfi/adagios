@@ -8,20 +8,46 @@
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
 {% block content %}
-    {% if object %}
-        <h4>Plugin Output</h4>
-        <table align="center" class="center" border=1>
-            <tr class="alert alert-{{ object.status }}">
-                <td> {{ object.plugin_output }}</td>
+    {% if host %}
+        <h4>Host Status</h4>
+        <table class="alert alert-{{ host.status }}" >
+            <tr>
+                <th>host_name</th>
+                <td>{{ host.host_name }}</td>
             </tr>
-            <tr class="alert alert-{{ object.status }}">
+
+            <tr class="alert alert-{{ host.status }}">
+                <th>status</th>
+                <td> {{ host.plugin_output }}</td>
+            </tr>
+            <tr class="alert alert-{{ host.status }}">
+                <td></td>
                 <td>
-                    {{ object.long_plugin_output }}
+                    {{ host.long_plugin_output }}
                 </td>
             </tr>
             </table>
-            {% if results %}
+            {% if service %}
+                <h4>Service Status</h4>
+                <table class="alert alert-{{ service.status }}" border=1>
+                    <tr>
+                        <th>service_description</th>
+                        <td>{{ service_description }}</td>
+                    </tr>
+
+                    <tr class="alert alert-{{ service.status }}">
+                        <th>status</th>
+                        <td> {{ service.plugin_output }}</td>
+                    </tr>
+                    <tr class="alert alert-{{ service.status }}">
+                        <td></td>
+                        <td>
+                            {{ service.long_plugin_output }}
+                        </td>
+                    </tr>
+                </table>
                 <h4>Performance Data</h4>
+                {% if perfdata %}
                 <table border=1>
                 <tr class="alert alert-info">
                     <th>label</th>
@@ -33,7 +59,7 @@
                     <th>max value</th>
                     <th>status</th>
                 </tr>
-                {% for i in results %}
+                {% for i in perfdata %}
                     <tr class="alert alert-{{ i.csstag }}">
                         <td>{{ i.label }}</td>
                         <td>{{ i.value }} </td>
@@ -46,6 +72,9 @@
                     </tr>
                 {% endfor %}
                 </table>
+                {% else %}
+                No Perfdata available.
+                {% endif %}
             {% endif %}
     {% endif %}
 
@@ -55,12 +84,10 @@
 {% block header %} {{ block.super }} {% endblock %}
 
 {% block sidebar %}
-    {% if objects %}
-        <table class="table" style="margin:0px; padding:0px; height=10px">
-            <tr>
-                <th>services</th>
-            </tr>
-            {% for i in objects %}
+    {% if services %}
+        <table class="table" style="margin:0px; padding:0px; height:10px">
+            <h5>Services</h5>
+            {% for i in services %}
                 <tr>
                     {% if i.current_state == "0" %}
                         <td class="alert alert-success" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
@@ -74,7 +101,7 @@
                     {% if i.current_state == "3" %}
                         <td class="" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
                     {% endif %}
-                    <a href="?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
+                    <a href="{% url misc.views.status_host i.host_name i.service_description %}">
                         {{ i.host_name }}/{{ i.service_description }}
                     </a>
                     </td>
@@ -82,6 +109,10 @@
             {% endfor %}
         </table>
     {% endif %}
+    <h5>See also</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url misc.views.status %}">All Hosts</a></li>
+    </ul>
 
 
 {% endblock %}
