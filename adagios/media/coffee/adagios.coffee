@@ -77,6 +77,16 @@ $.extend $.fn.dataTableExt.oStdClasses,
       dt = $this.dataTable()
       columns = dt.fnSettings().aoColumns.length
       # 4 Visible columns
+      if $this.attr('id') == 'service'
+        if window_width < 470
+          dt.fnSetColumnVis 3, false
+          dt.fnSetColumnVis 4, false
+          dt.fnSetColumnVis 5, false
+          dt.fnSetColumnVis 6, true
+          return this
+        else
+          dt.fnSetColumnVis 3, true
+          dt.fnSetColumnVis 6, false
       if columns > 5
         dt.fnSetColumnVis(5, (window_width > 970))
       if columns > 4
