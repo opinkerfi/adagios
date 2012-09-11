@@ -5,7 +5,7 @@
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
     var currenttab = '#host';
-    var currenttable = '#host';
+    var currenttable = '#host-table';
     var BASE_URL = "{% url home %}";
 
 
@@ -24,9 +24,9 @@
         }
 
 
-        $('#objecttabs a:[href="#' + anchor + '"]').tab('show');
+        $('#objecttabs a:[href="#' + anchor + '-tab"]').tab('show');
 
-        $('table#service').adagios_ob_configure_dataTable(
+        $('table#service-table').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Host" },
                     { "sTitle": "Name" },
@@ -69,7 +69,7 @@
 
                 ]
         );
-        $('table#command').adagios_ob_configure_dataTable(
+        $('table#command-table').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Command Name" },
                     { "sTitle": "Command Line" }
@@ -91,7 +91,7 @@
                 ]
         );
 
-        $('table#contact').adagios_ob_configure_dataTable(
+        $('table#contact-table').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Contact Name" },
                     { "sTitle": "Alias" },
@@ -124,7 +124,7 @@
                     }
                 ]
         );
-        $('table#host').adagios_ob_configure_dataTable(
+        $('table#host-table').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Name" },
                     { "sTitle": "Address" },
@@ -157,7 +157,7 @@
                     }
                 ]
         );
-        $('table#timeperiod').adagios_ob_configure_dataTable(
+        $('table#timeperiod-table').adagios_ob_configure_dataTable(
                 [
                     { "sTitle": "Name" },
                     { "sTitle": "Alias" }
@@ -176,23 +176,25 @@
                     }
                 ]
         );
-        $('table#' + anchor).adagios_ob_render_dataTable();
+        $('table#' + anchor + "-table").adagios_ob_render_dataTable();
 
         $(window).bind('resize', function() {
             $('table.objecttable.dataTable').ob_check_datatable_column_visibility();
         });
         $('a[data-toggle="tab"]').on('show', function (e) {
             //alert($(e.target).attr('href'));
-            if ( ! $.fn.DataTable.fnIsDataTable($('table' + $(e.target).attr('href'))[0])) {
-                console.log('Rendering datatable table' + $(e.target).attr('href'));
-                $('table' + $(e.target).attr('href')).adagios_ob_render_dataTable();
+            var id = $(e.target).attr('href').split("-")[0];
+            if ( ! $.fn.DataTable.fnIsDataTable($('table' + id + "-table")[0])) {
+                console.log('Rendering datatable table' + id + "-table");
+                $('table' + id + "-table").adagios_ob_render_dataTable();
             }
             return true;
         });
         $('a[data-toggle="tab"]').on('shown', function (e) {
             currenttab = $(e.target).attr('href');
-            currenttable = 'table' + $(e.target).attr('href');
-            document.location.hash = $(e.target).attr('href');
+            var id = $(e.target).attr('href').split("-")[0];
+            currenttable = 'table' + id + "-table";
+            document.location.hash = id;
             $('#log').append("Set current tab " + currenttable + '<br/>');
             // e.target // activated tab
             // e.relatedTarget // previous tab
@@ -226,52 +228,52 @@
             <div class="span9">
                 <div id="objectbrowser" class="block">
                     <ul class="nav nav-tabs" id="objecttabs">
-                        <li><a href="#host" data-toggle="tab"><i class="glyph-computer-locked"></i> Hosts</a></li>
-                        <li><a href="#service" data-toggle="tab"><i class="glyph-computer-service"></i> Services</a></li>
-                        <li><a href="#contact" data-toggle="tab"><i class="icon-user"></i>Contacts</a></li>
-                        <li><a href="#command" data-toggle="tab"><i class="glyph-computer-proces"></i> Commands</a></li>
-                        <li><a href="#timeperiod" data-toggle="tab"><i class="glyph-clock"></i> Timeperiods</a></li>
+                        <li><a href="#host-tab" data-toggle="tab"><i class="glyph-computer-locked"></i> Hosts</a></li>
+                        <li><a href="#service-tab" data-toggle="tab"><i class="glyph-computer-service"></i> Services</a></li>
+                        <li><a href="#contact-tab" data-toggle="tab"><i class="icon-user"></i>Contacts</a></li>
+                        <li><a href="#command-tab" data-toggle="tab"><i class="glyph-computer-proces"></i> Commands</a></li>
+                        <li><a href="#timeperiod-tab" data-toggle="tab"><i class="glyph-clock"></i> Timeperiods</a></li>
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane" id="command">
+                        <div class="tab-pane" id="command-tab">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="command" class="table table-striped objecttable">
+                            <table id="command-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="tab-pane" id="contact">
+                        <div class="tab-pane" id="contact-tab">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="contact" class="table table-striped objecttable">
+                            <table id="contact-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="tab-pane" id="host">
+                        <div class="tab-pane" id="host-tab">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="host" class="table table-striped objecttable">
+                            <table id="host-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="tab-pane" id="service">
+                        <div class="tab-pane" id="service-tab">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="service" class="table table-striped objecttable">
+                            <table id="service-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="tab-pane" id="timeperiod">
+                        <div class="tab-pane" id="timeperiod-tab">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="timeperiod" class="table table-striped objecttable">
+                            <table id="timeperiod-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
