@@ -73,19 +73,26 @@ $.extend $.fn.dataTableExt.oStdClasses,
     window_width = $(window).width()
     $(this).each ->
       $this = $(this)
-      # Default hide visible column 4 then 3 (0 and 1 are hidden)
-      hidecols = [5, 4]
       # Don't hide the service name TODO this is semi helpfull on small devices, no hostname appears
-      if $this.attr('id') == 'service'
-        hidecols = [5,3]
       dt = $this.dataTable()
       columns = dt.fnSettings().aoColumns.length
       # 4 Visible columns
+      if $this.attr('id') == 'service'
+        if window_width < 470
+          dt.fnSetColumnVis 3, false
+          dt.fnSetColumnVis 4, false
+          dt.fnSetColumnVis 5, false
+          dt.fnSetColumnVis 6, true
+          return this
+        else
+          dt.fnSetColumnVis 3, true
+          dt.fnSetColumnVis 6, false
+      if columns > 5
+        dt.fnSetColumnVis(5, (window_width > 970))
       if columns > 4
-        dt.fnSetColumnVis(hidecols[0], (window_width > 970))
+        dt.fnSetColumnVis(4, (window_width > 470))
 
-      if (columns > 3)
-        dt.fnSetColumnVis(hidecols[1], (window_width > 470))
+
     this
   #
   #     Creates a dataTable for adagios objects
@@ -327,7 +334,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     $("div\##{object_type}_filter.dataTables_filter input").addClass "input-medium search-query"
 
-    dt.fnSort [[3, "asc"], [4, "asc"]]
+    if object_type == "service"
+      dt.fnSort [[3, "asc"], [4, "asc"]]
+    else
+      dt.fnSort [[3, "asc"]]
 
   
   #return this.each(function() {
