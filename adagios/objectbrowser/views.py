@@ -110,7 +110,7 @@ def geek_edit( request, object_id ):
             try:
                 form.save()
                 m.append("Object Saved manually to '%s'" % o['filename'])
-            except IOError, e:
+            except Exception, e:
                 c['errors'].append(e)
                 return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
         else:
@@ -145,7 +145,7 @@ def advanced_edit(request, object_id):
             try:
                 c['advanced_form'].save()
                 m.append("Object Saved to %s" % o['filename'])
-            except IOError, e:
+            except Exception, e:
                 c['errors'].append(e)
         else:
             c['errors'].append( "Problem reading form input")
@@ -197,7 +197,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
                 c['form'].save()
                 m.append("Object Saved to %s" % o['filename'])
                 return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
-            except IOError, e:
+            except Exception, e:
                 c['errors'].append(e)
         else:
             c['errors'].append( "Could not validate form input")
