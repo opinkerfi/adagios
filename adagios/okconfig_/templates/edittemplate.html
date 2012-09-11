@@ -43,7 +43,16 @@
                         {% endfor %}
                     </th>
                     <th colspan=2>{{ form.description }}
-                        <span id="{{ form.service.id }}_status" class="label pull-right service_status run_check_command">Pending</span>
+                        <a href="#pop"
+                                id="{{ form.service.id }}_status"
+                                data-object-id="{{ form.service.id }}"
+                                class="btn pull-right service_status run_check_command"
+                                rel="popover"
+                                title="Plugin Output"
+                                data-content="Pending"
+                                data-placement="left">
+                            Pending
+                        </a>
                         {% if fields.non_field_errors %}
                             <div class="alert alert-warning">{{ fields.non_field_errors  }}</div>
                         {%  endif %}
@@ -101,23 +110,57 @@
                     var host_status_output = $('span#host_status_output');
                     host_status_output.text(data[1]);
                     host_status.addClass('label-success');
-                    if (data[0] == '0') {
-                        host_status.text('OK');
+                    if (parseInt(data[0]) < 2) {
+                        host_status.text('UP');
                         host_status.addClass('label-success');
-                    }
-                    if (data[0] == '1') {
-                        host_status.text('Warning');
-                        host_status.addClass('label-warning');
-                    }
-                    if (data[0] == '2') {
-                        host_status.text('Critical');
+                    } else {
+                        host_status.text('DOWN');
                         host_status.addClass('label-danger');
                     }
-                }).error(function(jqXHR) {
-                    /* TODO - fix this to a this style */
-                    //alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
+                }).error(function() {
+                    host_status.text('Unknown');
                 });
         {% endif %}
+        $('a.service_status.run_check_command').each(function() {
+            var $this = $(this);
+            $.getJSON('{% url rest/pynag %}json/run_check_command',
+                    { object_id: $this.attr('data-object-id') },
+                    function(data) {
+                        var returncode = parseInt(data[0]);
+                        var output = "";
+                        if (data[1]) {
+                            output += data[1];
+                        } else {
+                            output += 'No data returned on stdout';
+                        }
+                        if (data[2]) {
+                            output += "<br/><br/><strong>Stderr Output:</strong><br/>" + data[2];
+                        }
+                        $this.attr('data-content', output);
+
+                        if (returncode == 0) {
+                            $this.text('OK');
+                            $this.addClass('btn-success');
+                            return true;
+                        }
+                        if (returncode == 1) {
+                            $this.text('Warning');
+                            $this.addClass('btn-warning');
+                            return true;
+                        }
+                        if (returncode == 2) {
+                            $this.text('Critical');
+                            $this.addClass('btn-danger');
+                            return true;
+                        }
+                        $this.text('Unknown');
+                        $this.addClass('btn-inverse');
+                        return true;
+                    }
+            );
+
+        });
+        $('a[rel="popover"]').popover();
     });
     //$(".collapse").collapse()
     </script>

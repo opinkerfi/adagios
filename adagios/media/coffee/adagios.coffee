@@ -24,6 +24,7 @@ jQuery ($) ->
 
 
 
+
 $.extend $.fn.dataTableExt.oStdClasses,
   sSortAsc: "header headerSortDown"
   sSortDesc: "header headerSortUp"
@@ -67,7 +68,25 @@ $.extend $.fn.dataTableExt.oStdClasses,
     )
     this
 
+  $.fn.ob_check_datatable_column_visibility = () ->
+    # Hide columns when we are small
+    window_width = $(window).width()
+    $(this).each ->
+      $this = $(this)
+      # Default hide visible column 4 then 3 (0 and 1 are hidden)
+      hidecols = [5, 4]
+      # Don't hide the service name TODO this is semi helpfull on small devices, no hostname appears
+      if $this.attr('id') == 'service'
+        hidecols = [5,3]
+      dt = $this.dataTable()
+      columns = dt.fnSettings().aoColumns.length
+      # 4 Visible columns
+      if columns > 4
+        dt.fnSetColumnVis(hidecols[0], (window_width > 970))
 
+      if (columns > 3)
+        dt.fnSetColumnVis(hidecols[1], (window_width > 470))
+    this
   #
   #     Creates a dataTable for adagios objects
   #
@@ -176,6 +195,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       sPaginationType: "bootstrap"
       # "sScrollY":"260px",
       # "bAutoWidth":true,
+      bAutoWidth:false
       bScrollCollapse: false
       bPaginate: true
       iDisplayLength: 100
@@ -193,6 +213,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
             $("#actions #modify").hide()
     )
 
+    dt.ob_check_datatable_column_visibility()
     # Unbind sorting on the first visible column
     $("table\##{ object_type } th:first").unbind "click"
 
@@ -412,16 +433,29 @@ $(document).ready ->
   $("#popover").popover()
   $("select").chosen()
 
-  $('button[data-dismiss="alert"]').on 'click', (e) ->
+  $('div.modal#notifications div.alert').bind 'close', (e) ->
     $this = $(this)
     id = $this.attr 'data-notification-dismiss'
+    console.log "dismissing id #{id}"
+    if $this.data 'dismissed'
+      return true
     if id
       $.post "#{BASE_URL}rest/adagios/txt/clear_notification", { notification_id: id }
       ,(data) ->
+        num_notifications = 0
         if data == "success"
           $('span#num_notifications').each ->
             num = +$(this).text()
-            $(this).text +num - 1
+            num_notifications = num - 1
+            $(this).text num_notifications
+          console.log "Notifications #{num_notifications}"
+          if num_notifications == 0
+            $('a[href="#notifications"] div.badge').removeClass 'badge-warning'
+            $('div#notifications.modal div.modal-body').text "No notifications"
+          $this.data 'dismissed', 1
+          $this.alert 'close'
         else
           alert "Unable to dismiss notification for #{id}"
+          console.log "Unable to do stuff for #{id}"
+      return e.preventDefault()
     true

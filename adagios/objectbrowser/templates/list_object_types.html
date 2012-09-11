@@ -172,14 +172,9 @@
         );
         $('table#' + anchor).adagios_ob_render_dataTable();
 
-
-        $(window).resize(function () {
-            /* Resize the heading row of datatables*/
-            var table = $.fn.dataTable.fnTables(true);
-            if ( table.length > 0 ) {
-              $(table).dataTable().fnAdjustColumnSizing();
-            }
-        } );
+        $(window).bind('resize', function() {
+            $('table.objecttable.dataTable').ob_check_datatable_column_visibility();
+        });
         $('a[data-toggle="tab"]').on('show', function (e) {
             //alert($(e.target).attr('href'));
             if ( ! $.fn.DataTable.fnIsDataTable($('table' + $(e.target).attr('href'))[0])) {
@@ -234,7 +229,7 @@
                     <div class="tab-content">
                         <div class="tab-pane" id="command">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="command" class="table table-striped">
+                            <table id="command" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -243,7 +238,7 @@
                         </div>
                         <div class="tab-pane" id="contact">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="contact" class="table table-striped">
+                            <table id="contact" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -252,7 +247,7 @@
                         </div>
                         <div class="tab-pane" id="host">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="host" class="table table-striped">
+                            <table id="host" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -261,7 +256,7 @@
                         </div>
                         <div class="tab-pane" id="service">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="service" class="table table-striped">
+                            <table id="service" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
@@ -270,7 +265,7 @@
                         </div>
                         <div class="tab-pane" id="timeperiod">
                             <div id="loading"><h3>Loading...</h3></div>
-                            <table id="timeperiod" class="table table-striped">
+                            <table id="timeperiod" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
                                 <tbody>
