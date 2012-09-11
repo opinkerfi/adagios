@@ -1,0 +1,57 @@
+{% extends "base2.html" %}
+
+{% block title %}{{ block.super }}{% endblock %}
+{% block smallheader %}{{ block.super }}{% endblock %}
+{% block largeheader %}Perfdata Analyzer{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+
+{% block adagios_hausinn %}{{ block.super }}{% endblock %}
+
+{% block content %}
+
+    <table class="table" style="line-height:6px; font-size:12px;">
+    {% for host in hosts %}
+            <tr style="line-height:10px;" class="alert alert-{{ host.status }}">
+                <th style="line-height:5px; padding-right: 0px;"  >
+                    <a href="{% url misc.views.status_host host.host_name %}">
+                        {{ host.host_name }}
+                    </a>
+                </th>
+                <th style="padding: 0px;"></th>
+                <th></th>
+            </tr>
+            {% for service in host.services %}
+
+                <tr style="line-height:6px;">
+                <td style="line-height:6px;" ></td>
+                <td  style="line-height:6px;" class="alert alert-{{ service.status }}">
+                    <a href="{% url misc.views.status_host service.host_name service.service_description %}">
+                        {{ service.service_description }}
+                    </a>
+                </td>
+                <td  style="line-height:6px;" class="alert alert-{{ service.status }}"> {{ service.plugin_output }}</td>
+                </tr>
+            {% endfor %}
+    {% endfor %}
+    </table>
+
+
+{% endblock %}
+
+{% block header %} {{ block.super }} {% endblock %}
+
+{% block sidebar %}
+    <h5>Go to</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url misc.views.status %}">See All</a></li>
+        <li><a href="{% url misc.views.status %}?current_state=1">See Warnings</a></li>
+        <li><a href="{% url misc.views.status %}?current_state=2">See Critical</a></li>
+        <li><a href="{% url misc.views.status %}?not__current_state=0">Problems</a></li>
+
+        <li><a href="{% url misc.views.status %}?not__current_state=0&has_been_acknowledged=0">Unhandled Problems</a></li>
+    </ul>
+
+{% endblock %}
+
+
+{% block footer %} {{ block.super }} {% endblock %}

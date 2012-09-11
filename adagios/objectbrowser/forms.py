@@ -98,6 +98,8 @@ class PynagForm(forms.Form):
     def clean(self):
         cleaned_data = super(self.__class__, self).clean()
         for k,v in cleaned_data.items():
+            # change from unicode to str
+            v = cleaned_data[k] = smart_str(v)
             if k in MULTICHOICE_FIELDS:
                 # Put the + back in there if needed
                 if self.pynag_object.get(k,'').startswith('+'):
@@ -414,8 +416,8 @@ class BulkCopyForm(BaseBulkForm):
             i.copy(**kwargs)
 
 class BulkDeleteForm(BaseBulkForm):
-    yes_i_am_sure = forms.BooleanField(label="Yes, i am sure")
     """ Form used to delete multiple objects at once """
+    yes_i_am_sure = forms.BooleanField(label="Yes, i am sure")
     def delete(self):
         """ Deletes every object in the form """
         for i in self.changed_objects:
