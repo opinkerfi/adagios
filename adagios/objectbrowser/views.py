@@ -294,6 +294,9 @@ def _edit_service( request, c):
     try: c['effective_contactgroups'] = service.get_effective_contact_groups()
     except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
 
+    try: c['effective_hostgroups'] = service.get_effective_hostgroups()
+    except KeyError, e: c['errors'].append( "Could not find hostgroup: %s" % str(e))
+
     try: c['effective_command'] = service.get_effective_check_command()
     except KeyError, e: pass
 
@@ -301,9 +304,19 @@ def _edit_service( request, c):
 
 def _edit_contactgroup( request, c):
     """ This is a helper function to edit_object """
+    try: c['effective_contactgroups'] = c['my_object'].get_effective_contactgroups()
+    except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
+
+    try: c['effective_contacts'] = c['my_object'].get_effective_contacts()
+    except KeyError, e: c['errors'].append( "Could not find contact: %s" % str(e))
+
     return render_to_response('edit_contactgroup.html', c, context_instance = RequestContext(request))
 def _edit_hostgroup( request, c):
     """ This is a helper function to edit_object """
+    hostgroup = c['my_object']
+    try: c['effective_services'] = hostgroup.get_effective_services()
+    except KeyError, e: c['errors'].append( "Could not find service: %s" % str(e))
+
     return render_to_response('edit_hostgroup.html', c, context_instance = RequestContext(request))
 def _edit_servicegroup( request, c):
     """ This is a helper function to edit_object """
