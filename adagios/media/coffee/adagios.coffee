@@ -77,7 +77,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
       dt = $this.dataTable()
       columns = dt.fnSettings().aoColumns.length
       # 4 Visible columns
-      if $this.attr('id') == 'service'
+      console.log $this.attr('id')
+      if $this.attr('id') == 'service-table'
         if window_width < 470
           dt.fnSetColumnVis 3, false
           dt.fnSetColumnVis 4, false
@@ -127,7 +128,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $this.jsonqueries = $this.fetch.length
     $.each $this.fetch, (f, v) ->
       object_type = v["object_type"]
-      console.log """Populating #{ object_type } #{ $(this).attr("id") }<br/>"""
+      console.log """Populating #{ object_type } #{ $this.attr("id") }<br/>"""
       json_query_fields = ["id", "register"]
       $.each v["rows"], (k, field) ->
         json_query_fields.push field["cName"]  if "cName" of field
