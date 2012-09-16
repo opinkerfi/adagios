@@ -31,7 +31,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
   sSortable: "header"
 
 (($) ->
-  obIgnoreTables = [$("table#service")[0], $("table#contact")[0], $("table#host")[0], $("table#command")[0], $("table#timeperiod")[0]]
+  obIgnoreTables = [$("table#service-table")[0], $("table#contact-table")[0], $("table#host-table")[0], $("table#command-table")[0], $("table#timeperiod-table")[0]]
   filter_cache = {}
   object_types = ['service', 'servicegroup', 'host', 'hostgroup', 'contact', 'contactgroup', 'command', 'timeperiod']
 
@@ -40,7 +40,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     return true  if $.inArray(oSettings.nTable, obIgnoreTables) is -1
 
     # Default we show nothing
-    object_type = oSettings["sTableId"]
+    object_type = oSettings["sTableId"].split("-")[0]
     cache_type = filter_cache[object_type]
 
     return true if cache_type is undefined
@@ -77,7 +77,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
       dt = $this.dataTable()
       columns = dt.fnSettings().aoColumns.length
       # 4 Visible columns
-      if $this.attr('id') == 'service'
+      console.log $this.attr('id')
+      if $this.attr('id') == 'service-table'
         if window_width < 470
           dt.fnSetColumnVis 3, false
           dt.fnSetColumnVis 4, false
@@ -127,7 +128,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $this.jsonqueries = $this.fetch.length
     $.each $this.fetch, (f, v) ->
       object_type = v["object_type"]
-      console.log """Populating #{ object_type } #{ $(this).attr("id") }<br/>"""
+      console.log """Populating #{ object_type } #{ $this.attr("id") }<br/>"""
       json_query_fields = ["id", "register"]
       $.each v["rows"], (k, field) ->
         json_query_fields.push field["cName"]  if "cName" of field
@@ -193,10 +194,11 @@ $.extend $.fn.dataTableExt.oStdClasses,
   #     
   $.fn.adagios_ob_dtPopulate = ->
     $this = $(this)
-    object_type = $this.attr('id')
+    object_type = $this.attr('id').split("-")[0]
     dtData = $this.data("dtData")
     aoColumns = $this.data("aoColumns")
-    $("##{ object_type } #loading").hide()
+    $("##{ object_type }-tab #loading").hide()
+    console.log "Hiding ##{ object_type }-tab #loading"
     dt = $this.dataTable(
       aoColumns: aoColumns
       sPaginationType: "bootstrap"
@@ -222,7 +224,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     dt.ob_check_datatable_column_visibility()
     # Unbind sorting on the first visible column
-    $("table\##{ object_type } th:first").unbind "click"
+    $("table\##{ object_type }-table th:first").unbind "click"
 
     $(".toolbar_#{ object_type }").html """
     <div class="row-fluid">
@@ -299,10 +301,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
       <li class="capitalize"><a href="#{BASE_URL}objectbrowser/add/#{ ot }">#{ ot }</a></li>
       """
 
-    console.log "Assignin click on #" + object_type + ".tab-pane label#selectall"
-    $("#" + $this.attr("id") + ".tab-pane label#selectall").on "click", () ->
-      $checkbox = $("#" + $this.attr("id") + ".tab-pane #selectall input")
-      console.log "#" + $this.attr("id") + ".tab-pane #selectall input"
+    console.log "Assignin click on #" + object_type + "-tab.tab-pane label#selectall"
+    $("#" + object_type + "-tab.tab-pane label#selectall").on "click", () ->
+      $checkbox = $("#" + object_type + "-tab.tab-pane #selectall input")
+      console.log "#" + object_type + "-tab.tab-pane #selectall input"
       unless $checkbox.attr("checked") is `undefined`
         $(".tab-pane.active .dataTable input").each ->
           $(this).attr "checked", "checked"
@@ -323,13 +325,13 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $target = $(this)
       e.preventDefault()
       return false  if $target.hasClass("active")
-      object_type = $target.parentsUntil(".tab-content", ".tab-pane").attr("id")
+      object_type = $target.parentsUntil(".tab-content", ".tab-pane").attr("id").split("-")[0]
       $target.siblings().each ->
         $(this).removeClass "active"
 
       $target.addClass "active"
       filter_cache[object_type] = $target.attr('data-filter-type')
-      $("table#" + object_type).dataTable().fnDraw()
+      $("table#" + object_type + "-table").dataTable().fnDraw()
       false
 
     $("div\##{object_type}_filter.dataTables_filter input").addClass "input-medium search-query"
