@@ -7,11 +7,9 @@
 
 
 {% block content %}
-    Are you sure you want to delete {{ object.object_type }} from file {{  object.filename }} ?
-    <pre>
-    {{ object }}
-    </pre>
-    <form action="#" method="POST">{% csrf_token %}
+    Are you sure you want to delete {{ object.object_type }} {{ object.description }} from file {{  object.filename }} ?
+    <form action="#" method="POST" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
         <button class="btn btn-danger" type="submit"><i class="icon-trash icon-white"></i> Yes, delete it</button>
     </form>
 {% endblock %}

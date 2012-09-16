@@ -565,11 +565,14 @@ def delete_object(request, object_id):
     c['messages'] = []
     c['errors'] = []
     c['object'] = my_obj = Model.ObjectDefinition.objects.get_by_id(object_id)
+    c['form'] = f = DeleteObjectForm(pynag_object=my_obj, initial=request.GET)
     if request.method == 'POST':
         try:
-            my_obj.delete()
+            c['form'] = f = DeleteObjectForm(pynag_object=my_obj, data=request.POST)
+            if f.is_valid():
+                f.delete()
             return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) + "#" + my_obj.object_type )
-        except IOError, e:
+        except Exception, e:
             c['errors'].append( e )
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
 

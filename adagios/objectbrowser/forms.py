@@ -289,6 +289,23 @@ class GeekEditObjectForm(forms.Form):
         definition = self.cleaned_data['definition']
         self.pynag_object.rewrite( str_new_definition=definition )
 
+class DeleteObjectForm(forms.Form):
+    """ Form used to handle deletion of one single object """
+    def __init__(self, pynag_object, *args, **kwargs):
+        self.pynag_object = pynag_object
+        super(self.__class__, self).__init__(*args,**kwargs)
+        if self.pynag_object.object_type == 'host':
+            recursive = forms.BooleanField(required=False, initial=True, label="Delete Services",
+                help_text="Check this box if you also want to delete all services of this host")
+            self.fields['recursive'] = recursive
+
+    def delete(self):
+        """ Deletes self.pynag_object. """
+        recursive = False
+        if 'recursive' in self.cleaned_data and self.cleaned_data['recursive'] == True:
+            recursive = True
+        self.pynag_object.delete(recursive)
+
 class CopyObjectForm(forms.Form):
     """ Form to assist a user to copy a single object definition
     """
