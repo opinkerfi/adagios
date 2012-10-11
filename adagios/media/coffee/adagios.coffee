@@ -443,7 +443,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
 $(document).ready ->
   $("[rel=tooltip]").popover()
   $("#popover").popover()
-  $("select").chosen()
+  $("select").select2({
+    placeholder: "Select an item"
+  })
 
   $('div.modal#notifications div.alert').bind 'close', (e) ->
     $this = $(this)

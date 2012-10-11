@@ -4,7 +4,7 @@
 @import url(glyph-free.css);
 @import url(../datatables/css/jquery.dataTables.css);
 @import url(../datatables/DT_bootstrap.css);
-@import url(../chosen/chosen.css);
+@import url(../select2/select2.css);
 
 /*
 Fix for dropdown buttons, height to small for some reason
@@ -194,4 +194,9 @@ div#loading {
 
 div#top_status_output {
     overflow: hidden;
+}
+
+div.tab-content input,
+div.tab-content select {
+    width: 92%;
 }
