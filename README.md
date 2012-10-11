@@ -35,7 +35,7 @@ http://opensource.is/adagios
 Source Code
 ===========
 
-	git clone http://github.com/pynag/pynag.git
+	git clone http://github.com/opinkerfi/adagios.git
 
 Install Instructions
 ====================
@@ -55,16 +55,19 @@ Install needed packages:
 
 Adagios will not work unless you turn off selinux:
 
+	sed -i "s/SELINUX=enforcing/SELINUX=permissive/" /etc/sysconfig/selinux
 	setenforce 0
 
 If you plan to access adagios through apache, make sure it is started:
 
 	service httpd restart
+	chkconfig httpd on
 
 
 Same goes for nagios, start it if it is ready
 
 	service nagios restart
+	chkconfig nagios on
 	
 It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
 everything in /etc/nagios to the nagios user.

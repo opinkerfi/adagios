@@ -63,8 +63,9 @@ def handle_request(request, module_name, attribute, format):
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))
     # Everything below is just about formatting the results
+    print type(result)
     if format == 'json':
-        result = simplejson.dumps( result, sort_keys=True,skipkeys=True, indent=4 )
+        result = simplejson.dumps( result, ensure_ascii=False, sort_keys=True,skipkeys=True, indent=4 )
         mimetype='application/javascript'
     elif format == 'xml':
             # TODO: For some reason Ubuntu does not have this module. Where is it? Should we use lxml instead ?
