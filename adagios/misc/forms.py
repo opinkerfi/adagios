@@ -89,8 +89,10 @@ class AdagiosSettingsForm(forms.Form):
     def clean_nagios_init_script(self):
         filename = self.cleaned_data['nagios_init_script']
         if filename.startswith('sudo'):
-            filename = filename.split()[1]
-        return self.check_file_exists(filename)
+            self.check_file_exists(filename.split()[1])
+        else:
+            self.check_file_exists(filename)
+        return filename
     def clean_nagios_binary(self):
         filename = self.cleaned_data['nagios_binary']
         return self.check_file_exists(filename)
