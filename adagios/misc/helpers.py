@@ -107,6 +107,7 @@ def change_attribute(id, attribute_name, new_value):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
+
 def change_service_attribute(identifier, new_value):
     """
     Change one service that is identified in the form of:

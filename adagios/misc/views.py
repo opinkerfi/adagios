@@ -179,8 +179,9 @@ def pnp4nagios(request):
     c['errors'] = e=  []
     c['messages'] =m= []
 
-    c['form'] = form = forms.EditAllForm('service','action_url', '/new_url', initial=request.GET)
-    c['interesting_objects'] = form.interesting_objects
+    c['form'] = form = forms.PNP4NagiosForm(request.GET)
+    #c['interesting_objects'] = form.interesting_objects
+
     return render_to_response('pnp4nagios.html', c, context_instance = RequestContext(request))
 
 def status(request):

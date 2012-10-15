@@ -6,14 +6,14 @@
 
 {% block footer %}
 <script>
-    $('#latest').adagios_version();
+    $('#latest_version').adagios_version();
 </script>
 {% endblock %}
 {% block content %}
 
 
 
-    <h4>About</h4>
+    <h3>About Adagios</h3>
         <p> Adagios is a web based Nagios configuration interface build to be simple and intuitive
              in design, exposing less of the clutter under the hood of nagios.
         </p>
@@ -21,27 +21,37 @@
             This is a tech preview and there are a lot of known bugs.
             We would really like <a href="mailto:opensource@opensource.is">your feedback</a>
             to help us develop this app.
-        </p>
+            </p>
+
+
     <h4>Features</h4>
 
-    <ul>
-        <li>Edit nagios configs in-place without a database backend (thanks pynag)</li>
-        <li>Audit of configuration changes (aka git integration)</li>
-        <li>Bulk Edit/Copy/Delete of objects</li>
-        <li>Value-add for both novices and nagios gurus</li>
-        <li>Rest Interface</li>
-        <li>Start/Stop/Reload of Nagios Service</li>
-    </ul>
-    Adagios also integrates nicely with <a href="http://github.com/opinkerfi/okconfig.git">okconfig</a> offering features such as:
-    <ul>
-        <li>Template support</li>
-        <li>Preconfigured templates (windows,linux,oracle,brocade,etc)</li>
-        <li>Remotely push agent to client (windows,rhel,debian,suse are supported)</li>
-        <li>Network scan to find unmonitored hosts</li>
-        <li>Easy changes to plugin thresholds via nagios macros</li>
-    </ul>
+    
+        <ul>
+            <li>Edit nagios configs in-place without a database backend (thanks pynag)</li>
+            <li>Audit of configuration changes (aka git integration)</li>
+            <li>Bulk Edit/Copy/Delete of objects</li>
+            <li>Value-add for both novices and nagios gurus</li>
+            <li>Rest Interface</li>
+            <li>Start/Stop/Reload of Nagios Service</li>
+        </ul>
+        Adagios also integrates nicely with <a href="http://github.com/opinkerfi/okconfig.git">okconfig</a> offering features such as:
+        <ul>
+            <li>Template support</li>
+            <li>Preconfigured templates (windows,linux,oracle,brocade,etc)</li>
+            <li>Remotely push agent to client (windows,rhel,debian,suse are supported)</li>
+            <li>Network scan to find unmonitored hosts</li>
+            <li>Easy changes to plugin thresholds via nagios macros</li>
+        </ul>
+    <div id="updates_avail" class="hide">
+        <h3>New version is available</h3>
+        <ul>
+        <li><strong>Your Version</strong>: <span id="current_version">{{ version }}</span> </li>
+        <li><strong>Available Version</strong>: <a href="" id="version_info"><span id="latest_version">Unknown</span></a></li>
+        </ul>
+    </div>
 
-    <h4>Project Page</h4>
+    <h3>Project Page</h3>
 <p>
     If you are looking for the project page, it is <a href="http://opensource.is/adagios">right here.</a>
 </p>
