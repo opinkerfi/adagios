@@ -38,13 +38,11 @@
 
 
                 <!-- Right aligned navbar - MISC -->
-                <ul class="nav pull-right">
-                    {% if needs_reload_NOT_NEEDED %}
-                        <li>
 
-                                <button  class="btn btn-success">
-                                    <a href="{% url misc.views.nagios_service %}"> <i class="icon-refresh"></i> Reload Nagios </a>
-                                </button>
+                <ul class="nav pull-right">
+                    {% if needs_reload %}
+                        <li>
+                            <a title="Nagios Service needs to be reloaded to apply changes" href="{% url misc.views.nagios_service  %}" ><i class="glyph-white glyph-refresh"></i> Reload Nagios</a>
                         </li>
                     {% endif %}
                     <li>
