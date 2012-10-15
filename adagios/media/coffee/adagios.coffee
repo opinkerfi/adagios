@@ -59,12 +59,20 @@ $.extend $.fn.dataTableExt.oStdClasses,
     false
 
   $.fn.adagios_version = () ->
-    $.get("http://adagios.opensource.is/rest/adagios/txt/version", (data) ->
-      $(this).text data
+    $this = $(this)
+
+    current_version = $('#current_version').text()
+    $.getJSON("http://adagios.opensource.is/cgi-bin/version.cgi?version=#{current_version}&callback=?", (data) ->
       this
-    ).error(->
-      $(this).text "Unknown"
+    ).error( (jqXHR, text) ->
+      alert("Failed to fetch data: URL: \"" + this.url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.message + "\"");
       this
+    ).success( (data) ->
+      if $('span#current_version') != data['version']
+        $('div#updates_avail').show()
+      $this.text data['version']
+      $('a#version_info').attr 'href', data['link']
+
     )
     this
 

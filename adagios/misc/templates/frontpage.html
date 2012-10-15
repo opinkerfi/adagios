@@ -6,21 +6,32 @@
 
 {% block footer %}
 <script>
-    $('#latest').adagios_version();
+    $('#version_check').adagios_version();
 </script>
 {% endblock %}
 {% block content %}
 
 
 
-    <h4>About</h4>
+    <h3>About</h3>
     Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios.
 
 <p>
     This is a tech preview and there are a lot of known bugs. We would really like <a href="mailto:opensource@opensource.is">your feedback</a> to help us develop this app.
 </p>
+
+    <div id="updates_avail" class="hide">
+<h3>Update available!</h3>
+    <strong>Your Version</strong>: <span id="current_version">{{ version }}</span><br/>
+    <strong>Available Version</strong>: <span id="version_check">Unknown</span><br/>
+    <a href="" id="version_info">More information...</a>
+    <br/><br/>
+</div>
+
+<h3>The Adagios Project</h3>
 <p>
     If you are looking for the project page, it is <a href="http://opensource.is/adagios">right here.</a>
 </p>
+Version: <span id="current_version">{{ version }}</span> <span id="version_check"> </span>
 
 {% endblock %}
