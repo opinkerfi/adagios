@@ -167,6 +167,8 @@ def nagios_service(request):
     c['form'] = form
     service = pynag.Control.daemon(nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
     c['status'] = service.status()
+    if pynag.Model.config.needs_reload() == True:
+        c['messages'].append('Nagios Service Needs to be reloaded to apply latest configuration changes. Click Reload to reload Nagios Service now.')
     return render_to_response('nagios_service.html', c, context_instance = RequestContext(request))
 
 
