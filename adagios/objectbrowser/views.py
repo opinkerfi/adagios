@@ -565,7 +565,7 @@ def delete_object(request, object_id):
     c['messages'] = []
     c['errors'] = []
     c['object'] = my_obj = Model.ObjectDefinition.objects.get_by_id(object_id)
-    c['form'] = f = DeleteObjectForm(pynag_object=my_obj, initial=request.GET)
+    c['form'] = DeleteObjectForm(pynag_object=my_obj, initial=request.GET)
     if request.method == 'POST':
         try:
             c['form'] = f = DeleteObjectForm(pynag_object=my_obj, data=request.POST)
@@ -577,7 +577,7 @@ def delete_object(request, object_id):
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
 
 def copy_object(request, object_id):
-    ''' View to Copy a single object definition '''
+    """ View to Copy a single object definition """
     c = {}
     c.update(csrf(request))
     c['messages'] = []
