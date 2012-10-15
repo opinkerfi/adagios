@@ -218,8 +218,8 @@ class PynagForm(forms.Form):
             field.required = False
         # At the moment, our database of required objects is incorrect
         field.required = False
-        
-        field.widget.attrs['style'] = 'width: 94%'
+
+
         if field_name in MULTICHOICE_FIELDS:
             self.add_css_tag(field=field, css_tag="multichoice")
         

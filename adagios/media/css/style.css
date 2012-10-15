@@ -196,7 +196,9 @@ div#top_status_output {
     overflow: hidden;
 }
 
-div.tab-content input,
-div.tab-content select {
-    width: 92%;
+div.controls input,
+.select2field {
+    max-width: 490px;
+    width: 90%;
+
 }

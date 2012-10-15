@@ -452,7 +452,8 @@ $(document).ready ->
   $("[rel=tooltip]").popover()
   $("#popover").popover()
   $("select").select2({
-    placeholder: "Select an item"
+    placeholder: "Select an item",
+    containerCssClass: "select2field"
   })
 
   $('div.modal#notifications div.alert').bind 'close', (e) ->
