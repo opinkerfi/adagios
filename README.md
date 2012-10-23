@@ -78,6 +78,12 @@ everything in /etc/nagios to the nagios user.
 	git commit -a -m "Initial commit"
 	chown -R nagios /etc/nagios/* /etc/nagios/.git
 
+By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and 
+nagios.cfg contains a reference to this directory.
+
+	mkdir -p /etc/nagios/adagios
+	pynag config --append cfg_dir=/etc/nagios/adagios
+
 Congratulations! You are now ready to browse through adagios through http://$servername/adagios/. By default it
 will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
 changed in /etc/nagios/passwd)
