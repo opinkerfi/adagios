@@ -41,7 +41,7 @@ Install Instructions
 ====================
 These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.
 
-For RHEL6 you must install epel yum repository (fedora users skip this step):
+For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):
 
 	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-7.noarch.rpm
 
@@ -78,7 +78,13 @@ everything in /etc/nagios to the nagios user.
 	git commit -a -m "Initial commit"
 	chown -R nagios /etc/nagios/* /etc/nagios/.git
 
-Congratulations! You are now ready to browse through adagios through http://<servername>/adagios/. By default it
+By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and 
+nagios.cfg contains a reference to this directory.
+
+	mkdir -p /etc/nagios/adagios
+	pynag config --append cfg_dir=/etc/nagios/adagios
+
+Congratulations! You are now ready to browse through adagios through http://$servername/adagios/. By default it
 will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
 changed in /etc/nagios/passwd)
 
