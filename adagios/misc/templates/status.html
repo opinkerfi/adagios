@@ -24,12 +24,12 @@
 
                 <tr style="line-height:6px;">
                 <td style="line-height:6px;" ></td>
-                <td  style="line-height:6px;" class="alert alert-{{ service.status }}">
+                <td  style="white-space:nowrap; line-height:6px;" class="alert alert-{{ service.status }}">
                     <a href="{% url misc.views.status_host service.host_name service.service_description %}">
                         {{ service.service_description }}
                     </a>
                 </td>
-                <td  style="line-height:6px;" class="alert alert-{{ service.status }}"> {{ service.plugin_output }}</td>
+                <td  style="line-height:6px;" class="alert alert-{{ service.status }}"> {{ service.plugin_output|slice:"80" }}</td>
                 </tr>
             {% endfor %}
     {% endfor %}
