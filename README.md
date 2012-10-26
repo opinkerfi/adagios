@@ -80,7 +80,11 @@ everything in /etc/nagios to the nagios user.
 	git init
 	git add .
 	git commit -a -m "Initial commit"
+	# Make sure nagios group will always have write access to the configuration files:
 	chown -R nagios /etc/nagios/* /etc/nagios/.git
+	setfacl -R -m group:nagios:rwx /etc/nagios/
+	setfacl -R -m d:group:nagios:rwx /etc/nagios/
+	
 
 By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and 
 nagios.cfg contains a reference to this directory.
