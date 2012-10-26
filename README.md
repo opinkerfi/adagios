@@ -51,7 +51,11 @@ Next step is to install OK yum repository:
 
 Install needed packages:
 
-	yum --enablerepo=ok-testing install -y nagios okconfig git adagios
+	yum --enablerepo=ok-testing install -y nagios git adagios
+
+Install okconfig (optional). Okconfig is a collection of plugins and templates for monitoring enterprise equipment. If installed Adagios will have options such as network scan and remote installation of clients.
+
+	yum --enablerepo=ok-testing install -y okconfig
 
 Adagios will not work unless you turn off selinux:
 
