@@ -196,7 +196,7 @@ div#top_status_output {
     overflow: hidden;
 }
 
-div.controls input,
+div.controls input:not([type="checkbox"]):not([type="radio"]),
 .select2field {
     max-width: 490px;
     width: 90%;
