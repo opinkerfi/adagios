@@ -51,7 +51,11 @@ Next step is to install OK yum repository:
 
 Install needed packages:
 
-	yum --enablerepo=ok-testing install -y nagios okconfig git adagios
+	yum --enablerepo=ok-testing install -y nagios git adagios
+
+Install okconfig (optional). Okconfig is a collection of plugins and templates for monitoring enterprise equipment. If installed Adagios will have options such as network scan and remote installation of clients.
+
+	yum --enablerepo=ok-testing install -y okconfig
 
 Adagios will not work unless you turn off selinux:
 
@@ -76,7 +80,11 @@ everything in /etc/nagios to the nagios user.
 	git init
 	git add .
 	git commit -a -m "Initial commit"
+	# Make sure nagios group will always have write access to the configuration files:
 	chown -R nagios /etc/nagios/* /etc/nagios/.git
+	setfacl -R -m group:nagios:rwx /etc/nagios/
+	setfacl -R -m d:group:nagios:rwx /etc/nagios/
+	
 
 By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and 
 nagios.cfg contains a reference to this directory.

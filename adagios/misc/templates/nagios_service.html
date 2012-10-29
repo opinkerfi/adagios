@@ -11,20 +11,24 @@
 Service nagios status:
     {% if status  > 3 %}
         unknown ("service nagios status" returned {{ status }})
-    {% endif %}
-    {% if status  == 0 %}
+    {% elif status  == 0 %}
         Started
-    {% endif %}
-    {% if status  == 3 %}
+    {% else %}
         Stopped
     {% endif %}
     {% if form %}
         <form action="#" method="post" class="form-horizontal">{% csrf_token %}
             <div class="form-actions">
+		{% if status == 0 %}
                 <button class="btn btn-success" type="submit" name="reload">Reload</button>
-                <button class="btn " type="submit" name="start">Start</button>
+		{% endif %}
+		{% if status > 0 %}
+                <button class="btn btn-success" type="submit" name="start">Start</button>
+		{% endif %}
+		{% if status == 0 or status > 3 %}
                 <button class="btn " type="submit" name="stop">Stop</button>
                 <button class="btn " type="submit" name="restart">Restart</button>
+		{% endif %}
                 <button class="btn " type="submit" name="status">Status</button>
             </div>
         </form>

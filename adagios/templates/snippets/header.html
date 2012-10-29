@@ -40,9 +40,22 @@
                 <!-- Right aligned navbar - MISC -->
 
                 <ul class="nav pull-right">
+                    {% if not nagios_running %}
+                        <li>
+		    <form action="{% url misc.views.nagios_service %}" method="POST">
+		    {% csrf_token %}
+                      <input type="hidden" name="start" value="1" />
+                      <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-white glyph-play-button" alt="start"/>
+                    </form>
+                        </li>
+                    {% endif %}
                     {% if needs_reload %}
                         <li>
-                            <a title="Nagios Service needs to be reloaded to apply changes" href="{% url misc.views.nagios_service  %}" ><i class="glyph-white glyph-refresh"></i> </a>
+		    <form action="{% url misc.views.nagios_service %}" method="POST">
+		    {% csrf_token %}
+                      <input type="hidden" name="reload" value="1" />
+                      <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-white glyph-refresh" alt="reload"/>
+		    </form>
                         </li>
                     {% endif %}
                     <li>

@@ -1,7 +1,5 @@
 import pynag.Model
 import os
-from os import environ
-from platform import node
 
 from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
@@ -14,6 +12,8 @@ def on_page_load(request):
     for k,v in reload_configfile(request).items():
         results[k] = v
     for k,v in get_httpuser(request).items():
+        results[k] = v
+    for k,v in check_nagios_running(request).items():
         results[k] = v
     for k,v in check_nagios_needs_reload(request).items():
         results[k] = v
@@ -92,22 +92,15 @@ def check_git(request):
                 add_notification(level="warning", notification_id="git_missing", message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
     return {}
 
+def check_nagios_running(request):
+    """ Notify user if nagios is not running """
+    nagios_pid = pynag.Model.config._get_pid()
+    print "Nagios_pid=%s" % (nagios_pid)
+    return { "nagios_running":(nagios_pid is not None)}
+
 def check_nagios_needs_reload(request):
     """ Notify user if nagios needs a reload """
-    try:
-        # Remove notification if there was any
-        clear_notification("needs_reload")
-        warn = "Nagios should be reloaded to apply new configuration changes"
-        ok = "Nagios configuration is up to date. Tommi: See TODO in header.html"
-        needs_reload = pynag.Model.config.needs_reload()
-        if needs_reload:
-            add_notification(level="warning", message=warn, notification_id="needs_reload")
-        else:
-            pass
-            #add_notification(level="success", message=ok, notification_id="needs_reload")
-    except KeyError, e:
-        raise e
-    return { "needs_reload":needs_reload }
+    return { "needs_reload": pynag.Model.config.needs_reload() }
 
 def check_selinux(request):
     """ Check if selinux is enabled and notify user """
