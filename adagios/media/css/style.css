@@ -202,3 +202,13 @@ div.controls input,
     width: 90%;
 
 }
+
+
+.navbar input[type="image"] {
+	margin-top: 10px;
+	width: auto;
+}
+
+.navbar form {
+    margin: 0;
+}
