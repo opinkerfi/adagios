@@ -68,7 +68,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       alert("Failed to fetch data: URL: \"" + this.url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.message + "\"");
       this
     ).success( (data) ->
-      if $('span#current_version') != data['version']
+      if $('span#current_version').text() != data['version']
         $('div#updates_avail').show()
       $this.text data['version']
       $('a#version_info').attr 'href', data['link']
