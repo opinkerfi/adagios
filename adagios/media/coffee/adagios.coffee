@@ -436,7 +436,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
         $("#run_check_plugin div#error").show()
       $("#run_check_plugin_refresh").show()
       $("#run_check_plugin div.progress").hide()
-      $("#run_check_plugin_refresh").click ->
+      $("#run_check_plugin_refresh").unbind('click').click ->
         $(this).adagios_ob_run_check_command()
 
     ).error (jqXHR) ->
