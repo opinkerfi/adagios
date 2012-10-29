@@ -95,7 +95,6 @@ def check_git(request):
 def check_nagios_running(request):
     """ Notify user if nagios is not running """
     nagios_pid = pynag.Model.config._get_pid()
-    print "Nagios_pid=%s" % (nagios_pid)
     return { "nagios_running":(nagios_pid is not None)}
 
 def check_nagios_needs_reload(request):
