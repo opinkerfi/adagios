@@ -1,12 +1,12 @@
 {% extends "base_misc.html" %}
 {% block title %}PNP4nagios integration{% endblock %}
 {% block nav1 %}PNP4Nagios{% endblock %}
-{% block smallheader %}integration with{% endblock %}
-{% block largeheader %}PNP4Nagios{% endblock %}
+{% block smallheader %}Configuring{% endblock %}
+{% block largeheader %}PNP{% endblock %}
 
 
 {% block content %}
-    <div class="well">
+    <div class="well" xmlns="http://www.w3.org/1999/html">
     PNP is an addon to Nagios which analyzes performance data provided by plugins and stores them automatically into RRD-databases (Round Robin Databases, see RRD Tool).
     <p xmlns="http://www.w3.org/1999/html">
     This page helps you configure PNP using the so-called "bulk npcmod" method.
@@ -67,12 +67,9 @@
             {% endif %}
         </div>
         <div class="tab-pane" id="pnp_templates">
-            Manage the templates used to generate performance graphs.
+            <p>Manage the templates used to generate performance graphs.</p>
             {% if pnp_templates %}
                 <table class="table">
-                    <tr>
-                        <th>Filename</th>
-                    </tr>
                     {% for file in pnp_templates.templates %}
 
                         <tr>
