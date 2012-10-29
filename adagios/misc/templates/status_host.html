@@ -1,4 +1,4 @@
-{% extends "base2.html" %}
+{% extends "base_misc.html" %}
 
 {% block title %}{{ block.super }}{% endblock %}
 {% block smallheader %}{{ block.super }}{% endblock %}
@@ -9,24 +9,26 @@
 
 {% block content %}
     {% if host %}
-        <h4>Host Status</h4>
-        <table class="alert alert-{{ host.status }}" >
+        <h4>Host Status: </h4>
+        <div class="well">
+        <table  >
             <tr>
-                <th>host_name</th>
+                <th>host_name: </th>
                 <td>{{ host.host_name }}</td>
             </tr>
 
-            <tr class="alert alert-{{ host.status }}">
-                <th>status</th>
-                <td> {{ host.plugin_output }}</td>
+            <tr >
+                <th>status: </th>
+                <td class=" alert-{{ host.status }}"> {{ host.plugin_output }}</td>
             </tr>
-            <tr class="alert alert-{{ host.status }}">
+            <tr >
                 <td></td>
                 <td>
                     {{ host.long_plugin_output }}
                 </td>
             </tr>
-            </table>
+        </table>
+        </div>
             {% if service %}
                 <h4>Service Status</h4>
                 <table class="alert alert-{{ service.status }}" border=1>
@@ -102,7 +104,7 @@
                         <td class="" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
                     {% endif %}
                     <a href="{% url misc.views.status_host i.host_name i.service_description %}">
-                        {{ i.host_name }}/{{ i.service_description }}
+                        {{ i.service_description }}
                     </a>
                     </td>
                 </tr>

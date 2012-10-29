@@ -242,7 +242,9 @@ def status_host(request, host_name, service_description=None):
         c['service'] = i = s.get_servicestatus(host_name, service_description)
         from pynag import Model
         perfdata = i.get('performance_data', 'a=1')
-        perfdata = Model.PerfData(perfdata)
+
+        perfdata = pynag.Utils.PerfData(perfdata)
+        print perfdata.invalid_metrics
         for i in perfdata.metrics:
             if i.status == "ok":
                 i.csstag = "success"

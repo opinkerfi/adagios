@@ -3,7 +3,7 @@
 
 {% block head %}{{ block.super }} {% endblock %}
 
-{% block footer %}{{ block.super }}{% endblock %}
+
 
 {% block sidebar %}{{ block.super }}{% endblock %}
 
@@ -27,6 +27,7 @@
             <li><a href="#general" data-toggle="tab">General</a></li>
             <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
             <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
+            <li id="macros_li" class="hide"><a href="#macros_tab" data-toggle="tab">Macros</a></li>
             <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
         </ul>
         <form class="form-horizontal" action="#" method="POST">
@@ -82,6 +83,27 @@
                         <button class="btn">Cancel</button>
                     </div>
                 </div>
+                <div class="tab-pane" id="macros_tab">
+                    <div class="well">
+                        This tab contains custom macros (also called "custom variables") for this {{  my_object.object_type }}.
+                    </div>
+                    <fieldset>
+                        {% if fields.non_field_errors %}
+                            {{ fields.non_field_errors  }}
+                        {%  endif %}
+
+                        {% for field in form %}
+                            {%  if field.label|slice:":2" == "__" %}
+                                {% include "bootstrap_field.html" with field=field %}
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+
+                </div>
+
         </form>
                 <div class="tab-pane" id="advanced">
                     <!-- All Attributes -->
@@ -106,3 +128,16 @@
 
 
 
+{% block footer %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+                    if ( $('div.tab-pane#macros_tab fieldset').children().length ) {
+                        $('li#macros_li').show();
+                    }
+                }
+        );
+    </script>
+
+{% endblock %}

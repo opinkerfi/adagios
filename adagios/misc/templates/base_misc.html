@@ -1,0 +1,192 @@
+{% extends "base2.html" %}
+{% block title %}Misc{% endblock %}
+
+
+{% block adagios_hausinn %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{% url home %}">Home</a> <span class="divider">/</span>
+        </li>
+        <li>
+            {% block nav1 %}misc{% endblock %}
+            <span class="divider">/</span>
+        </li>
+    </ul>
+    <h2>
+        <i class="icon-th-large"></i> <small>{% block smallheader %}block=smallheader{% endblock%} </small> {% block largeheader %}block=largeheader{% endblock %}
+    </h2>
+{% endblock %}
+
+
+{% block sidebar %}
+    <h5>Actions</h5>
+    <ul class="nav nav-list">
+
+        {% if my_object %}
+            <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
+            <li><a href="{%  url objectbrowser.views.copy_object my_object.id %}"><i class="icon-copy"></i> Copy this {{  my_object.object_type }}</a></li>
+            <li><a href="{%  url objectbrowser.views.delete_object my_object.id %}"><i class="icon-trash"></i> Delete this {{  my_object.object_type }}</a></li>
+        {% endif %}
+
+        {% if my_object.object_type == 'service' and my_object.register == '1' %}
+            <li>
+                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}&service={{  my_object.service_description }}">
+                    <i class="icon-fire"></i> Open in Nagios</a>
+            </li>
+        {% endif %}
+
+        {% if my_object.object_type == 'host' and my_object.register == '1' %}
+            <li>
+                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{  my_object.host_name }}">
+                    <i class="icon-fire"></i> Open in Nagios</a>
+            </li>
+        {% endif %}
+
+        {% if my_object.action_url %}
+            <li><a href="{{ my_object.action_url }}"><i class="glyph-charts"></i> View Graphs</a></li>
+        {%  endif %}
+
+
+    </ul>
+
+    <h5>Diagnostics</h5>
+    <ul class="nav nav-list">
+        {% if command_line and form.host_name.value and form.register != '0' %}
+            <li><a data-toggle="modal" href="#run_check_plugin"><i class="icon-play"></i> Run Check Plugin</a></li>
+        {% endif %}
+    </ul>
+    <hr/>
+    {% if effective_parents %}
+        <h5>Parents</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_parents %}
+                <li><a href="{% url edit_object i.id %}">{{ i.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_services %}
+        <h5>Services</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_services %}
+                <li>
+                    <a href="{% url edit_object i.id %}">
+                        {{ i.service_description }}
+                        {% if i.register == "0" %}(unregistered){% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if effective_contactgroups %}
+        <h5>Contactgroups</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_contactgroups %}
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_hostgroups %}
+        <h5>Hostgroups</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_hostgroups %}
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_hosts %}
+        <h5>Hosts</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_hosts %}
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_contacts %}
+        <h5>Contacts</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_contacts %}
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_command %}
+        <h5>Check Command</h5>
+        <ul class="nav nav-list">
+            <li><a href="{% url edit_object effective_command.id %}">{{ effective_command.description }}</a></li>
+        </ul>
+    {% endif %}
+
+    <div class="modal hide wide fade" id="run_check_plugin" data-object-id="{{ my_object.id }}" data-object-type="{{ my_object.object_type }}">
+        <div class="modal-header">
+            <h3>Run Check Plugin</h3>
+            <dl class="dl-horizontal">
+                <dt>Status</dt>
+                <dd><div class="label" id="state">Pending</div></dd>
+                <dt>Command</dt>
+                <dd>{{ command_line }}</dd>
+            </dl>
+        </div>
+        <div class="modal-body">
+            <h4>Plugin Output</h4>
+            <div id="output">
+                <pre>Executing check plugin</pre>
+            </div>
+            <div class="progress progress-success progress-striped active hide" data-timer="{{ status.check_execution_time }}">
+                <div class="bar" style="width: 0"></div>
+            </div>
+            <div id="error" class="hide">
+                <div class="alert alert-error">
+                    Plugin output (standard error)
+                    <pre></pre>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="run_check_plugin_refresh" class="btn hide" data-object-id="{{ my_object.id }}" data-object-type="{{ my_object.object_type }}"><i class="icon-refresh"></i> Refresh</button>
+            <button class="btn" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    {% if my_object %}
+    <div class="modal hide fade" id="geek_edit">
+        <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Geek Edit</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
+                    {{ geek_edit }}
+                </fieldset>
+                <strong>Filename:</strong> {{ my_object.filename }}
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit">Save changes</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block footer %}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#objecttab a:first').tab('show');
+        $(document).ready(function() {
+
+
+
+            $('#run_check_plugin_refresh').click(function(e) {
+                $('#run_check_plugin div#output pre').html('Rerunning plugin');
+                $(this).adagios_ob_run_check_command();
+                return false;
+            });
+            $('#run_check_plugin').on('show', function() {
+                $(this).adagios_ob_run_check_command();
+            });
+        });
+    </script>
+{%  endblock %}

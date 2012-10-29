@@ -7,7 +7,7 @@
 %define release 2
 
 Name: adagios
-Version: 1.1.1
+Version: 1.1.2
 Release: %{release}%{?dist}
 Summary: Adagios web-configuration front-end to nagios 
 Group: Applications/Internet
@@ -32,7 +32,9 @@ Adagios is a web based Nagios configuration interface build to be simple and int
 
 %prep
 %setup -qn %{name}-%{version} -n %{name}-%{version}
-sed -i "s/__version__=.*/__version__='%{version}'/" adagios/__init__.py
+VERSION=%{version}
+echo %{release} | grep -q git && VERSION=$VERSION-%{release}
+sed -i "s/__version__=.*/__version__='$VERSION'/" adagios/__init__.py
 
 %build
 python setup.py build
@@ -67,6 +69,114 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
+* Fri Oct 26 2012 Pall Sigurdsson <palli@opensource.is> 1.1.2-2
+- fix block=smallheader boilerplates in misc module (palli@opensource.is)
+- minor cosmetic fixes in status cgi (palli@opensource.is)
+- Macro editing for hosts and services in objectbrowser (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- Adding git reference to testing rpms (palli@opensource.is)
+- Update README.md (palli-github@minor.is)
+- Update README.md (palli-github@minor.is)
+- Update README.md (palli-github@minor.is)
+- size patch for select2 fields (palli@opensource.is)
+- merged frontpage description with version check (palli@opensource.is)
+- frontpage description updated (palli@opensource.is)
+- Merge remote-tracking branch 'github/master' (tommi@tommi.org)
+- Closes #56 - Implmented jsonp version checking (tommi@tommi.org)
+- tomhom (palli@opensource.is)
+- INSTALL removed in favour of README.md (palli@opensource.is)
+- Nagios service reload button reintroduced (palli@opensource.is)
+- pycharm inspection updates (palli@opensource.is)
+- Nagios Service view now displays a notice if service needs to be reloaded
+  (palli@opensource.is)
+- Bugfix where sudo was removed from init script path if provided.
+  (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- Added select2 functionality (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- ensure_ascii set to False for simplejson (palli@opensource.is)
+- Update README.md (palli-github@minor.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- Improvements to objectbrowser/delete/ (palli@opensource.is)
+- Fixes responsive design of ob->list->service shortname (tommi@tommi.org)
+- Closes #75 - Removed hardcoded path for url resolver (tommi@tommi.org)
+- Minor cosmetic patch (tommi@tommi.org)
+- Merge remote-tracking branch 'github/master' (tommi@tommi.org)
+- Closes #31 - Major rework of IDs to fix jump on location.hash change
+  (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- status.html added (palli@opensource.is)
+- exception handling broadened on objectbrowser views (palli@opensource.is)
+- objectbrowser unicode strings converted to bytestrings before being passed to
+  pynag (palli@opensource.is)
+- Responsive - show service shortname on small devices (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- Fixes to responsive ob list (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- Various fixes related to get_effective_contactgroups and
+  get_effective_hostgroups (palli@opensource.is)
+- experimental status view added and settings bugfix (palli@opensource.is)
+- Resize ob list working, implemented hiding column (tommi@tommi.org)
+- Closes #61 - Implemented run_commands for okconfig/edithost (tommi@tommi.org)
+- Typo in warning message regarding uncommitted changes (tommi@tommi.org)
+- Fixed dismissal of notifications and failure handling (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- Closes #72 - inconsistant labels on level="" (tommi@tommi.org)
+
+* Fri Oct 26 2012 Pall Sigurdsson <palli@opensource.is>
+- fix block=smallheader boilerplates in misc module (palli@opensource.is)
+- minor cosmetic fixes in status cgi (palli@opensource.is)
+- Macro editing for hosts and services in objectbrowser (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- Adding git reference to testing rpms (palli@opensource.is)
+- Update README.md (palli-github@minor.is)
+- Update README.md (palli-github@minor.is)
+- Update README.md (palli-github@minor.is)
+- size patch for select2 fields (palli@opensource.is)
+- merged frontpage description with version check (palli@opensource.is)
+- frontpage description updated (palli@opensource.is)
+- Merge remote-tracking branch 'github/master' (tommi@tommi.org)
+- Closes #56 - Implmented jsonp version checking (tommi@tommi.org)
+- tomhom (palli@opensource.is)
+- INSTALL removed in favour of README.md (palli@opensource.is)
+- Nagios service reload button reintroduced (palli@opensource.is)
+- pycharm inspection updates (palli@opensource.is)
+- Nagios Service view now displays a notice if service needs to be reloaded
+  (palli@opensource.is)
+- Bugfix where sudo was removed from init script path if provided.
+  (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- Added select2 functionality (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- ensure_ascii set to False for simplejson (palli@opensource.is)
+- Update README.md (palli-github@minor.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- Improvements to objectbrowser/delete/ (palli@opensource.is)
+- Fixes responsive design of ob->list->service shortname (tommi@tommi.org)
+- Closes #75 - Removed hardcoded path for url resolver (tommi@tommi.org)
+- Minor cosmetic patch (tommi@tommi.org)
+- Merge remote-tracking branch 'github/master' (tommi@tommi.org)
+- Closes #31 - Major rework of IDs to fix jump on location.hash change
+  (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- status.html added (palli@opensource.is)
+- exception handling broadened on objectbrowser views (palli@opensource.is)
+- objectbrowser unicode strings converted to bytestrings before being passed to
+  pynag (palli@opensource.is)
+- Responsive - show service shortname on small devices (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- Fixes to responsive ob list (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- Various fixes related to get_effective_contactgroups and
+  get_effective_hostgroups (palli@opensource.is)
+- experimental status view added and settings bugfix (palli@opensource.is)
+- Resize ob list working, implemented hiding column (tommi@tommi.org)
+- Closes #61 - Implemented run_commands for okconfig/edithost (tommi@tommi.org)
+- Typo in warning message regarding uncommitted changes (tommi@tommi.org)
+- Fixed dismissal of notifications and failure handling (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- Closes #72 - inconsistant labels on level="" (tommi@tommi.org)
+
 * Thu Sep 06 2012 Pall Sigurdsson <palli@opensource.is> 1.1.1-2
 - Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
 - reload_nagios button implemented (palli@opensource.is)
