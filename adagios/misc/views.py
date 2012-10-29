@@ -179,8 +179,29 @@ def pnp4nagios(request):
     c['errors'] = e=  []
     c['messages'] =m= []
 
-    c['form'] = form = forms.PNP4NagiosForm(request.GET)
+    c['broker_module'] = forms.PNPBrokerModuleForm(initial=request.GET)
+    c['templates_form'] = forms.PNPTemplatesForm(initial=request.GET)
+    c['action_url'] = forms.PNPActionUrlForm(initial=request.GET)
+    c['pnp_templates'] = forms.PNPTemplatesForm(initial=request.GET)
+
+    try:
+        c['npcd_config'] = forms.PNPConfigForm(initial=request.GET)
+    except Exception, e:
+        c['errors'].append(e)
     #c['interesting_objects'] = form.interesting_objects
+    if request.method == 'POST' and 'save_broker_module' in request.POST:
+        c['form'] = broker_form = forms.PNPBrokerModuleForm(data=request.POST)
+        if broker_form.is_valid():
+            broker_form.save()
+    elif request.method == 'POST' and 'save_action_url' in request.POST:
+        c['action_url'] = forms.PNPActionUrlForm(data=request.POST)
+        if c['action_url'].is_valid():
+            c['action_url'].save()
+    elif request.method == 'POST' and 'save_npcd_cfg' in request.POST:
+        c['npcd_config'] = forms.PNPConfigForm(data=request.POST)
+        if c['npcd_config'].is_valid():
+            c['npcd_config'].save()
+
 
     return render_to_response('pnp4nagios.html', c, context_instance = RequestContext(request))
 
@@ -221,6 +242,20 @@ def status(request):
     c['hosts'] = hosts
     return render_to_response('status.html', c, context_instance = RequestContext(request))
 
+def edit_file(request, filename):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    try:
+        c['form'] = forms.EditFileForm(filename=filename,initial=request.GET)
+        c['filename'] = filename
+        if request.method == 'POST':
+            c['form'] = forms.EditFileForm(filename=filename,data=request.POST)
+            if c['form'].is_valid():
+                c['form'].save()
+    except Exception, e:
+        c['errors'].append(e)
+    return render_to_response('editfile.html', c, context_instance = RequestContext(request))
 def status_host(request, host_name, service_description=None):
     c = { }
     c['messages'] = []

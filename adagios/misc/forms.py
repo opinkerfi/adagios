@@ -138,12 +138,88 @@ class EditAllForm(forms.Form):
         for i in interesting_objects:
             self.fields[ 'modify_%s' % i.get_id() ] = forms.BooleanField(required=False,initial=True)
 
-class PNP4NagiosForm(forms.Form):
-    """ This form is responsible for configuring PNP4Nagios. """
-    broker_module=forms.CharField(help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
-    config_file=forms.CharField(help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
+class PNPActionUrlForm(forms.Form):
+    """ This form handles applying action_url to bunch of hosts and services """
     apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
     action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
+    def save(self):
+        if self.cleaned_data['apply_action_url'] == True:
+            action_url = self.cleaned_data['action_url']
+            services = Model.Service.objects.filter(action_url__isnot=action_url)
+            for i in services:
+                if 'action_url' in i._defined_attributes or i.use is None:
+                    i.action_url = action_url
+                    i.save()
+class PNPTemplatesForm(forms.Form):
+    """ This form manages your pnp4nagios templates """
+    def __init__(self, *args,**kwargs):
+        self.template_directories = []
+        self.templates = []
+        tmp = Model.config._load_static_file('/etc/pnp4nagios/config.php')
+        for k,v in tmp:
+            if k == "$conf['template_dirs'][]":
+                # strip all ' and " from directory
+                directory = v.strip(";").strip('"').strip("'")
+                self.template_directories.append( directory )
+                if os.path.isdir(directory):
+                    for file in os.listdir(directory):
+                        self.templates.append( "%s/%s" % (directory,file))
+                        #self.templates.append(file)
+
+        super(self.__class__,self).__init__(*args,**kwargs)
+pnp_loglevel_choices = [ ('0', '0 - Only Errors'), ('1', '1 - Little logging'), ('2', '2 - Log Everything'), ('-1','-1 Debug mode (log all and slower processing')]
+class PNPConfigForm(forms.Form):
+    """ This form handles the npcd.cfg configuration file """
+    user = forms.CharField(help_text="npcd service will have privileges of this group")
+    group = forms.CharField(help_text="npcd service will have privileges of this user")
+    log_type = forms.CharField(help_text="Define if you want to log to 'syslog' or 'file'")
+    log_file = forms.CharField(help_text="If log_type is set to file. Log to this file")
+    max_logfile_size = forms.IntegerField(help_text="Defines the maximum filesize (bytes) before logfile will rotate.")
+    log_level = forms.ChoiceField(help_text="How much should we log?", choices=pnp_loglevel_choices)
+    perfdata_spool_dir = forms.CharField(help_text="where we can find the performance data files")
+    perfdata_file_run_cmd = forms.CharField(help_text="execute following command for each found file in perfdata_spool_dir")
+    perfdata_file_run_cmd_args = forms.CharField(required=False, help_text="optional arguments to perfdata_file_run_cmd")
+    identify_npcd = forms.ChoiceField(widget=forms.RadioSelect, choices=(('1','Yes'),('0', 'No')), help_text="If yes, npcd will append -n to the perfdata_file_run_cmd")
+    npcd_max_threads = forms.IntegerField(help_text="Define how many parallel threads we should start")
+    sleep_time = forms.IntegerField(help_text="How many seconds npcd should wait between dirscans")
+    load_threshold = forms.FloatField(help_text="npcd won't start if load is above this threshold")
+    pid_file = forms.CharField(help_text="Location of your pid file")
+    perfdata_file = forms.CharField(help_text="Where should npcdmod.o write the performance data. Must not be same directory as perfdata_spool_dir")
+    perfdata_spool_filename = forms.CharField(help_text="Filename for the spooled files")
+    perfdata_file_processing_interval = forms.IntegerField(help_text="Interval between file processing")
+    def __init__(self,initial={}, *args,**kwargs):
+        my_initial = {}
+        # Lets use PNPBrokerModuleForm to find sensible path to npcd config file
+        broker_form = PNPBrokerModuleForm()
+        npcd_cfg = broker_form.initial.get('config_file')
+        npcd_values = Model.config._load_static_file(npcd_cfg)
+        for k,v in npcd_values:
+            my_initial[k] = v
+        super(self.__class__,self).__init__(initial=my_initial,*args,**kwargs)
+
+
+
+class EditFileForm(forms.Form):
+    """ Manages editing of a single file """
+    filecontent = forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'rows':'50', 'cols':'2000'}) )
+    def __init__(self,filename,initial={},*args,**kwargs):
+        self.filename = filename
+        my_initial = initial.copy()
+        if 'filecontent' not in my_initial:
+            my_initial['filecontent'] = open(filename).read()
+        super(self.__class__,self).__init__(initial=my_initial, *args,**kwargs)
+    def save(self):
+        if 'filecontent' in self.changed_data:
+            data = self.cleaned_data['filecontent']
+            open(self.filename,'w').write(data)
+class PNPBrokerModuleForm(forms.Form):
+    """ This form is responsible for configuring PNP4Nagios. """
+    enable_PNP= forms.BooleanField(required=False, initial=True,help_text="If set, PNP will be enabled and will graph Nagios Performance Data.")
+    broker_module=forms.CharField(help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
+    config_file=forms.CharField(help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
+
+    #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
+    #action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
     def clean_broker_module(self):
         """ Raises validation error if filename does not exist """
         filename = self.cleaned_data['broker_module']
@@ -202,15 +278,7 @@ class PNP4NagiosForm(forms.Form):
         if 'broker_module' in self.changed_data or 'config_file' in self.changed_data or self.nagios_configline is None:
             v = "%s config_file=%s" % ( self.cleaned_data['broker_module'], self.cleaned_data['config_file'] )
             Model.config._edit_static_file(attribute="broker_module", new_value=v, old_value = self.nagios_configline, append=True)
-        # TODO: What to do if make sure npcd is running is checked
-        # TODO: What to do if reload nagios is checked
-        if self.cleaned_data['apply_action_url'] == True:
-            action_url = self.cleaned_data['action_url']
-        services = Model.Service.objects.filter(action_url__isnot=action_url)
-        for i in services:
-            if 'action_url' in i._defined_attributes or i.use is None:
-                i.action_url = action_url
-                i.save()
+
 
 
 class PerfDataForm(forms.Form):

@@ -109,3 +109,10 @@
     });
     </script>
 {% endblock %}
+
+{% block sidebar %}
+    <h5>Actions</h5>
+    <ul class="nav nav-list">
+        <li><a href="{%  url misc.views.edit_file nagios_cfg  %}" >edit nagios.cfg</a></li>
+    </ul>
+{% endblock %}
