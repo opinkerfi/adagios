@@ -12,6 +12,6 @@ urlpatterns = patterns('',
     (r'^/status/?$', 'misc.views.status'),
     (r'^/status/(?P<host_name>.+)/(?P<service_description>.+)/?$', 'misc.views.status_host'),
     (r'^/status/(?P<host_name>.+)$', 'misc.views.status_host'),
-    (r'^/editfile/(?P<filename>.+)$', 'misc.views.edit_file'),
+    (r'^/editfile(?P<filename>.+)$', 'misc.views.edit_file'),
 )
  

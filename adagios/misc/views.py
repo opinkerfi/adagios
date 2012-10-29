@@ -193,14 +193,17 @@ def pnp4nagios(request):
         c['form'] = broker_form = forms.PNPBrokerModuleForm(data=request.POST)
         if broker_form.is_valid():
             broker_form.save()
+            m.append("Broker Module updated in nagios.cfg")
     elif request.method == 'POST' and 'save_action_url' in request.POST:
         c['action_url'] = forms.PNPActionUrlForm(data=request.POST)
         if c['action_url'].is_valid():
             c['action_url'].save()
+            m.append('Action_url updated for services')
     elif request.method == 'POST' and 'save_npcd_cfg' in request.POST:
         c['npcd_config'] = forms.PNPConfigForm(data=request.POST)
         if c['npcd_config'].is_valid():
             c['npcd_config'].save()
+            m.append("npcd.cfg updated")
 
 
     return render_to_response('pnp4nagios.html', c, context_instance = RequestContext(request))

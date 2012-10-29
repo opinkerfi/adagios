@@ -168,11 +168,12 @@ class PNPTemplatesForm(forms.Form):
 
         super(self.__class__,self).__init__(*args,**kwargs)
 pnp_loglevel_choices = [ ('0', '0 - Only Errors'), ('1', '1 - Little logging'), ('2', '2 - Log Everything'), ('-1','-1 Debug mode (log all and slower processing')]
+pnp_log_type_choices = [('syslog','syslog'),('file','file')]
 class PNPConfigForm(forms.Form):
     """ This form handles the npcd.cfg configuration file """
     user = forms.CharField(help_text="npcd service will have privileges of this group")
     group = forms.CharField(help_text="npcd service will have privileges of this user")
-    log_type = forms.CharField(help_text="Define if you want to log to 'syslog' or 'file'")
+    log_type = forms.ChoiceField(widget=forms.RadioSelect, choices=pnp_log_type_choices, help_text="Define if you want to log to 'syslog' or 'file'")
     log_file = forms.CharField(help_text="If log_type is set to file. Log to this file")
     max_logfile_size = forms.IntegerField(help_text="Defines the maximum filesize (bytes) before logfile will rotate.")
     log_level = forms.ChoiceField(help_text="How much should we log?", choices=pnp_loglevel_choices)
@@ -253,7 +254,7 @@ class PNPBrokerModuleForm(forms.Form):
         if 'broker_module' not in my_initial:
             my_initial['broker_module'] = self.get_suggested_npcdmod_path()
         if 'config_file' not in my_initial:
-            my_initial['config_file'] = self.get_suggested_npcdmod_path()
+            my_initial['config_file'] = self.get_suggested_npcd_path()
         super(self.__class__,self).__init__(initial=my_initial,*args,**kwargs)
     def get_suggested_npcdmod_path(self):
         """ Returns best guess for full path to npcdmod.o file """
