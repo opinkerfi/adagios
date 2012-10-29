@@ -11,7 +11,8 @@
 Service nagios status:
     {% if status  > 3 %}
         unknown ("service nagios status" returned {{ status }})
-    {% elif status  == 0 %}
+    {% endif %}
+    {% if status  == 0 %}
         Started
     {% else %}
         Stopped
