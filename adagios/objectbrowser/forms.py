@@ -313,10 +313,16 @@ class CopyObjectForm(forms.Form):
     def __init__(self, pynag_object, *args, **kwargs):
         self.pynag_object = pynag_object
         super(self.__class__, self).__init__(*args,**kwargs)
-
-        # We display different field depending on what type of an object it is
         object_type = pynag_object['object_type']
-        if object_type == 'host':
+
+        # For templates we assume the new copy will have its generic name changed
+        # otherwise we display different field depending on what type of an object it is
+        if pynag_object['register'] == '0':
+            new_generic_name = "%s-copy" % pynag_object.get_description()
+            if pynag_object.name is '':
+                new_generic_name = '%s-copy' % pynag_object.name
+            self.fields['name'] = forms.CharField(initial=new_generic_name, help_text="Select a new generic name for this %s" % object_type)
+        elif object_type == 'host':
             new_host_name = "%s-copy" % pynag_object.get_description()
             self.fields['host_name'] = forms.CharField(help_text="Select a new host name for this host", initial=new_host_name)
             self.fields['address'] = forms.CharField(help_text="Select a new ip address for this host")

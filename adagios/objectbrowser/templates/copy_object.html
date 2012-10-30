@@ -12,7 +12,7 @@
             <div class="alert alert-success">
                 <button class="close" data-dismiss="alert">×</button>
                 <strong>Success!</strong>
-                {{ i.object_type }} <a href="{% url edit_object i.id  %}">"{{ i.shortname }}"</a>
+                {{ i.object_type }} <a href="{% url edit_object i.id  %}">"{{ i.description }}"</a>
                 was successfully saved to {{ i.filename }}.
             </div>
         {% endfor %}
