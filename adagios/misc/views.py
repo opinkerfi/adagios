@@ -190,7 +190,7 @@ def pnp4nagios(request):
         c['errors'].append(e)
     #c['interesting_objects'] = form.interesting_objects
     if request.method == 'POST' and 'save_broker_module' in request.POST:
-        c['form'] = broker_form = forms.PNPBrokerModuleForm(data=request.POST)
+        c['broker_module'] = broker_form = forms.PNPBrokerModuleForm(data=request.POST)
         if broker_form.is_valid():
             broker_form.save()
             m.append("Broker Module updated in nagios.cfg")
@@ -198,8 +198,10 @@ def pnp4nagios(request):
         c['action_url'] = forms.PNPActionUrlForm(data=request.POST)
         if c['action_url'].is_valid():
             c['action_url'].save()
-            m.append('Action_url updated for services')
-    elif request.method == 'POST' and 'save_npcd_cfg' in request.POST:
+            m.append('Action_url updated for %s services' % c['action_url'].total_services)
+            if c['action_url'].error_services  > 0:
+                e.append("%s services could not be updated (check permissions?)" % c['action_url'].error_services)
+    elif request.method == 'POST' and 'save_npcd_config' in request.POST:
         c['npcd_config'] = forms.PNPConfigForm(data=request.POST)
         if c['npcd_config'].is_valid():
             c['npcd_config'].save()

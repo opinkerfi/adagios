@@ -140,16 +140,21 @@ class EditAllForm(forms.Form):
 
 class PNPActionUrlForm(forms.Form):
     """ This form handles applying action_url to bunch of hosts and services """
-    apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
-    action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
+    #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
+    action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Reset the action_url attribute of every service check in your nagios configuration with this one. ")
     def save(self):
-        if self.cleaned_data['apply_action_url'] == True:
-            action_url = self.cleaned_data['action_url']
-            services = Model.Service.objects.filter(action_url__isnot=action_url)
-            for i in services:
-                if 'action_url' in i._defined_attributes or i.use is None:
-                    i.action_url = action_url
+        action_url = self.cleaned_data['action_url']
+        services = Model.Service.objects.filter(action_url__isnot=action_url)
+        self.total_services = len(services)
+        self.error_services = 0
+        for i in services:
+            if 'action_url' in i._defined_attributes or i.use is None:
+                i.action_url = action_url
+                try:
                     i.save()
+                except:
+                    self.error_services += 1
+
 class PNPTemplatesForm(forms.Form):
     """ This form manages your pnp4nagios templates """
     def __init__(self, *args,**kwargs):
@@ -192,11 +197,14 @@ class PNPConfigForm(forms.Form):
         my_initial = {}
         # Lets use PNPBrokerModuleForm to find sensible path to npcd config file
         broker_form = PNPBrokerModuleForm()
-        npcd_cfg = broker_form.initial.get('config_file')
-        npcd_values = Model.config._load_static_file(npcd_cfg)
+        self.npcd_cfg = broker_form.initial.get('config_file')
+        npcd_values = Model.config._load_static_file(self.npcd_cfg)
         for k,v in npcd_values:
             my_initial[k] = v
         super(self.__class__,self).__init__(initial=my_initial,*args,**kwargs)
+    def save(self):
+        for i in self.changed_data:
+            Model.config._edit_static_file(attribute=i, new_value=self.cleaned_data[i], filename=self.npcd_cfg)
 
 
 
@@ -215,10 +223,11 @@ class EditFileForm(forms.Form):
             open(self.filename,'w').write(data)
 class PNPBrokerModuleForm(forms.Form):
     """ This form is responsible for configuring PNP4Nagios. """
-    enable_PNP= forms.BooleanField(required=False, initial=True,help_text="If set, PNP will be enabled and will graph Nagios Performance Data.")
+    #enable_pnp= forms.BooleanField(required=False, initial=True,help_text="If set, PNP will be enabled and will graph Nagios Performance Data.")
     broker_module=forms.CharField(help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
     config_file=forms.CharField(help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
-
+    event_broker_options=forms.IntegerField(initial="-1", help_text="Nagios's default of -1 is recommended here. PNP Documentation says you will need at least bits 2 and 3. Only change this if you know what you are doing.")
+    process_performance_data= forms.BooleanField(required=False, initial=True,help_text="PNP Needs the nagios option process_performance_data enabled to function. Make sure it is enabled.")
     #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
     #action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
     def clean_broker_module(self):
@@ -233,8 +242,6 @@ class PNPBrokerModuleForm(forms.Form):
         if not os.path.exists(filename):
             raise forms.ValidationError('File not found')
         return filename
-    def clean_action_url(self):
-        return str(self.cleaned_data['action_url'])
     def __init__(self, initial={}, *args,**kwargs):
         my_initial = {}
         Model.config.parse()
@@ -248,6 +255,8 @@ class PNPBrokerModuleForm(forms.Form):
                 for i in v:
                     if i.find('config_file=') > -1:
                         my_initial['config_file']=i.split('=',1)[1]
+            elif k == "event_broker_options":
+                my_initial[k] = v
         # If view specified any initial values, they overwrite ours
         for k,v in initial.items():
             my_initial[k] = v
@@ -280,6 +289,14 @@ class PNPBrokerModuleForm(forms.Form):
             v = "%s config_file=%s" % ( self.cleaned_data['broker_module'], self.cleaned_data['config_file'] )
             Model.config._edit_static_file(attribute="broker_module", new_value=v, old_value = self.nagios_configline, append=True)
 
+        # We are supposed to handle process_performance_data attribute.. lets do that here
+        process_performance_data = "1" if self.cleaned_data['process_performance_data'] else "0"
+        Model.config._edit_static_file(attribute="process_performance_data", new_value=process_performance_data)
+
+        # Update event broker only if it has changed
+        name = "event_broker_options"
+        if name in self.changed_data:
+            Model.config._edit_static_file(attribute=name, new_value=self.cleaned_data[name])
 
 
 class PerfDataForm(forms.Form):

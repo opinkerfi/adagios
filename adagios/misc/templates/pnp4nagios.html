@@ -27,7 +27,7 @@
                 <form action="#" method="post" class="form-horizontal">{% csrf_token %}
                     {% include "bootstrap_fields.html" with fields=broker_module %}
                     <div class="form-actions">
-                        <button name="save_broker_module" class="btn btn-success" type="submit">Do it!</button>
+                        <button name="save_broker_module" class="btn btn-success" type="submit">Enable broker module</button>
                     </div>
                 </form>
             {% endif %}
@@ -56,13 +56,14 @@
 
         </div>
         <div class="tab-pane" id="action_url">
-            To make PNP graphs easily accessable from your Nagios web interface. You can set the 'action_url' attribute
-            on your hosts and services.
+            <p>To make PNP graphs easily accessable from your Nagios web interface. You can set the 'action_url' attribute
+            on your hosts and services.</p>
+            <p>Here you can reset action_url of all your services (first applying them to templates)</p>
             {% if action_url %}
                 <form action="#" method="post" class="form-horizontal">{% csrf_token %}
                     {% include "bootstrap_fields.html" with fields=action_url %}
                     <div class="form-actions">
-                        <button name="save_action_url" class="btn btn-success" type="submit">Apply Action Url</button>
+                        <button name="save_action_url" class="btn btn-success" type="submit">Apply this action url to every object</button>
                     </div>
                 </form>
             {% endif %}
@@ -78,14 +79,7 @@
                         </tr>
                     {% endfor %}
                 </table>
-                <!--
-                <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-                    {% include "bootstrap_fields.html" with fields=pnp_templates %}
-                    <div class="form-actions">
-                        <button name="save_templates" class="btn btn-success" type="submit">Save</button>
-                    </div>
-                </form>
-                -->
+
             {% endif %}
         </div>
     </div> <!-- End of tab content -->
