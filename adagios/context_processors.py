@@ -29,6 +29,8 @@ def on_page_load(request):
         results[k] = v
     for k,v in check_destination_directory(request).items():
         results[k] = v
+    for k,v in check_nagios_cfg(request).items():
+        results[k] = v
     return results
 
 def activate_plugins(request):
@@ -54,7 +56,9 @@ def get_httpuser(request):
     for i in pynag.Model.eventhandlers:
         i.modified_by = request.META.get('REMOTE_USER', 'anonymous')
     return {}
-
+def check_nagios_cfg(request):
+    """ Check availability of nagios.cfg """
+    return { 'nagios_cfg' : pynag.Model.config.cfg_file }
 def check_destination_directory(request):
     """ Check that adagios has a place to store new objects """
     dest = settings.destination_directory
@@ -91,7 +95,6 @@ def check_git(request):
 def check_nagios_running(request):
     """ Notify user if nagios is not running """
     nagios_pid = pynag.Model.config._get_pid()
-    print "Nagios_pid=%s" % (nagios_pid)
     return { "nagios_running":(nagios_pid is not None)}
 
 def check_nagios_needs_reload(request):

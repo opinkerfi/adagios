@@ -1,0 +1,22 @@
+{% extends "base_misc.html" %}
+{% block title %}{{ filename }}{% endblock %}
+{% block nav1 %}{{ filename }}{% endblock %}
+{% block smallheader %}edit{% endblock %}
+{% block largeheader %}{{ filename }}{% endblock %}
+
+
+{% block content %}
+    <div id="editfile">
+    <br>
+    You are editing {{ filename }}. Be careful what you do. <br>
+    {% if form %}
+        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+            {{  form.filecontent }}
+            <div class="form-actions">
+                <button name="save" class="btn btn-success" type="submit">Save</button>
+            </div>
+        </form>
+    {% endif %}
+    </div>
+{% endblock %}
+

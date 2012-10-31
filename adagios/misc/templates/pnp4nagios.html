@@ -1,23 +1,96 @@
 {% extends "base_misc.html" %}
 {% block title %}PNP4nagios integration{% endblock %}
 {% block nav1 %}PNP4Nagios{% endblock %}
-{% block smallheader %}integration with{% endblock %}
-{% block largeheader %}PNP4Nagios{% endblock %}
+{% block smallheader %}Configuring{% endblock %}
+{% block largeheader %}PNP{% endblock %}
 
 
 {% block content %}
-    PNP is an addon to Nagios which analyzes performance data provided by plugins and stores them automatically into RRD-databases (Round Robin Databases, see RRD Tool).
-    <p>
-    This form helps you configure PNP using the so-called "bulk npcmod" method. If you are just here to verify your installation. Click verify at the bottom of the page.
+    <div class="well" xmlns="http://www.w3.org/1999/html">
+    <p >
+    PNP is an addon to Nagios which analyzes performance data provided by plugins and stores them automatically into Round Robin Databases (RRD).
+    <p xmlns="http://www.w3.org/1999/html">
+    This page helps you configure PNP using the so-called "bulk npcmod" method.
     </p>
-    {% if form %}
-        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-            {% include "bootstrap_fields.html" with fields=form %}
-            <div class="form-actions">
-                <button class="btn btn-success" type="submit">Save</button>
-            </div>
-        </form>
+    </div>
+    <ul class="nav nav-tabs" id="objecttab">
+        <li><a href="#broker_module" data-toggle="tab">Broker Module</a></li>
+        <li><a href="#npcd_config" data-toggle="tab">NPCD Config</a></li>
+        <li><a href="#action_url" data-toggle="tab">Action Url</a></li>
+        <li><a href="#pnp_templates" data-toggle="tab">PNP Templates</a></li>
+    </ul>
 
-    {% endif %}
+    <div class="tab-content">
 
+        <div class="tab-pane" id="broker_module">
+            {% if broker_module %}
+                <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                    {% include "bootstrap_fields.html" with fields=broker_module %}
+                    <div class="form-actions">
+                        <button name="save_broker_module" class="btn btn-success" type="submit">Enable broker module</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div> <!-- End of advanced tab -->
+
+        <div class="tab-pane" id="npcd_config">
+            <p>This tab helps you configure your npcd.cfg file which controls the behaviour of npcd daemon.</p>
+            <br>
+            {% if npcd_config %}
+                <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                    {% include "bootstrap_fields.html" with fields=npcd_config %}
+                    <div class="form-actions">
+                        <button name="save_npcd_config" class="btn btn-success" type="submit">Save npcd.cfg</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="well">
+
+                <p>
+                    Sorry, but we could not read npcd config file {{ form.config_file.value }}.
+                </p>
+                <p>Make sure permissions are correct and that config file path in Broker Module tab is correct</p>
+                </div>
+            {% endif %}
+
+
+        </div>
+        <div class="tab-pane" id="action_url">
+            <p>To make PNP graphs easily accessable from your Nagios web interface. You can set the 'action_url' attribute
+            on your hosts and services.</p>
+            <p>Here you can reset action_url of all your services (first applying them to templates)</p>
+            {% if action_url %}
+                <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                    {% include "bootstrap_fields.html" with fields=action_url %}
+                    <div class="form-actions">
+                        <button name="save_action_url" class="btn btn-success" type="submit">Apply this action url to every object</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+        <div class="tab-pane" id="pnp_templates">
+            <p>Manage the templates used to generate performance graphs.</p>
+            {% if pnp_templates %}
+                <table class="table">
+                    {% for file in pnp_templates.templates %}
+
+                        <tr>
+                            <td><a title="Edit {{ file }}" href="{%  url misc.views.edit_file file  %}" >{{ file }}</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+            {% endif %}
+        </div>
+    </div> <!-- End of tab content -->
+{% endblock %}
+
+
+{% block sidebar %}
+    <h5>Actions</h5>
+    <ul class="nav nav-list">
+    <li><a href="{%  url misc.views.edit_file "/etc/pnp4nagios/config.php"  %}" >Edit config.php</a></li>
+    <li><a href="{%  url misc.views.edit_file "/etc/pnp4nagios/npcd.cfg"  %}" >Edit npcd.cfg</a></li>
+    <li><a href="{%  url misc.views.edit_file nagios_cfg  %}" >Edit nagios.cfg</a></li>
+    </ul>
 {% endblock %}
