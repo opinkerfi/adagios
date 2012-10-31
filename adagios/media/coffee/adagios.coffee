@@ -444,6 +444,20 @@ $.extend $.fn.dataTableExt.oStdClasses,
     # Stop the button from POST'ing
     this
 ) jQuery
+
+fatalError = (errorTitle, errorContent, errorFooter) ->
+  $('div.container-fluid.content').html """
+  <div class="row-fluid">
+    <div class="span4">
+      <div class="alert alert-error">
+        <h2>Fatal Error - #{errorTitle}</h2>
+        <div>#{errorContent}</div>
+        <div>#{errorFooter}</div>
+      </div>
+    </div>
+  </div>
+    """
+
 $(document).ready ->
   $("[rel=tooltip]").popover()
   $("#popover").popover()
