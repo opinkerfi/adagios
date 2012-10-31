@@ -64,15 +64,11 @@ $.extend $.fn.dataTableExt.oStdClasses,
     current_version = $('#current_version').text()
     $.getJSON("http://adagios.opensource.is/cgi-bin/version.cgi?version=#{current_version}&callback=?", (data) ->
       this
-    ).error( (jqXHR, text) ->
-      alert("Failed to fetch data: URL: \"" + this.url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.message + "\"");
-      this
     ).success( (data) ->
       if $('span#current_version').text() != data['version']
         $('div#updates_avail').show()
       $this.text data['version']
       $('a#version_info').attr 'href', data['link']
-
     )
     this
 
@@ -182,9 +178,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
           $this.adagios_ob_dtPopulate()
       ).error (jqXHR) ->
 
-      
-      # TODO - fix this to a this style 
-      
+
+      # TODO - fix this to a this style
+
       #targetDataTable = $(this).data('datatable');
       #targetDataTable.parent().parent().parent().html('<div class="alert alert-error"><h3>ERROR</h3><br/>Failed to fetch data::<p>URL: ' + this.url + '<br/>Server Status: ' + jqXHR.status + ' ' + jqXHR.statusText + '</p></div>');
       this
@@ -440,11 +436,11 @@ $.extend $.fn.dataTableExt.oStdClasses,
         $(this).adagios_ob_run_check_command()
 
     ).error (jqXHR) ->
-      
-      # TODO - fix this to a this style 
+
+      # TODO - fix this to a this style
       alert "Failed to fetch data: URL: \"" + @url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.statusText + "\""
 
-    
+
     # Stop the button from POST'ing
     this
 ) jQuery
