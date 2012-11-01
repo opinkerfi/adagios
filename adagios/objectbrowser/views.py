@@ -439,15 +439,6 @@ def edit_nagios_cfg(request):
     c['content'] = []
 
 
-    for key, v in Model.config.maincfg_values:
-        if key not in main_config:
-            c['content'].append({
-                'title': 'No documentation found',
-                'key': key,
-                'values': [v],
-                'doc': 'This seems to be an undefined option and no documentation was found for it. Perhaps it is'
-                       'mispelled.'
-            })
 
 
     for conf in sorted(main_config):
@@ -464,6 +455,17 @@ def edit_nagios_cfg(request):
             'key': conf,
             'values': values
         })
+
+    for key, v in Model.config.maincfg_values:
+        if key not in main_config:
+            c['content'].append({
+                'title': 'No documentation found',
+                'key': key,
+                'values': [v],
+                'doc': 'This seems to be an undefined option and no documentation was found for it. Perhaps it is'
+                       'mispelled.'
+            })
+    c['content'] = sorted(c['content'], key=lambda cfgitem: cfgitem['key'])
     return render_to_response('edit_configfile.html', c, context_instance = RequestContext(request))
 
 def bulk_edit(request):
