@@ -318,8 +318,9 @@ class CopyObjectForm(forms.Form):
         # For templates we assume the new copy will have its generic name changed
         # otherwise we display different field depending on what type of an object it is
         if pynag_object['register'] == '0':
-            new_generic_name = "%s-copy" % pynag_object.get_description()
-            if pynag_object.name is '':
+            if pynag_object.name is None:
+                new_generic_name = "%s-copy" % pynag_object.get_description()
+            else:
                 new_generic_name = '%s-copy' % pynag_object.name
             self.fields['name'] = forms.CharField(initial=new_generic_name, help_text="Select a new generic name for this %s" % object_type)
         elif object_type == 'host':
