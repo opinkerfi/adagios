@@ -1,90 +1,49 @@
 {% extends "base_misc.html" %}
 
-{% block title %}{{ block.super }}{% endblock %}
-{% block smallheader %}{{ block.super }}{% endblock %}
-{% block largeheader %}Perfdata Analyzer{% endblock %}
-{% block nav1 %}{{ block.super }}{% endblock %}
-
-{% block adagios_hausinn %}{{ block.super }}{% endblock %}
+{% block title %}Audit Log{% endblock %}
+{% block smallheader %}audit{% endblock %}
+{% block largeheader %}log{% endblock %}
+{% block nav1 %}misc{% endblock %}
 
 {% block content %}
-    {% if object %}
-        <h4>Plugin Output</h4>
-        <table align="center" class="center" border=1>
-            <tr class="alert alert-{{ object.status }}">
-                <td> {{ object.plugin_output }}</td>
-            </tr>
-            <tr class="alert alert-{{ object.status }}">
-                <td>
-                    {{ object.long_plugin_output }}
-                </td>
-            </tr>
-            </table>
-            {% if results %}
-                <h4>Performance Data</h4>
-                <table border=1>
-                <tr class="alert alert-info">
-                    <th>label</th>
-                    <th>value</th>
-                    <th>warning</th>
-                    <th>critical</th>
-                    <th>unit</th>
-                    <th>min value</th>
-                    <th>max value</th>
-                    <th>status</th>
-                </tr>
-                {% for i in results %}
-                    <tr class="alert alert-{{ i.csstag }}">
-                        <td>{{ i.label }}</td>
-                        <td>{{ i.value }} </td>
-                        <td>{{ i.warn }}  </td>
-                        <td>{{ i.crit }}  </td>
-                        <td> {{ i.uom }}</td>
-                        <td>{{ i.min }}   </td>
-                        <td>{{ i.max }}   </td>
-                        <td><label >{{ i.status }}</label></td>
-                    </tr>
-                {% endfor %}
-                </table>
-            {% endif %}
-    {% endif %}
+
+    <div id='chart_div'></div>
+
+
 
 
 {% endblock %}
 
-{% block header %} {{ block.super }} {% endblock %}
+{% block footer %}
+    {{ block.super }}
+    <script type='text/javascript'>
+        var datarows = [["mike","",""]];
+    </script>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
 
-{% block sidebar %}
-    {% if objects %}
-        <table class="table" style="margin:0px; padding:0px; height=10px">
-            <tr>
-                <th>services</th>
-            </tr>
-            {% for i in objects %}
-                <tr>
-                    {% if i.current_state == "0" %}
-                        <td class="alert alert-success" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    {% if i.current_state == "1" %}
-                        <td class="alert alert-warning" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    {% if i.current_state == "2" %}
-                        <td class="alert alert-danger" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    {% if i.current_state == "3" %}
-                        <td class="" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    <a href="?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
-                        {{ i.host_name }}/{{ i.service_description }}
-                    </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+    var datarows = $.parseJSON(
+            $.ajax(
+                    {
+                        url: "{% url rest/pynag %}json/contactgroup_hierarchy?limit=100",
+                        async: false,
+                        dataType: 'json'
+                    }
+            ).responseText
+    );
+
+        google.load('visualization', '1', {packages:['orgchart']});
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = new google.visualization.DataTable();1
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Manager');
+            data.addColumn('string', 'ToolTip');
+            data.addRows( datarows );
+            var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+            chart.draw(data, {allowHtml:true});
+        }
+    </script>
 
 
 {% endblock %}
-
-
-{% block footer %} {{ block.super }} {% endblock %}

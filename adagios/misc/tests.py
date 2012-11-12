@@ -82,7 +82,7 @@ def test_old(request):
         c['form'] = f
         return render_to_response('test.html', c, context_instance = RequestContext(request))
 
-def test(request):
+def test_old_as_hell(request):
     c = {}
     c['messages'] = []
 
@@ -99,3 +99,9 @@ def test(request):
                 service['status'] = state[service['current_state']]
                 host['services'].append( service)
     return render_to_response('status.html', c, context_instance = RequestContext(request))
+
+
+def test(request):
+    c = {}
+    c['messages'] = []
+    return render_to_response('test.html', c, context_instance = RequestContext(request))

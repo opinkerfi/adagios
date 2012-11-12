@@ -203,3 +203,17 @@ def dnslookup(host_name):
         return { 'host': name, 'aliaslist': aliaslist, 'addresslist': addresslist }
     except Exception, e:
         return { 'error': str(e) }
+
+def contactgroup_hierarchy(**kwargs):
+    result = []
+    try:
+        groups = Model.Contactgroup.objects.all
+        for i in groups:
+            display = {}
+            display['v'] = i.contactgroup_name
+            display['f'] = '%s<div style="color:green; font-style:italic">%s contacts</div>' % (i.contactgroup_name, len(i.get_effective_contacts()))
+            arr = [ display, i.contactgroup_members or '', str(i)]
+            result.append( arr )
+        return result
+    except Exception,e :
+        return { 'error': str(e) }
