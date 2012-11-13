@@ -244,9 +244,9 @@ class AdvancedEditForm(forms.Form):
     * Every attribute that is defined in nagios object definition html
 
     """
-    register = forms.CharField(required=False)
-    name = forms.CharField(required=False, label="Object Name")
-    use = forms.CharField(required=False, label="Use")
+    register = forms.CharField(required=False, help_text="Set to 1 if you want this object enabled.")
+    name = forms.CharField(required=False, label="Generic Name", help_text="This name is used if you want other objects to inherit (with the use attribute) what you have defined here.")
+    use = forms.CharField(required=False, label="Use", help_text="Inherit all settings from another object")
     __prefix = "advanced" # This prefix will go on every field
     def save(self):
         for k in self.changed_data:

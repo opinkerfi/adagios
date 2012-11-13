@@ -310,6 +310,10 @@ def _edit_contactgroup( request, c):
     try: c['effective_contacts'] = c['my_object'].get_effective_contacts()
     except KeyError, e: c['errors'].append( "Could not find contact: %s" % str(e))
 
+    try:
+        c['effective_memberof'] = Model.Contactgroup.objects.filter(contactgroup_members__has_field=c['my_object'].contactgroup_name)
+    except Exception, e:
+        c['errors'].append(e)
     return render_to_response('edit_contactgroup.html', c, context_instance = RequestContext(request))
 def _edit_hostgroup( request, c):
     """ This is a helper function to edit_object """
