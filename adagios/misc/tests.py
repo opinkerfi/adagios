@@ -5,11 +5,9 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 
-from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 import forms
-import django.forms
 
 from django.test import TestCase
 
@@ -104,4 +102,17 @@ def test_old_as_hell(request):
 def test(request):
     c = {}
     c['messages'] = []
+    c = {'object_types': []}
+    import pynag.Model
+    for name,Class in pynag.Model.string_to_class.items():
+        if name is not None:
+            active = inactive = 0
+            all_instances = Class.objects.all
+            for i in all_instances:
+                if i['register'] == "0":
+                    inactive += 1
+                else:
+                    active += 1
+            c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
+
     return render_to_response('test.html', c, context_instance = RequestContext(request))

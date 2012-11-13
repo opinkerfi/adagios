@@ -5,6 +5,7 @@
 @import url(../datatables/css/jquery.dataTables.css);
 @import url(../datatables/DT_bootstrap.css);
 @import url(../select2/select2.css);
+@import url(../jqplot/jquery.jqplot.min.css);
 
 /*
 Fix for dropdown buttons, height to small for some reason
