@@ -175,9 +175,13 @@ class PynagForm(forms.Form):
             all_groups = Model.Servicegroup.objects.filter(servicegroup_name__contains='')
             choices = map(lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
             field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
-        elif field_name == 'hostgroups':
+        elif field_name in ('hostgroups', 'hostgroup_members', 'hostgroup_name'):
             all_groups = Model.Hostgroup.objects.filter(hostgroup_name__contains='')
             choices = map(lambda x: (x.hostgroup_name, x.hostgroup_name), all_groups)
+            field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
+        elif field_name == 'members' and object_type == 'hostgroup':
+            all_groups = Model.Host.objects.filter(host_name__contains='')
+            choices = map(lambda x: (x.host_name, x.host_name), all_groups)
             field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
         elif field_name in ('contacts','members'):
             all = Model.Contact.objects.filter(contact_name__contains='')

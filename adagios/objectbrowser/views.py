@@ -320,7 +320,10 @@ def _edit_hostgroup( request, c):
     hostgroup = c['my_object']
     try: c['effective_services'] = hostgroup.get_effective_services()
     except KeyError, e: c['errors'].append( "Could not find service: %s" % str(e))
-
+    try:
+        c['effective_memberof'] = Model.Hostgroup.objects.filter(hostgroup_members__has_field=c['my_object'].hostgroup_name)
+    except Exception, e:
+        c['errors'].append(e)
     return render_to_response('edit_hostgroup.html', c, context_instance = RequestContext(request))
 def _edit_servicegroup( request, c):
     """ This is a helper function to edit_object """
