@@ -1,4 +1,4 @@
-edit_contactgroup.html{% extends "edit_object.html" %}
+{% extends "edit_object.html" %}
 {% block title %}{{  block.super }}{% endblock %}
 
 {% block head %}{{ block.super }} {% endblock %}
@@ -8,5 +8,99 @@ edit_contactgroup.html{% extends "edit_object.html" %}
 {% block sidebar %}{{ block.super }}{% endblock %}
 
 {% block content %}
-    {{ block.super }}
+    {% if my_object %}
+        <!-- wrapper for scrollable items -->
+        <ul class="nav nav-tabs" id="objecttab">
+            <li><a href="#general" data-toggle="tab">General</a></li>
+            <li><a href="#members_tab" data-toggle="tab">Members</a></li>
+            <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
+            <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+        </ul>
+        <form class="form-horizontal" action="#" method="POST">
+            {% csrf_token %}
+            <div class="tab-content">
+
+
+                <div class="tab-pane" id="general">
+                    <fieldset>
+                        {% include "bootstrap_field.html" with field=form.servicegroup_name %}
+                        {% include "bootstrap_field.html" with field=form.alias %}
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="memberof">
+                    <fieldset>
+                        <!-- Display All Servicegroup if this is that kind of an object -->
+                        <div class="effective_memberof">
+                            <fieldset id="id_effective_memberof" class="attribute_{{object_type}}">
+                                Following is a list of all servicegroups that <i>{{ my_object.servicegroup_name }}</i> is a member of.
+                                <p></p>
+                                {% if effective_memberof %}
+                                    <p>
+                                        {% for group in effective_memberof %}
+                                            <label><a href="id={{ group.id }}">{{group.servicegroup_name}}</a></label>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </fieldset>
+                        </div>
+
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+                </div>
+
+
+                <div class="tab-pane" id="members_tab">
+                    If you want to add specific services to this servicegroup. Use the advanced field or open that specific service and edit the "servicegroups" attribute.
+                    <fieldset>
+                        {% include "bootstrap_field.html" with field=form.servicegroup_members %}
+                    </fieldset>
+
+                    <div class="effective_members">
+                        <fieldset id="id_effective_members" class="attribute_{{object_type}}">
+                            <legend>Effective Members of this group</legend>
+                            Group membership can be defined in multiple ways, for example by editing the service and editing the "servicegroups"
+                            attribute. For your convenience, here is a list of all services in this servicegroup.
+                            <p></p>
+                            {% if effective_services %}
+                                <p>
+                                    {% for i in effective_services %}
+                                        <label><a href="id={{ i.id }}">{{i.description}}</a></label>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </fieldset>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+                </div>
+        </form>
+        <div class="tab-pane" id="advanced">
+            <!-- All Attributes -->
+            <h2>All Attributes</h2>
+            <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
+                {% include "bootstrap_fields.html" with fields=advanced_form %}
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+        </div>
+
+
+
+    {% else %}
+        <p>Object not found </p>
+    {% endif %}
+
+
 {% endblock content %}

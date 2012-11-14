@@ -318,7 +318,7 @@ def _edit_contactgroup( request, c):
 def _edit_hostgroup( request, c):
     """ This is a helper function to edit_object """
     hostgroup = c['my_object']
-    try: c['effective_services'] = hostgroup.get_effective_services()
+    try: c['effective_services'] = sorted(hostgroup.get_effective_services(), key=lambda x: x.get_description())
     except KeyError, e: c['errors'].append( "Could not find service: %s" % str(e))
     try:
         c['effective_memberof'] = Model.Hostgroup.objects.filter(hostgroup_members__has_field=c['my_object'].hostgroup_name)
@@ -327,6 +327,10 @@ def _edit_hostgroup( request, c):
     return render_to_response('edit_hostgroup.html', c, context_instance = RequestContext(request))
 def _edit_servicegroup( request, c):
     """ This is a helper function to edit_object """
+    try:
+        c['effective_memberof'] = Model.Servicegroup.objects.filter(servicegroup_members__has_field=c['my_object'].servicegroup_name)
+    except Exception, e:
+        c['errors'].append(e)
     return render_to_response('edit_servicegroup.html', c, context_instance = RequestContext(request))
 def _edit_command( request, c):
     """ This is a helper function to edit_object """
@@ -349,7 +353,7 @@ def _edit_host( request, c):
     c['object_macros'] = host.get_all_macros()
     if not c.has_key('errors'): c['errors'] = []
 
-    try: c['effective_services'] = host.get_effective_services()
+    try: c['effective_services'] = sorted(host.get_effective_services(), key=lambda x: x.get_description())
     except KeyError, e: c['errors'].append( "Could not find service: %s" % str(e))
 
     try: c['effective_hostgroups'] = host.get_effective_hostgroups()

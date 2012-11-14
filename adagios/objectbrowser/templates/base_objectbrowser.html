@@ -59,7 +59,7 @@
     </ul>
     <hr/>
     {% if effective_parents %}
-        <h5>Parents</h5>
+        <h5>Templates</h5>
         <ul class="nav nav-list">
             {% for i in effective_parents %}
                 <li><a href="{% url edit_object i.id %}">{{ i.name }}</a></li>
@@ -70,12 +70,26 @@
         <h5>Services</h5>
         <ul class="nav nav-list">
             {% for i in effective_services %}
+                {% if i.register == "1" %}
                 <li>
                     <a href="{% url edit_object i.id %}">
                         {{ i.service_description }}
-                        {% if i.register == "0" %}(unregistered){% endif %}
                     </a>
                 </li>
+                {% endif %}
+            {% endfor %}
+            {% for i in effective_services %}
+                {% if i.register == "0" %}
+                <li>
+                    <a href="{% url edit_object i.id %}" style="color: grey" title="This Service check is not registered (inactive)">
+                        {% if i.service_description %}
+                            {{ i.service_description }}
+                        {% else %}
+                            {{ i.description }}
+                        {% endif %}
+                    </a>
+                </li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
@@ -92,6 +106,14 @@
         <h5>Hostgroups</h5>
         <ul class="nav nav-list">
             {% for i in effective_hostgroups %}
+                <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if effective_servicegroups %}
+        <h5>Servicegroups</h5>
+        <ul class="nav nav-list">
+            {% for i in effective_servicegroups %}
                 <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
             {% endfor %}
         </ul>
