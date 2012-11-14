@@ -97,12 +97,20 @@ def geek_edit( request, object_id ):
     # Get our object
     try:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
-        c['my_object'] = o
     except Exception, e:
-        # Not raising, handled by template
-        c['error_summary'] = 'Unable to find object'
-        c['error'] = e
-        return render_to_response('error.html', c, context_instance = RequestContext(request))
+        # This is an ugly hack. If unknown object ID was specified and it so happens to
+        # Be the same as a brand new empty object definition we will assume that we are
+        # to create a new object definition instead of throwing error because ours was
+        # not found.
+        for i in Model.string_to_class.values():
+            if i().get_id() == object_id:
+                o = i()
+                break
+        else:
+            c['error_summary'] = 'Unable to find object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
+    c['my_object'] = o
     if request.method == 'POST':
         # Manual edit of the form
         form = GeekEditObjectForm(pynag_object=o, data=request.POST)
@@ -134,9 +142,18 @@ def advanced_edit(request, object_id):
         o = ObjectDefinition.objects.get_by_id(id=object_id)
         c['my_object'] = o
     except Exception, e:
-        c['error_summary'] = 'Unable to get object'
-        c['error'] = e
-        return render_to_response('error.html', c, context_instance = RequestContext(request))
+        # This is an ugly hack. If unknown object ID was specified and it so happens to
+        # Be the same as a brand new empty object definition we will assume that we are
+        # to create a new object definition instead of throwing error because ours was
+        # not found.
+        for i in Model.string_to_class.values():
+            if i().get_id() == object_id:
+                o = i()
+                break
+        else:
+            c['error_summary'] = 'Unable to get object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
 
     if request.method == 'POST':
         # User is posting data into our form
@@ -318,7 +335,7 @@ def _edit_contactgroup( request, c):
 def _edit_hostgroup( request, c):
     """ This is a helper function to edit_object """
     hostgroup = c['my_object']
-    try: c['effective_services'] = hostgroup.get_effective_services()
+    try: c['effective_services'] = sorted(hostgroup.get_effective_services(), key=lambda x: x.get_description())
     except KeyError, e: c['errors'].append( "Could not find service: %s" % str(e))
     try:
         c['effective_memberof'] = Model.Hostgroup.objects.filter(hostgroup_members__has_field=c['my_object'].hostgroup_name)
@@ -327,6 +344,10 @@ def _edit_hostgroup( request, c):
     return render_to_response('edit_hostgroup.html', c, context_instance = RequestContext(request))
 def _edit_servicegroup( request, c):
     """ This is a helper function to edit_object """
+    try:
+        c['effective_memberof'] = Model.Servicegroup.objects.filter(servicegroup_members__has_field=c['my_object'].servicegroup_name)
+    except Exception, e:
+        c['errors'].append(e)
     return render_to_response('edit_servicegroup.html', c, context_instance = RequestContext(request))
 def _edit_command( request, c):
     """ This is a helper function to edit_object """
@@ -349,7 +370,7 @@ def _edit_host( request, c):
     c['object_macros'] = host.get_all_macros()
     if not c.has_key('errors'): c['errors'] = []
 
-    try: c['effective_services'] = host.get_effective_services()
+    try: c['effective_services'] = sorted(host.get_effective_services(), key=lambda x: x.get_description())
     except KeyError, e: c['errors'].append( "Could not find service: %s" % str(e))
 
     try: c['effective_hostgroups'] = host.get_effective_hostgroups()

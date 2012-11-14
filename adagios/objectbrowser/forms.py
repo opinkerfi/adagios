@@ -171,7 +171,7 @@ class PynagForm(forms.Form):
             all_objects = self.pynag_object.objects.filter(name__contains='')
             choices = map(lambda x: (x.name, x.name), all_objects)
             field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
-        elif field_name == 'servicegroups':
+        elif field_name in ('servicegroups','servicegroup_members'):
             all_groups = Model.Servicegroup.objects.filter(servicegroup_name__contains='')
             choices = map(lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
             field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))

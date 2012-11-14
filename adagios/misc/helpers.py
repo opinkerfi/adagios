@@ -211,7 +211,7 @@ def contactgroup_hierarchy(**kwargs):
         for i in groups:
             display = {}
             display['v'] = i.contactgroup_name
-            display['f'] = '%s<div style="color:green; font-style:italic">%s contacts</div>' % (i.contactgroup_name, len(i.get_effective_contacts()))
+            display['f'] = '%s<div style="color:green; font-style:italic">%s contacts</div>' % (i.contactgroup_name, 0)
             arr = [ display, i.contactgroup_members or '', str(i)]
             result.append( arr )
         return result
