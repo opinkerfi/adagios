@@ -97,12 +97,20 @@ def geek_edit( request, object_id ):
     # Get our object
     try:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
-        c['my_object'] = o
     except Exception, e:
-        # Not raising, handled by template
-        c['error_summary'] = 'Unable to find object'
-        c['error'] = e
-        return render_to_response('error.html', c, context_instance = RequestContext(request))
+        # This is an ugly hack. If unknown object ID was specified and it so happens to
+        # Be the same as a brand new empty object definition we will assume that we are
+        # to create a new object definition instead of throwing error because ours was
+        # not found.
+        for i in Model.string_to_class.values():
+            if i().get_id() == object_id:
+                o = i()
+                break
+        else:
+            c['error_summary'] = 'Unable to find object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
+    c['my_object'] = o
     if request.method == 'POST':
         # Manual edit of the form
         form = GeekEditObjectForm(pynag_object=o, data=request.POST)
@@ -134,9 +142,18 @@ def advanced_edit(request, object_id):
         o = ObjectDefinition.objects.get_by_id(id=object_id)
         c['my_object'] = o
     except Exception, e:
-        c['error_summary'] = 'Unable to get object'
-        c['error'] = e
-        return render_to_response('error.html', c, context_instance = RequestContext(request))
+        # This is an ugly hack. If unknown object ID was specified and it so happens to
+        # Be the same as a brand new empty object definition we will assume that we are
+        # to create a new object definition instead of throwing error because ours was
+        # not found.
+        for i in Model.string_to_class.values():
+            if i().get_id() == object_id:
+                o = i()
+                break
+        else:
+            c['error_summary'] = 'Unable to get object'
+            c['error'] = e
+            return render_to_response('error.html', c, context_instance = RequestContext(request))
 
     if request.method == 'POST':
         # User is posting data into our form
