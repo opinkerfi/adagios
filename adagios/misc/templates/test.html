@@ -41,7 +41,7 @@
             data.addColumn('string', 'ToolTip');
             data.addRows( datarows );
             var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
-            chart.draw(data, {allowHtml:true});
+            chart.draw(data, {allowHtml:true, allowCollapse:true});
         }
     </script>
 
