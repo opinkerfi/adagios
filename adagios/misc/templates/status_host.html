@@ -1,110 +1,168 @@
 {% extends "base_misc.html" %}
 
 {% block title %}{{ host.host_name }}{% endblock %}
-{% block smallheader %}{% endblock %}
-{% block largeheader %}Perfdata Analyzer{% endblock %}
+{% block smallheader %}{{ service.host_name }} - {% endblock %}
+{% block largeheader %}{{ service.display_name }} is <span class="state_{{ service.state }}">{{ service.status }}</span>{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
 {% block content %}
+    <ul class="nav nav-tabs" id="objecttab">
+        <li><a href="#general" data-toggle="tab">General</a></li>
+        <li><a href="#macros_tab" data-toggle="tab">Macros</a></li>
+        <li><a href="#other" data-toggle="tab">Misc</a></li>
+    </ul>
+    <div class="tab-content">
+
+    <div class="tab-pane" id="general">
     {% if host %}
-        <h4>Host Status: </h4>
-        <div class="well">
-        <table  >
-            <tr>
-                <th>host_name: </th>
-                <td>{{ host.host_name }}</td>
-            </tr>
-
-            <tr >
-                <th>status: </th>
-                <td class=" alert-{{ host.status }}"> {{ host.plugin_output }}</td>
-            </tr>
-            <tr >
-                <td></td>
-                <td>
-                    {{ host.long_plugin_output }}
-                </td>
-            </tr>
-        </table>
-        </div>
-            {% if service %}
-                <h4>Service Status</h4>
-                <table class="alert alert-{{ service.status }}" border=1>
-                    <tr>
-                        <th>service_description</th>
-                        <td>{{ service_description }}</td>
-                    </tr>
-
-                    <tr class="alert alert-{{ service.status }}">
-                        <th>status</th>
-                        <td> {{ service.plugin_output }}</td>
-                    </tr>
-                    <tr class="alert alert-{{ service.status }}">
+                <table class="table">
+                    <tr >
                         <td></td>
+                        <td>Host Name</td>
+                        <td>{{ host.name }}</td>
+                    </tr>
+                    <tr >
+                        <td></td>
+                        <td>Host Address</td>
+                        <td>{{ host.address }}</td>
+                    </tr>
+                {% if service %}
+                    <tr >
+                        <td></td>
+                        <td>Service Name</td>
+                        <td>{{ service.display_name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 20px;"></td>
+                        <td>Plugin output</td>
                         <td>
-                            {{ service.long_plugin_output }}
+                            {% if service.long_plugin_output %}
+                            <pre>{{ service.plugin_output }}
+{{ service.long_plugin_output }}</pre>
+                            {% else %}
+                            <pre>{{ service.plugin_output }}</pre>
+                            {% endif %}
                         </td>
                     </tr>
-                </table>
-                <h4>Performance Data</h4>
-                {% if perfdata %}
-                <table border=1>
-                <tr class="alert alert-info">
-                    <th>label</th>
-                    <th>value</th>
-                    <th>warning</th>
-                    <th>critical</th>
-                    <th>unit</th>
-                    <th>min value</th>
-                    <th>max value</th>
-                    <th>status</th>
-                </tr>
-                {% for i in perfdata %}
-                    <tr class="alert alert-{{ i.csstag }}">
-                        <td>{{ i.label }}</td>
-                        <td>{{ i.value }} </td>
-                        <td>{{ i.warn }}  </td>
-                        <td>{{ i.crit }}  </td>
-                        <td> {{ i.uom }}</td>
-                        <td>{{ i.min }}   </td>
-                        <td>{{ i.max }}   </td>
-                        <td><label >{{ i.status }}</label></td>
+                    <tr>
+                        <td></td>
+                        <td>Performance  Data</td>
+                        <td >
+                            {% if perfdata %}
+                                <table border=1 class=table style="border-color: #ffffff;" >
+                                    <tr>
+                                        <th>label</th>
+                                        <th>value</th>
+                                        <th>warn</th>
+                                        <th>crit</th>
+                                        <th>unit</th>
+                                        <th>min</th>
+                                        <th>max</th>
+                                        <th>status</th>
+                                    </tr>
+                                    {% for i in perfdata %}
+                                        <tr class="state_{{ i.get_status }}">
+                                            <td>{{ i.label }}</td>
+                                            <td>{{ i.value }} </td>
+                                            <td>{{ i.warn }}  </td>
+                                            <td>{{ i.crit }}  </td>
+                                            <td> {{ i.uom }}</td>
+                                            <td>{{ i.min }}   </td>
+                                            <td>{{ i.max }}   </td>
+                                            <td><label >{{ i.status }}</label></td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            {% else %}
+                                No Perfdata available.
+                            {% endif %}
+
+                        </td>
                     </tr>
-                {% endfor %}
-                </table>
-                {% else %}
-                No Perfdata available.
                 {% endif %}
-            {% endif %}
+
+                </table>
     {% endif %}
+    </div>
 
-
+    <div class="tab-pane" id="other">
+        <h4>Information available via livestatus</h4>:
+        <table class=table>
+            {% for k,v in service.items %}
+            <tr>
+                <td>                {{ k }}
+                </td>
+                <td>
+                {{ v }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="tab-pane" id="macros_tab">
+        This is the macros tab
+    </div>
+    </div>
 {% endblock %}
 
-{% block header %} {{ block.super }} {% endblock %}
+{% block header %}
+    {{ block.super }}
+    <style>
+    .table th, .table td {
+      line-height: 10px;
+    }
+    </style>
+    <style>
+        .state_0 {
+            background-color: #DFF0D8;
+            border-color: #D6E9C6;
+        }
+        .state_1 {
+            background-color: #FCF8E3;
+        }
+        .state_2 {
+            background-color: #EED3D7;
+            color: #B94A48;
+        }
+        .state_3 {
+            background-color: #d3d3d3;
+        }
+        .table td {
+            line-height: 10px;
+        }
+    </style>
+{% endblock %}
 
 {% block sidebar %}
     {% if services %}
         <table class="table" style="margin:0px; padding:0px; height:10px">
-            <h5>Services</h5>
+            <h5>Actions</h5>
+            <ul class="nav nav-list">
+                <li><a href="{% url misc.views.status %}">Reschedule check of this service</a></li>
+                <li><a href="{% url misc.views.status %}">Acknowledge Problem</a></li>
+                <li><a href="{% url misc.views.status %}">Downtime</a></li>
+                <li></li>
+                <li><a href="{% url misc.views.status %}">Edit this service</a></li>
+            </ul>
+            <h5>Services on this host</h5>
             {% for i in services %}
                 <tr>
-                    {% if i.current_state == "0" %}
+                    {% if i.state == 0 %}
                         <td class="alert alert-success" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
                     {% endif %}
-                    {% if i.current_state == "1" %}
+                    {% if i.state == 1 %}
                         <td class="alert alert-warning" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
                     {% endif %}
-                    {% if i.current_state == "2" %}
+                    {% if i.state == 2 %}
                         <td class="alert alert-danger" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
                     {% endif %}
-                    {% if i.current_state == "3" %}
+                    {% if i.state == 3 %}
                         <td class="" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
                     {% endif %}
-                    <a href="{% url misc.views.status_host i.host_name i.service_description %}">
-                        {{ i.service_description }}
+                    <a href="{% url misc.views.status_host i.host_name i.description %}">
+                        {{ i.description }}
                     </a>
                     </td>
                 </tr>

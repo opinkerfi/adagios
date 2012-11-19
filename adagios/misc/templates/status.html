@@ -11,44 +11,70 @@
 
     <table class="table" style="line-height:6px; font-size:12px;">
     {% for host in hosts %}
-            <tr style="line-height:10px;" class="alert alert-{{ host.status }}">
-                <th style="line-height:5px; padding-right: 0px;"  >
-                    <a href="{% url misc.views.status_host host.host_name %}">
-                        {{ host.host_name }}
+            <tr style="line-height:10px;" class="state_{{ host.state }}">
+                <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
+                    <a href="{% url misc.views.status_host host.name %}">
+                        {{ host.name }}
                     </a>
                 </th>
-                <th style="padding: 0px;"></th>
-                <th></th>
+                <th colspan=3 style="line-height:5px;">
+                    {{ host.plugin_output }}
+                </th>
             </tr>
             {% for service in host.services %}
-
                 <tr style="line-height:6px;">
-                <td style="line-height:6px;" ></td>
-                <td  style="white-space:nowrap; line-height:6px;" class="alert alert-{{ service.status }}">
-                    <a href="{% url misc.views.status_host service.host_name service.service_description %}">
-                        {{ service.service_description }}
-                    </a>
+                <td></td>
+                <td class=state_{{ service.state }} style="white-space: nowrap; line-height:6px;">
+                    <a href="{% url misc.views.status_host host.name service.description %}">{{ service.description }}</a>
                 </td>
-                <td  style="line-height:6px;" class="alert alert-{{ service.status }}"> {{ service.plugin_output|slice:"80" }}</td>
+                <td class=state_{{ service.state }}>{{ service.plugin_output }}</td>
                 </tr>
             {% endfor %}
+            <tr>
+            <td></td>
+            </tr>
     {% endfor %}
     </table>
 
 
 {% endblock %}
 
-{% block header %} {{ block.super }} {% endblock %}
+
+{% block header %}
+    {{ block.super }}
+    <style>
+        .state_0 {
+            background-color: #DFF0D8;
+            border-color: #D6E9C6;
+        }
+        .state_1 {
+            background-color: #FCF8E3;
+        }
+        .state_2 {
+            background-color: #EED3D7;
+            color: #B94A48;
+        }
+        .state_3 {
+            background-color: #d3d3d3;
+        }
+        .table td {
+            line-height: 10px;
+        }
+    </style>
+
+
+
+{% endblock %}
 
 {% block sidebar %}
     <h5>Go to</h5>
     <ul class="nav nav-list">
         <li><a href="{% url misc.views.status %}">See All</a></li>
-        <li><a href="{% url misc.views.status %}?current_state=1">See Warnings</a></li>
-        <li><a href="{% url misc.views.status %}?current_state=2">See Critical</a></li>
-        <li><a href="{% url misc.views.status %}?not__current_state=0">Problems</a></li>
+        <li><a href="{% url misc.views.status %}?state=1">See Warnings</a></li>
+        <li><a href="{% url misc.views.status %}?state=2">See Critical</a></li>
+        <li><a href="{% url misc.views.status %}?state__isnot=0">Problems</a></li>
 
-        <li><a href="{% url misc.views.status %}?not__current_state=0&has_been_acknowledged=0">Unhandled Problems</a></li>
+        <li><a href="{% url misc.views.status %}?state__isnot=0&has_been_acknowledged=0">Unhandled Problems</a></li>
     </ul>
 
 {% endblock %}

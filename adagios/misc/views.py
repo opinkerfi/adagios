@@ -34,10 +34,10 @@ from subprocess import Popen, PIPE
 import adagios.settings
 from adagios import __version__
 from collections import defaultdict
-state = defaultdict(lambda: "info")
-state["0"] = "success"
-state["1"] = "warning"
-state["2"] = "danger"
+state = defaultdict(lambda: "unknown")
+state[0] = "ok"
+state[1] = "warning"
+state[2] = "critical"
 def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file
@@ -218,29 +218,36 @@ def status(request):
     state["0"] = "success"
     state["1"] = "warning"
     state["2"] = "danger"
-    from pynag import Parsers
-    s = Parsers.status()
-    s.parse()
-    all_hosts = s.data['hoststatus']
-    all_services = s.data['servicestatus']
+    livestatus = pynag.Parsers.mk_livestatus()
+    all_hosts = livestatus.get_hosts()
+
+    #from pynag import Parsers
+    #s = Parsers.status()
+    #s.parse()
+    #all_hosts = s.data['hoststatus']
+    #all_services = s.data['servicestatus']
     services = defaultdict(list)
     hosts = []
+    all_services = livestatus.get_services()
     for service in all_services:
-        service['status'] = state[service['current_state']]
+    #    service['status'] = state[service['state']]
         for k,v in request.GET.items():
-            if k.startswith('not__'):
-                k = k[len('not__'):]
-                if k in service and service[k] == v:
+            if k in service:
+                if str(service[k]) == str(v):
+                    continue
+                else:
                     break
-                continue
-            if k in service and service[k] != v:
-                break
+            elif k.endswith('__isnot') and k[:-1*len("__isnot")] in service:
+                print "got here"
+                if str(service[k[:-1*len("__isnot")]]) == str(v):
+                    break
         else:
-            services[service['host_name']].append( service )
+            services[ service['host_name'] ].append(service)
+    #    services[service['host_name']].append( service )
     for host in all_hosts:
-        if len(services[host['host_name']]) > 0:
-            host['status'] = state[host['current_state']]
-            host['services'] = services[host['host_name']]
+        if len(services[host['name']]) > 0:
+            host['status'] = state[host['state']]
+            host['services'] = services[host['name']]
             hosts.append( host )
     hosts.sort()
     c['services'] = services
@@ -264,36 +271,112 @@ def edit_file(request, filename):
 def status_host(request, host_name, service_description=None):
     c = { }
     c['messages'] = []
-    f = forms.PerfDataForm(initial=request.GET)
-    from pynag import Parsers
-    s = Parsers.status()
-    s.parse()
+    livestatus = pynag.Parsers.mk_livestatus()
+
     c['services'] = services = []
-    all_services = s.data['servicestatus']
+    all_services = livestatus.get_services()
+    all_hosts = livestatus.get_hosts()
     for service in all_services:
+        service['status'] = state[service['state']]
         if service['host_name'] == host_name:
-            service['status'] = state[service['current_state']]
             services.append(service)
-    host = c['host'] = s.get_hoststatus(host_name)
+            if service['description'] == service_description:
+                c['service'] = service
+    for i in all_hosts:
+        if i['name'] == host_name:
+            c['host'] = host = i
     c['host_name'] = host_name
     c['service_description'] = service_description
-    host['status'] = state[host['current_state']]
+    host['status'] = state[host['state']]
     if service_description:
-        c['service'] = i = s.get_servicestatus(host_name, service_description)
         from pynag import Model
-        perfdata = i.get('performance_data', 'a=1')
-
+        perfdata = c['service']['perf_data']
         perfdata = pynag.Utils.PerfData(perfdata)
-        print perfdata.invalid_metrics
         for i in perfdata.metrics:
-            if i.status == "ok":
-                i.csstag = "success"
-            elif i.status == "warning":
-                i.csstag = "warning"
-            elif i.status == "critical":
-                i.csstag = "danger"
-            else:
-                i.csstag = "info"
+            i.status = state[i.get_status()]
         c['perfdata'] = perfdata.metrics
 
+        # Temp hack for livestatus troubleshooting
+        livestatus_keys = []
+        for k,v in service.items():
+            livestatus_keys.append("<tr><td>%s</td><td>%s</td></tr>" % (k,v) )
+        c['livestatus_keys'] = livestatus_keys
+
     return render_to_response('status_host.html', c, context_instance = RequestContext(request))
+
+def status_hostgroup(request, hostgroup_name=None):
+    c = { }
+    c['messages'] = []
+    livestatus = pynag.Parsers.mk_livestatus()
+    hostgroups = livestatus.get_hostgroups()
+    c['hostgroup_name'] = hostgroup_name
+
+    if hostgroup_name is None:
+        c['hostgroups'] = hostgroups
+        c['hosts'] = livestatus.get_hosts()
+    else:
+        my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
+        subgroups = my_hostgroup.hostgroup_members or ''
+        subgroups = subgroups.split(',')
+        # Strip out any group that is not a subgroup of hostgroup_name
+        right_hostgroups = []
+        for group in hostgroups:
+            if group.get('name','') in subgroups:
+                right_hostgroups.append(group)
+        c['hostgroups'] = right_hostgroups
+
+        # If a hostgroup was specified lets also get all the hosts for it
+        c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
+    for host in c['hosts']:
+        ok = host.get('num_services_ok')
+        warn = host.get('num_services_warn')
+        crit = host.get('num_services_crit')
+        pending = host.get('num_services_pending')
+        unknown = host.get('num_services_unknown')
+        total = ok + warn + crit +pending + unknown
+        host['total'] = total
+        host['problems'] = warn + crit + unknown
+        try:
+            total = float(total)
+            host['health'] = float(ok) / total * 100.0
+            host['percent_ok'] = ok/total*100
+            host['percent_warn'] = warn/total*100
+            host['percent_crit'] = crit/total*100
+            host['percent_unknown'] = unknown/total*100
+            host['percent_pending'] = pending/total*100
+        except ZeroDivisionError:
+            host['health'] = 'n/a'
+    # Extra statistics for our hostgroups
+    for hg in c['hostgroups']:
+        ok = hg.get('num_services_ok')
+        warn = hg.get('num_services_warn')
+        crit = hg.get('num_services_crit')
+        pending = hg.get('num_services_pending')
+        unknown = hg.get('num_services_unknown')
+        total = ok + warn + crit +pending + unknown
+        hg['total'] = total
+        hg['problems'] = warn + crit + unknown
+        try:
+            total = float(total)
+            hg['health'] = float(ok) / total * 100.0
+            hg['health'] = float(ok) / total * 100.0
+            hg['percent_ok'] = ok/total*100
+            hg['percent_warn'] = warn/total*100
+            hg['percent_crit'] = crit/total*100
+            hg['percent_unknown'] = unknown/total*100
+            hg['percent_pending'] = pending/total*100
+        except ZeroDivisionError:
+            pass
+    return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
+
+def test_livestatus(request):
+    """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
+    c = { }
+    c['messages'] = []
+    livestatus = pynag.Parsers.mk_livestatus()
+    query = request.GET.get('q') or 'GET hostgroups'
+    c['query'] = query
+
+    c['results'] = livestatus.query(query)
+    c['header'] = c['results'][0].keys()
+    return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
