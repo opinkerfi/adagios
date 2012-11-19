@@ -1,8 +1,8 @@
 {% extends "base_misc.html" %}
 
-{% block title %}{{ host.host_name }}{% endblock %}
-{% block smallheader %}{{ service.host_name }} - {% endblock %}
-{% block largeheader %}{{ service.display_name }} is <span class="state_{{ service.state }}">{{ service.status }}</span>{% endblock %}
+{% block title %}{{ my_object.display_name }}{% endblock %}
+{% block smallheader %}{{ host.display_name }} {% endblock %}
+{% block largeheader %}<span class="state_{{ my_object.state }}">{{ service.display_name }} is {{ my_object.status }}</span>{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
@@ -12,39 +12,41 @@
         <li><a href="#general" data-toggle="tab">General</a></li>
         <li><a href="#information" data-toggle="tab">Information</a></li>
         <li><a href="#events" data-toggle="tab">History</a></li>
-        <li><a href="#macros_tab" data-toggle="tab">Macros</a></li>
+        <li><a href="#custom_variables" data-toggle="tab">Custom Variables</a></li>
         <li><a href="#other" data-toggle="tab">Misc</a></li>
     </ul>
     <div class="tab-content">
 
     <div class="tab-pane" id="general">
-    {% if host %}
+    {% if my_object %}
                 <table class="table">
                     <tr >
                         <td></td>
                         <td>Host Name</td>
-                        <td>{{ host.name }}</td>
+                        <td><a href="{% url status.views.status_detail host.name %}">{{ host.display_name }}</a></td>
                     </tr>
                     <tr >
                         <td></td>
                         <td>Host Address</td>
                         <td>{{ host.address }}</td>
                     </tr>
-                {% if service %}
+                    {% if service %}
                     <tr >
                         <td></td>
                         <td>Service Name</td>
                         <td>{{ service.display_name }}</td>
                     </tr>
+                    {% endif %}
+
                     <tr>
                         <td style="width: 20px;"></td>
                         <td>Plugin output</td>
                         <td>
-                            {% if service.long_plugin_output %}
-                            <pre>{{ service.plugin_output }}
-{{ service.long_plugin_output }}</pre>
+                            {% if my_object.long_plugin_output %}
+                            <pre>{{ my_object.plugin_output }}
+{{ my_object.long_plugin_output }}</pre>
                             {% else %}
-                            <pre>{{ service.plugin_output }}</pre>
+                            <pre>{{ my_object.plugin_output }}</pre>
                             {% endif %}
                         </td>
                     </tr>
@@ -75,7 +77,7 @@
                                             <td>{{ i.min }}   </td>
                                             <td>{{ i.max }}   </td>
                                             <td><label >{{ i.status }}</label></td>
-                                            <td><a href="{{ service.action_url_expanded }}"><i class="glyph glyph-charts"></i></a></td>
+                                            <td><a href="{{ my_object.action_url_expanded }}"><i class="glyph glyph-charts"></i></a></td>
                                         </tr>
                                     {% endfor %}
                                 </table>
@@ -85,7 +87,7 @@
 
                         </td>
                     </tr>
-                {% endif %}
+
 
                 </table>
     {% endif %}
@@ -94,7 +96,7 @@
     <div class="tab-pane" id="other">
         <h4>Information available via livestatus</h4>:
         <table class=table>
-            {% for k,v in service.items %}
+            {% for k,v in my_object.items %}
             <tr>
                 <td>                {{ k }}
                 </td>
@@ -111,50 +113,74 @@
             <tr>
                 <td>External Links </td>
                 <td>
-                    {% if service.notes_url_expanded %}
-                        <a href="{{ service.notes_url_expanded }}">notes</a>
+                    {% if my_object.notes_url_expanded %}
+                        <a href="{{ my_object.notes_url_expanded }}">notes</a>
                     {% endif %}
-                    {% if service.action_url_expanded %}
-                        <a href="{{ service.action_url_expanded }}">actions</a>
+                    {% if my_object.action_url_expanded %}
+                        <a href="{{ my_object.action_url_expanded }}">actions</a>
                     {% endif %}
             </tr>
             <tr></tr>
             <tr>
-                <td>Notes</td>
-                <td><textarea cols="100" rows=5 name="notes">define host {
-                    host_name			10.199.10.254
-                    use				check_mk_host
-                    address			10.199.10.254
-                    _TAGS				snmp
-                    hostgroups			+check_mk
-                    alias				10.199.10.254
-                    }{{ service.notes }}</textarea></td>
+                <td>
+                <label for="id_notes">Notes</label>
+                </td>
+                <td><textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
             </tr>
         </table>
         <hr>
-        This check is executed every {{ service.check_interval }} minutes. When a problem occurs it will check {{ service.max_check_attempts }} times every {{ service.retry_interval }} minutes before going to hard state and start sending out notifications.
+        This check is executed every <a href="#">{{ my_object.check_interval }}</a> minutes.
+
+        When a problem occurs it will check <a href="#">{{ my_object.max_check_attempts }}</a> times
+
+        every <a href="#">{{ my_object.retry_interval }}</a> minutes before going to
+        hard state and start sending out notifications.
         <table class=table>
             <tr>
                 <td>Last Check</td>
-                <td>{{ service.last_check }}</td>
+                <td>{{ my_object.last_check }}</td>
             </tr>
             <tr>
                 <td>Next Check</td>
-                <td>{{ service.next_check }} <button class="button">Check now</button></td>
+                <td>{{ my_object.next_check }} <i class="glyph-refresh" title="Reschedule this check to run right now"></i></td>
             </tr>
             <tr>
                 <td>Check Period</td>
-                <td>{{ service.check_period }}</td>
+                <td><a href="/objectbrowser/edit/timeperiod/{{ my_object.check_period }}">{{ my_object.check_period }}</a></td>
             </tr>
             <tr>
                 <td>Notification Period</td>
-                <td>{{ service.notification_period }}</td>
+                <td><a href="/objectbrowser/edit/timeperiod/{{ my_object.notification_period }}">{{ my_object.notification_period }}</a></td>
             </tr>
         </table>
     </div>
 
-    <div class="tab-pane" id="macros_tab">
-        This is the macros tab
+    <div class="tab-pane" id="custom_variables">
+        Some checks have custom variables defined. These can be defined for example to define warning/critical thresholds
+        for custom plugins.
+        <p></p>
+        {% if my_object.custom_variables %}
+        <table class="table">
+            <tr>
+                <th>
+                    Variable Name
+                </th>
+                <th>
+                    Value
+                </th>
+            </tr>
+            {% for k,v in my_object.custom_variables.items %}
+                <tr>
+                <td>{{ k }}</td>
+                <td>
+                    <input name="{{ k }}" value="{{ v }}"/>
+                </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        This check has no custom variables defined.
+        {% endif %}
     </div>
         <div class="tab-pane" id="events">
             Last {{ log|length }} log entries:
@@ -200,42 +226,31 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% if services %}
-        <table class="table" style="margin:0px; padding:0px; height:10px">
+    {% if host.services_with_info %}
             <h5>Actions</h5>
-            <ul class="nav nav-list">
-                <li><a href="{% url misc.views.status %}">Reschedule check of this service</a></li>
-                <li><a href="{% url misc.views.status %}">Acknowledge Problem</a></li>
-                <li><a href="{% url misc.views.status %}">Downtime</a></li>
-                <li></li>
-                <li><a href="{% url misc.views.status %}">Edit this service</a></li>
+            <ul class="nav nav-list" style="white-space: nowrap;">
+                <li><a href="{% url status.views.status %}"><i class="glyph-edit"> </i> Configure this object</a></li>
+                <li><hr></li>
+                <li><a href="{% url status.views.status %}"><i class="glyph-refresh"> </i> Reschedule Check</a></li>
+                <li><a href="{% url status.views.status %}"><i class="glyph-ok-2"> </i> Acknowledge Problem</a></li>
+                <li><a href="{% url status.views.status %}"><i class="glyph-alarm"> </i> Downtime</a></li>
             </ul>
             <h5>Services on this host</h5>
-            {% for i in services %}
+            <table class="table" style="margin:0px; padding:0px; height:10px">
+            {% for i in host.services_with_info %}
                 <tr>
-                    {% if i.state == 0 %}
-                        <td class="alert alert-success" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    {% if i.state == 1 %}
-                        <td class="alert alert-warning" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    {% if i.state == 2 %}
-                        <td class="alert alert-danger" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    {% if i.state == 3 %}
-                        <td class="" style="margin-bottom:0; height:10px; line-height:5px; height:5px; font-size:13px;">
-                    {% endif %}
-                    <a href="{% url misc.views.status_host i.host_name i.description %}">
-                        {{ i.description }}
-                    </a>
+                    <td class="state_{{ i.1 }}">
+                        <a title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
+                            {{ i.0 }}
+                        </a>
                     </td>
                 </tr>
             {% endfor %}
-        </table>
+            </table>
     {% endif %}
     <h5>See also</h5>
     <ul class="nav nav-list">
-        <li><a href="{% url misc.views.status %}">All Hosts</a></li>
+        <li><a href="{% url status.views.status %}">All Hosts</a></li>
     </ul>
 
 

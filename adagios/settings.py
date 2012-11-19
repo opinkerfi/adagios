@@ -105,6 +105,7 @@ INSTALLED_APPS = [
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
+    'adagios.status',
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',

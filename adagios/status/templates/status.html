@@ -13,7 +13,7 @@
     {% for host in hosts %}
             <tr style="line-height:10px;" class="state_{{ host.state }}">
                 <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
-                    <a href="{% url misc.views.status_host host.name %}">
+                    <a href="{% url status.views.status_detail host.name %}">
                         {{ host.name }}
                     </a>
                 </th>
@@ -25,7 +25,7 @@
                 <tr style="line-height:6px;">
                 <td></td>
                 <td class=state_{{ service.state }} style="white-space: nowrap; line-height:6px;">
-                    <a href="{% url misc.views.status_host host.name service.description %}">{{ service.description }}</a>
+                    <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
                 </td>
                 <td class=state_{{ service.state }}>{{ service.plugin_output }}</td>
                 </tr>
@@ -69,12 +69,12 @@
 {% block sidebar %}
     <h5>Go to</h5>
     <ul class="nav nav-list">
-        <li><a href="{% url misc.views.status %}">See All</a></li>
-        <li><a href="{% url misc.views.status %}?state=1">See Warnings</a></li>
-        <li><a href="{% url misc.views.status %}?state=2">See Critical</a></li>
-        <li><a href="{% url misc.views.status %}?state__isnot=0">Problems</a></li>
+        <li><a href="{% url status.views.status %}">See All</a></li>
+        <li><a href="{% url status.views.status %}?state=1">See Warnings</a></li>
+        <li><a href="{% url status.views.status %}?state=2">See Critical</a></li>
+        <li><a href="{% url status.views.status %}?state__isnot=0">Problems</a></li>
 
-        <li><a href="{% url misc.views.status %}?state__isnot=0&has_been_acknowledged=0">Unhandled Problems</a></li>
+        <li><a href="{% url status.views.status %}?state__isnot=0&has_been_acknowledged=0">Unhandled Problems</a></li>
     </ul>
 
 {% endblock %}

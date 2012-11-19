@@ -17,13 +17,17 @@
 
 
                     <!-- Object Browser -->
+                    <li>
+                        <a href="{% url status.views.status_hostgroup %}"><i class="glyph-white glyph-table"></i> Status</a>
+                    </li>
+
                     <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
-                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-white glyph-table"></i> Object Browser</a>
+                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-white glyph-edit"></i> Configure</a>
                     </li>
 
                     <!-- Nagios -->
                     <li>
-                        <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i>Monitor</a>
+                        <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i> Nagios</a>
                     </li>
 
                     <!-- Any extra plugins can put an entry in the menubar -->

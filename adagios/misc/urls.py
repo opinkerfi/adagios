@@ -9,13 +9,6 @@ urlpatterns = patterns('',
     (r'^/service/?', 'misc.views.nagios_service'),
     (r'^/map/?', 'misc.views.map'),
     (r'^/pnp4nagios/?', 'misc.views.pnp4nagios'),
-    (r'^/status/host/?$', 'misc.views.status'),
-    (r'^/status/hostgroup/?$', 'misc.views.status_hostgroup'),
-    (r'^/status/?$', 'misc.views.status_hostgroup'),
-    (r'^/status/hostgroup/(?P<hostgroup_name>.+)/?$', 'misc.views.status_hostgroup'),
-    (r'^/status/(?P<host_name>.+)/(?P<service_description>.+)/?$', 'misc.views.status_host'),
-    (r'^/status/(?P<host_name>.+)$', 'misc.views.status_host'),
     (r'^/editfile(?P<filename>.+)$', 'misc.views.edit_file'),
-    (r'^/livestatus/?$', 'misc.views.test_livestatus'),
 )
  
