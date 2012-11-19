@@ -289,18 +289,15 @@ def status_host(request, host_name, service_description=None):
     c['service_description'] = service_description
     host['status'] = state[host['state']]
     if service_description:
-        from pynag import Model
         perfdata = c['service']['perf_data']
         perfdata = pynag.Utils.PerfData(perfdata)
         for i in perfdata.metrics:
             i.status = state[i.get_status()]
         c['perfdata'] = perfdata.metrics
 
-        # Temp hack for livestatus troubleshooting
-        livestatus_keys = []
-        for k,v in service.items():
-            livestatus_keys.append("<tr><td>%s</td><td>%s</td></tr>" % (k,v) )
-        c['livestatus_keys'] = livestatus_keys
+        # Get the event log
+        c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % service['host_name'])
+
 
     return render_to_response('status_host.html', c, context_instance = RequestContext(request))
 

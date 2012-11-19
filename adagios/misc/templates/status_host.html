@@ -10,6 +10,8 @@
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
         <li><a href="#general" data-toggle="tab">General</a></li>
+        <li><a href="#information" data-toggle="tab">Information</a></li>
+        <li><a href="#events" data-toggle="tab">History</a></li>
         <li><a href="#macros_tab" data-toggle="tab">Macros</a></li>
         <li><a href="#other" data-toggle="tab">Misc</a></li>
     </ul>
@@ -61,6 +63,7 @@
                                         <th>min</th>
                                         <th>max</th>
                                         <th>status</th>
+                                        <th>pnp</th>
                                     </tr>
                                     {% for i in perfdata %}
                                         <tr class="state_{{ i.get_status }}">
@@ -72,6 +75,7 @@
                                             <td>{{ i.min }}   </td>
                                             <td>{{ i.max }}   </td>
                                             <td><label >{{ i.status }}</label></td>
+                                            <td><a href="{{ service.action_url_expanded }}"><i class="glyph glyph-charts"></i></a></td>
                                         </tr>
                                     {% endfor %}
                                 </table>
@@ -101,9 +105,69 @@
             {% endfor %}
         </table>
     </div>
+
+    <div class="tab-pane" id="information">
+        <table class="table">
+            <tr>
+                <td>External Links </td>
+                <td>
+                    {% if service.notes_url_expanded %}
+                        <a href="{{ service.notes_url_expanded }}">notes</a>
+                    {% endif %}
+                    {% if service.action_url_expanded %}
+                        <a href="{{ service.action_url_expanded }}">actions</a>
+                    {% endif %}
+            </tr>
+            <tr></tr>
+            <tr>
+                <td>Notes</td>
+                <td><textarea cols="100" rows=5 name="notes">define host {
+                    host_name			10.199.10.254
+                    use				check_mk_host
+                    address			10.199.10.254
+                    _TAGS				snmp
+                    hostgroups			+check_mk
+                    alias				10.199.10.254
+                    }{{ service.notes }}</textarea></td>
+            </tr>
+        </table>
+        <hr>
+        This check is executed every {{ service.check_interval }} minutes. When a problem occurs it will check {{ service.max_check_attempts }} times every {{ service.retry_interval }} minutes before going to hard state and start sending out notifications.
+        <table class=table>
+            <tr>
+                <td>Last Check</td>
+                <td>{{ service.last_check }}</td>
+            </tr>
+            <tr>
+                <td>Next Check</td>
+                <td>{{ service.next_check }} <button class="button">Check now</button></td>
+            </tr>
+            <tr>
+                <td>Check Period</td>
+                <td>{{ service.check_period }}</td>
+            </tr>
+            <tr>
+                <td>Notification Period</td>
+                <td>{{ service.notification_period }}</td>
+            </tr>
+        </table>
+    </div>
+
     <div class="tab-pane" id="macros_tab">
         This is the macros tab
     </div>
+        <div class="tab-pane" id="events">
+            Last {{ log|length }} log entries:
+            <table style="font-size: 80%;" class=table>
+                {% for line in log %}
+                    <tr class="state_{{ line.state }}">
+                    <td>{{ line.time }}</td>
+                    <td><div>{{ line.type }}</div></td>
+                    <td><div>{{ line.options }}</div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 {% endblock %}
 
