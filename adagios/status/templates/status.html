@@ -1,8 +1,8 @@
 {% extends "base_misc.html" %}
 
 {% block title %}{{ block.super }}{% endblock %}
-{% block smallheader %}{{ block.super }}{% endblock %}
-{% block largeheader %}Perfdata Analyzer{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Service List{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
@@ -18,21 +18,19 @@
                     </a>
                 </th>
                 <th colspan=3 style="line-height:5px;">
-                    {{ host.plugin_output }}
+                    <!-- {{ host.plugin_output }} -->
                 </th>
             </tr>
             {% for service in host.services %}
                 <tr style="line-height:6px;">
                 <td></td>
-                <td class=state_{{ service.state }} style="white-space: nowrap; line-height:6px;">
+                <td  style="white-space: nowrap; line-height:6px;">
                     <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
                 </td>
-                <td class=state_{{ service.state }}>{{ service.plugin_output }}</td>
+                <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
+                <td>{{ service.plugin_output }}</td>
                 </tr>
             {% endfor %}
-            <tr>
-            <td></td>
-            </tr>
     {% endfor %}
     </table>
 

@@ -33,6 +33,10 @@ from subprocess import Popen, PIPE
 import adagios.settings
 from adagios import __version__
 from collections import defaultdict
+
+livestatus = pynag.Parsers.mk_livestatus()
+livestatus.test()
+
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
@@ -42,10 +46,6 @@ def status(request):
     c = {}
     c['messages'] = []
     from collections import defaultdict
-    state = defaultdict(lambda: "info")
-    state["0"] = "success"
-    state["1"] = "warning"
-    state["2"] = "danger"
     livestatus = pynag.Parsers.mk_livestatus()
     all_hosts = livestatus.get_hosts()
 
@@ -70,6 +70,7 @@ def status(request):
                 if str(service[k[:-1*len("__isnot")]]) == str(v):
                     break
         else:
+            service['status'] = state[service['state']]
             services[ service['host_name'] ].append(service)
     #    services[service['host_name']].append( service )
     for host in all_hosts:
@@ -130,7 +131,6 @@ def status_detail(request, host_name, service_description=None):
 def status_hostgroup(request, hostgroup_name=None):
     c = { }
     c['messages'] = []
-    livestatus = pynag.Parsers.mk_livestatus()
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
 

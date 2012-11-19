@@ -40,7 +40,7 @@
 
                     <tr>
                         <td style="width: 20px;"></td>
-                        <td>Plugin output</td>
+                        <td>Check output</td>
                         <td>
                             {% if my_object.long_plugin_output %}
                             <pre>{{ my_object.plugin_output }}
@@ -142,15 +142,20 @@
             </tr>
             <tr>
                 <td>Next Check</td>
-                <td>{{ my_object.next_check }} <i class="glyph-refresh" title="Reschedule this check to run right now"></i></td>
+                <td>{{ my_object.next_check }}<a href="#"><i class="glyph-refresh" title="Reschedule this check to run right now"></i></a></td>
             </tr>
             <tr>
                 <td>Check Period</td>
-                <td><a href="/objectbrowser/edit/timeperiod/{{ my_object.check_period }}">{{ my_object.check_period }}</a></td>
+                <td>
+                    {% if my_object.check_period %}
+                    <a href="{% url edit_by_shortname "timeperiod" my_object.check_period %}">{{ my_object.check_period }}</a></td>
+                    {% else %}
+                    Unknown
+                    {% endif %}
             </tr>
             <tr>
                 <td>Notification Period</td>
-                <td><a href="/objectbrowser/edit/timeperiod/{{ my_object.notification_period }}">{{ my_object.notification_period }}</a></td>
+                <td><a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a></td>
             </tr>
         </table>
     </div>
