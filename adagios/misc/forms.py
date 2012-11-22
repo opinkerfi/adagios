@@ -152,7 +152,7 @@ class PNPActionUrlForm(forms.Form):
                 i.action_url = action_url
                 try:
                     i.save()
-                except:
+                except Exception:
                     self.error_services += 1
 
 class PNPTemplatesForm(forms.Form):

@@ -34,9 +34,6 @@ import adagios.settings
 from adagios import __version__
 from collections import defaultdict
 
-livestatus = pynag.Parsers.mk_livestatus()
-livestatus.test()
-
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
@@ -46,19 +43,17 @@ def status(request):
     c = {}
     c['messages'] = []
     from collections import defaultdict
-    livestatus = pynag.Parsers.mk_livestatus()
+    authuser = request.GET.get('contact_name', None)
+    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
     all_hosts = livestatus.get_hosts()
+    all_services = livestatus.get_services()
+    all_contacts = livestatus.get_contacts()
+    c['contacts'] = all_contacts
+    c['current_contact'] = authuser
 
-    #from pynag import Parsers
-    #s = Parsers.status()
-    #s.parse()
-    #all_hosts = s.data['hoststatus']
-    #all_services = s.data['servicestatus']
     services = defaultdict(list)
     hosts = []
-    all_services = livestatus.get_services()
     for service in all_services:
-    #    service['status'] = state[service['state']]
         for k,v in request.GET.items():
             if k in service:
                 if str(service[k]) == str(v):
@@ -66,7 +61,6 @@ def status(request):
                 else:
                     break
             elif k.endswith('__isnot') and k[:-1*len("__isnot")] in service:
-                print "got here"
                 if str(service[k[:-1*len("__isnot")]]) == str(v):
                     break
         else:
@@ -89,19 +83,24 @@ def status_detail(request, host_name, service_description=None):
     c['messages'] = []
     c['errors'] = []
     livestatus = pynag.Parsers.mk_livestatus()
+    c['pnp_url'] = adagios.settings.pnp_url
 
     try:
         c['host'] = my_host = livestatus.get_host(host_name)
+        my_host['object_type'] = 'host'
     except IndexError:
         c['errors'].append("Could not find any host named '%s'"%host_name)
         return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
 
     if service_description is None:
         primary_object = my_host
+        c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name)
     else:
         try:
             c['service'] = my_service = livestatus.get_service(host_name,service_description)
+            my_service['object_type'] = 'service'
             primary_object = my_service
+            c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name, 'Filter: description = %s' % service_description)
         except IndexError:
             c['errors'].append("Could not find any service named '%s'"%service_description)
             return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
@@ -118,12 +117,11 @@ def status_detail(request, host_name, service_description=None):
 
     perfdata = primary_object['perf_data']
     perfdata = pynag.Utils.PerfData(perfdata)
-    for i in perfdata.metrics:
-        i.status = state[i.get_status()]
+    for i,datum in enumerate(perfdata.metrics):
+        datum.i = i
+        datum.status = state[datum.get_status()]
     c['perfdata'] = perfdata.metrics
 
-    # Get the event log
-    c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name)
 
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
@@ -131,6 +129,7 @@ def status_detail(request, host_name, service_description=None):
 def status_hostgroup(request, hostgroup_name=None):
     c = { }
     c['messages'] = []
+    livestatus = pynag.Parsers.mk_livestatus()
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
 
@@ -196,10 +195,32 @@ def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
     c = { }
     c['messages'] = []
-    livestatus = pynag.Parsers.mk_livestatus()
-    query = request.GET.get('q') or 'GET hostgroups'
-    c['query'] = query
+    c['table'] = table = request.GET.get('table')
 
-    c['results'] = livestatus.query(query)
-    c['header'] = c['results'][0].keys()
+    livestatus = pynag.Parsers.mk_livestatus()
+    if table is not None:
+        columns = livestatus.query('GET columns', 'Filter: table = %s' % table)
+        c['columns'] = columns
+
+        columns = ""
+        limit = request.GET.get('limit')
+        run_query = False
+        for k,v in request.GET.items():
+            if k == "submit":
+                run_query = True
+            if k.startswith('check_'):
+                columns += " " + k[len("check_"):]
+        # Any columns checked means we return a query
+        query = []
+        query.append( 'GET %s' % table )
+        if len(columns) > 0:
+            query.append("Columns: %s" % columns)
+        if limit != '' and limit > 0:
+            query.append( "Limit: %s" % limit )
+        if run_query == True:
+            c['results'] = livestatus.query(*query)
+            c['query'] = livestatus.last_query
+            c['header'] = c['results'][0].keys()
+
     return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
+

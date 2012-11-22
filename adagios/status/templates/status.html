@@ -8,7 +8,21 @@
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
 {% block content %}
+    <form action="#" method="get" class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="id_contact_name">View as contact:</label>
+            <div class="controls" id="contact_name_field">
+                <select name="contact_name" id="id_contact_name">
+                    <option value=""></option>
+                    {% for i in contacts %}
+                        <option value="{{ i.name }}" {% if i.name == current_contact  %}selected="selected"{% endif %}>{{ i.name }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary" type="submit">Submit</button>
 
+            </div>
+        </div>
+    </form>
     <table class="table" style="line-height:6px; font-size:12px;">
     {% for host in hosts %}
             <tr style="line-height:10px;" class="state_{{ host.state }}">
@@ -46,11 +60,10 @@
             border-color: #D6E9C6;
         }
         .state_1 {
-            background-color: #FCF8E3;
+            background-color: #FCEFB0;
         }
         .state_2 {
             background-color: #EED3D7;
-            color: #B94A48;
         }
         .state_3 {
             background-color: #d3d3d3;
@@ -72,7 +85,7 @@
         <li><a href="{% url status.views.status %}?state=2">See Critical</a></li>
         <li><a href="{% url status.views.status %}?state__isnot=0">Problems</a></li>
 
-        <li><a href="{% url status.views.status %}?state__isnot=0&has_been_acknowledged=0">Unhandled Problems</a></li>
+        <li><a href="{% url status.views.status %}?state__isnot=0&acknowledged=0">Unhandled Problems</a></li>
     </ul>
 
 {% endblock %}

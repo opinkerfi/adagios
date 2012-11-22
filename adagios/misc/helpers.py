@@ -84,7 +84,7 @@ def delete_object(object_id, cascade=False):
         o = Model.ObjectDefinition.objects.get_by_id(id)
         o.delete(cascade=cascade)
         return True
-    except:
+    except Exception:
         return False
 def get_host_names(invalidate_cache=False):
     """ Returns a list of all hosts """

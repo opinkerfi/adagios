@@ -2,7 +2,9 @@
 
 {% block title %}{{ my_object.display_name }}{% endblock %}
 {% block smallheader %}{{ host.display_name }} {% endblock %}
-{% block largeheader %}<span class="state_{{ my_object.state }}">{{ service.display_name }} is {{ my_object.status }}</span>{% endblock %}
+{% block largeheader %}
+    <span class="state_{{ my_object.state }}">{{ service.display_name }} is {{ my_object.status }}</span>
+{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
@@ -12,6 +14,7 @@
         <li><a href="#general" data-toggle="tab">General</a></li>
         <li><a href="#information" data-toggle="tab">Information</a></li>
         <li><a href="#events" data-toggle="tab">History</a></li>
+        <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
         <li><a href="#custom_variables" data-toggle="tab">Custom Variables</a></li>
         <li><a href="#other" data-toggle="tab">Misc</a></li>
     </ul>
@@ -77,7 +80,9 @@
                                             <td>{{ i.min }}   </td>
                                             <td>{{ i.max }}   </td>
                                             <td><label >{{ i.status }}</label></td>
-                                            <td><a href="{{ my_object.action_url_expanded }}"><i class="glyph glyph-charts"></i></a></td>
+                                            <td>
+                                                <a href="{{ pnp_url }}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </table>
@@ -194,10 +199,22 @@
                     <tr class="state_{{ line.state }}">
                     <td>{{ line.time }}</td>
                     <td><div>{{ line.type }}</div></td>
-                    <td><div>{{ line.options }}</div></td>
+                    <td>
+                        <div>{{ line.options }}</div></td>
                     </tr>
                 {% endfor %}
             </table>
+        </div>
+        <div class="tab-pane" id="graphs">
+                {% if perfdata %}
+                {% for i in perfdata %}
+                    <a href="{{ pnp_url }}/graph?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}">
+                        <img src="{{ pnp_url }}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}"/>
+                    </a>
+                {% endfor %}
+                {% else %}
+                No Performance data is available for this {{ my_object.object_type }}.
+                {% endif %}
         </div>
     </div>
 {% endblock %}
@@ -219,7 +236,7 @@
         }
         .state_2 {
             background-color: #EED3D7;
-            color: #B94A48;
+            #color: #B94A48;
         }
         .state_3 {
             background-color: #d3d3d3;
@@ -227,14 +244,29 @@
         .table td {
             line-height: 10px;
         }
+        #preview{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:5px;
+            display:none;
+            color:#fff;
+        }
+
+
     </style>
+
+    <!-- This is for pnp4nagios popover functions -->
+    <script src="{% url media path="pnp/js/jquery.js" %}" type="text/javascript"></script>
+    <script src="{% url media path="pnp/js/main.js" %}" type="text/javascript"></script>
+
 {% endblock %}
 
 {% block sidebar %}
     {% if host.services_with_info %}
             <h5>Actions</h5>
             <ul class="nav nav-list" style="white-space: nowrap;">
-                <li><a href="{% url status.views.status %}"><i class="glyph-edit"> </i> Configure this object</a></li>
+                <li><a href=" url edit_by_shortname my_object.object_type my_object.name %}"><i class="glyph-edit"> </i> Configure this object</a></li>
                 <li><hr></li>
                 <li><a href="{% url status.views.status %}"><i class="glyph-refresh"> </i> Reschedule Check</a></li>
                 <li><a href="{% url status.views.status %}"><i class="glyph-ok-2"> </i> Acknowledge Problem</a></li>
@@ -262,4 +294,6 @@
 {% endblock %}
 
 
-{% block footer %} {{ block.super }} {% endblock %}
+{% block footer %}
+    {{ block.super }}
+{% endblock %}

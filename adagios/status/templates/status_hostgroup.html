@@ -180,11 +180,11 @@
     <h5>Go to</h5>
     <ul class="nav nav-list">
         <li><a href="{% url status.views.status %}">See All</a></li>
-        <li><a href="{% url status.views.status %}?current_state=1">See Warnings</a></li>
-        <li><a href="{% url status.views.status %}?current_state=2">See Critical</a></li>
-        <li><a href="{% url status.views.status %}?not__current_state=0">Problems</a></li>
+        <li><a href="{% url status.views.status %}?state=1">See Warnings</a></li>
+        <li><a href="{% url status.views.status %}?state=2">See Critical</a></li>
+        <li><a href="{% url status.views.status %}?state__isnot=0">Problems</a></li>
 
-        <li><a href="{% url status.views.status %}?not__current_state=0&has_been_acknowledged=0">Unhandled Problems</a></li>
+        <li><a href="{% url status.views.status %}?state__isnot=0&acknowledged=0">Unhandled Problems</a></li>
     </ul>
 
 {% endblock %}
