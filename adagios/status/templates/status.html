@@ -1,54 +1,192 @@
 {% extends "base_misc.html" %}
 
 {% block title %}{{ block.super }}{% endblock %}
-{% block smallheader %}{% endblock %}
-{% block largeheader %}Service List{% endblock %}
-{% block nav1 %}{{ block.super }}{% endblock %}
-
-{% block adagios_hausinn %}{{ block.super }}{% endblock %}
-
-{% block content %}
-    <form action="#" method="get" class="form-horizontal">
+{% block adagios_hausinn %}
+    <div class="" style="padding-top: 20px">
+    <form action="" action="get" class="form-horizontal">
         <div class="control-group">
-            <label class="control-label" for="id_contact_name">View as contact:</label>
-            <div class="controls" id="contact_name_field">
-                <select name="contact_name" id="id_contact_name">
+
+            <div class="controls" style="padding-bottom: 0;" id="address_field">
+
+                <select style="width: 200px;" placeholder="View as contact..." name="contact_name" id="id_contact_name">
                     <option value=""></option>
                     {% for i in contacts %}
                         <option value="{{ i.name }}" {% if i.name == current_contact  %}selected="selected"{% endif %}>{{ i.name }}</option>
                     {% endfor %}
                 </select>
-                <button class="btn btn-primary" type="submit">Submit</button>
 
+                <input name="q" style="line-height: 22px;" placeholder="Search for hosts,services, etc..." />
+
+                <button type="submit" class='btn add-on btn-info'>
+                    <i class="icon-white icon-search"></i>
+                </button>
             </div>
         </div>
     </form>
-    <table class="table" style="line-height:6px; font-size:12px;">
-    {% for host in hosts %}
-            <tr style="line-height:10px;" class="state_{{ host.state }}">
-                <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
-                    <a href="{% url status.views.status_detail host.name %}">
-                        {{ host.name }}
-                    </a>
-                </th>
-                <th colspan=3 style="line-height:5px;">
-                    <!-- {{ host.plugin_output }} -->
-                </th>
-            </tr>
-            {% for service in host.services %}
-                <tr style="line-height:6px;">
-                <td></td>
-                <td  style="white-space: nowrap; line-height:6px;">
-                    <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
-                </td>
-                <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
-                <td>{{ service.plugin_output }}</td>
-                </tr>
+    </div>
+{% endblock %}
+{% block largeheader %}
+{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+
+
+{% block content %}
+    <ul class="nav nav-tabs" id="objecttab">
+        <li><a href="#unhandled_problems" data-toggle="tab">Open Problems</a></li>
+        <li><a href="#all_problems" data-toggle="tab">Problems</a></li>
+        <li><a href="#all_checks" data-toggle="tab">All</a></li>
+        <li><a href="#ok_checks" data-toggle="tab">All OK</a></li>
+        <li><a href="#history" data-toggle="tab">History</a></li>
+        <li><a href="#other" data-toggle="tab">Misc</a></li>
+    </ul>
+    <div class="tab-content">
+
+        <div class="tab-pane" id="unhandled_problems">
+
+            <table class="table" style="line-height:6px; font-size:12px;">
+            {% for host in hosts %}
+                    <tr style="line-height:10px;" >
+                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
+                            <a href="{% url status.views.status_detail host.name %}">
+                                {{ host.name }}
+                            </a>
+                        </th>
+                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
+                            {{ host.status }}
+                        </th>
+                        <td colspan=2 style="line-height:5px;">
+                            {{ host.plugin_output }}
+                        </td>
+                    </tr>
+                    {% for service in host.services %}
+                        {% if service.state != 0 and service.acknowledged == 0 %}
+                        <tr style="line-height:6px;">
+
+                        <td  colspan=2 style="white-space: nowrap; line-height:6px;">
+                            - <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
+                        </td>
+                        <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
+                        <td>{{ service.plugin_output }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
             {% endfor %}
-    {% endfor %}
-    </table>
+            </table>
+        </div> <!-- end of tab-pane -->
+
+        <div class="tab-pane" id="all_problems">
+
+            <table class="table" style="line-height:6px; font-size:12px;">
+                {% for host in hosts %}
+                    <tr style="line-height:10px;" >
+                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
+                            <a href="{% url status.views.status_detail host.name %}">
+                                {{ host.name }}
+                            </a>
+                        </th>
+                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
+                            {{ host.status }}
+                        </th>
+                        <td colspan=2 style="line-height:5px;">
+                            {{ host.plugin_output }}
+                        </td>
+                    </tr>
+                    {% for service in host.services %}
+                        {% if service.state != 0 %}
+                            <tr style="line-height:6px;">
+                                <td></td>
+                                <td  style="white-space: nowrap; line-height:6px;">
+                                    <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
+                                </td>
+                                <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
+                                <td>{{ service.plugin_output }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </table>
+        </div> <!-- end of tab-pane -->
+
+        <div class="tab-pane" id="all_checks">
+
+            <table class="table" style="line-height:6px; font-size:12px;">
+                {% for host in hosts %}
+                    <tr style="line-height:10px;" >
+                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
+                            <a href="{% url status.views.status_detail host.name %}">
+                                {{ host.name }}
+                            </a>
+                        </th>
+                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
+                            {{ host.status }}
+                        </th>
+                        <td colspan=2 style="line-height:5px;">
+                            {{ host.plugin_output }}
+                        </td>
+                    </tr>
+                    {% for service in host.services %}
+                        <tr style="line-height:6px;">
+                            <td></td>
+                            <td  style="white-space: nowrap; line-height:6px;">
+                                <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
+                            </td>
+                            <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
+                            <td>{{ service.plugin_output }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </table>
+        </div> <!-- end of tab-pane -->
+
+        <div class="tab-pane" id="ok_checks">
+
+            <table class="table" style="line-height:6px; font-size:12px;">
+                {% for host in hosts %}
+                    <tr style="line-height:10px;" >
+                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
+                            <a href="{% url status.views.status_detail host.name %}">
+                                {{ host.name }}
+                            </a>
+                        </th>
+                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
+                            {{ host.status }}
+                        </th>
+                        <td colspan=2 style="line-height:5px;">
+                            {{ host.plugin_output }}
+                        </td>
+                    </tr>
+                    {% for service in host.services %}
+                        {% if service.state == 0 %}
+                        <tr style="line-height:6px;">
+                            <td></td>
+                            <td  style="white-space: nowrap; line-height:6px;">
+                                <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
+                            </td>
+                            <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
+                            <td>{{ service.plugin_output }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </table>
+        </div> <!-- end of tab-pane -->
+
+        <div class="tab-pane" id="history">
+            Last {{ log|length }} log entries:
+            <table style="font-size: 80%;" class=table>
+                {% for line in log %}
+                    <tr class="state_{{ line.state }}">
+                        <td>{{ line.time|date:'Y-m-d H:i' }}</td>
+                        <td><div>{{ line.type}}</div></td>
+                        <td>
+                            <div>{{ line.options }}</div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div> <!-- end of tab-pane -->
 
 
+    </div> <!-- End of tab-content -->
 {% endblock %}
 
 
@@ -73,19 +211,20 @@
         }
     </style>
 
-
+    <style>
+        .input-append button.add-on {
+            height: inherit !important;
+        }
+    </style>
 
 {% endblock %}
 
 {% block sidebar %}
     <h5>Go to</h5>
     <ul class="nav nav-list">
-        <li><a href="{% url status.views.status %}">See All</a></li>
-        <li><a href="{% url status.views.status %}?state=1">See Warnings</a></li>
-        <li><a href="{% url status.views.status %}?state=2">See Critical</a></li>
-        <li><a href="{% url status.views.status %}?state__isnot=0">Problems</a></li>
-
-        <li><a href="{% url status.views.status %}?state__isnot=0&acknowledged=0">Unhandled Problems</a></li>
+        <li><a href="{% url status.views.status_hostgroup %}">Hostgroup View</a></li>
+        <li><a href="{% url status.views.status %}">Service View</a></li>
+        <li><a href="{% url status.views.test_livestatus %}">Test Livestatus</a></li>
     </ul>
 
 {% endblock %}

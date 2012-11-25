@@ -1,13 +1,49 @@
-{% extends "base_status.html" %}
+{% extends "base_misc.html" %}
 
 {% block title %}{{ block.super }}{% endblock %}
 {% block smallheader %}status for{% endblock %}
 {% block largeheader %}Hostgroups{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_hostgroup %}">Hostgroups</a>{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
 {% block content %}
+    <div class="span3">
+        <h5>Hostgroups</h5>
+        <ul class="nav nav-list">
+            {% for i in all_hostgroups %}
+            <li>
+                    {% if hostgroup_name == i.name %}
+                        <a href="{% url status.views.status_treeview  i.name %}">
+                            <i class="glyph-folder-minus"> </i>{{ i.name }}
+                        </a>
+                        {% if hostgroups %}
+                            <ul>
+                            {% for x in hostgroups %}
+                            <li>
+                                <a href="{% url status.views.status_treeview  x.name %}">
+                                    <i class="glyph-folder-open"> </i>{{ x.name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url status.views.status_treeview  i.name %}">
+                            <i class="glyph-folder-open"> </i>{{ i.name }}
+                        </a>
+                    {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <table border=1>
+            <tr>
+                <td colspan="2"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="">
     {% if hostgroups %}
         <h4>
             {% if hostgroup_name %}
@@ -57,6 +93,7 @@
     {% endif %}
 
     {% if hosts %}
+        <hr>
         {% if hostgroup_name %}
             <h4>Hostgroup {{ hostgroup_name }} has the following hosts</h4>
         {% else %}
@@ -92,7 +129,7 @@
     {% else %}
         No hosts in this hostgroup.
     {% endif %}
-
+    </div>
 {% endblock %}
 
 {% block header %} {{ block.super }}
@@ -180,6 +217,16 @@
 
 {% endblock %}
 
+{% block sidebar %}
+    <h5>Go to</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url status.views.status_hostgroup %}">Hostgroup View</a></li>
+        <li><a href="{% url status.views.status %}">Service View</a></li>
+        <li><a href="{% url status.views.test_livestatus %}">Test Livestatus</a></li>
+
+    </ul>
+
+{% endblock %}
 
 
 {% block footer %} {{ block.super }} {% endblock %}

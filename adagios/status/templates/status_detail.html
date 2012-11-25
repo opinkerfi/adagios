@@ -1,4 +1,5 @@
-{% extends "base_misc.html" %}
+{% extends "base_status.html" %}
+{% load adagiostags %}
 
 {% block title %}{{ my_object.display_name }}{% endblock %}
 {% block smallheader %}{{ host.display_name }} {% endblock %}
@@ -81,7 +82,7 @@
                                             <td>{{ i.max }}   </td>
                                             <td><label >{{ i.status }}</label></td>
                                             <td>
-                                                <a href="{{ pnp_url }}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
+                                                <a href="{% url status.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -132,6 +133,25 @@
                 </td>
                 <td><textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
             </tr>
+            <tr>
+                <td>
+                    Comments:
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <th>Actions</th>
+                            <th>Author</th>
+                            <th>Message</th>
+                        </tr>
+                        {% for i in comments_with_info %}
+                        <td></td>
+                        <td>{{ i.1 }}</td>
+                        <td>{{ i.2 }}</td>
+                    {% endfor %}
+                    </table>
+                </td>
+            </tr>
         </table>
         <hr>
         This check is executed every <a href="#">{{ my_object.check_interval }}</a> minutes.
@@ -143,11 +163,18 @@
         <table class=table>
             <tr>
                 <td>Last Check</td>
-                <td>{{ my_object.last_check }}</td>
+                <td>
+                    {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
+                     ({{ my_object.last_check|timestamp|timesince  }} ago)
+                </td>
             </tr>
             <tr>
                 <td>Next Check</td>
-                <td>{{ my_object.next_check }}<a href="#"><i class="glyph-refresh" title="Reschedule this check to run right now"></i></a></td>
+                <td>
+                    {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
+                    ({{ my_object.next_check|timestamp|timeuntil }})
+                    <a href="#"><i class="glyph-refresh" title="Reschedule this check to run right now"></i></a>
+                </td>
             </tr>
             <tr>
                 <td>Check Period</td>
@@ -196,8 +223,11 @@
             Last {{ log|length }} log entries:
             <table style="font-size: 80%;" class=table>
                 {% for line in log %}
+                    {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                    <tr><td></td></tr>
+                    {% endifchanged %}
                     <tr class="state_{{ line.state }}">
-                    <td>{{ line.time }}</td>
+                    <td>{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
                     <td><div>{{ line.type }}</div></td>
                     <td>
                         <div>{{ line.options }}</div></td>
@@ -205,15 +235,65 @@
                 {% endfor %}
             </table>
         </div>
+
+
         <div class="tab-pane" id="graphs">
-                {% if perfdata %}
-                {% for i in perfdata %}
-                    <a href="{{ pnp_url }}/graph?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}">
-                        <img src="{{ pnp_url }}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}"/>
-                    </a>
-                {% endfor %}
+                {% if graph_urls %}
+                    <div style="padding-left: 200px;" class="tabbable"> <!-- Only required for left/right tabs -->
+                        <ul class="nav nav-pills">
+                            <li><a href="#hours" data-toggle="tab">4 Hours</a></li>
+                            <li class="active"><a href="#day" data-toggle="tab">25 Hours</a></li>
+                            <li><a href="#week" data-toggle="tab">One Week</a></li>
+                            <li><a href="#month" data-toggle="tab">One Month</a></li>
+                            <li><a href="#year" data-toggle="tab">One Year</a></li>
+                        </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane" id="hours">
+                            {% for graph in graph_urls %}
+                                    {% if graph.title == "4 Hours" %}
+                                        <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                    {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="tab-pane active" id="day">
+                            {% for graph in graph_urls %}
+                                {% if graph.title == "25 Hours" %}
+                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="tab-pane" id="week">
+                            {% for graph in graph_urls %}
+                                {% if graph.title == "One Week" %}
+                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="tab-pane" id="month">
+                            {% for graph in graph_urls %}
+                                {% if graph.title == "One Month" %}
+                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="tab-pane" id="year">
+                            {% for graph in graph_urls %}
+                                {% if graph.title == "One Year" %}
+                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+
+                </div>
+            </div>
                 {% else %}
-                No Performance data is available for this {{ my_object.object_type }}.
+                    No Performance data is available for this {{ my_object.object_type }}.
                 {% endif %}
         </div>
     </div>
@@ -262,36 +342,6 @@
 
 {% endblock %}
 
-{% block sidebar %}
-    {% if host.services_with_info %}
-            <h5>Actions</h5>
-            <ul class="nav nav-list" style="white-space: nowrap;">
-                <li><a href=" url edit_by_shortname my_object.object_type my_object.name %}"><i class="glyph-edit"> </i> Configure this object</a></li>
-                <li><hr></li>
-                <li><a href="{% url status.views.status %}"><i class="glyph-refresh"> </i> Reschedule Check</a></li>
-                <li><a href="{% url status.views.status %}"><i class="glyph-ok-2"> </i> Acknowledge Problem</a></li>
-                <li><a href="{% url status.views.status %}"><i class="glyph-alarm"> </i> Downtime</a></li>
-            </ul>
-            <h5>Services on this host</h5>
-            <table class="table" style="margin:0px; padding:0px; height:10px">
-            {% for i in host.services_with_info %}
-                <tr>
-                    <td class="state_{{ i.1 }}">
-                        <a title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
-                            {{ i.0 }}
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </table>
-    {% endif %}
-    <h5>See also</h5>
-    <ul class="nav nav-list">
-        <li><a href="{% url status.views.status %}">All Hosts</a></li>
-    </ul>
-
-
-{% endblock %}
 
 
 {% block footer %}

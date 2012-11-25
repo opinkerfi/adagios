@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     (r'^/map/?', 'misc.views.map'),
     (r'^/pnp4nagios/?', 'misc.views.pnp4nagios'),
     (r'^/editfile(?P<filename>.+)$', 'misc.views.edit_file'),
+    (r'^/signout$', 'misc.views.sign_out'),
 )
  

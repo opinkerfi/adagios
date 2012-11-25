@@ -68,10 +68,20 @@
                             <div class="badge{% if notifications|length %} badge-warning{% endif %}"><span id="num_notifications">{{ notifications|length }}</span> Notification{% if notifications|length != 1 %}s{% endif %}</div>
                         </a>
                     </li>
+                    <li class="dropdown"><a><i class="glyph-white glyph-clock"></i> {% now "Y-m-d H:i" %}</a></li>
                     <li class="dropdown">
                         <a class="dropdown-toggle"
                            data-toggle="dropdown"
-                           href="#"><i class="icon-barcode icon-white"></i> Misc <b class="caret"></b>
+                           href="#"><i class="glyph-user glyph-white"></i> {{ remote_user }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url misc.views.sign_out %}">Sign Out</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#"><i class="glyph-cogwheel glyph-white"></i>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="http://opensource.is/adagios/newticket?type=defect">Report Bug</a></li>

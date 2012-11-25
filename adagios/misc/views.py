@@ -17,6 +17,7 @@
 
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
+from django.shortcuts import HttpResponse
 from django.template import RequestContext
 import forms
 import os
@@ -224,3 +225,8 @@ def edit_file(request, filename):
     except Exception, e:
         c['errors'].append(e)
     return render_to_response('editfile.html', c, context_instance = RequestContext(request))
+
+
+def sign_out(request):
+    """ Use this to force browser to update authentication """
+    return HttpResponse('You have been signed out', status=401)

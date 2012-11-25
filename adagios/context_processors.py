@@ -53,9 +53,10 @@ def resolve_urlname(request):
 
 def get_httpuser(request):
     """ Get the current user that is authenticating to us and update event handlers"""
+    remote_user = request.META.get('REMOTE_USER', 'anonymous')
     for i in pynag.Model.eventhandlers:
-        i.modified_by = request.META.get('REMOTE_USER', 'anonymous')
-    return {}
+        i.modified_by = remote_user
+    return {'remote_user': remote_user }
 def check_nagios_cfg(request):
     """ Check availability of nagios.cfg """
     return { 'nagios_cfg' : pynag.Model.config.cfg_file }

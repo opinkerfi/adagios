@@ -1,0 +1,146 @@
+{% extends "base2.html" %}
+{% block title %}Status{% endblock %}
+{% load adagiostags %}
+
+
+{% block adagios_hausinn %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{% url home %}">Home</a> <span class="divider">/</span>
+        </li>
+        <li>
+            {% block nav1 %}
+                <a href="{% url status.views.status %}">Status</a>
+            {% endblock %}
+            <span class="divider">/</span>
+            {% block nav2 %}
+            {% endblock %}
+
+        </li>
+    </ul>
+    <h2>
+        <i class="icon-th-large"></i> <small>{% block smallheader %}block=smallheader{% endblock%} </small> {% block largeheader %}block=largeheader{% endblock %}
+    </h2>
+{% endblock %}
+
+
+{% block sidebar %}
+    <h5>Actions</h5>
+    <ul class="nav nav-list" style="white-space: nowrap;">
+        {% if my_object.short_name %}
+        <li><a href="{% url edit_by_shortname my_object.object_type my_object.short_name %}"><i class="glyph-edit"></i> Configure this {{ my_object.object_type }}</a></li>
+        {% endif %}
+        <li><a href="#"><i class="glyph-refresh"></i> Reschedule Check</a></li>
+        <li><a href="#"><i class="glyph-ok-2"></i> Acknowledge Problem</a></li>
+        <li><a href="#"><i class="glyph-alarm"></i> Downtime</a></li>
+        {% if my_object.object_type == 'service' %}
+            <li>
+                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=1&host={{  my_object.host_name }}&service={{  my_object.description }}">
+                    <i class="icon-eye-open"></i> Open in Nagios</a>
+            </li>
+        {% endif %}
+
+        {% if my_object.object_type == 'host' %}
+            <li>
+                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=1&host={{  my_object.host_name }}">
+                    <i class="icon-eye-open"></i> Open in Nagios</a>
+            </li>
+        {% endif %}
+        {% if my_object.action_url %}
+            <li><a href="{{ my_object.action_url }}"><i class="glyph-charts"></i> Action Url</a></li>
+        {%  endif %}
+    </ul>
+
+    {% if host.services_with_info %}
+        <h5>Services on this host</h5>
+            <ul class="nav nav-list" style="white-space: nowrap;">
+            {% for i in host.services_with_info %}
+                    <li>
+                        <a class="state_{{ i.1 }}" title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
+                            <i class="glyph-refresh"></i> {{ i.0 }}
+                        </a>
+                    </li>
+
+            {% endfor %}
+                </ul>
+    {% endif %}
+
+    {% if hostgroup_name %}
+        {% if hostgroups %}
+            <h5>Is a member of hostgroup:</h5>
+            <ul class="nav nav-list">
+                {% for group in hostgroups %}
+                    <li><a href="{% url status.views.status_hostgroup group.name %}">{{ group.name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+    {% if host.parents %}
+        <h5>Network Parents</h5>
+        <ul class="nav nav-list">
+            {% for i in host.parents %}
+                <li><a href="{% url status.views.status i %}">{{ i }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if host.groups %}
+            <h5>Is a member of hostgroups</h5>
+            <ul class="nav nav-list">
+                {% for group in host.groups %}
+                    <li><a href="{% url status.views.status_hostgroup group %}">{{ group }}</a></li>
+                {% endfor %}
+            </ul>
+    {% endif %}
+
+    <h5>Go to</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url status.views.status_hostgroup %}">Hostgroup View</a></li>
+        <li><a href="{% url status.views.status %}">Service View</a></li>
+        <li><a href="{% url status.views.test_livestatus %}">Test Livestatus</a></li>
+    </ul>
+    <hr>
+
+    {% if my_object.id %}
+    <div class="modal hide fade" id="geek_edit">
+        <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Geek Edit</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
+                    {{ geek_edit }}
+                </fieldset>
+                <strong>Filename:</strong> {{ my_object.filename }}
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit">Save changes</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block footer %}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#objecttab a:first').tab('show');
+        $(document).ready(function() {
+
+
+
+            $('#run_check_plugin_refresh').click(function(e) {
+                $('#run_check_plugin div#output pre').html('Rerunning plugin');
+                $(this).adagios_ob_run_check_command();
+                return false;
+            });
+            $('#run_check_plugin').on('show', function() {
+                $(this).adagios_ob_run_check_command();
+            });
+        });
+    </script>
+{%  endblock %}

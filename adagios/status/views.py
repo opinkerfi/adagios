@@ -17,6 +17,8 @@
 
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
+from django.shortcuts import HttpResponse
+
 from django.template import RequestContext
 import os
 
@@ -55,7 +57,13 @@ def status(request):
     hosts = []
     for service in all_services:
         for k,v in request.GET.items():
-            if k in service:
+            if k == 'q' and v is not None and v != '':
+                q = str(v).lower()
+                if q in service['description'].lower() or q in service['host_name'].lower():
+                    continue
+                else:
+                    break
+            elif k in service:
                 if str(service[k]) == str(v):
                     continue
                 else:
@@ -75,6 +83,7 @@ def status(request):
     hosts.sort()
     c['services'] = services
     c['hosts'] = hosts
+    c['log'] = livestatus.query('GET log', 'Limit: 50')
     return render_to_response('status.html', c, context_instance = RequestContext(request))
 
 def status_detail(request, host_name, service_description=None):
@@ -84,10 +93,12 @@ def status_detail(request, host_name, service_description=None):
     c['errors'] = []
     livestatus = pynag.Parsers.mk_livestatus()
     c['pnp_url'] = adagios.settings.pnp_url
+    c['nagios_url'] = adagios.settings.nagios_url
 
     try:
         c['host'] = my_host = livestatus.get_host(host_name)
         my_host['object_type'] = 'host'
+        my_host['short_name'] = my_host['name']
     except IndexError:
         c['errors'].append("Could not find any host named '%s'"%host_name)
         return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
@@ -99,6 +110,7 @@ def status_detail(request, host_name, service_description=None):
         try:
             c['service'] = my_service = livestatus.get_service(host_name,service_description)
             my_service['object_type'] = 'service'
+            my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
             c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name, 'Filter: description = %s' % service_description)
         except IndexError:
@@ -122,7 +134,16 @@ def status_detail(request, host_name, service_description=None):
         datum.status = state[datum.get_status()]
     c['perfdata'] = perfdata.metrics
 
-
+    # Lets get some graphs
+    import urllib
+    search_query = "json?host=%s" % host_name
+    #if service_description:
+    #    search_query += "&srv=%s" % urllib.quote( service_description )
+    print search_query
+    tmp = pynag.Utils.runCommand("php /usr/share/pnp4nagios/html/index.php '%s'" % search_query)[1]
+    import json
+    tmp = json.loads(tmp)
+    c['graph_urls'] = tmp
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
 
@@ -190,6 +211,71 @@ def status_hostgroup(request, hostgroup_name=None):
         except ZeroDivisionError:
             pass
     return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
+def status_treeview(request, hostgroup_name=None):
+    c = { }
+    c['messages'] = []
+    livestatus = pynag.Parsers.mk_livestatus()
+    c['all_hostgroups'] = hostgroups = livestatus.get_hostgroups()
+
+    c['hostgroup_name'] = hostgroup_name
+
+    if hostgroup_name is None:
+        c['hostgroups'] = hostgroups
+        c['hosts'] = livestatus.get_hosts()
+    else:
+        my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
+        subgroups = my_hostgroup.hostgroup_members or ''
+        subgroups = subgroups.split(',')
+        # Strip out any group that is not a subgroup of hostgroup_name
+        right_hostgroups = []
+        for group in hostgroups:
+            if group.get('name','') in subgroups:
+                right_hostgroups.append(group)
+        c['hostgroups'] = right_hostgroups
+
+        # If a hostgroup was specified lets also get all the hosts for it
+        c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
+    for host in c['hosts']:
+        ok = host.get('num_services_ok')
+        warn = host.get('num_services_warn')
+        crit = host.get('num_services_crit')
+        pending = host.get('num_services_pending')
+        unknown = host.get('num_services_unknown')
+        total = ok + warn + crit +pending + unknown
+        host['total'] = total
+        host['problems'] = warn + crit + unknown
+        try:
+            total = float(total)
+            host['health'] = float(ok) / total * 100.0
+            host['percent_ok'] = ok/total*100
+            host['percent_warn'] = warn/total*100
+            host['percent_crit'] = crit/total*100
+            host['percent_unknown'] = unknown/total*100
+            host['percent_pending'] = pending/total*100
+        except ZeroDivisionError:
+            host['health'] = 'n/a'
+        # Extra statistics for our hostgroups
+    for hg in c['hostgroups']:
+        ok = hg.get('num_services_ok')
+        warn = hg.get('num_services_warn')
+        crit = hg.get('num_services_crit')
+        pending = hg.get('num_services_pending')
+        unknown = hg.get('num_services_unknown')
+        total = ok + warn + crit +pending + unknown
+        hg['total'] = total
+        hg['problems'] = warn + crit + unknown
+        try:
+            total = float(total)
+            hg['health'] = float(ok) / total * 100.0
+            hg['health'] = float(ok) / total * 100.0
+            hg['percent_ok'] = ok/total*100
+            hg['percent_warn'] = warn/total*100
+            hg['percent_crit'] = crit/total*100
+            hg['percent_unknown'] = unknown/total*100
+            hg['percent_pending'] = pending/total*100
+        except ZeroDivisionError:
+            pass
+    return render_to_response('status_treeview.html', c, context_instance = RequestContext(request))
 
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
@@ -224,3 +310,19 @@ def test_livestatus(request):
 
     return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
 
+
+def pnp(request, pnp_command='image'):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    if pnp_command is None:
+        return HttpResponse("Need a pnp command", )
+    import pynag.Utils
+    querystring= '&'.join(map( lambda x: "%s=%s" % x, request.GET.items() ))
+    result = pynag.Utils.runCommand("php /usr/share/pnp4nagios/html/index.php '%s?%s'" % (pnp_command, querystring)) [1]
+    mimetype = "text"
+    if pnp_command == 'image':
+        mimetype="image/png"
+    elif pnp_command == 'json':
+        mimetype="application/json"
+    return HttpResponse(result, mimetype)
