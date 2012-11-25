@@ -139,10 +139,12 @@ def status_detail(request, host_name, service_description=None):
     search_query = "json?host=%s" % host_name
     #if service_description:
     #    search_query += "&srv=%s" % urllib.quote( service_description )
-    print search_query
-    tmp = pynag.Utils.runCommand("php /usr/share/pnp4nagios/html/index.php '%s'" % search_query)[1]
     import json
-    tmp = json.loads(tmp)
+    try:
+        tmp = pynag.Utils.runCommand("php /usr/share/pnp4nagios/html/index.php '%s'" % search_query)[1]
+        tmp = json.loads(tmp)
+    except Exception:
+        tmp = []
     c['graph_urls'] = tmp
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
