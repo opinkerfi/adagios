@@ -36,6 +36,9 @@ import adagios.settings
 from adagios import __version__
 from collections import defaultdict
 
+import pnp.functions
+import json
+
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
@@ -135,16 +138,12 @@ def status_detail(request, host_name, service_description=None):
     c['perfdata'] = perfdata.metrics
 
     # Lets get some graphs
-    import urllib
-    search_query = "json?host=%s" % host_name
-    #if service_description:
-    #    search_query += "&srv=%s" % urllib.quote( service_description )
-    import json
     try:
-        tmp = pynag.Utils.runCommand("php /usr/share/pnp4nagios/html/index.php '%s'" % search_query)[1]
+        tmp = pnp.functions.run_pnp("json", host=host_name)
         tmp = json.loads(tmp)
-    except Exception:
+    except Exception, e:
         tmp = []
+        c['errors'].append(e)
     c['graph_urls'] = tmp
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
@@ -313,18 +312,3 @@ def test_livestatus(request):
     return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
 
 
-def pnp(request, pnp_command='image'):
-    c = {}
-    c['messages'] = []
-    c['errors'] = []
-    if pnp_command is None:
-        return HttpResponse("Need a pnp command", )
-    import pynag.Utils
-    querystring= '&'.join(map( lambda x: "%s=%s" % x, request.GET.items() ))
-    result = pynag.Utils.runCommand("php /usr/share/pnp4nagios/html/index.php '%s?%s'" % (pnp_command, querystring)) [1]
-    mimetype = "text"
-    if pnp_command == 'image':
-        mimetype="image/png"
-    elif pnp_command == 'json':
-        mimetype="application/json"
-    return HttpResponse(result, mimetype)

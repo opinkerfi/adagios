@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^objectbrowser', include('objectbrowser.urls')),
     (r'^misc', include('misc.urls')),
     (r'^status', include('status.urls')),
+    (r'^pnp', include('pnp.urls')),
     (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
     (r'^rest', include('rest.urls')),
 

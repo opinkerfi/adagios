@@ -82,7 +82,7 @@
                                             <td>{{ i.max }}   </td>
                                             <td><label >{{ i.status }}</label></td>
                                             <td>
-                                                <a href="{% url status.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
+                                                <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -252,7 +252,7 @@
                         <div class="tab-pane" id="hours">
                             {% for graph in graph_urls %}
                                     {% if graph.title == "4 Hours" %}
-                                        <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                        <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
                                     {% endif %}
                             {% endfor %}
                         </div>
@@ -260,7 +260,7 @@
                         <div class="tab-pane active" id="day">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "25 Hours" %}
-                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -268,7 +268,7 @@
                         <div class="tab-pane" id="week">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "One Week" %}
-                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -276,7 +276,7 @@
                         <div class="tab-pane" id="month">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "One Month" %}
-                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -284,7 +284,7 @@
                         <div class="tab-pane" id="year">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "One Year" %}
-                                    <img src="{% url status.views.pnp 'image' %}?{{ graph.image_url }}">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
                                 {% endif %}
                             {% endfor %}
                         </div>

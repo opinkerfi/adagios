@@ -3,7 +3,6 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     (r'^/test/?$', 'status.views.test_livestatus'),
-    (r'^/pnp/(?P<pnp_command>.+)?$', 'status.views.pnp'),
     (r'^/treeview/(?P<hostgroup_name>.+)?/?$', 'status.views.status_treeview'),
     (r'^/host/?$', 'status.views.status'),
     (r'^/hostgroup/?$', 'status.views.status_hostgroup'),
