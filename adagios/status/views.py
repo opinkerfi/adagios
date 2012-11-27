@@ -67,7 +67,9 @@ def status(request):
                 else:
                     break
             elif k in service:
-                if str(service[k]) == str(v):
+                if type(service[k]) is type([]) and str(v) in service[k]:
+                    continue
+                elif str(service[k]) == str(v):
                     continue
                 else:
                     break

@@ -4,20 +4,23 @@
 {% block title %}{{ my_object.display_name }}{% endblock %}
 {% block smallheader %}{{ host.display_name }} {% endblock %}
 {% block largeheader %}
-    <span class="state_{{ my_object.state }}">{{ service.display_name }} is {{ my_object.status }}</span>
+    {{ service.display_name }} is <span class="state_{{ my_object.state }}">{{ my_object.status }}</span>
 {% endblock %}
-{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav1 %}<a href="{% url status.views.status %}">status</a>{% endblock %}
+{% block nav2 %}{{ host_name }} {% if service_description %}- {{ service_description }}{% endif %}{% endblock %}
 
-{% block adagios_hausinn %}{{ block.super }}{% endblock %}
+
 
 {% block content %}
+    <div class="span9" id="maincontent_left_side">
+
     <ul class="nav nav-tabs" id="objecttab">
         <li><a href="#general" data-toggle="tab">General</a></li>
         <li><a href="#information" data-toggle="tab">Information</a></li>
         <li><a href="#events" data-toggle="tab">History</a></li>
         <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
         <li><a href="#custom_variables" data-toggle="tab">Custom Variables</a></li>
-        <li><a href="#other" data-toggle="tab">Misc</a></li>
+        <li><a href="#other" data-toggle="tab">Debug</a></li>
     </ul>
     <div class="tab-content">
 
@@ -56,7 +59,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td>Performance  Data</td>
+                        <td>Performance  Metrics</td>
                         <td >
                             {% if perfdata %}
                                 <table border=1 class=table style="border-color: #ffffff;" >
@@ -164,16 +167,26 @@
             <tr>
                 <td>Last Check</td>
                 <td>
-                    {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
-                     ({{ my_object.last_check|timestamp|timesince  }} ago)
+                    {% if my_object.last_check %}
+                        {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
+                         ({{ my_object.last_check|timestamp|timesince  }} ago)
+                    {% else %}
+                        check has never been executed.
+                    {% endif %}
                 </td>
             </tr>
             <tr>
                 <td>Next Check</td>
                 <td>
-                    {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
-                    ({{ my_object.next_check|timestamp|timeuntil }})
-                    <a href="#"><i class="glyph-refresh" title="Reschedule this check to run right now"></i></a>
+                    {% if my_object.next_check %}
+                        {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
+                        ({{ my_object.next_check|timestamp|timeuntil }} from now)
+                    {% else %}
+                        Check is not scheduled to be executed.
+                    {% endif %}
+                    <button class="pull-right btn btn-small">
+                        <i class="glyph-refresh" title="Recheck - Execute check immediately"> </i>
+                    </button>
                 </td>
             </tr>
             <tr>
@@ -187,7 +200,12 @@
             </tr>
             <tr>
                 <td>Notification Period</td>
-                <td><a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a></td>
+                <td>
+                    {% if my_object.notification_period %}
+                    <a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a></td>
+                    {% else %}
+                    Unknown
+                    {% endif %}
             </tr>
         </table>
     </div>
@@ -239,7 +257,7 @@
 
         <div class="tab-pane" id="graphs">
                 {% if graph_urls %}
-                    <div style="padding-left: 200px;" class="tabbable"> <!-- Only required for left/right tabs -->
+                    <div class="tabbable"> <!-- Only required for left/right tabs -->
                         <ul class="nav nav-pills">
                             <li><a href="#hours" data-toggle="tab">4 Hours</a></li>
                             <li class="active"><a href="#day" data-toggle="tab">25 Hours</a></li>
@@ -252,7 +270,7 @@
                         <div class="tab-pane" id="hours">
                             {% for graph in graph_urls %}
                                     {% if graph.title == "4 Hours" %}
-                                        <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
+                                        <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                     {% endif %}
                             {% endfor %}
                         </div>
@@ -260,7 +278,7 @@
                         <div class="tab-pane active" id="day">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "25 Hours" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -268,7 +286,7 @@
                         <div class="tab-pane" id="week">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "One Week" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -276,7 +294,7 @@
                         <div class="tab-pane" id="month">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "One Month" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -284,7 +302,7 @@
                         <div class="tab-pane" id="year">
                             {% for graph in graph_urls %}
                                 {% if graph.title == "One Year" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}&graph_width=320">
+                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -297,6 +315,74 @@
                 {% endif %}
         </div>
     </div>
+</div>
+<div class="span3" id="maincontent_right_side">
+    {% if host.services_with_info %}
+        <h5>Services on this host</h5>
+        <ul class="nav nav-list">
+            {% for i in host.services_with_info %}
+                <li>
+                    <a class="state_{{ i.1 }}" title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
+                        <i class="glyph-refresh"></i> {{ i.0 }}
+                    </a>
+                </li>
+
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if hostgroup_name %}
+        {% if hostgroups %}
+            <h5>Is a member of hostgroup:</h5>
+            <ul class="nav nav-list">
+                {% for group in hostgroups %}
+                    <li><a href="{% url status.views.status_hostgroup group.name %}">{{ group.name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+    {% if host.parents %}
+        <h5>Network Parents</h5>
+        <ul class="nav nav-list">
+            {% for i in host.parents %}
+                <li><a href="{% url status.views.status i %}">{{ i }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if host.groups %}
+        <h5>Is a member of hostgroups</h5>
+        <ul class="nav nav-list">
+            {% for group in host.groups %}
+                <li><a href="{% url status.views.status_hostgroup group %}">{{ group }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+    {% if my_object.id %}
+        <div class="modal hide fade" id="geek_edit">
+            <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3>Geek Edit</h3>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
+                        {{ geek_edit }}
+                    </fieldset>
+                    <strong>Filename:</strong> {{ my_object.filename }}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+
+</div>
 {% endblock %}
 
 {% block header %}
@@ -304,6 +390,12 @@
     <style>
     .table th, .table td {
       line-height: 10px;
+    }
+    form {
+        margin: 0px;
+    }
+    #maincontent_left_side {
+        margin: 0px;
     }
     </style>
     <style>
@@ -346,4 +438,8 @@
 
 {% block footer %}
     {{ block.super }}
+{% endblock %}
+
+
+{% block sidebar %}
 {% endblock %}

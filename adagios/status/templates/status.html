@@ -1,51 +1,30 @@
-{% extends "base_misc.html" %}
+{% extends "base_status.html" %}
 
 {% block title %}{{ block.super }}{% endblock %}
+{% block smallheader %}{% endblock %}
 {% block adagios_hausinn %}
-    <div class="" style="padding-top: 20px">
-    <form action="" action="get" class="form-horizontal">
-        <div class="control-group">
-
-            <div class="controls" style="padding-bottom: 0;" id="address_field">
-
-                <select style="width: 200px;" placeholder="View as contact..." name="contact_name" id="id_contact_name">
-                    <option value=""></option>
-                    {% for i in contacts %}
-                        <option value="{{ i.name }}" {% if i.name == current_contact  %}selected="selected"{% endif %}>{{ i.name }}</option>
-                    {% endfor %}
-                </select>
-
-                <input name="q" style="line-height: 22px;" placeholder="Search for hosts,services, etc..." />
-
-                <button type="submit" class='btn add-on btn-info'>
-                    <i class="icon-white icon-search"></i>
-                </button>
-            </div>
-        </div>
-    </form>
-    </div>
 {% endblock %}
-{% block largeheader %}
+{% block largeheader %}Service Overview
 {% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
 
+{% block sidebar_outer %}
+{% endblock %}
+{% block content_span %}span12{% endblock %}
 
 {% block content %}
-    <ul class="nav nav-tabs" id="objecttab">
-        <li><a href="#unhandled_problems" data-toggle="tab">Open Problems</a></li>
-        <li><a href="#all_problems" data-toggle="tab">Problems</a></li>
-        <li><a href="#all_checks" data-toggle="tab">All</a></li>
-        <li><a href="#ok_checks" data-toggle="tab">All OK</a></li>
-        <li><a href="#history" data-toggle="tab">History</a></li>
-        <li><a href="#other" data-toggle="tab">Misc</a></li>
-    </ul>
-    <div class="tab-content">
-
-        <div class="tab-pane" id="unhandled_problems">
-
             <table class="table" style="line-height:6px; font-size:12px;">
+            <tr>
+                <th>                </th>
+                <th colspan=2>Name</th>
+                <th>Status</th>
+                <th>Output</th>
+            </tr>
             {% for host in hosts %}
                     <tr style="line-height:10px;" >
+                        <td style="line-height:5px;">
+                            <input style="margin: -4px; padding: 0px; line-height: 5px;" type="checkbox">
+                        </td>
                         <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
                             <a href="{% url status.views.status_detail host.name %}">
                                 {{ host.name }}
@@ -59,134 +38,20 @@
                         </td>
                     </tr>
                     {% for service in host.services %}
-                        {% if service.state != 0 and service.acknowledged == 0 %}
                         <tr style="line-height:6px;">
-
-                        <td  colspan=2 style="white-space: nowrap; line-height:6px;">
-                            - <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
+                        <td style="line-height:5px;">
+                            <input style="margin: -4px; padding: 0px; line-height: 5px;" type="checkbox">
+                        </td>
+                            <td></td>
+                        <td  colspan=1 style="white-space: nowrap; line-height:6px;">
+                             <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
                         </td>
                         <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
                         <td>{{ service.plugin_output }}</td>
                         </tr>
-                        {% endif %}
                     {% endfor %}
             {% endfor %}
             </table>
-        </div> <!-- end of tab-pane -->
-
-        <div class="tab-pane" id="all_problems">
-
-            <table class="table" style="line-height:6px; font-size:12px;">
-                {% for host in hosts %}
-                    <tr style="line-height:10px;" >
-                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
-                            <a href="{% url status.views.status_detail host.name %}">
-                                {{ host.name }}
-                            </a>
-                        </th>
-                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
-                            {{ host.status }}
-                        </th>
-                        <td colspan=2 style="line-height:5px;">
-                            {{ host.plugin_output }}
-                        </td>
-                    </tr>
-                    {% for service in host.services %}
-                        {% if service.state != 0 %}
-                            <tr style="line-height:6px;">
-                                <td></td>
-                                <td  style="white-space: nowrap; line-height:6px;">
-                                    <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
-                                </td>
-                                <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
-                                <td>{{ service.plugin_output }}</td>
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-            </table>
-        </div> <!-- end of tab-pane -->
-
-        <div class="tab-pane" id="all_checks">
-
-            <table class="table" style="line-height:6px; font-size:12px;">
-                {% for host in hosts %}
-                    <tr style="line-height:10px;" >
-                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
-                            <a href="{% url status.views.status_detail host.name %}">
-                                {{ host.name }}
-                            </a>
-                        </th>
-                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
-                            {{ host.status }}
-                        </th>
-                        <td colspan=2 style="line-height:5px;">
-                            {{ host.plugin_output }}
-                        </td>
-                    </tr>
-                    {% for service in host.services %}
-                        <tr style="line-height:6px;">
-                            <td></td>
-                            <td  style="white-space: nowrap; line-height:6px;">
-                                <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
-                            </td>
-                            <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
-                            <td>{{ service.plugin_output }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            </table>
-        </div> <!-- end of tab-pane -->
-
-        <div class="tab-pane" id="ok_checks">
-
-            <table class="table" style="line-height:6px; font-size:12px;">
-                {% for host in hosts %}
-                    <tr style="line-height:10px;" >
-                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
-                            <a href="{% url status.views.status_detail host.name %}">
-                                {{ host.name }}
-                            </a>
-                        </th>
-                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
-                            {{ host.status }}
-                        </th>
-                        <td colspan=2 style="line-height:5px;">
-                            {{ host.plugin_output }}
-                        </td>
-                    </tr>
-                    {% for service in host.services %}
-                        {% if service.state == 0 %}
-                        <tr style="line-height:6px;">
-                            <td></td>
-                            <td  style="white-space: nowrap; line-height:6px;">
-                                <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
-                            </td>
-                            <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
-                            <td>{{ service.plugin_output }}</td>
-                        </tr>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-            </table>
-        </div> <!-- end of tab-pane -->
-
-        <div class="tab-pane" id="history">
-            Last {{ log|length }} log entries:
-            <table style="font-size: 80%;" class=table>
-                {% for line in log %}
-                    <tr class="state_{{ line.state }}">
-                        <td>{{ line.time|date:'Y-m-d H:i' }}</td>
-                        <td><div>{{ line.type}}</div></td>
-                        <td>
-                            <div>{{ line.options }}</div></td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div> <!-- end of tab-pane -->
-
-
-    </div> <!-- End of tab-content -->
 {% endblock %}
 
 
@@ -194,6 +59,7 @@
     {{ block.super }}
     <style>
         .state_0 {
+            color: #468847;
             background-color: #DFF0D8;
             border-color: #D6E9C6;
         }
@@ -201,7 +67,9 @@
             background-color: #FCEFB0;
         }
         .state_2 {
-            background-color: #EED3D7;
+            color: #B94A48;
+            background-color: #F2DEDE;
+            border-color: #EED3D7;
         }
         .state_3 {
             background-color: #d3d3d3;
@@ -214,6 +82,11 @@
     <style>
         .input-append button.add-on {
             height: inherit !important;
+        }
+    </style>
+    <style>
+        form {
+            margin: 0px;
         }
     </style>
 

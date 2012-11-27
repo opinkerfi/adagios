@@ -1,146 +1,208 @@
-{% extends "base2.html" %}
-{% block title %}Status{% endblock %}
-{% load adagiostags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Adagios - {% block title %}block=title?{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Adagios - Nagios Configuration Made Easy">
+    <meta name="author" content="Tomas Edwardsson, Pall Sigurdsson">
+
+    <!-- Le styles -->
+    <link href="{% url media path="css/style.css" %}" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+        }
+        @media (max-width: 979px) {
+            body {
+                padding-top: 0;
+            }
+        }
+    </style>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="{% url media path="ico/favicon.ico" %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114"
+          href="{% url media path="ico/apple-touch-icon-114-precomposed.png" %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72"
+          href="{% url media path="ico/apple-touch-icon-72-precomposed.png" %}">
+    <link rel="apple-touch-icon-precomposed"
+          href="{% url media path="ico/apple-touch-icon-57-precomposed.png" %}">
+
+    <!-- Block header starts -->
+    {%  block header %}{% endblock %}
+    <!-- Block header ends -->
+</head>
+
+<body>
 
 
-{% block adagios_hausinn %}
+<!-- block top_navigation starts -->
+{% block top_navigation %}
+    {%  include "snippets/header.html" %}
+{% endblock %}
+<!-- block top_navigation ends -->
+
+<div class="span12">
     <ul class="breadcrumb">
+        <li><i class="glyph-right-arrow"></i>
+        </li>
         <li>
-            <a href="{% url home %}">Home</a> <span class="divider">/</span>
+            <a href="{% url home %}"> Home</a> <span class="divider">/</span>
         </li>
         <li>
             {% block nav1 %}
                 <a href="{% url status.views.status %}">Status</a>
             {% endblock %}
             <span class="divider">/</span>
+        </li>
+        <li>
             {% block nav2 %}
             {% endblock %}
-
         </li>
     </ul>
-    <h2>
-        <i class="icon-th-large"></i> <small>{% block smallheader %}block=smallheader{% endblock%} </small> {% block largeheader %}block=largeheader{% endblock %}
-    </h2>
-{% endblock %}
+</div>
 
+<!-- Here we start the main view -->
+<div class=span12></div>
+<div class="container-fluid content span12 block">
+    <div class="row-fluid">
+        <div class="pull-left" id="titlebar">
+        <h2>
+            <small>{% block smallheader %}block=smallheader{% endblock %}</small>
+            {% block largeheader %}block=largeheader{% endblock %}
+        </h2>
+        </div>
 
-{% block sidebar %}
-    <h5>Actions</h5>
-    <ul class="nav nav-list" style="white-space: nowrap;">
-        {% if my_object.short_name %}
-        <li><a href="{% url edit_by_shortname my_object.object_type my_object.short_name %}"><i class="glyph-edit"></i> Configure this {{ my_object.object_type }}</a></li>
-        {% endif %}
-        <li><a href="#"><i class="glyph-refresh"></i> Reschedule Check</a></li>
-        <li><a href="#"><i class="glyph-ok-2"></i> Acknowledge Problem</a></li>
-        <li><a href="#"><i class="glyph-alarm"></i> Downtime</a></li>
-        {% if my_object.object_type == 'service' %}
-            <li>
-                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=1&host={{  my_object.host_name }}&service={{  my_object.description }}">
-                    <i class="icon-eye-open"></i> Open in Nagios</a>
-            </li>
-        {% endif %}
-
-        {% if my_object.object_type == 'host' %}
-            <li>
-                <a href="{{ nagios_url }}/cgi-bin/extinfo.cgi?type=1&host={{  my_object.host_name }}">
-                    <i class="icon-eye-open"></i> Open in Nagios</a>
-            </li>
-        {% endif %}
-        {% if my_object.action_url %}
-            <li><a href="{{ my_object.action_url }}"><i class="glyph-charts"></i> Action Url</a></li>
-        {%  endif %}
-    </ul>
-
-    {% if host.services_with_info %}
-        <h5>Services on this host</h5>
-            <ul class="nav nav-list" style="white-space: nowrap;">
-            {% for i in host.services_with_info %}
-                    <li>
-                        <a class="state_{{ i.1 }}" title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
-                            <i class="glyph-refresh"></i> {{ i.0 }}
+        <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" id="right_of_title">
+            <div class="pull-right" id="search_box">
+                <form action="" method="get" >
+                    <div class="pull-left">
+                        <input name="q"  style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
+                    </div>
+                    <div class="btn-group pull-left">
+                        <a class="btn btn-info" href="#">
+                            <i class="icon-white icon-search"></i> Search
                         </a>
-                    </li>
-
-            {% endfor %}
-                </ul>
-    {% endif %}
-
-    {% if hostgroup_name %}
-        {% if hostgroups %}
-            <h5>Is a member of hostgroup:</h5>
-            <ul class="nav nav-list">
-                {% for group in hostgroups %}
-                    <li><a href="{% url status.views.status_hostgroup group.name %}">{{ group.name }}</a></li>
-                {% endfor %}
-            </ul>
+                        <a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                            <li><a href="?state__isnot=0"> All Problems</a></li>
+                            <li><a href="?state=0"> All OK</a></li>
+                            <li><a href=""> Everything</a></li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="pull-right">
+                <form>
+                    <button class="btn btn-small">
+                        <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i>
+                    </button>
+                    <button class="btn btn-small">
+                        <i class="glyph-check" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out"> </i>
+                    </button>
+                    <button class="btn btn-small">
+                        <i class="glyph-clock" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over"> </i>
+                    </button>
+                    <button class="btn btn-small">
+                        <i class="glyph-eye-open" title="Open in Nagios"> </i>
+                    </button>
+                    <button class="btn btn-small">
+                        <i class="glyph-edit" title="Configure {{ my_object.object_type }}"> </i>
+                    </button>
+                </form>
+            </div >
+        </div>
+        <div id="error_messages">
+        {% if errors|length %}
+            {%  for error in errors %}
+                <div class="alert" style="clear: both;">
+                    <button class="close" data-dismiss="alert">×</button>
+                    <strong>Warning!</strong> {{ error }}
+                </div>
+            {%  endfor %}
         {% endif %}
-    {% endif %}
-    {% if host.parents %}
-        <h5>Network Parents</h5>
-        <ul class="nav nav-list">
-            {% for i in host.parents %}
-                <li><a href="{% url status.views.status i %}">{{ i }}</a></li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% if host.groups %}
-            <h5>Is a member of hostgroups</h5>
-            <ul class="nav nav-list">
-                {% for group in host.groups %}
-                    <li><a href="{% url status.views.status_hostgroup group %}">{{ group }}</a></li>
-                {% endfor %}
-            </ul>
-    {% endif %}
-
-    <h5>Go to</h5>
-    <ul class="nav nav-list">
-        <li><a href="{% url status.views.status_hostgroup %}">Hostgroup View</a></li>
-        <li><a href="{% url status.views.status %}">Service View</a></li>
-        <li><a href="{% url status.views.test_livestatus %}">Test Livestatus</a></li>
-    </ul>
-    <hr>
-
-    {% if my_object.id %}
-    <div class="modal hide fade" id="geek_edit">
-        <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Geek Edit</h3>
-            </div>
-            <div class="modal-body">
-                <p>
-                <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
-                    {{ geek_edit }}
-                </fieldset>
-                <strong>Filename:</strong> {{ my_object.filename }}
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal">Close</button>
-                <button class="btn btn-primary" type="submit">Save changes</button>
-            </div>
-        </form>
+        {% if messages|length %}
+            {%  for message in messages  %}
+                <div class="alert alert-success" style="clear: both;">
+                    <button class="close" data-dismiss="alert alert-success">×</button>
+                    <strong>Info!</strong> {{ message }}
+                </div>
+            {%  endfor %}
+        {% endif %}
+        </div>
     </div>
-    {% endif %}
-{% endblock %}
+    <hr style="margin-top: 10px;">
+    <div class="row-fluid">
+        <div class="span2"   id="left_sidebar">
+            <h5>Current Status</h5>
+            <ul class="nav nav-list">
+                <li><a href="{% url status.views.status %}?acknowledge=0&state__isnot=0">Unhandled Problems </a></li>
+                <li><a href="{% url status.views.status_hostgroup %}">Hostgroups</a></li>
+                <li><a href="{% url status.views.status %}">Hosts </a></li>
+                <li><a href="{% url status.views.status %}">Services </a></li>
+            </ul>
+            <h5>Reports</h5>
+                <ul class="nav nav-list">
+                <li><a href="#">Log</a></li>
+                <li><a href="#">Reports</a></li>
+            </ul>
+        </div>
 
 
+        <div class="span10" id="main_content">
+            <!-- block content starts -->
+            {% block content %}block=content{% endblock %}
+            <!-- block content ends -->
+        </div>
+
+    </div>
+
+
+</div> <!-- /container -->
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{% url media path="jquery/jquery-1.7.2.min.js" %}"></script>
+<script src="{% url media path="bootstrap/js/bootstrap.min.js" %}"></script>
+
+<script src="{% url media path="datatables/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% url media path="datatables/DT_bootstrap.js" %}"></script>
+
+<script src="{% url media path="select2/select2.min.js" %}" type="text/javascript"></script>
+<script src="{% url media path="js/adagios.js" %}"></script>
+
+
+<script>
+    var BASE_URL = "{% url home %}";
+    var MEDIA_URL = "{% url media path="" %}";
+</script>
+
+<!-- block footer starts -->
 {% block footer %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
-        $('#objecttab a:first').tab('show');
-        $(document).ready(function() {
-
-
-
-            $('#run_check_plugin_refresh').click(function(e) {
-                $('#run_check_plugin div#output pre').html('Rerunning plugin');
-                $(this).adagios_ob_run_check_command();
-                return false;
-            });
-            $('#run_check_plugin').on('show', function() {
-                $(this).adagios_ob_run_check_command();
-            });
-        });
+    $('#objecttab a:first').tab('show');
     </script>
-{%  endblock %}
+{% endblock %}
+<!-- block footer ends -->
+
+<!--
+GLYPHICONS FREE are released under the Creative Commons Attribution 3.0 Unported (CC BY 3.0). The Glyphicons FREE can
+be used both commercially and for personal use, but you must always add a link to www.glyphicons.com in a prominent
+place (e.g. the footer of a website), include the CC-BY license and the reference to www.glyphicons.com on every page
+using Glyphicons.
+
+All logos and trademarks in social icons are the property of the respective trademark owners.®
+-->
+</body>
+</html>
