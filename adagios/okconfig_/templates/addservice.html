@@ -1,36 +1,12 @@
-{% extends "base.html" %}
+{% extends "base_okconfig.html" %}
 {% block title %}Add Service{% endblock %}
-
+{% block smallheader %}add {% endblock %}
+{% block largeheader %}service {% endblock %}
 {% block head %}
 {% endblock %}
 
 
 {% block content %}
-
-    <div class="row-fluid">
-        <div class="span8">
-            <div class="block">
-                <ul class="breadcrumb">
-                    <li>
-                        <a href="{% url home %}">Home</a> <span class="divider">/</span>
-                    </li>
-                    <li>
-                        <a href="{% url objectbrowser %}">Object Browser</a> <span class="divider">/</span>
-                    </li>
-                </ul>
-                <h2>
-                    <i class="icon-th-large"></i> <small>Add</small> Service to host
-                </h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="row-fluid">
-        <div class="span8">
-            <div class="block">
-
-
-
 
                 {% if form %}
 
@@ -59,10 +35,6 @@
                         </div>
                     </form>
                 {% endif %}
-            </div>
-        </div>
-    </div>
-
 
 
 {% endblock %}

@@ -1,32 +1,11 @@
-{% extends "base.html" %}
+{% extends "base_misc.html" %}
 {% block title %}REST Interface{% endblock %}
-
-
+{% block nav1 %}rest{% endblock %}
+{% block smallheader %}rest{% endblock %}
+{% block largeheader %}{{ module_name }}{% endblock %}
+{% block sidebar %}{% endblock %}
 {% block content %}
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="block">
-                <ul class="breadcrumb">
-                    <li>
-                        <a href="{% url home %}">Home</a> <span class="divider">/</span>
-                    </li>
-                    <li>
-                        <a href="{% url objectbrowser %}">Object Browser</a> <span class="divider">/</span>
-                    </li>
-                </ul>
-                <h2>
-                    <i class="icon-th-large"></i> <small>Service</small> {{ my_object.host_name }}
-                </h2>
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="row-fluid">
-        <div class="span9">
-            <div class="block">
-
+                The following GET operations are supported:
                 <table border=1>
                     {% for i in gets %}
 	                <tr>
@@ -49,13 +28,13 @@
 	                </tr>
                     {% endfor %}
                 </table>
-                The following is the documentation for the module you requested:
-                -----------------
-                {{ module_documenation }}
-                -----------------
-
-            </div>
-        </div>
-    </div>
+                {% if module_documenation %}
+                    <p>
+                        The following is the documentation for the module you requested:
+                    </p>
+                    <pre>{{ module_documenation }}</pre>
+                {% else %}
+                    This module has no documentation.
+                {% endif %}
 
 {% endblock %}
