@@ -7,7 +7,7 @@
     {{ service.display_name }} is <span class="state_{{ my_object.state }}">{{ my_object.status }}</span>
 {% endblock %}
 {% block nav1 %}<a href="{% url status.views.status %}">status</a>{% endblock %}
-{% block nav2 %}{{ host_name }} {% if service_description %}- {{ service_description }}{% endif %}{% endblock %}
+{% block nav2 %}{{ host_name }} {% if primary_object.object_type == 'service' %}- {{ service_description }}{% endif %}{% endblock %}
 
 
 
@@ -85,7 +85,7 @@
                                             <td>{{ i.max }}   </td>
                                             <td><label >{{ i.status }}</label></td>
                                             <td>
-                                                <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={% if my_object.object_type == 'service' %}{{ service.description }}{% else %}_HOST_{% endif %}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
+                                                <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -257,18 +257,18 @@
 
         <div class="tab-pane" id="graphs">
                 {% if graph_urls %}
-                    <div class="tabbable"> <!-- Only required for left/right tabs -->
-                        <ul class="nav nav-pills">
-                            <li><a href="#hours" data-toggle="tab">4 Hours</a></li>
+                    <div id="graphs_tab" class="tabbable"> <!-- Only required for left/right tabs -->
+                        <ul  class="nav nav-pills" id="graphs_ul">
+                            <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
                             <li class="active"><a href="#day" data-toggle="tab">25 Hours</a></li>
                             <li><a href="#week" data-toggle="tab">One Week</a></li>
                             <li><a href="#month" data-toggle="tab">One Month</a></li>
                             <li><a href="#year" data-toggle="tab">One Year</a></li>
                         </ul>
 
-                    <div class="tab-content">
-                        <div class="tab-pane" id="hours">
-                            {% for graph in graph_urls %}
+                    <div class="tab-content" id="graphs_content">
+                        <div class="tab-pane graph-pane" id="hours">
+                            {% for graph in graph_urlss %}
                                     {% if graph.title == "4 Hours" %}
                                         <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                     {% endif %}
@@ -276,7 +276,7 @@
                         </div>
 
                         <div class="tab-pane active" id="day">
-                            {% for graph in graph_urls %}
+                            {% for graph in graph_urlss %}
                                 {% if graph.title == "25 Hours" %}
                                     <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
@@ -284,7 +284,7 @@
                         </div>
 
                         <div class="tab-pane" id="week">
-                            {% for graph in graph_urls %}
+                            {% for graph in graph_urlss %}
                                 {% if graph.title == "One Week" %}
                                     <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
@@ -292,7 +292,7 @@
                         </div>
 
                         <div class="tab-pane" id="month">
-                            {% for graph in graph_urls %}
+                            {% for graph in graph_urlss %}
                                 {% if graph.title == "One Month" %}
                                     <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
@@ -300,7 +300,7 @@
                         </div>
 
                         <div class="tab-pane" id="year">
-                            {% for graph in graph_urls %}
+                            {% for graph in graph_urlss %}
                                 {% if graph.title == "One Year" %}
                                     <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
                                 {% endif %}
@@ -438,6 +438,34 @@
 
 {% block footer %}
     {{ block.super }}
+    <!-- Load graphs only on demand -->
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#graphs_content').show(function(event) {
+                    alert( e );
+                }
+        )
+        $('#graphs_ul').click(function(event){
+                    var anchor = event.srcElement.href.split('#')[1];
+                    var title = event.srcElement.text;
+                    my_element = document.getElementById(anchor);
+                    if (my_element.childElementCount == 0) {
+                        $.getJSON('{% url pnp.views.pnp 'json' %}?host={{ host_name }}&srv={{ service_description }}', function(data) {
+                                    $.each(data, function(i, item) {
+                                        if (item['title'] == title) {
+                                            new_img = document.createElement( 'img');
+                                            new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url']);
+                                            my_element.appendChild( new_img );
+                                            }
+                                        }
+                                    )
+                                }
+                        )
+                    }
+                }
+        )
+    </script>
+
 {% endblock %}
 
 

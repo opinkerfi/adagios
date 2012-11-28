@@ -88,10 +88,10 @@
                         <input name="q"  style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
                     </div>
                     <div class="btn-group pull-left">
-                        <a class="btn btn-info" href="#">
-                            <i class="icon-white icon-search"></i> Search
+                        <a class="btn " href="#">
+                            <i class="icon-search"></i> Search
                         </a>
-                        <a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                        <a class="btn  dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
                             <li><a href="?state__isnot=0"> All Problems</a></li>
@@ -103,6 +103,18 @@
             </div>
             <div class="pull-right">
                 <form>
+                    <!--
+                    <div class="btn-group pull-right" style="font-size: 11px;">
+                        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">... <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                            <li><a href="?state__isnot=0"> All Problems</a></li>
+                            <li><a href="?state=0"> All OK</a></li>
+                            <li><a href=""> Everything</a></li>
+                        </ul>
+                    </div>
+                    -->
+                    <div class="pull-right">
                     <button class="btn btn-small">
                         <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i>
                     </button>
@@ -118,6 +130,7 @@
                     <button class="btn btn-small">
                         <i class="glyph-edit" title="Configure {{ my_object.object_type }}"> </i>
                     </button>
+                    </div>
                 </form>
             </div >
         </div>
@@ -143,6 +156,18 @@
     <hr style="margin-top: 10px;">
     <div class="row-fluid">
         <div class="span2"   id="left_sidebar">
+            <div class="btn-group">
+                <a class="btn btn-success" href="{% url okconfig_.views.addhost %}">
+                    Add Host
+                </a>
+                <a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Add Check to host</a></li>
+                    <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Install Agent on host</a></li>
+                </ul>
+            </div>
+            <br>
+
             <h5>Current Status</h5>
             <ul class="nav nav-list">
                 <li><a href="{% url status.views.status %}?acknowledge=0&state__isnot=0">Unhandled Problems </a></li>

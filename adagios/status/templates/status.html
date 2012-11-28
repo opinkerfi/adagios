@@ -1,6 +1,6 @@
 {% extends "base_status.html" %}
 
-{% block title %}{{ block.super }}{% endblock %}
+{% block title %}Status Overview{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block adagios_hausinn %}
 {% endblock %}
@@ -15,34 +15,19 @@
 {% block content %}
             <table class="table" style="line-height:6px; font-size:12px;">
             <tr>
-                <th>                </th>
-                <th colspan=2>Name</th>
+                <th></th>
+                <th>Host</th>
+                <th>Service</th>
                 <th>Status</th>
                 <th>Output</th>
             </tr>
             {% for host in hosts %}
-                    <tr style="line-height:10px;" >
-                        <td style="line-height:5px;">
-                            <input style="margin: -4px; padding: 0px; line-height: 5px;" type="checkbox">
-                        </td>
-                        <th colspan=2 style="line-height:5px; padding-right: 0px;"  >
-                            <a href="{% url status.views.status_detail host.name %}">
-                                {{ host.name }}
-                            </a>
-                        </th>
-                        <th class="state_{{ host.state }}" colspan=1 style="line-height:5px; padding-right: 0px;"  >
-                            {{ host.status }}
-                        </th>
-                        <td colspan=2 style="line-height:5px;">
-                            {{ host.plugin_output }}
-                        </td>
-                    </tr>
                     {% for service in host.services %}
                         <tr style="line-height:6px;">
                         <td style="line-height:5px;">
                             <input style="margin: -4px; padding: 0px; line-height: 5px;" type="checkbox">
                         </td>
-                            <td></td>
+                            <td>{% ifchanged host.name %}{{ host.name }}{% endifchanged %}</td>
                         <td  colspan=1 style="white-space: nowrap; line-height:6px;">
                              <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
                         </td>

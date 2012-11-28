@@ -110,11 +110,13 @@ def status_detail(request, host_name, service_description=None):
 
     if service_description is None:
         primary_object = my_host
+        c['service_description'] = '_HOST_'
         c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name)
     else:
         try:
             c['service'] = my_service = livestatus.get_service(host_name,service_description)
             my_service['object_type'] = 'service'
+            c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
             c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name, 'Filter: description = %s' % service_description)
@@ -130,7 +132,6 @@ def status_detail(request, host_name, service_description=None):
     # Service list on the sidebar should be sorted
     my_host['services_with_info'] = sorted(my_host['services_with_info'])
     c['host_name'] = host_name
-    c['service_description'] = service_description
 
     perfdata = primary_object['perf_data']
     perfdata = pynag.Utils.PerfData(perfdata)

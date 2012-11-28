@@ -1,6 +1,6 @@
 {% extends "base_status.html" %}
 
-{% block title %}{{ block.super }}{% endblock %}
+{% block title %}Hostgroups{% endblock %}
 {% block nav2 %}<a href="{% url status.views.status_hostgroup %}">Hostgroups</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Hostgroups{% endblock %}
@@ -26,7 +26,7 @@
             {% endif %}
         </h4>
 
-        <table class="table well" style="line-height:6px; font-size:12px; width: 75%;" >
+        <table class="table well" style="line-height:6px; font-size:12px;" >
         <tr>
             <th>Hostgroup</th>
             <th>Hosts</th>
@@ -72,8 +72,8 @@
         {% else %}
            <h4>Host overview:</h4>
         {% endif %}
-        <br>
-        <table class="table well" style="line-height:6px; font-size:12px; width: 75%;" >
+
+        <table class="table well" style="line-height:6px; font-size:12px;" >
             <tr>
                 <th>host_name</th>
                 <th>Host Status</th>
