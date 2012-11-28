@@ -3,7 +3,12 @@
 {% block title %}Hostgroups{% endblock %}
 {% block nav2 %}<a href="{% url status.views.status_hostgroup %}">Hostgroups</a>{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Hostgroups{% endblock %}
+{% block largeheader %}
+    {% if hostgroup_name %}Hostgroup {{ hostgroup_name }}
+    {% else %}
+    Hostgroups
+    {% endif %}
+{% endblock %}
 
 {% block adagios_hausinn %}
     <div style="margin-top: 5px;" >
@@ -17,15 +22,8 @@
 {% endblock %}
 
 {% block content %}
-    {% if hostgroups %}
-        <h4>
-            {% if hostgroup_name %}
-                Hostgroup {{ hostgroup_name }} has the following subgroups:
-            {% else %}
-                Hostgroup overview:
-            {% endif %}
-        </h4>
 
+    {% if hostgroups %}
         <table class="table well" style="line-height:6px; font-size:12px;" >
         <tr>
             <th>Hostgroup</th>
@@ -35,74 +33,90 @@
             <th colspan=2>Service Status</th>
         </tr>
         {% for row in hostgroups %}
-            <tr>
-                <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
-                <td>
-                    {{ row.members|length }}
-                </td>
-                <td>
-                    {{ row.total }}
-                </td>
+            {% if row.members|length > 0 %}
+                <tr>
+                    <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
+                    <td>
+                        {{ row.members|length }}
+                    </td>
+                    <td>
+                        {{ row.total }}
+                    </td>
 
-                <td>
-                    {% if row.health > -1 %}
-                    {{ row.health|floatformat }}%
-                    {% else %}
-                    0
-                    {% endif %}
-                </td>
+                    <td>
+                        {% if row.health > -1 %}
+                        {{ row.health|floatformat }}%
+                        {% else %}
+                        0
+                        {% endif %}
+                    </td>
 
-                <td>
-                    <div class="progress">
-                        <div class="bar bar-success" style=" width: {{ row.percent_ok }}%;"></div>
-                        <div class="bar bar-warning" style=" width: {{ row.percent_warn }}%;"></div>
-                        <div class="bar bar-danger" style=" width: {{ row.percent_crit }}%;"></div>
-                        <div class="bar bar-info" style=" width: {{ row.percent_unknown }}%;"></div>
-                    </div>
-                </td>
-            </tr>
+                    <td>
+                        <div class="progress">
+                            <div class="bar bar-success" style=" width: {{ row.percent_ok }}%;"></div>
+                            <div class="bar bar-warning" style=" width: {{ row.percent_warn }}%;"></div>
+                            <div class="bar bar-danger" style=" width: {{ row.percent_crit }}%;"></div>
+                            <div class="bar bar-info" style=" width: {{ row.percent_unknown }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <!-- hostgroup {{ row.name }} was empty and therefor skippe -->
+            {% endif %}
         {% endfor %}
         </table>
     {% else %}
     {% endif %}
 
-    {% if hosts %}
-        {% if hostgroup_name %}
-            <h4>Hostgroup {{ hostgroup_name }} has the following hosts</h4>
-        {% else %}
-           <h4>Host overview:</h4>
-        {% endif %}
-
-        <table class="table well" style="line-height:6px; font-size:12px;" >
-            <tr>
-                <th>host_name</th>
-                <th>Host Status</th>
-                <th>Service Status</th>
-            </tr>
-
-            {% for row in hosts %}
-                <tr >
-                    <td><a style="color: black" href="{% url status.views.status_detail row.name %}">{{ row.name }}</a></td>
-                    {% if row.state  == 0 %}
-                        <td class="alert alert-success">UP</td>
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                    {% if hostgroup_name %}
+                        <h4>Hostgroup {{ hostgroup_name }} has {{ hosts|length }} hosts</h4>
                     {% else %}
-                        <td class="alert alert-danger">Down</td>
+                        <h4>See all {{ hosts|length }} hosts</h4>
                     {% endif %}
-                    <td>
-                        <div class="progress">
-                            <div class="bar bar-success" style="width: {{ row.percent_ok }}%;"></div>
-                            <div class="bar bar-warning" style="width: {{ row.percent_warn }}%;"></div>
-                            <div class="bar bar-danger" style="width: {{ row.percent_crit }}%;"></div>
-                            <div class="bar bar-info" style="width: {{ row.percent_unknown }}%;"></div>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        No hosts in this hostgroup.
-    {% endif %}
+                </a>
+            </div>
+            <div id="collapseTwo" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    {% if hosts %}
 
+                        <table class="table well" style="line-height:6px; font-si"h: 75%;" >
+                        <tr>
+                            <th>host_name</th>
+                            <th>Host Status</th>
+                            <th>Service Status</th>
+                        </tr>
+
+                        {% for row in hosts %}
+                            <tr >
+                                <td><a style="color: black" href="{% url status.views.status_detail row.name %}">{{ row.name }}</a></td>
+                                {% if row.state  == 0 %}
+                                    <td class="alert alert-success">UP</td>
+                                {% else %}
+                                    <td class="alert alert-danger">Down</td>
+                                {% endif %}
+                                <td>
+                                    <div class="progress">
+                                        <div class="bar bar-success" style="width: {{ row.percent_ok }}%;"></div>
+                                        <div class="bar bar-warning" style="width: {{ row.percent_warn }}%;"></div>
+                                        <div class="bar bar-danger" style="width: {{ row.percent_crit }}%;"></div>
+                                        <div class="bar bar-info" style="width: {{ row.percent_unknown }}%;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    {% else %}
+                        No hosts in this hostgroup.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block header %} {{ block.super }}
