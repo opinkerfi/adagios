@@ -382,6 +382,9 @@ def _edit_host( request, c):
     try: c['effective_contactgroups'] = host.get_effective_contact_groups()
     except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
 
+    try: c['effective_command'] = host.get_effective_check_command()
+    except KeyError, e: pass
+
     try:
         s = status()
         s.parse()
