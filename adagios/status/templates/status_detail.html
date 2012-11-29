@@ -26,6 +26,11 @@
     <div class="tab-pane" id="general">
     {% if my_object %}
                 <table class="table">
+                    <tr>
+                        <td></td>
+                        <td>Status</td>
+                        <td><div class="circle state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}</td>
+                    </tr>
                     <tr >
                         <td></td>
                         <td>Host Name</td>
@@ -45,11 +50,6 @@
                         <td>{{ service.display_name }}</td>
                     </tr>
                     {% endif %}
-                    <tr>
-                        <td></td>
-                        <td>Status</td>
-                        <td><div class="circle state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}</td>
-                    </tr>
                     <tr>
                         <td style="width: 20px;"></td>
                         <td>Check output</td>
@@ -146,22 +146,22 @@
                     Comments:
                 </td>
                 <td>
-                    <table>
-                        <tr>
-                            <th>Actions</th>
-                            <th>Author</th>
-                            <th>Message</th>
-                        </tr>
+                    <div id="comments">
                         {% for i in my_object.comments_with_info %}
-                        <td></td>
-                        <td>{{ i.1 }}</td>
-                        <td>{{ i.2 }}</td>
-                    {% endfor %}
-                    </table>
+                            <div class="alert alert-info">
+                                <button class="close" data-dismiss="alert" title="Delete this comment"><i class="glyph-bin"></i></button>
+                                <i class="glyph-user"></i> <a href="">{{ i.1 }}</a>: {{ i.2 }}
+                            </div>
+                        {% endfor %}
+                        <div id="div_add_comment" class="alert alert-info">
+                            <i class="glyph-user"></i> <a href="">{{ remote_user }}</a>: <input placeholder="Write a comment...">
+                        </div>
+                    </div>
+
                 </td>
             </tr>
         </table>
-        <hr>
+
         This check is executed every <a href="#">{{ my_object.check_interval }}</a> minutes.
 
         When a problem occurs it will check <a href="#">{{ my_object.max_check_attempts }}</a> times
@@ -414,7 +414,7 @@
     </style>
     <style>
         .state_0 {
-            background-color: #32cd32;
+            background-color: #90ee90;
             border-color: #D6E9C6;
         }
         .state_1 {
@@ -454,6 +454,8 @@
     {{ block.super }}
     <!-- Load graphs only on demand -->
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $('#select_bar').hide();
 
         $('#graphs_content').show(function(event) {
                     alert( e );
