@@ -44,6 +44,37 @@ state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
+def status_parents(request):
+    c = {}
+    c['messages'] = []
+    from collections import defaultdict
+    authuser = request.GET.get('contact_name', None)
+    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
+    all_hosts = livestatus.get_hosts()
+    all_services = livestatus.get_services()
+    all_contacts = livestatus.get_contacts()
+    host_dict = {}
+    map(lambda x: host_dict.__setitem__(x['name'], x), all_hosts)
+    c['hosts'] = []
+
+    for i in all_hosts:
+        if len(i['childs']) > 0:
+            c['hosts'].append(i)
+            ok = 0
+            crit = 0
+            for x in i['childs']:
+                if host_dict[x]['state'] == 0:
+                    ok += 1
+                else:
+                    crit += 1
+            total = float(len(i['childs']))
+            i['health'] = float(ok) / total * 100.0
+            i['percent_ok'] = ok/total*100
+            i['percent_crit'] = crit/total*100
+
+    return render_to_response('status_parents.html', c, context_instance = RequestContext(request))
+
+
 def status(request):
     c = {}
     c['messages'] = []
@@ -154,6 +185,7 @@ def status_detail(request, host_name, service_description=None):
 def status_hostgroup(request, hostgroup_name=None):
     c = { }
     c['messages'] = []
+    c['errors'] = []
     livestatus = pynag.Parsers.mk_livestatus()
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name

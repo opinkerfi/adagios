@@ -20,6 +20,73 @@
                 padding-top: 0;
             }
         }
+        .state_0 {
+            color: #468847;
+            background-color: #DFF0D8;
+            border-color: #D6E9C6;
+        }
+        .state_1 {
+            background-color: #FCEFB0;
+        }
+        .state_2 {
+            color: #B94A48;
+            background-color: #F2DEDE;
+            border-color: #EED3D7;
+        }
+        .state_3 {
+            background-color: #d3d3d3;
+        }
+        .table td {
+            line-height: 10px;
+        }
+        .circle {
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            /* width and height can be anything, as long as they're equal */
+        }
+
+        @-webkit-keyframes spin {
+		  from { -webkit-transform: rotate(0deg); }
+		  to { -webkit-transform: rotate(360deg); }
+		}
+
+        @-moz-keyframes spin {
+		  from { -moz-transform: rotate(0deg); }
+		  to { -moz-transform: rotate(360deg); }
+		}
+
+        @-ms-keyframes spin {
+		  from { -ms-transform: rotate(0deg); }
+		  to { -ms-transform: rotate(360deg); }
+		}
+
+        .circle-spin {
+
+            background-image: -moz-radial-gradient(12px 12px 12deg, circle cover, yellow 0%, orange 100%, red 95%);
+            background-image: -webkit-radial-gradient(10px 10px, circle cover, red, white);
+            background-image: radial-gradient(12px 12px 12deg, circle cover, yellow 0%, orange 100%, red 95%);
+
+
+            /* webkit chrome, safari, mobile */
+            -webkit-animation-name: spin;
+            -webkit-animation-duration: 3s; /* 3 seconds */
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-timing-function: linear;
+
+            /* mozilla ff */
+            -moz-animation-name: spin;
+            -moz-animation-duration: 3s; /* 3 seconds */
+            -moz-animation-iteration-count: infinite;
+            -moz-animation-timing-function: linear;
+
+            /* microsoft ie */
+            -ms-animation-name: spin;
+            -ms-animation-duration: 3s; /* 3 seconds */
+            -ms-animation-iteration-count: infinite;
+            -ms-animation-timing-function: linear;
+        }
     </style>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -69,10 +136,9 @@
         </li>
     </ul>
 </div>
-
 <!-- Here we start the main view -->
 <div class=span12></div>
-<div class="container-fluid content span12 block">
+<div class="container-fluid content  span12 block">
     <div class="row-fluid">
         <div class="pull-left" id="titlebar">
         <h2>
@@ -80,83 +146,8 @@
             {% block largeheader %}block=largeheader{% endblock %}
         </h2>
         </div>
-
         <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" id="right_of_title">
-            <div class="pull-right" id="search_box">
-                <form action="" method="get" >
-                    <div class="pull-left">
-                        <input name="q"  style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
-                    </div>
-                    <div class="btn-group pull-left">
-                        <a class="btn " href="#">
-                            <i class="icon-search"></i> Search
-                        </a>
-                        <a class="btn  dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
-                            <li><a href="?state__isnot=0"> All Problems</a></li>
-                            <li><a href="?state=0"> All OK</a></li>
-                            <li><a href=""> Everything</a></li>
-                        </ul>
-                    </div>
-                </form>
-            </div>
-            <div class="pull-right">
-                <form>
-                    <!--
-                    <div class="btn-group pull-right" style="font-size: 11px;">
-                        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">... <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
-                            <li><a href="?state__isnot=0"> All Problems</a></li>
-                            <li><a href="?state=0"> All OK</a></li>
-                            <li><a href=""> Everything</a></li>
-                        </ul>
-                    </div>
-                    -->
-                    <div class="pull-right">
-                    <button class="btn btn-small">
-                        <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i>
-                    </button>
-                    <button class="btn btn-small">
-                        <i class="glyph-check" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out"> </i>
-                    </button>
-                    <button class="btn btn-small">
-                        <i class="glyph-clock" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over"> </i>
-                    </button>
-                    <button class="btn btn-small">
-                        <i class="glyph-eye-open" title="Open in Nagios"> </i>
-                    </button>
-                    <button class="btn btn-small">
-                        <i class="glyph-edit" title="Configure {{ my_object.object_type }}"> </i>
-                    </button>
-                    </div>
-                </form>
-            </div >
-        </div>
-        <div id="error_messages">
-        {% if errors|length %}
-            {%  for error in errors %}
-                <div class="alert" style="clear: both;">
-                    <button class="close" data-dismiss="alert">×</button>
-                    <strong>Warning!</strong> {{ error }}
-                </div>
-            {%  endfor %}
-        {% endif %}
-        {% if messages|length %}
-            {%  for message in messages  %}
-                <div class="alert alert-success" style="clear: both;">
-                    <button class="close" data-dismiss="alert alert-success">×</button>
-                    <strong>Info!</strong> {{ message }}
-                </div>
-            {%  endfor %}
-        {% endif %}
-        </div>
-    </div>
-    <hr style="margin-top: 10px;">
-    <div class="row-fluid">
-        <div class="span2"   id="left_sidebar">
-            <div class="btn-group">
+            <div class="pull-right btn-group">
                 <a class="btn btn-success" href="{% url okconfig_.views.addhost %}">
                     Add Host
                 </a>
@@ -168,12 +159,35 @@
             </div>
             <br>
 
+        </div>
+        <div id="error_messages" style="margin-left: 30px;" class="pull-left">
+        {% if errors|length %}
+            {%  for error in errors %}
+                <div class="alert">
+                    <button class="close" data-dismiss="alert">×</button>
+                    <strong>Warning!</strong> {{ error }}
+                </div>
+            {%  endfor %}
+        {% endif %}
+        {% if messages|length %}
+            {%  for message in messages  %}
+                <div class="alert alert-success">
+                    <button class="close" data-dismiss="alert alert-success">×</button>
+                    <strong>Info!</strong> {{ message }}
+                </div>
+            {%  endfor %}
+        {% endif %}
+        </div>
+    </div>
+    <hr style="margin-top: 10px; margin-bottom: 10px;">
+    <div class="row-fluid">
+        <div class="span2"   id="left_sidebar">
             <h5>Current Status</h5>
             <ul class="nav nav-list">
-                <li><a href="{% url status.views.status %}?acknowledge=0&state__isnot=0">Unhandled Problems </a></li>
+                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0">Unhandled Problems </a></li>
                 <li><a href="{% url status.views.status_hostgroup %}">Hostgroups</a></li>
-                <li><a href="{% url status.views.status %}">Hosts </a></li>
                 <li><a href="{% url status.views.status %}">Services </a></li>
+                <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
             </ul>
             <h5>Reports</h5>
                 <ul class="nav nav-list">
@@ -184,9 +198,75 @@
 
 
         <div class="span10" id="main_content">
+            {% block toolbar %}
+            <div class id="toolbar row-fluid" style="margin-bottom: 40px;">
+
+                <div class="span6" id="action_buttons">
+                    <form>
+                        <!--
+                        <div class="btn-group pull-right" style="font-size: 11px;">
+                            <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">... <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                                <li><a href="?state__isnot=0"> All Problems</a></li>
+                                <li><a href="?state=0"> All OK</a></li>
+                                <li><a href=""> Everything</a></li>
+                            </ul>
+                        </div>
+                        -->
+                        <div >
+                            <button class="btn btn-small">
+                                <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i> Recheck
+                            </button>
+                            <button class="btn btn-small">
+                                <i class="glyph-check" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out"> </i> Acknowledge
+                            </button>
+                            <button class="btn btn-small">
+                                <i class="glyph-clock" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over"> </i> Downtime
+                            </button>
+                            <button class="btn btn-small">
+                                <i class="glyph-eye-open" title="Open in Nagios"> </i>
+                            </button>
+                            <button class="btn btn-small">
+                                <i class="glyph-edit" title="Configure {{ my_object.object_type }}"> </i>
+                            </button>
+                            <button class="btn btn-small">
+                                <i class="glyph-bin" title="Delete {{ my_object.object_type }}"> </i>
+                            </button>
+
+                        </div>
+                    </form>
+                </div >
+
+
+
+                <div class=" pull-right" id="search_box">
+                    <form action="" method="get" >
+                        <div class="pull-left">
+                            <input name="q"  style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
+                        </div>
+                        <div class="btn-group pull-left">
+                            <a class="btn " href="#">
+                                <i class="icon-search"></i> Search
+                            </a>
+                            <a class="btn  dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                                <li><a href="?state__isnot=0"> All Problems</a></li>
+                                <li><a href="?state=0"> All OK</a></li>
+                                <li><a href=""> Everything</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            {% endblock %}
+            <div id="block-content">
             <!-- block content starts -->
             {% block content %}block=content{% endblock %}
             <!-- block content ends -->
+            </div>
         </div>
 
     </div>

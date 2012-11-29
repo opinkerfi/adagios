@@ -4,6 +4,7 @@ from django.conf import settings
 urlpatterns = patterns('',
     (r'^/test/?$', 'status.views.test_livestatus'),
     (r'^/treeview/(?P<hostgroup_name>.+)?/?$', 'status.views.status_treeview'),
+    (r'^/parents/?$', 'status.views.status_parents'),
     (r'^/host/?$', 'status.views.status'),
     (r'^/hostgroup/?$', 'status.views.status_hostgroup'),
     (r'^/?$', 'status.views.status_hostgroup'),

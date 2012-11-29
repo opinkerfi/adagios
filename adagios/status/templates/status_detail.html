@@ -1,10 +1,9 @@
 {% extends "base_status.html" %}
 {% load adagiostags %}
-
 {% block title %}{{ my_object.display_name }}{% endblock %}
 {% block smallheader %}{{ host.display_name }} {% endblock %}
 {% block largeheader %}
-    {{ service.display_name }} is <span class="state_{{ my_object.state }}">{{ my_object.status }}</span>
+    {{ service.display_name }} <span class="state_{{ my_object.state }}">{{ my_object.status }}</span>
 {% endblock %}
 {% block nav1 %}<a href="{% url status.views.status %}">status</a>{% endblock %}
 {% block nav2 %}{{ host_name }} {% if primary_object.object_type == 'service' %}- {{ service_description }}{% endif %}{% endblock %}
@@ -30,7 +29,9 @@
                     <tr >
                         <td></td>
                         <td>Host Name</td>
-                        <td><a href="{% url status.views.status_detail host.name %}">{{ host.display_name }}</a></td>
+                        <td><a href="{% url status.views.status_detail host.name %}" title="{{ host.plugin_output }}">
+                            <div class="circle state_{{ host.state }}"></div> {{ host.display_name }}
+                        </a></td>
                     </tr>
                     <tr >
                         <td></td>
@@ -44,7 +45,11 @@
                         <td>{{ service.display_name }}</td>
                     </tr>
                     {% endif %}
-
+                    <tr>
+                        <td></td>
+                        <td>Status</td>
+                        <td><div class="circle state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}</td>
+                    </tr>
                     <tr>
                         <td style="width: 20px;"></td>
                         <td>Check output</td>
@@ -64,6 +69,7 @@
                             {% if perfdata %}
                                 <table border=1 class=table style="border-color: #ffffff;" >
                                     <tr>
+                                        <th></th>
                                         <th>label</th>
                                         <th>value</th>
                                         <th>warn</th>
@@ -71,11 +77,11 @@
                                         <th>unit</th>
                                         <th>min</th>
                                         <th>max</th>
-                                        <th>status</th>
                                         <th>pnp</th>
                                     </tr>
                                     {% for i in perfdata %}
-                                        <tr class="state_{{ i.get_status }}">
+                                        <tr>
+                                            <td class="nowrap"><div class="circle state_{{ i.get_status }}"> </div></td>
                                             <td>{{ i.label }}</td>
                                             <td>{{ i.value }} </td>
                                             <td>{{ i.warn }}  </td>
@@ -83,7 +89,6 @@
                                             <td> {{ i.uom }}</td>
                                             <td>{{ i.min }}   </td>
                                             <td>{{ i.max }}   </td>
-                                            <td><label >{{ i.status }}</label></td>
                                             <td>
                                                 <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
                                             </td>
@@ -147,7 +152,7 @@
                             <th>Author</th>
                             <th>Message</th>
                         </tr>
-                        {% for i in comments_with_info %}
+                        {% for i in my_object.comments_with_info %}
                         <td></td>
                         <td>{{ i.1 }}</td>
                         <td>{{ i.2 }}</td>
@@ -321,9 +326,9 @@
         <h5>Services on this host</h5>
         <ul class="nav nav-list">
             {% for i in host.services_with_info %}
-                <li>
-                    <a class="state_{{ i.1 }}" title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
-                        <i class="glyph-refresh"></i> {{ i.0 }}
+                <li style="white-space: nowrap;">
+                    <a title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
+                        <div class="circle state_{{ i.1 }}"></div> {{ i.0 }}
                     </a>
                 </li>
 
@@ -345,7 +350,9 @@
         <h5>Network Parents</h5>
         <ul class="nav nav-list">
             {% for i in host.parents %}
-                <li><a href="{% url status.views.status i %}">{{ i }}</a></li>
+                <li><a href="{% url status.views.status_detail i %}">
+                    {{ i }}
+                </a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -400,14 +407,14 @@
     </style>
     <style>
         .state_0 {
-            background-color: #DFF0D8;
+            background-color: #32cd32;
             border-color: #D6E9C6;
         }
         .state_1 {
-            background-color: #FCF8E3;
+            background-color: orange;
         }
         .state_2 {
-            background-color: #EED3D7;
+            background-color: #ffc0cb;
             #color: #B94A48;
         }
         .state_3 {

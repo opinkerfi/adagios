@@ -7,13 +7,15 @@
 {% block largeheader %}Service Overview
 {% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
+{% load adagiostags %}
 
 {% block sidebar_outer %}
 {% endblock %}
 {% block content_span %}span12{% endblock %}
 
 {% block content %}
-            <table class="table" style="line-height:6px; font-size:12px;">
+            <table class="table well" style="line-height:6px; font-size:12px;">
+            <!--
             <tr>
                 <th></th>
                 <th>Host</th>
@@ -21,18 +23,23 @@
                 <th>Status</th>
                 <th>Output</th>
             </tr>
+            -->
             {% for host in hosts %}
                     {% for service in host.services %}
                         <tr style="line-height:6px;">
                         <td style="line-height:5px;">
                             <input style="margin: -4px; padding: 0px; line-height: 5px;" type="checkbox">
                         </td>
-                            <td>{% ifchanged host.name %}{{ host.name }}{% endifchanged %}</td>
+                            <td style="white-space: nowrap;">{% ifchanged host.name %}
+                                <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
+                                {{ host.name }}
+                            {% endifchanged %}</td>
                         <td  colspan=1 style="white-space: nowrap; line-height:6px;">
-                             <a href="{% url status.views.status_detail host.name service.description %}">{{ service.description }}</a>
+                             <a href="{% url status.views.status_detail host.name service.description %}" title=''>
+                                 {{ service.description }}</a>
                         </td>
-                        <td class=state_{{ service.state }}><b>{{ service.status }}</b></td>
-                        <td>{{ service.plugin_output }}</td>
+                        <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td>
+                        <td style="font-size: 11px;">{{ service.plugin_output }}</td>
                         </tr>
                     {% endfor %}
             {% endfor %}
@@ -62,7 +69,17 @@
         .table td {
             line-height: 10px;
         }
-    </style>
+        .circle {
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            /* width and height can be anything, as long as they're equal */
+        }
+        a {
+            color:  black;
+        }
+        <style>
 
     <style>
         .input-append button.add-on {

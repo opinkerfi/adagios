@@ -86,14 +86,16 @@
 
                         <table class="table well" style="line-height:6px; font-si"h: 75%;" >
                         <tr>
-                            <th>host_name</th>
-                            <th>Host Status</th>
+                            <th>Host Name</th>
+                            <th>Address</th>
+                            <th>Status</th>
                             <th>Service Status</th>
                         </tr>
 
                         {% for row in hosts %}
                             <tr >
                                 <td><a style="color: black" href="{% url status.views.status_detail row.name %}">{{ row.name }}</a></td>
+                                <td>{{ row.address }}</td>
                                 {% if row.state  == 0 %}
                                     <td class="alert alert-success">UP</td>
                                 {% else %}
