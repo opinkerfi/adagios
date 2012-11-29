@@ -462,8 +462,8 @@
                 }
         )
         $('#graphs_ul').click(function(event){
-                    var anchor = event.srcElement.href.split('#')[1];
-                    var title = event.srcElement.text;
+                    var anchor = event.target.href.split('#')[1];
+                    var title = event.target.text;
                     my_element = document.getElementById(anchor);
                     if (my_element.childElementCount == 0) {
                         $.getJSON('{% url pnp.views.pnp 'json' %}?host={{ host_name }}&srv={{ service_description }}', function(data) {
