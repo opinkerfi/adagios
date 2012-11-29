@@ -14,17 +14,26 @@
 {% block content_span %}span12{% endblock %}
 
 {% block content %}
-            <table class="table well table-condensed" style="line-height:6px; font-size:12px;">
+            <table class="table table-condensed well" style="line-height:6px; font-size:12px;">
             <thead>
-                <!--
                 <tr>
-                    <th></th>
+                    <td>
+                        <div class="btn-group" id="select_bar">
+                            <a class="" data-toggle="dropdown" href="#">
+                                <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href=""> All</a></li>
+                                <li><a href=""> None</a></li>
+                                <li><a href=""> Unhandled Problems</a></li>
+                                <li><a href=""> All Problems</a></li>
+                            </ul>
+                        </div>
+                    </td>
                     <th>Host</th>
                     <th>Service</th>
-                    <th>Status</th>
                     <th>Output</th>
                 </tr>
-                -->
             </thead>
             <tbody class="">
                 {% for host in hosts %}
@@ -38,10 +47,10 @@
                                     {{ host.name }}
                                 {% endifchanged %}</td>
                             <td  colspan=1 style="white-space: nowrap;">
-                                 <a href="{% url status.views.status_detail host.name service.description %}" title=''>
-                                     {{ service.description }}</a>
+                                 <a href="{% url status.views.status_detail host.name service.description %}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
+                                     <div class="circle state_{{ service.state }}"> </div> {{ service.description }}</a>
                             </td>
-                            <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td>
+                            <!-- <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td> -->
                             <td style="font-size: 80%">{{ service.plugin_output }}</td>
                             </tr>
                         {% endfor %}
@@ -56,15 +65,15 @@
     <style>
         .state_0 {
             color: #468847;
-            background-color: #DFF0D8;
+            background-color: #90ee90;
             border-color: #D6E9C6;
         }
         .state_1 {
-            background-color: #FCEFB0;
+            background-color: orange;
         }
         .state_2 {
             color: #B94A48;
-            background-color: #F2DEDE;
+            background-color: pink;
             border-color: #EED3D7;
         }
         .state_3 {

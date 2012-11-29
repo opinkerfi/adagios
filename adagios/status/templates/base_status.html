@@ -185,17 +185,11 @@
     <hr style="margin-top: 10px; margin-bottom: 10px;">
     <div class="row-fluid">
         <div class="span2"   id="left_sidebar">
-            <h5>Current Status</h5>
             <ul class="nav nav-list">
-                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0">Unhandled Problems </a></li>
+                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0">Problems </a></li>
                 <li><a href="{% url status.views.status_hostgroup %}">Hostgroups</a></li>
                 <li><a href="{% url status.views.status %}">Services </a></li>
                 <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
-            </ul>
-            <h5>Reports</h5>
-                <ul class="nav nav-list">
-                <li><a href="#">Log</a></li>
-                <li><a href="#">Reports</a></li>
             </ul>
         </div>
 
@@ -218,6 +212,7 @@
                         </div>
                         -->
                         <div >
+
                             <button class="btn btn-small">
                                 <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i> Recheck
                             </button>
@@ -249,7 +244,7 @@
                             <input name="q"  style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
                         </div>
                         <div class="btn-group pull-left">
-                            <a class="btn " href="#">
+                            <a class="btn btn-small" href="#">
                                 <i class="icon-search"></i> Search
                             </a>
                             <a class="btn  dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
