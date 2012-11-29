@@ -14,35 +14,39 @@
 {% block content_span %}span12{% endblock %}
 
 {% block content %}
-            <table class="table well" style="line-height:6px; font-size:12px;">
-            <!--
-            <tr>
-                <th></th>
-                <th>Host</th>
-                <th>Service</th>
-                <th>Status</th>
-                <th>Output</th>
-            </tr>
-            -->
-            {% for host in hosts %}
-                    {% for service in host.services %}
-                        <tr style="line-height:6px;">
-                        <td style="line-height:5px;">
-                            <input style="margin: -4px; padding: 0px; line-height: 5px;" type="checkbox">
-                        </td>
-                            <td style="white-space: nowrap;">{% ifchanged host.name %}
-                                <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
-                                {{ host.name }}
-                            {% endifchanged %}</td>
-                        <td  colspan=1 style="white-space: nowrap; line-height:6px;">
-                             <a href="{% url status.views.status_detail host.name service.description %}" title=''>
-                                 {{ service.description }}</a>
-                        </td>
-                        <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td>
-                        <td style="font-size: 11px;">{{ service.plugin_output }}</td>
-                        </tr>
-                    {% endfor %}
-            {% endfor %}
+            <table class="table well table-condensed" style="line-height:6px; font-size:12px;">
+            <thead>
+                <!--
+                <tr>
+                    <th></th>
+                    <th>Host</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                    <th>Output</th>
+                </tr>
+                -->
+            </thead>
+            <tbody class="">
+                {% for host in hosts %}
+                        {% for service in host.services %}
+                            <tr >
+                            <td >
+                                <input style="margin: -2px; padding: 0px;" type="checkbox">
+                            </td>
+                                <td style="white-space: nowrap;">{% ifchanged host.name %}
+                                    <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
+                                    {{ host.name }}
+                                {% endifchanged %}</td>
+                            <td  colspan=1 style="white-space: nowrap;">
+                                 <a href="{% url status.views.status_detail host.name service.description %}" title=''>
+                                     {{ service.description }}</a>
+                            </td>
+                            <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td>
+                            <td style="font-size: 80%">{{ service.plugin_output }}</td>
+                            </tr>
+                        {% endfor %}
+                {% endfor %}
+            </tbody>
             </table>
 {% endblock %}
 
