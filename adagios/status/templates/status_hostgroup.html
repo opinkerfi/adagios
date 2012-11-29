@@ -10,17 +10,6 @@
     {% endif %}
 {% endblock %}
 
-{% block adagios_hausinn %}
-    <div style="margin-top: 5px;" >
-        <form action="{% url status.views.status %}" action="get" style="margin-bottom: 2px;">
-            <input name="q"  style="width: 400px;  line-height: 22px; margin-left: 50px;" class="search-query" placeholder="hostgroups,hosts,services,etc..." />
-            <button type="submit" class='btn add-on btn-info'>
-                <i class="icon-white icon-search"></i>
-            </button>
-        </form>
-    </div>
-{% endblock %}
-
 {% block content %}
 
     {% if hostgroups %}
@@ -52,7 +41,7 @@
                     </td>
 
                     <td>
-                        <div class="progress">
+                        <div title="{{ row.total  }} services -- {{ row.problems }} problems" class="progress">
                             <div class="bar bar-success" style=" width: {{ row.percent_ok }}%;"></div>
                             <div class="bar bar-warning" style=" width: {{ row.percent_warn }}%;"></div>
                             <div class="bar bar-danger" style=" width: {{ row.percent_crit }}%;"></div>
