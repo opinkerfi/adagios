@@ -13,6 +13,19 @@ Network Parents
 
     <table class="table well" style="line-height:6px; font-size: 12px" >
     <tr>
+        <th>
+            <div class="btn-group" id="select_bar">
+                <a class="" data-toggle="dropdown" href="#">
+                    <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href=""> All</a></li>
+                    <li><a href=""> None</a></li>
+                    <li><a href=""> Unhandled Problems</a></li>
+                    <li><a href=""> All Problems</a></li>
+                </ul>
+            </div>
+        </th>
         <th>Host Name</th>
         <th>Address</th>
         <th>Status</th>
@@ -22,6 +35,10 @@ Network Parents
 
     {% for row in hosts %}
         <tr >
+        <td>
+            <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+
+        </td>
             <td><a style="color: black" href="{% url status.views.status_detail row.name %}">{{ row.name }}</a></td>
             <td>{{ row.address }}</td>
             {% if row.state  == 0 %}

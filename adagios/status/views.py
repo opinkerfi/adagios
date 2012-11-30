@@ -190,9 +190,29 @@ def status_hostgroup(request, hostgroup_name=None):
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
 
+    # Lets establish a good list of all hostgroups and parentgroups
+    all_hostgroups = pynag.Model.Hostgroup.objects.all
+    all_subgroups = set() # all hostgroups that belong in some other hostgroup
+    hostgroup_parentgroups = defaultdict(set) # "subgroup":['master1','master2']
+    hostgroup_childgroups = pynag.Model.ObjectRelations.hostgroup_hostgroups
+
+    for hostgroup,subgroups in hostgroup_childgroups.items():
+        map(lambda x: hostgroup_parentgroups[x].add(hostgroup), subgroups)
+
+    for i in hostgroups:
+        i['child_hostgroups'] = hostgroup_childgroups[i['name']]
+        i['parent_hostgroups'] = hostgroup_parentgroups[i['name']]
+
     if hostgroup_name is None:
-        c['hostgroups'] = hostgroups
+        # If no hostgroup was specified. Lets only show "root hostgroups"
         c['hosts'] = livestatus.get_hosts()
+        my_hostgroups = []
+        for i in hostgroups:
+            if len(i['parent_hostgroups']) == 0:
+                my_hostgroups.append(i)
+        my_hostgroups.sort()
+        c['hostgroups'] = my_hostgroups
+
     else:
         my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
         subgroups = my_hostgroup.hostgroup_members or ''

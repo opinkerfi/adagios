@@ -1,10 +1,19 @@
 {% extends "base_status.html" %}
 
 {% block title %}Hostgroups{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_hostgroup %}">Hostgroups</a>{% endblock %}
-{% block smallheader %}{% endblock %}
+{% block nav2 %}
+    <a href="{% url status.views.status_hostgroup %}">Hostgroups</a>
+    {% if hostgroup_name %}
+    / {{ hostgroup_name }}
+    {% else %}
+    {% endif %}
+{% endblock %}
+{% block smallheader %}
+    {% if hostgroup_name %}hostgroup
+    {% endif %}
+{% endblock %}
 {% block largeheader %}
-    {% if hostgroup_name %}Hostgroup {{ hostgroup_name }}
+    {% if hostgroup_name %}{{ hostgroup_name }}
     {% else %}
     Hostgroups
     {% endif %}
@@ -15,7 +24,23 @@
     {% if hostgroups %}
         <table class="table well table-condensed" style="line-height:6px; font-size:12px;" >
         <tr>
+            <th>
+                <div class="btn-group" id="select_bar">
+                    <a class="" data-toggle="dropdown" href="#">
+                        <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href=""> All</a></li>
+                        <li><a href=""> None</a></li>
+                        <li><a href=""> Unhandled Problems</a></li>
+                        <li><a href=""> All Problems</a></li>
+                    </ul>
+                </div>
+
+            </th>
             <th>Hostgroup</th>
+            <th>Child Hostgroups</th>
+            <th>Parent Hostgroups</th>
             <th>Hosts</th>
             <th>Services</th>
             <th>Health</th>
@@ -24,7 +49,20 @@
         {% for row in hostgroups %}
             {% if row.members|length > 0 %}
                 <tr>
+                    <td>
+                        <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+                    </td>
                     <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
+                    <td>
+                        <div title="{{ row.child_hostgroups }}">
+                            {{ row.child_hostgroups|length }}
+                        </div>
+                    </td>
+                    <td>
+                        <div title="{{ row.parent_hostgroups }}">
+                            {{ row.parent_hostgroups|length }}
+                        </div>
+                    </td>
                     <td>
                         {{ row.members|length }}
                     </td>
@@ -50,26 +88,24 @@
                     </td>
                 </tr>
             {% else %}
-                <!-- hostgroup {{ row.name }} was empty and therefor skippe -->
+                <!-- hostgroup {{ row.name }} was empty and therefor skipped -->
             {% endif %}
         {% endfor %}
         </table>
     {% else %}
     {% endif %}
 
+{% if hostgroup_name %}
+
     <div class="accordion" id="accordion2">
         <div class="accordion-group">
         <div class="accordion-group">
             <div class="accordion-heading">
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                    {% if hostgroup_name %}
-                        <h4>Hostgroup {{ hostgroup_name }} has {{ hosts|length }} hosts</h4>
-                    {% else %}
-                        <h4>See all {{ hosts|length }} hosts</h4>
-                    {% endif %}
+                    <h4>Hostgroup {{ hostgroup_name }} has {{ hosts|length }} hosts</h4>
                 </a>
             </div>
-            <div id="collapseTwo" class="accordion-body collapse">
+            <div id="collapseTwo" class="accordion-body ">
                 <div class="accordion-inner">
                     {% if hosts %}
 
@@ -108,6 +144,7 @@
             </div>
         </div>
     </div>
+{% endif %}
 {% endblock %}
 
 {% block header %} {{ block.super }}

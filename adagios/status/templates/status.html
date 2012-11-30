@@ -14,7 +14,7 @@
 {% block content_span %}span12{% endblock %}
 
 {% block content %}
-            <table class="table table-condensed well" style="line-height:6px; font-size:12px;">
+            <table class="table table-condensed well " style="line-height:6px; font-size:12px;">
             <thead>
                 <tr>
                     <td>
@@ -31,8 +31,8 @@
                         </div>
                     </td>
                     <th>Host</th>
-                    <th>Service</th>
-                    <th>Output</th>
+                    <th>Service Check</th>
+                    <th>Received</th>
                 </tr>
             </thead>
             <tbody class="">
@@ -46,12 +46,20 @@
                                     <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
                                     {{ host.name }}
                                 {% endifchanged %}</td>
-                            <td  colspan=1 style="white-space: nowrap;">
+                            <td  colspan=1 style="word-wrap: break-word;">
                                  <a href="{% url status.views.status_detail host.name service.description %}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
                                      <div class="circle state_{{ service.state }}"> </div> {{ service.description }}</a>
+                                <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
+                                <span title="{{ service.plugin_output }}" style="font-size: 80%; color: #808080; font-weight: normal;">
+                                         {{ service.plugin_output|slice:"70" }}
+                                 </span>
+
+
+                            </td>
+                            <td style="white-space: nowrap; font-size: 80%;">
+                                {{ service.last_check|timestamp|date:'Y-m-d H:i' }}
                             </td>
                             <!-- <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td> -->
-                            <td style="font-size: 80%">{{ service.plugin_output }}</td>
                             </tr>
                         {% endfor %}
                 {% endfor %}
@@ -92,6 +100,7 @@
         a {
             color:  black;
         }
+
         <style>
 
     <style>
