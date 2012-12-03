@@ -110,6 +110,20 @@ def status(request):
         else:
             service['status'] = state[service['state']]
             services[ service['host_name'] ].append(service)
+            tags = []
+            if service['state'] != 0:
+                tags.append('problem')
+                tags.append('problems')
+                if service['acknowledged'] == 0 and service['downtimes'] == []:
+                    tags.append('unhandled')
+            else:
+                tags.append('ok')
+            if service['acknowledged'] == 1:
+                tags.append('acknowledged')
+            if service['downtimes'] != []:
+                tags.append('downtime')
+            service['tags'] = ' '.join(tags)
+
     #    services[service['host_name']].append( service )
     for host in all_hosts:
         if len(services[host['name']]) > 0:
@@ -119,7 +133,7 @@ def status(request):
     hosts.sort()
     c['services'] = services
     c['hosts'] = hosts
-    c['log'] = livestatus.query('GET log', 'Limit: 50')
+    #c['log'] = livestatus.query('GET log', 'Limit: 50')
     return render_to_response('status.html', c, context_instance = RequestContext(request))
 
 def status_detail(request, host_name, service_description=None):
@@ -142,7 +156,7 @@ def status_detail(request, host_name, service_description=None):
     if service_description is None:
         primary_object = my_host
         c['service_description'] = '_HOST_'
-        c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name)
+        #c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name)
     else:
         try:
             c['service'] = my_service = livestatus.get_service(host_name,service_description)
@@ -150,7 +164,7 @@ def status_detail(request, host_name, service_description=None):
             c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
-            c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name, 'Filter: description = %s' % service_description)
+            #c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name, 'Filter: service_description = %s' % service_description)
         except IndexError:
             c['errors'].append("Could not find any service named '%s'"%service_description)
             return render_to_response('status_detail.html', c, context_instance = RequestContext(request))

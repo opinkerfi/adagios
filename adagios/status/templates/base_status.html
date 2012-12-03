@@ -46,9 +46,16 @@
             display: inline-block;
             /* width and height can be anything, as long as they're equal */
         }
+        .row_selected {
+            background-color: lightblue;
+        }
         a {
             color: black;
         }
+        .table tbody tr:hover td, .table tbody tr:hover th {
+            background-color: lightblue;
+        }
+
         @-webkit-keyframes spin {
 		  from { -webkit-transform: rotate(0deg); }
 		  to { -webkit-transform: rotate(360deg); }
@@ -198,7 +205,6 @@
             <div class id="toolbar row-fluid" style="margin-bottom: 40px;">
 
                 <div class="pull-left" id="action_buttons">
-                    <form>
                         <!--
                         <div class="btn-group pull-right" style="font-size: 11px;">
                             <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">... <span class="caret"></span></a>
@@ -212,27 +218,26 @@
                         -->
                         <div >
 
-                            <button class="btn btn-small">
-                                <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i> Recheck
+                            <button class="btn btn-small" data-loading-text="<img src='{{ BASE_URL }}/media/select2/spinner.gif'> Running..." id="reschedule_button">
+                                <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i> <span id="reschedule_text">Recheck</span>
                             </button>
-                            <button class="btn btn-small">
+                            <button class="btn btn-small" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button">
                                 <i class="glyph-check" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out"> </i> Acknowledge
                             </button>
-                            <button class="btn btn-small">
+                            <button class="btn btn-small" id="downtime_button">
                                 <i class="glyph-clock" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over"> </i> Downtime
                             </button>
                             <button class="btn btn-small">
                                 <i class="glyph-eye-open" title="Open in Nagios"> </i>
                             </button>
-                            <button class="btn btn-small">
+                            <a class="btn btn-small" id="configure_button" {% if my_object %}href="{% url edit_by_shortname my_object.object_type my_object.short_name %}"{% endif %}>
                                 <i class="glyph-edit" title="Configure {{ my_object.object_type }}"> </i>
-                            </button>
-                            <button class="btn btn-small">
+                            </a>
+                            <button class="btn btn-small" id="delete_button">
                                 <i class="glyph-bin" title="Delete {{ my_object.object_type }}"> </i>
                             </button>
 
                         </div>
-                    </form>
                 </div >
 
 
@@ -240,7 +245,7 @@
                 <div class=" pull-right" id="search_box">
                     <form action="" method="get" >
                         <div class="pull-left">
-                            <input name="q"  style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
+                            <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
                         </div>
                         <div class="btn-group pull-left">
                             <a class="btn btn-small" href="#">
@@ -292,8 +297,129 @@
 <!-- block footer starts -->
 {% block footer %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        // Change our table into a jquery datatable
+        /*$(function() {
+            oTable = $('#datatable').dataTable( {
+                "bPaginate": true,
+                "rowClasses": "test, test",
+                "iDisplayLength": 100,
 
-    $('#objecttab a:first').tab('show');
+            });
+            $('#search_field').keypress(function(){
+                oTable.fnFilter( $(this).val() );
+            });
+            $('#datatable_filter').hide();
+            $('#datatable_length').hide();
+
+        });
+        */
+    </script>
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        // When somebody clicks the acknowledge button, lets focus on the comment field
+        $('#acknowledge_modal').on('shown', function () {
+            document.getElementById('id_comment').focus()
+        })
+    </script>
+
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        // When row is clicked, lets check the checkbox in front of the row
+
+        $(document).ready(function() {
+            $('#datatable tr').click(function(e) {
+                if (e.target.type !== 'checkbox') {
+                        $(':checkbox', this).trigger('click');
+                }
+                update_selected_rows();
+            });
+        });
+
+        /*
+        // Enable shift+clicking to select multiple elements
+        var lastChecked = null;
+        $(document).ready(function() {
+            var $chkboxes = $('.chkbox');
+            function check_range(start) {
+                //var start = $chkboxes.index(this);
+                var end = $chkboxes.index(lastChecked);
+                $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).attr('checked', lastChecked.checked);
+                //$chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).parent().siblings().css('background-color', 'lightblue');
+                lastChecked = this;
+            }
+            $chkboxes.click(function(e) {
+
+                if(!lastChecked) {
+                    lastChecked = this;
+                    return;
+                }
+
+                if(e.shiftKey) {
+                    check_range($chkboxes.index(this));
+                    //var start = $chkboxes.index(this);
+                    //var end = $chkboxes.index(lastChecked);
+
+                    //$chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).attr('checked', lastChecked.checked);
+
+                }
+
+                lastChecked = this;
+            });
+        });
+        */
+        function update_selected_rows() {
+            $( ".chkbox" ).parent().parent().removeClass('row_selected');
+            $( "td :checked" ).parent().parent().addClass('row_selected');
+        }
+        // A Primitive shift-click functionality. Also highlight selected rows
+        $( function() {
+            var _last_selected = null, checkboxes = $( ".chkbox" );
+            checkboxes.click( function( e ) {
+                var ix = checkboxes.index( this ), checked = this.checked;
+                if ( e.shiftKey && ix != _last_selected ) {
+                    checkboxes.slice( Math.min( _last_selected, ix ), Math.max( _last_selected, ix ) )
+                            .each( function() {
+                                this.checked = checked
+                            });
+                    _last_selected = null;
+                } else { _last_selected = ix }
+                update_selected_rows();
+
+            })
+        } );
+
+        // Select all/none/problems button in top-left of the table
+        $('#select_all').click(function(e) {
+            $( ".chkbox").each( function() {
+                this.checked = true;
+            });
+            $('#select_many').prop('checked',true);
+            $('#select_many').prop('indeterminate',false);
+            update_selected_rows();
+        });
+        $('#select_none').click(function(e) {
+            $( ".chkbox").each( function() {
+                this.checked = false;
+            });
+            $('#select_many').prop('checked',false);
+            $('#select_many').prop('indeterminate',false);
+            update_selected_rows();
+        });
+        $('#select_problems').click(function(e) {
+            $( "input.problem ").each( function() {
+                this.checked = true;
+            });
+            $('#select_many').prop('checked',false);
+            $('#select_many').prop('indeterminate',true);
+            update_selected_rows();
+        });
+        $('#select_unhandled_problems').click(function(e) {
+            $( "input.unhandled ").each( function() {
+                this.checked = true;
+            });
+            $('#select_many').prop('checked',false);
+            $('#select_many').prop('indeterminate',true);
+            update_selected_rows();
+        });
+
     </script>
 {% endblock %}
 <!-- block footer ends -->

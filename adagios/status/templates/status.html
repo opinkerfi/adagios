@@ -14,22 +14,22 @@
 {% block content_span %}span12{% endblock %}
 
 {% block content %}
-            <table class="table table-condensed well " style="line-height:6px; font-size:12px;">
+            <table class="table table-condensed well" id="datatable" style="line-height:6px; font-size:12px;">
             <thead>
                 <tr>
-                    <td>
+                    <th>
                         <div class="btn-group" id="select_bar">
                             <a class="" data-toggle="dropdown" href="#">
-                                <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+                                <input style="margin-left: -2px; padding: 0px;" type="checkbox" id="select_many">
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href=""> All</a></li>
-                                <li><a href=""> None</a></li>
-                                <li><a href=""> Unhandled Problems</a></li>
-                                <li><a href=""> All Problems</a></li>
+                                <li><a id="select_all"> All</a></li>
+                                <li><a id="select_none"> None</a></li>
+                                <li><a id="select_unhandled_problems" > Unhandled Problems</a></li>
+                                <li><a id="select_problems"> All Problems</a></li>
                             </ul>
                         </div>
-                    </td>
+                    </th>
                     <th>Host</th>
                     <th>Service Check</th>
                     <th>Received</th>
@@ -40,7 +40,7 @@
                         {% for service in host.services %}
                             <tr >
                             <td >
-                                <input style="margin: -2px; padding: 0px;" type="checkbox">
+                                <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox">
                             </td>
                                 <td style="white-space: nowrap;">{% ifchanged host.name %}
                                     <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
