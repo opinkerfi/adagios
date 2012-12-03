@@ -143,13 +143,13 @@
                     <div id="comments">
                         {% for i in my_object.comments_with_info %}
                             <div class="alert alert-info">
-                                <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{{ BASE_URL }}/rest/status/json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
+                                <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
                                     <i class="glyph-bin"></i></button>
                                 <i class="glyph-user"></i> <a href="">{{ i.1 }}</a>: {{ i.2 }}
                             </div>
                         {% endfor %}
                         <div id="div_add_comment" class="alert alert-info">
-                            <form action="{{ BASE_URL }}/rest/status/json/comment" method="get">
+                            <form action="{% url rest/status %}json/comment" method="get">
                                     <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
                                     <input type="hidden" name="host_name" id="id_host_name" value="{{ host_name }}"/>
                                     {% if my_object.object_type == 'service' %}
@@ -511,7 +511,7 @@
             }
             $.ajax({
                 type: 'POST',
-                url: '{{ BASE_URL }}/rest/status/json/acknowledge   ',
+                url: '{% url rest/status %}json/acknowledge   ',
                 data: my_data,
                 success: function(data) { location.reload(); },
                 contentType: "application/json",
@@ -523,9 +523,8 @@
         //    $.getJSON('{{ BASE_URL }}/rest/status/json/acknowledge?host_name={{ host_name }}&service_description={{ service_description }}&comment=test&author={{ remote_user }}');
         //});
         $("#reschedule_button").click(function(){
-            $("#reschedule_button").html("<img src='{{ BASE_URL }}/media/select2/spinner.gif'>");
             $("#reschedule_button").button('loading');
-            $.getJSON('{{ BASE_URL }}/rest/status/json/reschedule?wait=1&host_name={{ host_name }}&service_description={{ service_description }}', function(data) {
+            $.getJSON('{% url rest/status %}json/reschedule?wait=1&host_name={{ host_name }}&service_description={{ service_description }}', function(data) {
                 $("#reschedule_text").html("Done");
                 location.reload();
             });

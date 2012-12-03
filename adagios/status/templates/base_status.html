@@ -218,7 +218,7 @@
                         -->
                         <div >
 
-                            <button class="btn btn-small" data-loading-text="<img src='{{ BASE_URL }}/media/select2/spinner.gif'> Running..." id="reschedule_button">
+                            <button class="btn btn-small" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> Running...' id="reschedule_button">
                                 <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i> <span id="reschedule_text">Recheck</span>
                             </button>
                             <button class="btn btn-small" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button">
