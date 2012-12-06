@@ -14,7 +14,10 @@
     <style>
         body {
             padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+            height: 100%;
         }
+        html { height: 100%; }
+        .full-height { min-height: 100%; }
         @media (max-width: 979px) {
             body {
                 padding-top: 0;
@@ -70,7 +73,9 @@
 		  from { -ms-transform: rotate(0deg); }
 		  to { -ms-transform: rotate(360deg); }
 		}
-
+        img {
+            background: url('{% url media path="select2/spinner.gif" %}') no-repeat;
+        }
         .circle-spin {
 
             background-image: -moz-radial-gradient(12px 12px 12deg, circle cover, yellow 0%, orange 100%, red 95%);
@@ -126,28 +131,30 @@
 {% endblock %}
 <!-- block top_navigation ends -->
 
-<div class="span12">
-    <ul class="breadcrumb">
-        <li><i class="glyph-right-arrow"></i>
-        </li>
-        <li>
-            <a href="{% url home %}"> Home</a> <span class="divider">/</span>
-        </li>
-        <li>
-            {% block nav1 %}
-                <a href="{% url status.views.status %}">Status</a>
-            {% endblock %}
-            <span class="divider">/</span>
-        </li>
-        <li>
-            {% block nav2 %}
-            {% endblock %}
-        </li>
-    </ul>
-</div>
 <!-- Here we start the main view -->
-<div class=span12></div>
-<div class="container-fluid content  span12 block">
+<div class="container-fluid content block full-height">
+
+
+    <div class="row-fluid">
+        <ul class="breadcrumb">
+            <li><i class="glyph-right-arrow"></i>
+            </li>
+            <li>
+                <a href="{% url home %}"> Home</a> <span class="divider">/</span>
+            </li>
+            <li>
+                {% block nav1 %}
+                    <a href="{% url status.views.status %}">Status</a>
+                {% endblock %}
+                <span class="divider">/</span>
+            </li>
+            <li>
+                {% block nav2 %}
+                {% endblock %}
+            </li>
+        </ul>
+    </div>
+
     <div class="row-fluid">
         <div class="pull-left" id="titlebar">
         <h2>
@@ -216,13 +223,11 @@
                             </ul>
                         </div>
                         -->
-                        <div >
-
-                            <button class="btn btn-small" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> Running...' id="reschedule_button">
+                            <button class="btn btn-small" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="reschedule();">
                                 <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i> <span id="reschedule_text">Recheck</span>
                             </button>
-                            <button class="btn btn-small" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button">
-                                <i class="glyph-check" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out"> </i> Acknowledge
+                            <button class="btn btn-small" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
+                                <i class="glyph-check" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out"> </i><span id="acknowledge_text"> Acknowledge</span>
                             </button>
                             <button class="btn btn-small" id="downtime_button">
                                 <i class="glyph-clock" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over"> </i> Downtime
@@ -237,26 +242,25 @@
                                 <i class="glyph-bin" title="Delete {{ my_object.object_type }}"> </i>
                             </button>
 
-                        </div>
                 </div >
 
 
 
                 <div class=" pull-right" id="search_box">
-                    <form action="" method="get" >
+                    <form action="{% url status.views.status %}" method="get" >
                         <div class="pull-left">
                             <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
                         </div>
                         <div class="btn-group pull-left">
-                            <a class="btn btn-small" href="#">
+                            <button class="btn btn-small"  type="submit" href="{% url status.views.status %}">
                                 <i class="icon-search"></i> Search
-                            </a>
-                            <a class="btn  dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                            </button>
+                            <a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="?acknowledged=0&state__isnot=0"> Open Problems</a></li>
-                                <li><a href="?state__isnot=0"> All Problems</a></li>
-                                <li><a href="?state=0"> All OK</a></li>
-                                <li><a href=""> Everything</a></li>
+                                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                                <li><a href="{% url status.views.status %}?state__isnot=0"> All Problems</a></li>
+                                <li><a href="{% url status.views.status %}?state=0"> All OK</a></li>
+                                <li><a href="{% url status.views.status %}"> Everything</a></li>
                             </ul>
                         </div>
                     </form>
@@ -273,6 +277,40 @@
 
     </div>
 
+    <!-- Acknowledge modal -->
+    <div class="modal hide fade" id="acknowledge_modal">
+        <form class="form-horizontal" onsubmit="acknowledge();sleep(10); return false;" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Acknowledge problem</h3>
+            </div>
+            <div class="modal-body">
+                <p>Acknowledge means that someone is handling this problem. It will no longer be marked as unhandled and Nagios will stop sending notifications about it until it goes back to OK status.</p>
+                <div class="control-group">
+                    <label class="control-label" for="id_acknowledgement_author">
+                        Author
+                    </label>
+                    <div class="controls" id="author_field">
+                        <input id="id_acknowledgement_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="id_comment">
+                        Comment
+                    </label>
+                    <div class="controls" id="host_name_field">
+                        <input id="id_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
+                        <label class="help-block">Other people looking at this service will see this comment.</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>Cancel</a>
+                <button type="submit" class="btn btn-primary">Acknowledge Problem</button>
+            </div>
+        </form>
+    </div>
+    <!-- Acknowledge modal ends -->
 
 </div> <!-- /container -->
 
@@ -318,7 +356,69 @@
         // When somebody clicks the acknowledge button, lets focus on the comment field
         $('#acknowledge_modal').on('shown', function () {
             document.getElementById('id_comment').focus()
-        })
+        });
+
+        function reschedule() {
+            $("#reschedule_button").button('loading');
+            var my_services = get_selected_services();
+            var services_done = 0;
+            $.each(my_services, function(i, item) {
+                host_name =  item['host_name'];
+                service_description = item['service_description'];
+                var url = '{% url rest/status %}json/reschedule?wait=1&host_name='+host_name+'&service_description='+service_description;
+                $.getJSON(url, function(data) {
+                    services_done++;
+                    $("#reschedule_text").html(services_done + "/" + my_services.length + " done");
+                    if (services_done >= my_services.length) {
+                        $("#reschedule_text").html('All Done. Reloading browser.');
+                        location.reload();
+                    }
+                });
+
+            });
+
+
+        }
+        // This function responsible for acknowledge on all selected rows
+        function acknowledge() {
+            var comment = document.getElementById("id_comment").value;
+            if (comment == '') {
+                comment = "No comment was entered...";
+            }
+            $("#acknowledge_button").button('loading');
+            var my_services = get_selected_services();
+            var services_done = 0;
+            $('#acknowledge_modal').modal('hide');
+            $.each(my_services, function(i, item) {
+                host_name =  item['host_name'];
+                service_description = item['service_description'];
+
+                my_data = {
+                    "host_name":host_name,
+                    "service_description":service_description,
+                    "comment":comment,
+                    "author":"{{ remote_user }}",
+                    "sticky":"1",
+                    "persistent":"1",
+                    "notify":"0"
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url rest/status %}json/acknowledge',
+                    data: my_data,
+                    async: false,
+                    success: function(data) {
+                        services_done++;
+                        $("#acknowledge_text").html(services_done + "/" + my_services.length + " done")
+                        //location.reload();
+                    },
+                    contentType: "application/json",
+                    dataType: 'json'
+                });
+            });
+        }
+
+
     </script>
 
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
@@ -365,10 +465,37 @@
             });
         });
         */
-        function update_selected_rows() {
-            $( ".chkbox" ).parent().parent().removeClass('row_selected');
-            $( "td :checked" ).parent().parent().addClass('row_selected');
+        $(document).ready(function() {
+            update_selected_rows();
+        });
+
+        // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
+        function get_selected_services() {
+            var result = []
+            checked_boxes = $( "td :checked" );
+            checked_boxes.each(function() {
+               var host_name = $(this).next('.input_hostname').val();
+               var service_description = $(this).next().next('.input_service_description').val();
+               result.push( {'host_name': host_name, 'service_description': service_description} )
+            });
+            return result;
         }
+        // update_selected_rows()
+        // highlights all rows that are selected in a table. Also shows/hides toolbar buttons if applicable.
+        function update_selected_rows() {
+            all_boxes = $( ".chkbox" );
+            checked_boxes = $( "td :checked" );
+            all_boxes.parent().parent().removeClass('row_selected');
+            checked_boxes.parent().parent().addClass('row_selected');
+            // Treat acknowledge button depending on if acknowledgements are needed
+            if (checked_boxes.length > 0) {
+                $('#action_buttons > .btn').show();
+            }
+            else {
+                $('#action_buttons > .btn').hide();
+            }
+        }
+
         // A Primitive shift-click functionality. Also highlight selected rows
         $( function() {
             var _last_selected = null, checkboxes = $( ".chkbox" );

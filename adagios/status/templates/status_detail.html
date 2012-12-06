@@ -13,6 +13,21 @@
 {% block content %}
     <div class="span9" id="maincontent_left_side">
 
+    <div class="hide" id="servicestatus">
+        <table>
+            <tbody>
+            <tr>
+                <td>
+                    <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked">
+                    <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
+                    <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
     <ul class="nav nav-tabs" id="objecttab">
         <li><a href="#general" data-toggle="tab">General</a></li>
         <li><a href="#information" data-toggle="tab">Information</a></li>
@@ -282,44 +297,25 @@
                         </ul>
 
                     <div class="tab-content" id="graphs_content">
+
                         <div class="tab-pane graph-pane" id="hours">
-                            {% for graph in graph_urlss %}
-                                    {% if graph.title == "4 Hours" %}
-                                        <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
-                                    {% endif %}
-                            {% endfor %}
+                            <!-- Javascript will put images here if applicable -->
                         </div>
 
                         <div class="tab-pane active" id="day">
-                            {% for graph in graph_urlss %}
-                                {% if graph.title == "25 Hours" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
-                                {% endif %}
-                            {% endfor %}
+                            <!-- Javascript will put images here if applicable -->
                         </div>
 
                         <div class="tab-pane" id="week">
-                            {% for graph in graph_urlss %}
-                                {% if graph.title == "One Week" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
-                                {% endif %}
-                            {% endfor %}
+                            <!-- Javascript will put images here if applicable -->
                         </div>
 
                         <div class="tab-pane" id="month">
-                            {% for graph in graph_urlss %}
-                                {% if graph.title == "One Month" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
-                                {% endif %}
-                            {% endfor %}
+                            <!-- Javascript will put images here if applicable -->
                         </div>
 
                         <div class="tab-pane" id="year">
-                            {% for graph in graph_urlss %}
-                                {% if graph.title == "One Year" %}
-                                    <img src="{% url pnp.views.pnp 'image' %}?{{ graph.image_url }}">
-                                {% endif %}
-                            {% endfor %}
+                            <!-- Javascript will put images here if applicable -->
                         </div>
 
 
@@ -377,63 +373,10 @@
     {% endif %}
 
 
-    {% if my_object.id %}
-        <div class="modal hide fade" id="geek_edit">
-            <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h3>Geek Edit</h3>
-                </div>
-                <div class="modal-body">
-                    <p>
-                    <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
-                        {{ geek_edit }}
-                    </fieldset>
-                    <strong>Filename:</strong> {{ my_object.filename }}
-                </div>
-                <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="submit">Save changes</button>
-                </div>
-            </form>
-        </div>
-    {% endif %}
 
 </div>
 
 
-    <div class="modal hide fade" id="acknowledge_modal">
-        <form class="form-horizontal" method="get" onsubmit="javascript:acknowledge();return false;" >
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3>Acknowledge problem</h3>
-        </div>
-        <div class="modal-body">
-            <p>Acknowledge means that someone is handling this problem. It will no longer be marked as unhandled and Nagios will stop sending notifications about it until it goes back to OK status.</p>
-                <div class="control-group">
-                    <label class="control-label" for="id_acknowledgement_author">
-                        Author
-                    </label>
-                    <div class="controls" id="author_field">
-                        <input id="id_acknowledgement_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="id_comment">
-                        Comment
-                    </label>
-                    <div class="controls" id="host_name_field">
-                        <input id="id_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
-                        <label class="help-block">Other people looking at this service will see this comment.</label>
-                    </div>
-                </div>
-        </div>
-        <div class="modal-footer">
-            <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>Cancel</a>
-            <button type="submit" class="btn btn-primary">Acknowledge Problem</button>
-        </div>
-    </form>
-    </div>
 {% endblock %}
 
 {% block header %}
@@ -492,43 +435,21 @@
 
 {% block footer %}
     {{ block.super }}
-    <!-- Load graphs only on demand -->
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-        function acknowledge() {
 
-            var comment = document.getElementById("id_comment").value;
-            if (comment == '') {
-                comment = "No comment was entered...";
-            }
-            my_data = {
-                "host_name":"{{ host_name }}",
-                "service_description":"{{ service_description }}",
-                "comment":comment,
-                "author":"{{ remote_user }}",
-                "sticky":"1",
-                "persistent":"1",
-                "notify":"0"
-            }
-            $.ajax({
-                type: 'POST',
-                url: '{% url rest/status %}json/acknowledge   ',
-                data: my_data,
-                success: function(data) { location.reload(); },
-                contentType: "application/json",
-                dataType: 'json'
-            });
-            $('#acknowledge_modal').modal('hide');
-        }
+        // Treat acknowledge button depending on if acknowledgements are needed
+        $(document).ready(function() {
+            {% if my_object.state == 0 %}
+            $('#acknowledge_button').addClass('disabled');
+            $('#acknowledge_text').html('Is acknowledged.');
+            {% endif %}
+            {% if my_object.acknowledged == 1 %}
+                $('#acknowledge_button').addClass('active');
+            {% endif %}
+        });
         //$("#acknowledge_button").click(function(){
         //    $.getJSON('{{ BASE_URL }}/rest/status/json/acknowledge?host_name={{ host_name }}&service_description={{ service_description }}&comment=test&author={{ remote_user }}');
         //});
-        $("#reschedule_button").click(function(){
-            $("#reschedule_button").button('loading');
-            $.getJSON('{% url rest/status %}json/reschedule?wait=1&host_name={{ host_name }}&service_description={{ service_description }}', function(data) {
-                $("#reschedule_text").html("Done");
-                location.reload();
-            });
-        });
         // When graphs link is clicked, simulate a click on 25hours tab as well
         $('#graphs_link').click(function(event) {
             $('#25hours').click();
@@ -539,6 +460,7 @@
                     var anchor = event.target.href.split('#')[1];
                     var title = event.target.text;
                     my_element = document.getElementById(anchor);
+
                     if (my_element.childElementCount == 0) {
                         $.getJSON('{% url pnp.views.pnp 'json' %}?host={{ host_name }}&srv={{ service_description }}', function(data) {
                                     $.each(data, function(i, item) {

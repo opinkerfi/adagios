@@ -11,7 +11,6 @@
 
 {% block sidebar_outer %}
 {% endblock %}
-{% block content_span %}span12{% endblock %}
 
 {% block content %}
             <table class="table table-condensed well" id="datatable" style="line-height:6px; font-size:12px;">
@@ -30,6 +29,15 @@
                             </ul>
                         </div>
                     </th>
+                    <th>
+                        <i class="glyph-alarm " title="unhandled"></i>
+                    </th>
+                    <th>
+                        <i class=" glyph-stopwatch  " title="downtimes"></i>
+                    </th>
+                    <th>
+                        <i class=" glyph-envelope" title="Notifications have been sent"></i>
+                    </th>
                     <th>Host</th>
                     <th>Service Check</th>
                     <th>Received</th>
@@ -41,11 +49,16 @@
                             <tr >
                             <td >
                                 <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox">
+                                <input type="hidden" class="input_hostname" name="host_name" value="{{ host.name }}">
+                                <input type="hidden" class="input_service_description" name="service_description" value="{{ service.description }}">
                             </td>
-                                <td style="white-space: nowrap;">{% ifchanged host.name %}
-                                    <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
-                                    {{ host.name }}
-                                {% endifchanged %}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style="white-space: nowrap;">{% ifchanged host.name %}
+                                <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
+                                {{ host.name }}
+                            {% endifchanged %}</td>
                             <td  colspan=1 style="word-wrap: break-word;">
                                  <a href="{% url status.views.status_detail host.name service.description %}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
                                      <div class="circle state_{{ service.state }}"> </div> {{ service.description }}</a>
