@@ -223,23 +223,23 @@
                             </ul>
                         </div>
                         -->
-                            <button class="btn btn-small" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="reschedule();">
-                                <i class="glyph-refresh" title="Recheck - Execute selected checks immediately"> </i> <span id="reschedule_text">Recheck</span>
+                            <button class="btn btn-small" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="reschedule();">
+                                <i class="glyph-refresh" > </i> <span id="reschedule_text">Recheck</span>
                             </button>
-                            <button class="btn btn-small" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
-                                <i class="glyph-check" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out"> </i><span id="acknowledge_text"> Acknowledge</span>
+                            <button class="btn btn-small" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
+                                <i class="glyph-check" > </i><span id="acknowledge_text"> Acknowledge</span>
                             </button>
-                            <button class="btn btn-small" id="downtime_button">
-                                <i class="glyph-clock" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over"> </i> Downtime
+                            <button class="btn btn-small" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" id="downtime_button">
+                                <i class="glyph-clock" > </i> Downtime
                             </button>
                             <button class="btn btn-small">
                                 <i class="glyph-eye-open" title="Open in Nagios"> </i>
                             </button>
-                            <a class="btn btn-small" id="configure_button" {% if my_object %}href="{% url edit_by_shortname my_object.object_type my_object.short_name %}"{% endif %}>
-                                <i class="glyph-edit" title="Configure {{ my_object.object_type }}"> </i>
+                            <a class="btn btn-small" title="Configure {{ my_object.object_type }}" id="configure_button" {% if my_object %}href="{% url edit_by_shortname my_object.object_type my_object.short_name %}"{% endif %}>
+                                <i class="glyph-edit" > </i>
                             </a>
-                            <button class="btn btn-small" id="delete_button">
-                                <i class="glyph-bin" title="Delete {{ my_object.object_type }}"> </i>
+                            <button class="btn btn-small" title="Delete {{ my_object.object_type }}" id="delete_button">
+                                <i class="glyph-bin" > </i>
                             </button>
 
                 </div >
@@ -249,7 +249,7 @@
                 <div class=" pull-right" id="search_box">
                     <form action="{% url status.views.status %}" method="get" >
                         <div class="pull-left">
-                            <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" class="search-query" placeholder="Filter..." />
+                            <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" value="{{ request.GET.q }}" class="search-query" placeholder="Filter..." />
                         </div>
                         <div class="btn-group pull-left">
                             <button class="btn btn-small"  type="submit" href="{% url status.views.status %}">
@@ -279,7 +279,7 @@
 
     <!-- Acknowledge modal -->
     <div class="modal hide fade" id="acknowledge_modal">
-        <form class="form-horizontal" onsubmit="acknowledge();sleep(10); return false;" >
+        <form class="form-horizontal" onsubmit='$("#acknowledge_modal").modal("hide"); acknowledge(); return false;' >
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Acknowledge problem</h3>
@@ -362,18 +362,22 @@
             $("#reschedule_button").button('loading');
             var my_services = get_selected_services();
             var services_done = 0;
+            var total = my_services.length;
             $.each(my_services, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'];
+                console.log('Rescheduling ' + host_name + ' ' + service_description);
                 var url = '{% url rest/status %}json/reschedule?wait=1&host_name='+host_name+'&service_description='+service_description;
                 $.getJSON(url, function(data) {
                     services_done++;
-                    $("#reschedule_text").html(services_done + "/" + my_services.length + " done");
-                    if (services_done >= my_services.length) {
-                        $("#reschedule_text").html('All Done. Reloading browser.');
+                    $("#reschedule_text").html(services_done + "/" + total + " done");
+                    if (services_done >= total) {
+                        $("#reschedule_text").html('All Done. Reloading page.');
                         location.reload();
                     }
                 });
+                $("#reschedule_text").html(i+1 + "/" + total + " rescheduled");
+
 
             });
 
@@ -381,6 +385,7 @@
         }
         // This function responsible for acknowledge on all selected rows
         function acknowledge() {
+            $('#acknowledge_modal').modal('hide');
             var comment = document.getElementById("id_comment").value;
             if (comment == '') {
                 comment = "No comment was entered...";
@@ -388,7 +393,6 @@
             $("#acknowledge_button").button('loading');
             var my_services = get_selected_services();
             var services_done = 0;
-            $('#acknowledge_modal').modal('hide');
             $.each(my_services, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'];
@@ -410,7 +414,10 @@
                     success: function(data) {
                         services_done++;
                         $("#acknowledge_text").html(services_done + "/" + my_services.length + " done")
-                        //location.reload();
+                        if (services_done >= my_services.length) {
+                            $("#acknowledge_text").html('All Done. Reloading page.');
+                            location.reload();
+                        }
                     },
                     contentType: "application/json",
                     dataType: 'json'
@@ -425,6 +432,9 @@
         // When row is clicked, lets check the checkbox in front of the row
 
         $(document).ready(function() {
+            // Set keyboard focus on the search box
+            document.getElementById('search_field').focus();
+
             $('#datatable tr').click(function(e) {
                 if (e.target.type !== 'checkbox') {
                         $(':checkbox', this).trigger('click');
@@ -489,10 +499,12 @@
             checked_boxes.parent().parent().addClass('row_selected');
             // Treat acknowledge button depending on if acknowledgements are needed
             if (checked_boxes.length > 0) {
-                $('#action_buttons > .btn').show();
+                $('#action_buttons > .btn').attr('disabled', null);
+                $('#action_buttons').attr('title',null);
             }
             else {
-                $('#action_buttons > .btn').hide();
+                $('#action_buttons > .btn').attr('disabled', 'disabled');
+                //$('#action_buttons').attr('title','Select some items below to active toolbar buttons');
             }
         }
 

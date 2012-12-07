@@ -164,7 +164,7 @@
                             </div>
                         {% endfor %}
                         <div id="div_add_comment" class="alert alert-info">
-                            <form action="{% url rest/status %}json/comment" method="get">
+                            <form action="{% url rest/status %}json/comment" method="POST" onsubmit="comment();return false;">
                                     <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
                                     <input type="hidden" name="host_name" id="id_host_name" value="{{ host_name }}"/>
                                     {% if my_object.object_type == 'service' %}
@@ -372,7 +372,23 @@
         </ul>
     {% endif %}
 
+    {% if my_object.contact_groups %}
+        <h5>Is a member of contactgroups</h5>
+        <ul class="nav nav-list">
+            {% for group in my_object.contact_groups %}
+                <li><a href="">{{ group }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
+    {% if service.groups %}
+        <h5>Is a member of servicegroups</h5>
+        <ul class="nav nav-list">
+            {% for group in service.groups %}
+                <li><a href="">{{ group }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
 </div>
 
@@ -440,11 +456,11 @@
         // Treat acknowledge button depending on if acknowledgements are needed
         $(document).ready(function() {
             {% if my_object.state == 0 %}
-            $('#acknowledge_button').addClass('disabled');
-            $('#acknowledge_text').html('Is acknowledged.');
+            $('#acknowledge_button').hide();
             {% endif %}
             {% if my_object.acknowledged == 1 %}
-                $('#acknowledge_button').addClass('active');
+                $('#acknowledge_button').attr('disabled','disabled');
+                $('#acknowledge_text').html('Is acknowledged');
             {% endif %}
         });
         //$("#acknowledge_button").click(function(){
@@ -475,6 +491,9 @@
                         )
                     }
         });
+        function comment() {
+            location.reload();
+        }
     </script>
 
 {% endblock %}

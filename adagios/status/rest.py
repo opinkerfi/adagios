@@ -56,14 +56,12 @@ def reschedule(host_name,service_description, check_time=time.time(), wait=0):
         pynag.Control.Command.schedule_forced_svc_check(host_name=host_name,service_description=service_description,check_time=check_time)
     if wait == "1":
         livestatus = pynag.Parsers.mk_livestatus()
-        print check_time
         livestatus.query("GET services",
             "WaitObject: %s %s" % (host_name,service_description),
             "WaitCondition: last_check > %s" % check_time,
             "WaitTrigger: check",
             "Filter: host_name = %s" % host_name,
         )
-    #time.sleep(5)
 
 def comment(author,comment,host_name,service_description=None,persistent=1):
     """ Adds a comment to a particular service.

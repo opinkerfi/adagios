@@ -21,6 +21,7 @@ from django.shortcuts import HttpResponse
 
 from django.template import RequestContext
 import os
+import time
 
 import pynag.Model
 import pynag.Utils
@@ -86,6 +87,7 @@ def status(request):
     all_contacts = livestatus.get_contacts()
     c['contacts'] = all_contacts
     c['current_contact'] = authuser
+    c['request'] = request
 
     services = defaultdict(list)
     hosts = []
@@ -133,7 +135,9 @@ def status(request):
     hosts.sort()
     c['services'] = services
     c['hosts'] = hosts
-    #c['log'] = livestatus.query('GET log', 'Limit: 50')
+    seconds_in_a_day = 60*60*24
+    today = time.time() % seconds_in_a_day # midnight of today
+
     return render_to_response('status.html', c, context_instance = RequestContext(request))
 
 def status_detail(request, host_name, service_description=None):
@@ -144,6 +148,9 @@ def status_detail(request, host_name, service_description=None):
     livestatus = pynag.Parsers.mk_livestatus()
     c['pnp_url'] = adagios.settings.pnp_url
     c['nagios_url'] = adagios.settings.nagios_url
+    c['request'] = request
+    seconds_in_a_day = 60*60*24
+    today = time.time() % seconds_in_a_day # midnight of today
 
     try:
         c['host'] = my_host = livestatus.get_host(host_name)
@@ -156,7 +163,12 @@ def status_detail(request, host_name, service_description=None):
     if service_description is None:
         primary_object = my_host
         c['service_description'] = '_HOST_'
-        #c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name)
+
+        c['log'] = livestatus.query('GET log',
+            'Filter: time >= %s' % today,
+            'Limit: 50',
+            'Filter: host_name = %s' % host_name,
+        )
     else:
         try:
             c['service'] = my_service = livestatus.get_service(host_name,service_description)
@@ -164,7 +176,12 @@ def status_detail(request, host_name, service_description=None):
             c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
-            #c['log'] = livestatus.query('GET log', 'Limit: 50', 'Filter: host_name = %s' % host_name, 'Filter: service_description = %s' % service_description)
+            c['log'] = livestatus.query('GET log',
+                'Filter: time >= %s' % time.time(),
+                'Filter: host_name = %s' % host_name,
+                'Limit: 50',
+                'Filter: service_description = %s' % service_description,
+            )
         except IndexError:
             c['errors'].append("Could not find any service named '%s'"%service_description)
             return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
@@ -173,6 +190,9 @@ def status_detail(request, host_name, service_description=None):
 
     # Friendly statusname (i.e. turn 2 into "critical")
     primary_object['status'] = state[primary_object['state']]
+
+    # Plugin longoutput comes to us with special characters escaped. lets undo that:
+    primary_object['long_plugin_output'] = primary_object['long_plugin_output'].replace('\\n','\n')
 
     # Service list on the sidebar should be sorted
     my_host['services_with_info'] = sorted(my_host['services_with_info'])
@@ -203,6 +223,7 @@ def status_hostgroup(request, hostgroup_name=None):
     livestatus = pynag.Parsers.mk_livestatus()
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
+    c['request'] = request
 
     # Lets establish a good list of all hostgroups and parentgroups
     all_hostgroups = pynag.Model.Hostgroup.objects.all
@@ -281,6 +302,7 @@ def status_hostgroup(request, hostgroup_name=None):
         except ZeroDivisionError:
             pass
     return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
+
 def status_treeview(request, hostgroup_name=None):
     c = { }
     c['messages'] = []
