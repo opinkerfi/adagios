@@ -32,7 +32,6 @@ def run_pnp(pnp_command, **kwargs):
         pnp_arguments[k] = v
     querystring= '&'.join(map( lambda x: "%s=%s" % x, pnp_arguments.items() ))
     command = "php '%s' '%s?%s'" % (pnp_path,pnp_command, querystring)
-    print command
     result = pynag.Utils.runCommand(command,raise_error_on_fail=True)
     return result[1]
 

@@ -2,6 +2,7 @@
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+USE_TZ = True
 
 # Hack to allow relative template paths
 import os
@@ -35,6 +36,8 @@ DATABASES = {
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 # TIME_ZONE = 'Atlantic/Reykjavik'
+TIME_ZONE = None
+USE_TZ = True
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html

@@ -76,7 +76,15 @@ def status_parents(request):
     return render_to_response('status_parents.html', c, context_instance = RequestContext(request))
 
 
-def status(request):
+def _status(request):
+    """ Helper function for a lot of status views, handles fetching of objects, populating context, and filtering, etc.
+
+    Returns:
+        hash map with request context
+    Examples:
+        c = _status(request)
+        return render_to_response('status_parents.html', c, context_instance = RequestContext(request))
+    """
     c = {}
     c['messages'] = []
     from collections import defaultdict
@@ -137,7 +145,10 @@ def status(request):
     c['hosts'] = hosts
     seconds_in_a_day = 60*60*24
     today = time.time() % seconds_in_a_day # midnight of today
+    return c
 
+def status(request):
+    c = _status(request)
     return render_to_response('status.html', c, context_instance = RequestContext(request))
 
 def status_detail(request, host_name, service_description=None):
@@ -303,71 +314,94 @@ def status_hostgroup(request, hostgroup_name=None):
             pass
     return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
 
-def status_treeview(request, hostgroup_name=None):
-    c = { }
+def status_boxview(request):
+    c = _status(request)
+    return render_to_response('status_boxview.html', c, context_instance = RequestContext(request))
+
+def get_related_objects(object_id):
+    my_object = pynag.Model.ObjectDefinition.objects.get_by_id(object_id)
+    result = []
+    if my_object.register == '0':
+        result += my_object.get_effective_children()
+        return result
+    if my_object.object_type == 'hostgroup':
+        result += my_object.get_effective_hostgroups()
+        result += my_object.get_effective_hosts()
+    if my_object.object_type == 'contactgroup':
+        result += my_object.get_effective_contactgroups()
+        result += my_object.get_effective_contacts()
+    if my_object.object_type == 'host':
+        result += my_object.get_effective_network_children()
+        result += my_object.get_effective_services()
+    return result
+def status_paneview(request):
+    #c = _status(request)
+    c = {}
     c['messages'] = []
+    c['errors'] = []
+    import pynag.Model
+    c['pane1_id'] = pane1 = request.GET.get('pane1')
+    c['pane2_id'] = pane2 = request.GET.get('pane2')
+    c['pane3_id'] = pane3 = request.GET.get('pane3')
+    c['view'] = view = request.GET.get('view', 'hostgroups')
+
+    pane1_object = None
+    pane2_object = None
+    pane3_object = None
+    pane1_objects = []
+    pane2_objects = []
+    pane3_objects = []
+
+    if pane1 is None or pane1 == 'None':
+        pane1 = None
+        if view == 'servicetemplates':
+            pane1_objects = pynag.Model.Service.objects.filter(register=0)
+        elif view == 'hostgroups':
+            pane1_objects = pynag.Model.Hostgroup.objects.all
+        elif view == 'contactgroups':
+            pane1_objects = pynag.Model.Contactgroup.objects.all
+        elif view == 'hosttemplates':
+            pane1_objects = pynag.Model.Host.objects.filter(register=0)
+        elif view == 'hosts':
+            pane1_objects = pynag.Model.Host.objects.filter(register=1)
+        elif view == 'networkparents':
+            hosts = pynag.Model.Host.objects.filter(register=1)
+            parents = []
+            for i in hosts:
+                if len(i.get_effective_network_children()) > 0:
+                    parents.append(i)
+            pane1_objects = parents
+    if pane1 is not None:
+        pane1_object = pynag.Model.ObjectDefinition.objects.get_by_id(pane1)
+        pane1_objects = get_related_objects(pane1)
+    if pane2 is not None:
+        pane2_object = pynag.Model.ObjectDefinition.objects.get_by_id(pane2)
+        pane2_objects = get_related_objects(pane2)
+    if pane3 is not None:
+        pane3_object = pynag.Model.ObjectDefinition.objects.get_by_id(pane3)
+        pane3_objects = get_related_objects(pane3)
+
     livestatus = pynag.Parsers.mk_livestatus()
-    c['all_hostgroups'] = hostgroups = livestatus.get_hostgroups()
+    hosts = livestatus.get_hosts()
+    services = livestatus.get_services()
+    for i in pane1_objects + pane2_objects + pane3_objects:
+        if i.object_type == 'host':
+            for x in hosts:
+                if x['name'] == i.host_name:
+                    i['state'] = x.get('state', None)
+        elif i.object_type == 'service':
+            for x in services:
+                if x['description'] == i.service_description and x['host_name'] == i.host_name:
+                    i['state'] = x.get('state', None)
+    c['request'] = request
+    c['pane1_objects'] = pane1_objects
+    c['pane2_objects'] = pane2_objects
+    c['pane3_objects'] = pane3_objects
+    c['pane1_object'] = pane1_object
+    c['pane2_object'] = pane2_object
+    c['pane3_object'] = pane3_object
 
-    c['hostgroup_name'] = hostgroup_name
-
-    if hostgroup_name is None:
-        c['hostgroups'] = hostgroups
-        c['hosts'] = livestatus.get_hosts()
-    else:
-        my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
-        subgroups = my_hostgroup.hostgroup_members or ''
-        subgroups = subgroups.split(',')
-        # Strip out any group that is not a subgroup of hostgroup_name
-        right_hostgroups = []
-        for group in hostgroups:
-            if group.get('name','') in subgroups:
-                right_hostgroups.append(group)
-        c['hostgroups'] = right_hostgroups
-
-        # If a hostgroup was specified lets also get all the hosts for it
-        c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
-    for host in c['hosts']:
-        ok = host.get('num_services_ok')
-        warn = host.get('num_services_warn')
-        crit = host.get('num_services_crit')
-        pending = host.get('num_services_pending')
-        unknown = host.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
-        host['total'] = total
-        host['problems'] = warn + crit + unknown
-        try:
-            total = float(total)
-            host['health'] = float(ok) / total * 100.0
-            host['percent_ok'] = ok/total*100
-            host['percent_warn'] = warn/total*100
-            host['percent_crit'] = crit/total*100
-            host['percent_unknown'] = unknown/total*100
-            host['percent_pending'] = pending/total*100
-        except ZeroDivisionError:
-            host['health'] = 'n/a'
-        # Extra statistics for our hostgroups
-    for hg in c['hostgroups']:
-        ok = hg.get('num_services_ok')
-        warn = hg.get('num_services_warn')
-        crit = hg.get('num_services_crit')
-        pending = hg.get('num_services_pending')
-        unknown = hg.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
-        hg['total'] = total
-        hg['problems'] = warn + crit + unknown
-        try:
-            total = float(total)
-            hg['health'] = float(ok) / total * 100.0
-            hg['health'] = float(ok) / total * 100.0
-            hg['percent_ok'] = ok/total*100
-            hg['percent_warn'] = warn/total*100
-            hg['percent_crit'] = crit/total*100
-            hg['percent_unknown'] = unknown/total*100
-            hg['percent_pending'] = pending/total*100
-        except ZeroDivisionError:
-            pass
-    return render_to_response('status_treeview.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_paneview.html', c, context_instance = RequestContext(request))
 
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
