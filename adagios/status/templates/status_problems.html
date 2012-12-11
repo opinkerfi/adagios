@@ -1,18 +1,17 @@
 {% extends "base1.html" %}
 
-
+{% load adagiostags %}
 {% block titlebar %} {% endblock %}
 {% block maincontent %}
     <table class="table table-condensed" style="white-space: nowrap;">
-    <thead></thead>
-    <tbody>
 
     {% if network_problems %}
         <tr>
         <th colspan=4>
-            <h3>Unhandled Network Problems:</h3>
+            <h3>Network outage:</h3>
         </th>
         </tr>
+        <!--
         <tr>
             <th style="width: 20px; max-width: 20px;"></th>
             <th>Host Name</th>
@@ -20,11 +19,15 @@
             <th>Description</th>
 
         </tr>
+        -->
         {% for i in network_problems %}
-            <tr>
+            <tr class=state_{{ i.state }} style="color: black;">
                 <td><div class="circle state_{{ i.state }}"></div></td>
                 <td>{{ i.name }}</td>
                 <td></td>
+                <td>
+                    {{ i.last_state_change|timestamp|timesince }}
+                </td>
                 <td>
                     {{ i.plugin_output }}
                 </td>
@@ -39,17 +42,22 @@
             <h3>Unhandled Host Problems:</h3>
         </th>
         </tr>
+        <!--
         <tr>
             <th style="width: 20px; max-width: 20px;"></th>
             <th>Host Name</th>
             <th></th>
             <th>Description</th>
         </tr>
+        -->
         {% for i in host_problems %}
-            <tr>
+            <tr class=state_{{ i.state }} style="color: black;">
                 <td><div class="circle state_{{ i.state }}"></div></td>
                 <td>{{ i.name }}</td>
                 <td></td>
+                <td>
+                    {{ i.last_state_change|timestamp|timesince }}
+                </td>
                 <td>
                     {{ i.plugin_output }}
                 </td>
@@ -63,18 +71,23 @@
             <h3>Unhandled Service problems:</h3>
         </td>
         </tr>
+        <!--
         <tr>
             <th style="width: 20px; max-width: 20px;"></th>
             <th>Host Name</th>
             <th>Service</th>
             <th>Description</th>
         </tr>
+        -->
         {% for i in service_problems %}
             <tr>
                 <td><div class="circle state_{{ i.state }}"></div></td>
                 <td>{{ i.host_name }}</td>
-                <td>
+                <td class=state_{{ i.state }} style="color: black;">
                     {{ i.description }}
+                </td>
+                <td>
+                    {{ i.last_state_change|timestamp|timesince }}
                 </td>
                 <td>
                     {{ i.plugin_output }}
