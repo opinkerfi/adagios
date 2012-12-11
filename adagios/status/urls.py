@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     (r'^/hostgroups/?$', 'status.views.status_hostgroup'),
     (r'^/hostgroups/(?P<hostgroup_name>.+)/?$', 'status.views.status_hostgroup'),
     (r'^/hosts/?$', 'status.views.status'),
-    (r'^/hosts/(?P<host_name>.+)/(?P<service_description>.+)/?$', 'status.views.status_detail'),
+    (r'^/hosts/(?P<host_name>.+?)/(?P<service_description>.+)/?$', 'status.views.status_detail'),
     (r'^/hosts/(?P<host_name>.+)/$', 'status.views.status_detail'),
     (r'^/hosts/(?P<host_name>.+)$', 'status.views.status_detail'),
     )
