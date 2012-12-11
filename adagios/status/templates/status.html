@@ -16,7 +16,7 @@
             <table class="table table-condensed well" id="datatable" style="line-height:6px; font-size:12px;">
             <thead>
                 <tr>
-                    <th>
+                    <th class="small">
                         <div class="btn-group" id="select_bar">
                             <a class="" data-toggle="dropdown" href="#">
                                 <input style="margin-left: -2px; padding: 0px;" type="checkbox" id="select_many">
@@ -29,14 +29,14 @@
                             </ul>
                         </div>
                     </th>
-                    <th>
-                        <i class="glyph-alarm " title="unhandled"></i>
+                    <th class="small">
+                        <i class="glyph-chat " title="Comments"></i>
                     </th>
-                    <th>
+                    <th class="small">
                         <i class=" glyph-stopwatch  " title="downtimes"></i>
                     </th>
-                    <th>
-                        <i class=" glyph-envelope" title="Notifications have been sent"></i>
+                    <th class="small">
+                        <i class=" glyph-warning-sign" title="Notifications have been sent"></i>
                     </th>
                     <th>Host</th>
                     <th>Service Check</th>
@@ -52,9 +52,22 @@
                                 <input type="hidden" class="input_hostname" name="host_name" value="{{ host.name }}">
                                 <input type="hidden" class="input_service_description" name="service_description" value="{{ service.description }}">
                             </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td>
+                                {% if service.comments  %}
+                                    <i class=" glyph-chat  " title="{{ service.comments_with_info }}"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if service.downtimes or service.host_downtimes %}
+                                    <i class=" glyph-stopwatch  " title="{{ service.downtimes }}"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if service.acknowledged == 1 or service.host_acknowledged  == 1 %}
+                                {% else %}
+                                    <i class="glyph-warning-sign" title="Unhandled problem. Please acknowledge it."></i>
+                                {% endif %}
+                            </td>
                             <td style="white-space: nowrap;">{% ifchanged host.name %}
                                 <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
                                 {{ host.name }}
@@ -83,11 +96,13 @@
 
 {% block header %}
     {{ block.super }}
-        a {
-            color:  black;
-        }
 
         <style>
+        .small{
+            width: 20px;
+            max-width: 20px;
+        }
+        </style>
 
     <style>
         .input-append button.add-on {

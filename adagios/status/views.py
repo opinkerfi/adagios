@@ -145,6 +145,11 @@ def _status(request):
     c['hosts'] = hosts
     seconds_in_a_day = 60*60*24
     today = time.time() % seconds_in_a_day # midnight of today
+    if request.GET.get('view', None) == 'servicegroups':
+        servicegroups = livestatus.query('GET servicegroups')
+        for i in servicegroups:
+            i['children'] = i['members_with_state']
+        c['objects'] = servicegroups
     return c
 
 def status(request):
@@ -316,6 +321,7 @@ def status_hostgroup(request, hostgroup_name=None):
 
 def status_boxview(request):
     c = _status(request)
+
     return render_to_response('status_boxview.html', c, context_instance = RequestContext(request))
 
 def get_related_objects(object_id):
@@ -384,15 +390,27 @@ def status_paneview(request):
     livestatus = pynag.Parsers.mk_livestatus()
     hosts = livestatus.get_hosts()
     services = livestatus.get_services()
+
+
     for i in pane1_objects + pane2_objects + pane3_objects:
         if i.object_type == 'host':
+            i['tag'] = 'H'
             for x in hosts:
                 if x['name'] == i.host_name:
                     i['state'] = x.get('state', None)
         elif i.object_type == 'service':
+            i['tag'] = 'S'
             for x in services:
                 if x['description'] == i.service_description and x['host_name'] == i.host_name:
                     i['state'] = x.get('state', None)
+        elif i.object_type == 'contact':
+            i['tag'] = 'C'
+        elif i.object_type == 'contactgroup':
+            i['tag'] = 'CG'
+        elif i.object_type == 'hostgroup':
+            i['tag'] = 'HG'
+        elif i.object_type == 'servicegroup':
+            i['tag'] = 'SG'
     c['request'] = request
     c['pane1_objects'] = pane1_objects
     c['pane2_objects'] = pane2_objects
@@ -403,6 +421,9 @@ def status_paneview(request):
 
     return render_to_response('status_paneview.html', c, context_instance = RequestContext(request))
 
+def status_index(request):
+    c = _status(request)
+    return render_to_response('status_index.html', c, context_instance = RequestContext(request))
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
     c = { }
@@ -436,4 +457,38 @@ def test_livestatus(request):
 
     return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
 
+
+def status_problems(request):
+    #c = _status(request)
+    c = {}
+    livestatus = pynag.Parsers.mk_livestatus()
+    hosts = livestatus.get_hosts()
+    services = livestatus.get_services()
+    hosts_that_are_down = []
+    hostnames_that_are_down = []
+    for host in hosts:
+        if host['state'] != 0 and host['acknowledged'] == 0 and host['downtimes'] == []:
+            hostnames_that_are_down.append(host['name'])
+            hosts_that_are_down.append(host)
+
+    network_problems = []
+    host_problems = []
+    service_problems = []
+
+    # Do nothing if host parent is also down.
+    for host in hosts_that_are_down:
+        for i in host['parents']:
+            if i in hostnames_that_are_down:
+                break
+        if len(host['childs']) == 0:
+            host_problems.append(host)
+        else:
+            network_problems.append(host)
+    for service in services:
+        if service['state'] != 0 and service['acknowledged'] == 0 and len(service['downtimes']) == 0 and not service['host_name'] in hostnames_that_are_down:
+            service_problems.append(service)
+    c['network_problems'] = network_problems
+    c['host_problems'] = host_problems
+    c['service_problems'] = service_problems
+    return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
 

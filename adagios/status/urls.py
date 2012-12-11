@@ -2,10 +2,11 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 urlpatterns = patterns('',
-    (r'^/?$', 'status.views.status_hostgroup'),
+    (r'^/?$', 'status.views.status_index'),
     (r'^/test/?$', 'status.views.test_livestatus'),
     (r'^/boxview/?$', 'status.views.status_boxview'),
     (r'^/paneview/?$', 'status.views.status_paneview'),
+    (r'^/problems/?$', 'status.views.status_problems'),
     (r'^/parents/?$', 'status.views.status_parents'),
     (r'^/hostgroups/?$', 'status.views.status_hostgroup'),
     (r'^/hostgroups/(?P<hostgroup_name>.+)/?$', 'status.views.status_hostgroup'),

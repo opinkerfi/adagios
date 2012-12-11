@@ -1,0 +1,55 @@
+{% extends "base_status.html" %}
+
+{% block title %}Status Overview{% endblock %}
+{% block nav2 %}<a href="{% url status.views.status_index %}">Overview</a>{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Status Overview{% endblock %}
+
+{% block toolbar %}{% endblock %}
+{% block content %}
+
+    <div class="row row-fluid">
+        <div class="span6">
+            <h3>Problem Summary</h3>
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>#</th>
+                    <th>Unhandled</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Network Outages</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Host Problems</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Service Problems</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="span6">
+            ...
+        </div>
+    </div>
+{% endblock %}
+
+{% block header %} {{ block.super }}
+{% endblock %}
+
+
+
+{% block footer %} {{ block.super }} {% endblock %}
+
+{% block head %}
+{% endblock %}

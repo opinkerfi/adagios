@@ -1,0 +1,86 @@
+{% extends "base1.html" %}
+
+
+{% block titlebar %} {% endblock %}
+{% block maincontent %}
+    <table class="table table-condensed" style="white-space: nowrap;">
+    <thead></thead>
+    <tbody>
+
+    {% if network_problems %}
+        <tr>
+        <th colspan=4>
+            <h3>Unhandled Network Problems:</h3>
+        </th>
+        </tr>
+        <tr>
+            <th style="width: 20px; max-width: 20px;"></th>
+            <th>Host Name</th>
+            <th></th>
+            <th>Description</th>
+
+        </tr>
+        {% for i in network_problems %}
+            <tr>
+                <td><div class="circle state_{{ i.state }}"></div></td>
+                <td>{{ i.name }}</td>
+                <td></td>
+                <td>
+                    {{ i.plugin_output }}
+                </td>
+
+            </tr>
+        {% endfor %}
+
+    {% endif %}
+    {% if host_problems %}
+        <tr>
+        <th colspan=4>
+            <h3>Unhandled Host Problems:</h3>
+        </th>
+        </tr>
+        <tr>
+            <th style="width: 20px; max-width: 20px;"></th>
+            <th>Host Name</th>
+            <th></th>
+            <th>Description</th>
+        </tr>
+        {% for i in host_problems %}
+            <tr>
+                <td><div class="circle state_{{ i.state }}"></div></td>
+                <td>{{ i.name }}</td>
+                <td></td>
+                <td>
+                    {{ i.plugin_output }}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+
+    {% if service_problems %}
+        <tr>
+        <td colspan=4>
+            <h3>Unhandled Service problems:</h3>
+        </td>
+        </tr>
+        <tr>
+            <th style="width: 20px; max-width: 20px;"></th>
+            <th>Host Name</th>
+            <th>Service</th>
+            <th>Description</th>
+        </tr>
+        {% for i in service_problems %}
+            <tr>
+                <td><div class="circle state_{{ i.state }}"></div></td>
+                <td>{{ i.host_name }}</td>
+                <td>
+                    {{ i.description }}
+                </td>
+                <td>
+                    {{ i.plugin_output }}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+</table>
+{% endblock %}
