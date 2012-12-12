@@ -164,15 +164,13 @@
                             </div>
                         {% endfor %}
                         <div id="div_add_comment" class="alert alert-info">
-                            <form action="{% url rest/status %}json/comment" method="POST" onsubmit="comment();return false;">
                                     <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
                                     <input type="hidden" name="host_name" id="id_host_name" value="{{ host_name }}"/>
                                     {% if my_object.object_type == 'service' %}
                                         <input type="hidden" name="service_description" id="id_service_description" value='{{ service_description }}'/>
                                     {% endif %}
-                                    <input type="hidden" name="persistent" value="1" id="id_persistent" />
-                                    <i class="glyph-user"></i> <a href="">{{ remote_user }}</a>: <input name=comment placeholder="Write a comment...">
-                            </form>
+                                    <input type="hidden" name="persistent" value="0" id="id_persistent" />
+                                    <i class="glyph-user"></i> <a href="">{{ remote_user }}</a>: <input name=comment id="write_a_comment" placeholder="Write a comment...">
                         </div>
                     </div>
 
@@ -251,7 +249,11 @@
                 <tr>
                 <td>{{ k }}</td>
                 <td>
-                    <input name="{{ k }}" value="{{ v }}"/>
+                    <div class="pull-left">
+                        <input class="editable_field" name="_{{ k }}" value="{{ v }}"/>
+                    </div>
+                    <div id="_{{ k }}_status"></div>
+
                 </td>
                 </tr>
             {% endfor %}
@@ -261,6 +263,14 @@
         {% endif %}
     </div>
         <div class="tab-pane" id="events">
+            <div width=500px class="progress">
+                {% for line in log reversed %}
+                    {% if line.class == 1 %}
+                        <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}" class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
             Last {{ log|length }} log entries:
             <table style="font-size: 80%;" class="table well table-condensed" table-striped>
                 <thead>
@@ -474,9 +484,52 @@
                         )
                     }
         });
-        function comment() {
-            location.reload();
-        }
+        // When enter is pressed in comment form. Post a new comment.
+        $('#write_a_comment').keyup(function (e) {
+            if (e.keyCode === 13) {
+                my_comment = this.value;
+                if (my_comment == '')
+                    return;
+                comment(my_comment,"{{ host_name }}", "{{ service_description }}");
+                location.reload();
+            }
+        });
+        // When an editable field is change, lets update configuration
+        $('.editable_field').focus(function(e) {
+            $(e.target).data('orig-value', $(e.target).attr('value'));
+        })
+        $('.editable_field').blur(function(e) {
+            var old_value = $(e.target).data('orig-value');
+            var new_value = $(e.target).attr('value');
+            var attribute_name = $(e.target).attr('name');
+            var object_type = "{{ my_object.object_type }}";
+            var short_name = "{{ my_object.short_name }}";
+            if (old_value == new_value)
+                return false;
+
+            // Get the div right next to the input box for editing
+            var message_div = $('#' + $(e.target).attr('name') + "_status");
+            message_div.html('<div class="pull-right"><div class="circle state_3"></div> Saving ...</div>');
+            console.log('#' + $(e.target).attr('name') + "_status");
+            console.log("Change " + $(e.target).attr('name') + " old " + old_value + " to " + new_value);
+
+            tmp = change_attribute(
+                    object_type,
+                    short_name,
+                    attribute_name,
+                    new_value,
+                    function(e) {
+                        message_div.html(
+                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>undo </a>' +
+                        '<div class="pull-right">' +
+                        '<div class="circle state_0"></div>  Saved. ' +
+                        '</div> '
+                        );
+                    }
+            );
+            console.log(tmp);
+
+        });
     </script>
 
 {% endblock %}

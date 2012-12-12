@@ -136,11 +136,13 @@ def _status(request):
 
     #    services[service['host_name']].append( service )
     for host in all_hosts:
+        host['num_problems'] = host['num_services_crit'] +  host['num_services_warn'] +  host['num_services_unknown']
         if len(services[host['name']]) > 0:
             host['status'] = state[host['state']]
             host['services'] = services[host['name']]
             hosts.append( host )
-    hosts.sort()
+    # Sort by service status
+    hosts.sort(reverse=True, cmp=lambda a,b: cmp(a['num_problems'], b['num_problems']))
     c['services'] = services
     c['hosts'] = hosts
     seconds_in_a_day = 60*60*24
@@ -193,10 +195,10 @@ def status_detail(request, host_name, service_description=None):
             my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
             c['log'] = livestatus.query('GET log',
-                'Filter: time >= %s' % time.time(),
+                'Filter: time >= %s' % today,
                 'Filter: host_name = %s' % host_name,
-                'Limit: 50',
                 'Filter: service_description = %s' % service_description,
+                'Limit: 50',
             )
         except IndexError:
             c['errors'].append("Could not find any service named '%s'"%service_description)
@@ -220,6 +222,36 @@ def status_detail(request, host_name, service_description=None):
         datum.i = i
         datum.status = state[datum.get_status()]
     c['perfdata'] = perfdata.metrics
+
+    # Create some state history progress bar from our logs:
+    if len(c['log']) > 0:
+        log = c['log']
+        start_time = log[-1]['time']
+        end_time = log[0]['time']
+        now = time.time()
+
+        duration = now - start_time
+        state_hist = []
+        start = start_time
+        last_item = None
+        css_hint = {}
+        css_hint[0] = 'success'
+        css_hint[1] = 'warning'
+        css_hint[2] = 'danger'
+        css_hint[3] = 'info'
+        for i in reversed(log):
+            print i
+            if not i['class'] == 1:
+                continue
+            if not last_item is None:
+                last_item['end_time'] = i['time']
+                last_item['duration'] = d = last_item['end_time'] - last_item['time']
+                last_item['duration_percent'] = 100*d/duration
+            i['bootstrap_status'] = css_hint[i['state']]
+            last_item = i
+        last_item['end_time'] = now
+        last_item['duration'] = d = last_item['end_time'] - last_item['time']
+        last_item['duration_percent'] = 100*d/duration
 
     # Lets get some graphs
     try:
@@ -422,7 +454,15 @@ def status_paneview(request):
     return render_to_response('status_paneview.html', c, context_instance = RequestContext(request))
 
 def status_index(request):
-    c = _status(request)
+    c = _status_combined(request)
+    top_alert_producers = defaultdict(int)
+    top_alert_producers['test'] = 5
+    print top_alert_producers, "top"
+    for i in c['log']:
+        top_alert_producers[i['host_name']] += 1
+    top_alert_producers = top_alert_producers.items()
+    top_alert_producers.sort(cmp=lambda a,b: cmp(a[1],b[1]), reverse=True)
+    c['top_alert_producers'] = top_alert_producers
     return render_to_response('status_index.html', c, context_instance = RequestContext(request))
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
@@ -457,16 +497,22 @@ def test_livestatus(request):
 
     return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
 
-
-def status_problems(request):
-    #c = _status(request)
+def _status_combined(request):
+    """ Returns a combined status of network outages, host problems and service problems
+    """
     c = {}
     livestatus = pynag.Parsers.mk_livestatus()
     hosts = livestatus.get_hosts()
     services = livestatus.get_services()
     hosts_that_are_down = []
     hostnames_that_are_down = []
+    service_status = [0,0,0,0]
+    host_status = [0,0,0,0]
+    parents = []
     for host in hosts:
+        host_status[host["state"]] += 1
+        if len(host['childs']) > 0:
+            parents.append(host)
         if host['state'] != 0 and host['acknowledged'] == 0 and host['downtimes'] == []:
             hostnames_that_are_down.append(host['name'])
             hosts_that_are_down.append(host)
@@ -485,10 +531,98 @@ def status_problems(request):
         else:
             network_problems.append(host)
     for service in services:
+        service_status[service["state"]] += 1
         if service['state'] != 0 and service['acknowledged'] == 0 and len(service['downtimes']) == 0 and not service['host_name'] in hostnames_that_are_down:
             service_problems.append(service)
     c['network_problems'] = network_problems
     c['host_problems'] = host_problems
     c['service_problems'] = service_problems
+    c['hosts'] = hosts
+    c['services'] = services
+    c['parents'] = parents
+    service_totals = float(sum(service_status))
+    host_totals = float(sum(host_status))
+    c['service_status'] = map(lambda x: 100*x/service_totals, service_status)
+    c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
+    seconds_in_a_day = 60*60*24
+    today = time.time() % seconds_in_a_day # midnight of today
+    c['log'] = livestatus.query('GET log',
+        'Filter: time >= %s' % today,
+        'Filter: type ~ ALERT',
+        'Limit: 100',
+    )
+    return c
+
+def status_problems(request):
+    #c = _status(request)
+    c = _status_combined(request)
     return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
+
+
+def state_history(request):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    livestatus = pynag.Parsers.mk_livestatus()
+    start_time = request.GET.get('start_time', None)
+    end_time = request.GET.get('end_time', None)
+    if end_time is None:
+        end_time = int(time.time())
+    end_time = int(end_time)
+    if start_time is None:
+        seconds_in_a_day = 60*60*24
+        seconds_today = end_time % seconds_in_a_day # midnight of today
+        start_time = end_time - seconds_today
+    start_time = int(start_time)
+    c['log'] = log = livestatus.query('GET log',
+        'Filter: time >= %s' % start_time,
+        'Filter: class = 1',
+    )
+    log.reverse()
+
+    total_duration = end_time - start_time
+    css_hint = {}
+    css_hint[0] = 'success'
+    css_hint[1] = 'warning'
+    css_hint[2] = 'danger'
+    css_hint[3] = 'info'
+    last_item = None
+
+    services = {}
+    for i in log:
+        short_name = "%s/%s" % (i['host_name'],i['service_description'])
+        if short_name not in services:
+            s = {}
+            s['host_name'] = i['host_name']
+            s['service_description'] = i['service_description']
+            s['log'] = [{'time':start_time,'state':3, 'plugin_output':'Unknown value here'}]
+            services[short_name] = s
+        services[short_name]['log'].append(i)
+    for service in services.values():
+        last_item = None
+        service['sla'] = float(0)
+        service['num_problems'] = 0
+        for i in service['log']:
+            i['bootstrap_status'] = css_hint[i['state']]
+            if last_item is not None:
+                last_item['end_time'] = i['time']
+                duration = last_item['end_time']  - last_item['time']
+                last_item['duration_percent'] = 100 * float(duration) / total_duration
+                if last_item['state'] == 0:
+                    service['sla'] += last_item['duration_percent']
+                else:
+                    service['num_problems'] += 1
+            last_item = i
+        last_item['end_time'] = end_time
+        duration = last_item['end_time']  - last_item['time']
+        last_item['duration_percent'] = 100 * duration / total_duration
+        if last_item['state'] == 0:
+            service['sla'] += last_item['duration_percent']
+        else:
+            service['num_problems'] += 1
+    c['services'] = services
+    c['start_time'] = start_time
+    c['end_time'] = end_time
+    return render_to_response('state_history.html', c, context_instance = RequestContext(request))
+
 

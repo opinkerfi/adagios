@@ -7,6 +7,7 @@ Convenient stateless functions for pynag. This module is used by the /rest/ inte
 
 import time
 import pynag.Control.Command
+import pynag.Model
 
 def hosts(**kwargs):
     """ Get status information about hosts
@@ -62,6 +63,7 @@ def reschedule(host_name,service_description, check_time=time.time(), wait=0):
             "WaitTrigger: check",
             "Filter: host_name = %s" % host_name,
         )
+    return "ok"
 
 def comment(author,comment,host_name,service_description=None,persistent=1):
     """ Adds a comment to a particular service.
@@ -82,3 +84,23 @@ def delete_comment(comment_id, host_name, service_description=None):
         pynag.Control.Command.del_host_comment(comment_id=comment_id)
     else:
         pynag.Control.Command.del_svc_comment(comment_id=comment_id)
+    return "ok"
+
+def edit(object_type, short_name, attribute_name, new_value):
+    """ Change one single attribute for one single object.
+
+    Arguments:
+      object_type    -- Type of object to change (i.e. "host","service", etc)
+      short_name      -- Short Name of the object f.e. the host_name of a host
+      attribute_name -- Name of attribute to change .. f.e. 'address'
+      new_value      -- New value of the object .. f.e. '127.0.0.1'
+    Examples:
+      edit('host','localhost','address','127.0.0.1')
+      edit('service', 'localhost/Ping', 'contactgroups', 'None')
+    """
+    # TODO : MK Livestatus access acording to remote_user
+    time.sleep(2)
+    c = pynag.Model.string_to_class[object_type]
+    my_obj = c.objects.get_by_shortname(short_name)
+    my_obj[attribute_name] = new_value
+    return str(my_obj)

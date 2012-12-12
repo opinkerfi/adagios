@@ -1,0 +1,48 @@
+{% extends "base_status.html" %}
+
+{% block title %}State History{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}State History
+{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% load adagiostags %}
+{% block toolbar %}{% endblock %}
+{% block content %}
+    <table class="table">
+    <tr>
+        <th>Start Time: {{ start_time|timestamp|date:'Y-m-d H:i' }}</th>
+        <th>End Time: {{ end_time|timestamp|date:'Y-m-d H:i' }}</th>
+    </tr>
+    </table>
+    <table class="table table-condensed well">
+    <tr>
+        <th>Host</th>
+        <th>Service </th>
+        <th>SLA %</th>
+        <th># alerts</th>
+        <th>Timeline</th>
+    </tr>
+
+    {% for service in services.values %}
+        <tr>
+        <td>{{ service.host_name }}</td>
+        <td>{{ service.service_description }}</td>
+        <td>{{ service.sla|floatformat }}%</td>
+            <td>{{ service.num_problems }}</td>
+        <td width=500px>
+
+            <div width="500px" class="progress">
+                {% for line in service.log %}
+                    <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}"  class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
+                {% endfor %}
+            </div>
+
+
+        </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
+
+
+{% block footer %} {{ block.super }} {% endblock %}

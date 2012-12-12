@@ -47,7 +47,7 @@ def handle_request(request, module_name, attribute, format):
             for k, v in request.GET.items():
                 # TODO: Is it safe to turn all digits to int ?
                 #if str(v).isdigit(): v = int(float(v))
-                arguments[str(k)] = str(v)
+                arguments[k.encode('utf-8')] = v.encode('utf-8')
             result = item( **arguments )
     elif request.method == 'POST':
         item = members[attribute]
@@ -56,9 +56,7 @@ def handle_request(request, module_name, attribute, format):
         else:
             arguments = {} #request.POST.items()
             for k, v in request.POST.items():
-                # TODO: Is it safe to turn all digits to int ?
-                #if str(v).isdigit(): v = int(float(v))
-                arguments[str(k)] = str(v)
+                arguments[k.encode('utf-8')] = v.encode('utf-8')
             result = item( **arguments )
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))

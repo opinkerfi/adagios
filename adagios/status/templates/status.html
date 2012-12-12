@@ -63,9 +63,13 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if service.acknowledged == 1 or service.host_acknowledged  == 1 %}
-                                {% else %}
+                                {% if service.state != 0 and service.acknowledged == 0 and service.host_acknowledged  == 0 %}
                                     <i class="glyph-warning-sign" title="Unhandled problem. Please acknowledge it."></i>
+                                {% else %}
+                                    <!--
+                                        acknowledged: {{ service.acknowledged  }}
+                                        host_acknowledged: {{ service.host_acknowledged  }}
+                                    -->
                                 {% endif %}
                             </td>
                             <td style="white-space: nowrap;">{% ifchanged host.name %}

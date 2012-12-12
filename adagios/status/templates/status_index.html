@@ -9,37 +9,103 @@
 {% block content %}
 
     <div class="row row-fluid">
-        <div class="span6">
-            <h3>Problem Summary</h3>
-            <table class="table table-condensed">
+        <div class="span4">
+            <h3>Status Overview</h3>
+            <table class="table well table-condensed">
                 <thead>
                 <tr>
                     <th>Description</th>
                     <th>#</th>
-                    <th>Unhandled</th>
+                    <th><i class="glyph-warning-sign" title="Unhandled Problems"></i></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Network Outages</td>
-                    <td></td>
-                    <td></td>
+                    <td>Network Status</td>
+                    <td>{{ parents|length }}</td>
+                    <td>
+                        {% if  network_problems|length_is:0 %}
+                        {% else %}
+
+                                <a href="{%  url status.views.status_problems %}">
+                                    {{ network_problems|length }}
+                                </a>
+
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
-                    <td>Host Problems</td>
-                    <td></td>
-                    <td></td>
+                    <td>Host Status</td>
+                    <td>{{ hosts|length }}</td>
+                    <td>
+                        {% if  host_problems|length_is:0 %}
+                        {% else %}
+                            <a href="{%  url status.views.status_problems %}">
+                                {{ host_problems|length }}
+                            </a>
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
-                    <td>Service Problems</td>
-                    <td></td>
-                    <td></td>
+                    <td>Service Status</td>
+                    <td>{{ services|length }}</td>
+                    <td>
+                        {% if  service_problems|length_is:0 %}
+                        {% else %}
+                            <a href="{%  url status.views.status_problems %}">
+                                {{ service_problems|length }}
+                            </a>
+                        {% endif %}
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div class="span6">
-            ...
+        <div class="span4">
+            <h3>Health</h3>
+            <table class="table well">
+                <tr>
+                    <td  style="white-space: nowrap" width=20px>Host Health</td>
+                    <th>
+                        <div class="progress">
+                            <div class="bar bar-success" style=" width: {{ host_status.0 }}%;">{{ host_status.0|floatformat }}%</div>
+                            <div class="bar bar-warning" style=" width: {{ host_status.1 }}%;"></div>
+                            <div class="bar bar-danger" style=" width: {{ host_status.2 }}%;"></div>
+                            <div class="bar bar-info" style=" width: {{ host_status.3 }}%;"></div>
+                        </div>
+
+                    </th>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap" width=20px>Service Health</td>
+                    <th>
+                        <div class="progress">
+                            <div class="bar bar-success" style=" width: {{ service_status.0 }}%;">{{ service_status.0|floatformat }}%</div>
+                            <div class="bar bar-warning" style=" width: {{ service_status.1 }}%;"></div>
+                            <div class="bar bar-danger" style=" width: {{ service_status.2 }}%;"></div>
+                            <div class="bar bar-info" style=" width: {{ service_status.3 }}%;"></div>
+                        </div>
+
+                    </th>
+                </tr>
+            </table>
+        </div>
+        <div class="span4">
+            <h3>Top Alert Producers</h3>
+            <table class="table-condensed well table">
+                <tr>
+                    <th>Host</th>
+                    <th>Alerts today</th>
+                </tr>
+            {% for i in top_alert_producers %}
+                {% if forloop.counter0 < 5 %}
+                <tr>
+                <td><a href="{% url status.views.status_detail i.0 %}">{{ i.0 }}</a></td>
+                <td>{{ i.1 }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </table>
         </div>
     </div>
 {% endblock %}

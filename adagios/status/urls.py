@@ -6,6 +6,7 @@ urlpatterns = patterns('',
     (r'^/test/?$', 'status.views.test_livestatus'),
     (r'^/boxview/?$', 'status.views.status_boxview'),
     (r'^/paneview/?$', 'status.views.status_paneview'),
+    (r'^/state_history/?$', 'status.views.state_history'),
     (r'^/problems/?$', 'status.views.status_problems'),
     (r'^/parents/?$', 'status.views.status_parents'),
     (r'^/hostgroups/?$', 'status.views.status_hostgroup'),
@@ -14,5 +15,6 @@ urlpatterns = patterns('',
     (r'^/hosts/(?P<host_name>.+?)/(?P<service_description>.+)/?$', 'status.views.status_detail'),
     (r'^/hosts/(?P<host_name>.+)/$', 'status.views.status_detail'),
     (r'^/hosts/(?P<host_name>.+)$', 'status.views.status_detail'),
+
     )
  
