@@ -21,7 +21,7 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Network Status</td>
+                    <td>Network Parents</td>
                     <td>{{ parents|length }}</td>
                     <td>
                         {% if  network_problems|length_is:0 %}
@@ -35,7 +35,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Host Status</td>
+                    <td>Hosts</td>
                     <td>{{ hosts|length }}</td>
                     <td>
                         {% if  host_problems|length_is:0 %}
@@ -47,7 +47,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Service Status</td>
+                    <td>Services</td>
                     <td>{{ services|length }}</td>
                     <td>
                         {% if  service_problems|length_is:0 %}
@@ -62,10 +62,10 @@
             </table>
         </div>
         <div class="span4">
-            <h3>Health</h3>
+            <h3>Health%</h3>
             <table class="table well">
                 <tr>
-                    <td  style="white-space: nowrap" width=20px>Host Health</td>
+                    <td  style="white-space: nowrap" width=20px>All hosts</td>
                     <th>
                         <div class="progress">
                             <div class="bar bar-success" style=" width: {{ host_status.0 }}%;">{{ host_status.0|floatformat }}%</div>
@@ -77,7 +77,7 @@
                     </th>
                 </tr>
                 <tr>
-                    <td style="white-space: nowrap" width=20px>Service Health</td>
+                    <td style="white-space: nowrap" width=20px>All services</td>
                     <th>
                         <div class="progress">
                             <div class="bar bar-success" style=" width: {{ service_status.0 }}%;">{{ service_status.0|floatformat }}%</div>
