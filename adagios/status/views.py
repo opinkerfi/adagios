@@ -626,3 +626,50 @@ def state_history(request):
     return render_to_response('state_history.html', c, context_instance = RequestContext(request))
 
 
+def _status_log(request):
+    """ Helper function to any status view that requires log access """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    livestatus = pynag.Parsers.mk_livestatus()
+    start_time = request.GET.get('start_time', None)
+    end_time = request.GET.get('end_time', None)
+    host_name = request.GET.get('host_name', None)
+    service_description = request.GET.get('service_description', None)
+    limit = request.GET.get('limit', None)
+    log_class = request.GET.get('class', None)
+
+    if end_time is None:
+        end_time = int(time.time())
+    end_time = int(end_time)
+
+    if start_time is None:
+        seconds_in_a_day = 60*60*24
+        seconds_today = end_time % seconds_in_a_day # midnight of today
+        start_time = end_time - seconds_today
+    start_time = int(start_time)
+
+    if limit is None:
+        limit = 500
+    query = []
+    query.append('GET log')
+    if start_time is not None:
+        query.append('Filter: time >= %s' % start_time)
+    #if end_time is not None:
+    #    query.append('Filter: time <= %s' % end_time)
+    if log_class is not None:
+        query.append('Filter: class = %s' % log_class)
+    if limit is not None:
+        query.append('Limit: %s' % limit)
+    if host_name is not None:
+        query.append('Filter: host_name = %s' % host_name)
+    if service_description is not None:
+        query.append('Filter: service_description = %s' % service_description)
+    c['log'] = log = livestatus.query(*query)
+
+    return c
+
+def status_log(request):
+    c = _status_log(request)
+    c['request'] = request
+    return render_to_response('status_log.html', c, context_instance = RequestContext(request))
