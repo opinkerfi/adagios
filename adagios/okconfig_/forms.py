@@ -167,5 +167,4 @@ class EditTemplateForm(forms.Form):
         self.service.reload_object()
         # Lets also update commandline because form is being returned to the user
         self.command_line = self.service.get_effective_command_line()
-        print self.command_line
 
