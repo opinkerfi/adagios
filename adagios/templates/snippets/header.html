@@ -62,13 +62,20 @@
 		    </form>
                         </li>
                     {% endif %}
+                    {% if num_problems %}
+                        <li><a href="{% url status.views.status %}?state__isnot=0&acknowledged=0"><i class="glyph-white glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
+                    {% endif %}
+                    <!--
                     <li>
                         <a data-toggle="modal"
                            href="#notifications">
                             <div class="badge{% if notifications|length %} badge-warning{% endif %}"><span id="num_notifications">{{ notifications|length }}</span> Notification{% if notifications|length != 1 %}s{% endif %}</div>
                         </a>
                     </li>
+                    -->
+                    <!--
                     <li class="dropdown"><a><i class="glyph-white glyph-clock"></i> {% now "Y-m-d h:i T" %}</a></li>
+                    -->
                     <li class="dropdown">
                         <a class="dropdown-toggle"
                            data-toggle="dropdown"
