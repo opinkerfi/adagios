@@ -5,7 +5,7 @@ from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
 import adagios
 from pynag import Model
-
+from pynag.Parsers import mk_livestatus
 def on_page_load(request):
     """ Collection of actions that take place every page load """
     results = {}
@@ -18,6 +18,8 @@ def on_page_load(request):
     for k,v in check_nagios_needs_reload(request).items():
         results[k] = v
     for k,v in get_notifications(request).items():
+        results[k] = v
+    for k,v in get_unhandled_problems(request).items():
         results[k] = v
     for k,v in resolve_urlname(request).items():
         results[k] = v
@@ -57,9 +59,22 @@ def get_httpuser(request):
     for i in pynag.Model.eventhandlers:
         i.modified_by = remote_user
     return {'remote_user': remote_user }
+
+def get_unhandled_problems(request):
+    """ Get number of any unhandled problems via livestatus """
+    results = {}
+    try:
+        livestatus = mk_livestatus()
+        problems = livestatus.query('GET services','Filter: state != 0', 'Filter: acknowledged = 0', 'Filter: scheduled_downtime_depth = 0')
+        results['problems'] = problems
+        results['num_problems'] = len(problems)
+    except Exception:
+        pass
+    return results
 def check_nagios_cfg(request):
     """ Check availability of nagios.cfg """
     return { 'nagios_cfg' : pynag.Model.config.cfg_file }
+
 def check_destination_directory(request):
     """ Check that adagios has a place to store new objects """
     dest = settings.destination_directory
@@ -76,6 +91,7 @@ def check_destination_directory(request):
     else:
         clear_notification(notification_id="dest_dir")
     return {}
+
 def check_git(request):
     """ Notify user if there is uncommited data in git repository """
     nagiosdir = os.path.dirname(pynag.Model.config.cfg_file)
