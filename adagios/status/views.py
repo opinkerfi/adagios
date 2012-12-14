@@ -677,7 +677,6 @@ def state_history(request):
             else:
                 service['num_problems'] += 1
 
-    tmp = services['www.okbeint.is/HTTPS www.okbeint.is']
 
     c['services'] = services
     c['start_time'] = start_time
