@@ -8,14 +8,16 @@
 {% load adagiostags %}
 {% block toolbar %}{% endblock %}
 {% block content %}
+    {{ log|length }} lines in logfile
     <table class="table">
     <tr>
-        <th>Start Time: {{ start_time|timestamp|date:'Y-m-d H:i' }}</th>
+        <th title="{{  start_time}}">Start Time: {{ start_time|timestamp|date:'Y-m-d H:i' }}</th>
         <th>End Time: {{ end_time|timestamp|date:'Y-m-d H:i' }}</th>
+        <th>Total Duration: {{ total_duration }}</th>
     </tr>
     </table>
     <table class="table table-condensed well">
-    <tr>
+    <tr style="white-space: nowrap">
         <th>Host</th>
         <th>Service </th>
         <th>SLA %</th>
@@ -29,13 +31,30 @@
         <td>{{ service.service_description }}</td>
         <td>{{ service.sla|floatformat }}%</td>
             <td>{{ service.num_problems }}</td>
-        <td width=500px>
+            <td width=500px>
 
             <div width="500px" class="progress">
-                {% for line in service.log %}
-                    <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}"  class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
-                {% endfor %}
+            {% for line in service.log %}
+                {%  if line.time != line.end_time or 1 == 1 %}
+                <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}"  class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
+                {% endif %}
+            {% endfor %}
+
             </div>
+        <!--
+                <table border=1>
+            {% for line in service.log %}
+                <tr>
+                <td>{{ line.time|timestamp|date:'Y-m-d H:i' }}</td>
+                <td>{{ line.end_time|timestamp|date:'Y-m-d H:i' }}</td>
+                <td>{{ line.duration }}</td>
+                    <td>{{ line.duration_percent }}</td>
+                </tr>
+            {% endfor %}
+                </table>
+            -->
+
+
 
 
         </td>

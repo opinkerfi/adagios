@@ -26,6 +26,7 @@ import time
 import pynag.Model
 import pynag.Utils
 import pynag.Control
+import pynag.Plugins
 import pynag.Model.EventHandlers
 import os.path
 from time import mktime
@@ -167,8 +168,10 @@ def status_detail(request, host_name, service_description=None):
     c['pnp_url'] = adagios.settings.pnp_url
     c['nagios_url'] = adagios.settings.nagios_url
     c['request'] = request
+    now = time.time()
     seconds_in_a_day = 60*60*24
-    today = time.time() % seconds_in_a_day # midnight of today
+    seconds_passed_today = now % seconds_in_a_day
+    today = now - seconds_passed_today # midnight of today
 
     try:
         c['host'] = my_host = livestatus.get_host(host_name)
@@ -240,7 +243,6 @@ def status_detail(request, host_name, service_description=None):
         css_hint[2] = 'danger'
         css_hint[3] = 'info'
         for i in reversed(log):
-            print i
             if not i['class'] == 1:
                 continue
             if not last_item is None:
@@ -249,9 +251,10 @@ def status_detail(request, host_name, service_description=None):
                 last_item['duration_percent'] = 100*d/duration
             i['bootstrap_status'] = css_hint[i['state']]
             last_item = i
-        last_item['end_time'] = now
-        last_item['duration'] = d = last_item['end_time'] - last_item['time']
-        last_item['duration_percent'] = 100*d/duration
+        if not last_item is None:
+            last_item['end_time'] = now
+            last_item['duration'] = d = last_item['end_time'] - last_item['time']
+            last_item['duration_percent'] = 100*d/duration
 
     # Lets get some graphs
     try:
@@ -457,7 +460,6 @@ def status_index(request):
     c = _status_combined(request)
     top_alert_producers = defaultdict(int)
     top_alert_producers['test'] = 5
-    print top_alert_producers, "top"
     for i in c['log']:
         top_alert_producers[i['host_name']] += 1
     top_alert_producers = top_alert_producers.items()
@@ -484,8 +486,7 @@ def test_livestatus(request):
             if k.startswith('check_'):
                 columns += " " + k[len("check_"):]
         # Any columns checked means we return a query
-        query = []
-        query.append( 'GET %s' % table )
+        query = ['GET %s' % table]
         if len(columns) > 0:
             query.append("Columns: %s" % columns)
         if limit != '' and limit > 0:
@@ -559,10 +560,52 @@ def status_problems(request):
     return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
 
 
+def _parse_nagios_logline(line):
+    ''' Parse one nagios logline and return hashmap
+    '''
+    import re
+    m = re.search('^\[(.*?)\] (.*?): (.*)', line)
+    if m is None:
+        return {}
+    timestamp, logtype, message = m.groups()
+
+    result = {}
+    if logtype in ('CURRENT HOST STATE', 'CURRENT SERVICE STATE', 'SERVICE ALERT', 'HOST ALERT'):
+        result['time'] = int(timestamp)
+        result['type'] = logtype
+        result['message'] = message
+        if logtype.find('HOST') > -1:
+            # This matches host current state:
+            m = re.search('(.*?);(.*?);(.*);(.*?);(.*)', message)
+            host, state, hard, check_attempt, plugin_output = m.groups()
+            service_description=None
+        if logtype.find('SERVICE') > -1:
+            m = re.search('(.*?);(.*?);(.*?);(.*?);(.*?);(.*)', message)
+            host,service_description,state,hard,check_attempt,plugin_output = m.groups()
+        result['host_name'] = host
+        result['service_description'] = service_description
+        result['state'] = int( pynag.Plugins.state[state] )
+        result['check_attempt'] = check_attempt
+        result['plugin_output'] = plugin_output
+
+    return result
+def _get_state_history(start_time=None, end_time=None, host=None, service_description=None):
+    """ Parses nagios logfiles and returns state history  """
+    log_file = pynag.Model.config.get_cfg_value('log_file')
+    log_archive_path = pynag.Model.config.get_cfg_value('log_archive_path')
+
+    # First, lets peek in the logfiles and see how many files we have to read:
+    result = []
+    for line in open(log_file).readlines():
+        parsed_line = _parse_nagios_logline( line )
+        if parsed_line !=  {}:
+            result.append(parsed_line)
+    return result
 def state_history(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
+
     livestatus = pynag.Parsers.mk_livestatus()
     start_time = request.GET.get('start_time', None)
     end_time = request.GET.get('end_time', None)
@@ -570,17 +613,21 @@ def state_history(request):
         end_time = int(time.time())
     end_time = int(end_time)
     if start_time is None:
+        #start_time = livestatus.query('GET status')[0]['last_log_rotation']
+        #print start_time
         seconds_in_a_day = 60*60*24
         seconds_today = end_time % seconds_in_a_day # midnight of today
         start_time = end_time - seconds_today
     start_time = int(start_time)
-    c['log'] = log = livestatus.query('GET log',
-        'Filter: time >= %s' % start_time,
-        'Filter: class = 1',
-    )
-    log.reverse()
-
+    c['log'] = log = _get_state_history()
+    #start_time = c['log'][0]['time']
+    #c['log'] = log = livestatus.query('GET log',
+    #    'Filter: time >= %s' % start_time,
+    #    'Filter: type ~ CURRENT',
+    #)
+    #log.reverse()
     total_duration = end_time - start_time
+    c['total_duration'] = total_duration
     css_hint = {}
     css_hint[0] = 'success'
     css_hint[1] = 'warning'
@@ -595,31 +642,43 @@ def state_history(request):
             s = {}
             s['host_name'] = i['host_name']
             s['service_description'] = i['service_description']
-            s['log'] = [{'time':start_time,'state':3, 'plugin_output':'Unknown value here'}]
+            s['log'] = []
+            #s['log'] = [{'time':start_time,'state':3, 'plugin_output':'Unknown value here'}]
             services[short_name] = s
+
         services[short_name]['log'].append(i)
     for service in services.values():
         last_item = None
         service['sla'] = float(0)
         service['num_problems'] = 0
+        service['duration'] = 0
         for i in service['log']:
             i['bootstrap_status'] = css_hint[i['state']]
+            if i['time'] < start_time:
+                i['time'] = start_time
             if last_item is not None:
                 last_item['end_time'] = i['time']
-                duration = last_item['end_time']  - last_item['time']
+                #last_item['time'] = max(last_item['time'], start_time)
+                last_item['duration'] = duration = last_item['end_time']  - last_item['time']
                 last_item['duration_percent'] = 100 * float(duration) / total_duration
+                service['duration'] += last_item['duration_percent']
                 if last_item['state'] == 0:
                     service['sla'] += last_item['duration_percent']
                 else:
                     service['num_problems'] += 1
             last_item = i
-        last_item['end_time'] = end_time
-        duration = last_item['end_time']  - last_item['time']
-        last_item['duration_percent'] = 100 * duration / total_duration
-        if last_item['state'] == 0:
-            service['sla'] += last_item['duration_percent']
-        else:
-            service['num_problems'] += 1
+        if not last_item is None:
+            last_item['end_time'] = end_time
+            last_item['duration'] = duration = last_item['end_time']  - last_item['time']
+            last_item['duration_percent'] = 100 * duration / total_duration
+            service['duration'] += last_item['duration_percent']
+            if last_item['state'] == 0:
+                service['sla'] += last_item['duration_percent']
+            else:
+                service['num_problems'] += 1
+
+    tmp = services['www.okbeint.is/HTTPS www.okbeint.is']
+
     c['services'] = services
     c['start_time'] = start_time
     c['end_time'] = end_time
@@ -651,8 +710,7 @@ def _status_log(request):
 
     if limit is None:
         limit = 500
-    query = []
-    query.append('GET log')
+    query = ['GET log']
     if start_time is not None:
         query.append('Filter: time >= %s' % start_time)
     #if end_time is not None:

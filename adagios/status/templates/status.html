@@ -30,13 +30,16 @@
                         </div>
                     </th>
                     <th class="small">
-                        <i class="glyph-chat " title="Comments"></i>
-                    </th>
-                    <th class="small">
                         <i class=" glyph-stopwatch  " title="downtimes"></i>
                     </th>
                     <th class="small">
-                        <i class=" glyph-warning-sign" title="Notifications have been sent"></i>
+                        <i class="glyph-chat " title="Comments"></i>
+                    </th>
+                    <th class="small">
+                        <i class="glyph-envelope" title="Notifications"></i>
+                    </th>
+                    <th class="small">
+                        <i class=" glyph-warning-sign" title="Unhandled"></i>
                     </th>
                     <th>Host</th>
                     <th>Service Check</th>
@@ -53,23 +56,28 @@
                                 <input type="hidden" class="input_service_description" name="service_description" value="{{ service.description }}">
                             </td>
                             <td>
-                                {% if service.comments  %}
-                                    <i class=" glyph-chat  " title="{{ service.comments_with_info }}"></i>
-                                {% endif %}
-                            </td>
-                            <td>
                                 {% if service.downtimes or service.host_downtimes %}
                                     <i class=" glyph-stopwatch  " title="{{ service.downtimes }}"></i>
                                 {% endif %}
                             </td>
                             <td>
+                                {% if service.comments  %}
+                                    <i class="glyph-chat" rel=tooltip title="Comments" data-content="{% for i in service.comments_with_info %}<div class='alert alert-info'><b>{{ i.1 }}:</b> {{ i.2 }}</div>{% endfor %}"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if service.max_check_attempts == service.current_attempt and service.state > 0 %}
+                                    <i class="glyph-envelope" rel="tooltip" title="Service is in Hard State" data-content="<ul><li>Service has failed at least {{ service.current_attempt  }} times and has reached HARD STATE.</li><li>{% if service.no_more_notifications == 0 %}Nagios is actively sending out notifications because of this problem.{% else %}Nagios has stopped sending out notifications because of this problem{% endif %}</li><li>Last notification was {{ service.last_notification|timestamp|timesince }} ago. </li><li>{% if service.next_notification == 0 %}No more notifications will be sent.{% else %}Next notification will be sent in {{ service.next_notification|timestamp|timeuntil }}{% endif %}</li></ul>"></i>
+                                {% endif %}
+                            </td>
+                            <td>
                                 {% if service.state != 0 and service.acknowledged == 0 and service.host_acknowledged  == 0 %}
-                                    <i class="glyph-warning-sign" title="Unhandled problem. Please acknowledge it."></i>
+                                    <i class="glyph-warning-sign" rel=tooltip data-content="You should acknowledge this problem to indicate that someone is working on a fix and stop nagios from sending out more notifications." title="Unhandled problem"></i>
                                 {% else %}
                                     <!--
-                                        acknowledged: {{ service.acknowledged  }}
-                                        host_acknowledged: {{ service.host_acknowledged  }}
-                                    -->
+                                    acknowledged: {{ service.acknowledged  }}
+                                    host_acknowledged: {{ service.host_acknowledged  }}
+                                -->
                                 {% endif %}
                             </td>
                             <td style="white-space: nowrap;">{% ifchanged host.name %}

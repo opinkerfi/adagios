@@ -7,7 +7,7 @@
 
     {% if network_problems %}
         <tr>
-        <th colspan=4>
+        <th colspan=5>
             <h3>Network outage:</h3>
         </th>
         </tr>
@@ -38,7 +38,7 @@
     {% endif %}
     {% if host_problems %}
         <tr>
-        <th colspan=4>
+        <th colspan=5>
             <h3>Unhandled Host Problems:</h3>
         </th>
         </tr>
@@ -67,7 +67,7 @@
 
     {% if service_problems %}
         <tr>
-        <td colspan=4>
+        <td colspan=5>
             <h3>Unhandled Service problems:</h3>
         </td>
         </tr>
@@ -98,7 +98,7 @@
 </table>
 
 {% if log %}
-    <h3>Last {{ log|length }} log entries:</h3>
+    <h3>Last {{ log|length }} alerts:</h3>
     <table style="font-size: 80%;" class="table table-condensed" table-striped>
         {% for line in log %}
                 <tr>

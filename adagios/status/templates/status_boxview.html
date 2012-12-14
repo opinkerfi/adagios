@@ -43,7 +43,9 @@
                 <hr style="margin-top: 0px; margin-bottom: 2px;">
                     <div>
                         {% for service in host.services %}
-                            <div style="border-color: #808080; {% if service.state == 0 %} background-color: green;{% endif %}{% if service.state == 1 %} background-color: yellow;{% endif %}{% if service.state == 2 %} background-color: red;{% endif %}" title="{{ service.plugin_output }}"class="circle state_{{ service.state }}"></div>
+                            <a href="{% url status.views.status_detail host.name service.description %}">
+                            <div style="border-color: #808080; {% if service.state == 0 %} background-color: green;{% endif %}{% if service.state == 1 %} background-color: yellow;{% endif %}{% if service.state == 2 %} background-color: red;{% endif %}" title="{{ service.description }} - {{ service.plugin_output }}"class="circle state_{{ service.state }}"></div>
+                            </a>
                         {% endfor %}
 
                     </div>
@@ -55,16 +57,6 @@
     {% endif %}
 {% endblock %}
 
-
-{% block sidebar %}
-    <h5>Go to</h5>
-    <ul class="nav nav-list">
-        <li><a href="{% url status.views.status_hostgroup %}">Hostgroup View</a></li>
-        <li><a href="{% url status.views.status %}">Service View</a></li>
-        <li><a href="{% url status.views.test_livestatus %}">Test Livestatus</a></li>
-    </ul>
-
-{% endblock %}
 
 
 {% block footer %} {{ block.super }} {% endblock %}

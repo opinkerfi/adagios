@@ -390,7 +390,7 @@
         <div class="pull-left" id="titlebar">
             <h2>
                 <small>{% block smallheader %}block=smallheader{% endblock %}</small>
-                {% block largeheader %}block=largeheader{% endblock %}
+                {% block largeheader %}block=largeheader {% endblock %}
             </h2>
         </div>
         <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" id="right_of_title">
@@ -431,20 +431,26 @@
 
 <hr style="margin-top: 10px; margin-bottom: 10px;">
 
-<div class="content content-fluid">
+<div class="container-fluid content">
     <div class="row-fluid ">
         <div class="span2"   id="left_sidebar">
+            <h5>Shortcuts</h5>
             <ul class="nav nav-list">
-                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0">Problems </a></li>
+                <li >
+                    <a {% if num_problems %}style="color: red"{% endif %} href="{% url status.views.status %}?acknowledged=0&state__isnot=0">Problems {% if num_problems %}({{ num_problems }}){% endif %}</a>
+                </li>
+                <li><a href="{% url status.views.status_index %}">Overview </a></li>
                 <li><a href="{% url status.views.status_hostgroup %}">Hostgroups</a></li>
                 <li><a href="{% url status.views.status %}">Services </a></li>
                 <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
-                <li><hr></li>
-
-                <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
+            </ul>
+            <h5>Experimental</h5>
+            <ul class="nav nav-list">
+               <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
                 <li><a href="{% url status.views.state_history %}">State History </a></li>
                 <li><a href="{% url status.views.status_log %}?class=1">Log </a></li>
+                <li><a href="{% url status.views.status_problems %}?class=1">Big Screen </a></li>
 
             </ul>
         </div>
@@ -496,7 +502,7 @@
                 <div class=" pull-right" id="search_box">
                     <form action="{% url status.views.status %}" method="get" >
                         <div class="pull-left">
-                            <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" value="{{ request.GET.q }}" class="search-query" placeholder="Filter..." />
+                            <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" value="{{ request.GET.q }}" class="search-query" placeholder="hosts, services, etc..." />
                         </div>
                         <div class="btn-group pull-left">
                             <button class="btn btn-small"  type="submit" href="{% url status.views.status %}">

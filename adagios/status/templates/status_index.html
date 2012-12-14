@@ -5,10 +5,8 @@
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Status Overview{% endblock %}
 
-{% block toolbar %}{% endblock %}
 {% block content %}
 
-    <div class="row row-fluid">
         <div class="span4">
             <h3>Status Overview</h3>
             <table class="table well table-condensed">
@@ -62,7 +60,7 @@
             </table>
         </div>
         <div class="span4">
-            <h3>Health%</h3>
+            <h3>Current Health</h3>
             <table class="table well">
                 <tr>
                     <td  style="white-space: nowrap" width=20px>All hosts</td>
@@ -107,7 +105,113 @@
             {% endfor %}
             </table>
         </div>
+    <!--
+    <div class="span5">
+        <h3>Nagios Components</h3>
+        <table class="table-condensed well table">
+            <tr>
+                <th>Component</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>
+                    Nagios Core
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+                    3.4.1
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Livestatus Broker Module
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                        PNP Broker Module
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                        Mod Gearman
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                        Git Repository
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+
+                </td>
+            </tr>
+        </table>
     </div>
+    <div class="span5">
+        <h3>Adagios Components</h3>
+        <table class="table-condensed well table">
+            <tr>
+                <th>Component</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>
+                    Status Module
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    PNP Module
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Configuration Module
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    OKConfig Module
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Git Integration
+                </td>
+                <td>
+                    <div class="circle state_0"></div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    -->
 {% endblock %}
 
 {% block header %} {{ block.super }}
@@ -115,7 +219,15 @@
 
 
 
-{% block footer %} {{ block.super }} {% endblock %}
+{% block footer %}
+    {{ block.super }}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+    $(document).ready(function() {
+        $('#action_buttons').hide();
+    });
+    </script>
+{% endblock %}
 
 {% block head %}
 {% endblock %}
