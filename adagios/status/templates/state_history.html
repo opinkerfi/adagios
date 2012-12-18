@@ -26,6 +26,7 @@
     </tr>
 
     {% for service in services.values %}
+        {% if service.num_problems > 0 %}
         <tr>
         <td>{{ service.host_name }}</td>
         <td>{{ service.service_description }}</td>
@@ -59,6 +60,7 @@
 
         </td>
         </tr>
+        {% endif %}
     {% endfor %}
     </table>
 {% endblock %}

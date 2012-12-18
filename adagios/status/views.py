@@ -610,7 +610,7 @@ def state_history(request):
     start_time = request.GET.get('start_time', None)
     end_time = request.GET.get('end_time', None)
     if end_time is None:
-        end_time = int(time.time())
+        end_time = time.time()
     end_time = int(end_time)
     if start_time is None:
         #start_time = livestatus.query('GET status')[0]['last_log_rotation']
@@ -638,15 +638,22 @@ def state_history(request):
     services = {}
     for i in log:
         short_name = "%s/%s" % (i['host_name'],i['service_description'])
-        if short_name not in services:
-            s = {}
-            s['host_name'] = i['host_name']
-            s['service_description'] = i['service_description']
-            s['log'] = []
-            #s['log'] = [{'time':start_time,'state':3, 'plugin_output':'Unknown value here'}]
-            services[short_name] = s
+        for k,v in request.GET.items():
+            if k in i.keys() and i[k] != v:
+                print k, "found in ", short_name
+                break
+        else:
+            if short_name not in services:
+                s = {}
+                s['host_name'] = i['host_name']
+                s['service_description'] = i['service_description']
+                s['log'] = []
+                s['worst_logfile_state'] = 0
+                #s['log'] = [{'time':start_time,'state':3, 'plugin_output':'Unknown value here'}]
+                services[short_name] = s
 
-        services[short_name]['log'].append(i)
+            services[short_name]['log'].append(i)
+            services[short_name]['worst_logfile_state'] = max(services[short_name]['worst_logfile_state'], i['state'])
     for service in services.values():
         last_item = None
         service['sla'] = float(0)
