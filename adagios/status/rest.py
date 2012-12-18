@@ -103,4 +103,5 @@ def edit(object_type, short_name, attribute_name, new_value):
     c = pynag.Model.string_to_class[object_type]
     my_obj = c.objects.get_by_shortname(short_name)
     my_obj[attribute_name] = new_value
+    my_obj.save()
     return str(my_obj)
