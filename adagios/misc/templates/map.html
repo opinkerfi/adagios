@@ -9,10 +9,10 @@
 
 {% block action_buttons %}
     <button  class="button btn-small" onclick="refresh();" >
-        <i class="glyph-refresh" > </i></button>
-    <div id="place_new_host_container">
-        <button  id="place_new_host_button" class="hide button btn-small" data-toggle="modal"  data-target="#addhost_modal" >Place new host here</button>
-    </div>
+        <i class="glyph-refresh" > </i>
+    </button>
+
+    <button  id="place_new_host_button" class="hide button btn-small" data-toggle="modal"  data-target="#addhost_modal" >Place new host here</button>
 {% endblock %}
 
 {% block content %}
@@ -180,11 +180,11 @@
             new_host_marker = newHostMarker(map, new google.maps.LatLng(0,0))
 
 
+            var infowindow = new google.maps.InfoWindow();
+            var html = "<a href='#' onclick='showmodal();'>Place new host here</a>";
+            infowindow.setContent(html);
 
             google.maps.event.addListener(new_host_marker, 'click', function(event) {
-                var infowindow = new google.maps.InfoWindow();
-                var html = "<a href='#' onclick='showmodal();'>Place new host here</a>";
-                infowindow.setContent("prufa");
                 infowindow.open(map, new_host_marker);
             });
 
