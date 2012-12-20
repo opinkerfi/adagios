@@ -64,7 +64,9 @@ def status_parents(request):
             c['hosts'].append(i)
             ok = 0
             crit = 0
+            i['child_hosts'] = []
             for x in i['childs']:
+                i['child_hosts'].append( host_dict[x] )
                 if host_dict[x]['state'] == 0:
                     ok += 1
                 else:
@@ -101,10 +103,25 @@ def _status(request):
     services = defaultdict(list)
     hosts = []
     for service in all_services:
+        # Tag the service with tags such as problems and unhandled
+        tags = []
+        if service['state'] != 0:
+            tags.append('problem')
+            tags.append('problems')
+            if service['acknowledged'] == 0 and service['downtimes'] == []:
+                tags.append('unhandled')
+        else:
+            tags.append('ok')
+        if service['acknowledged'] == 1:
+            tags.append('acknowledged')
+        if service['downtimes'] != []:
+            tags.append('downtime')
+        service['tags'] = ' '.join(tags)
+
         for k,v in request.GET.items():
             if k == 'q' and v is not None and v != '':
                 q = str(v).lower()
-                if q in service['description'].lower() or q in service['host_name'].lower():
+                if q in service['description'].lower() or q in service['host_name'].lower() or q in service['tags']:
                     continue
                 else:
                     break
@@ -121,23 +138,11 @@ def _status(request):
         else:
             service['status'] = state[service['state']]
             services[ service['host_name'] ].append(service)
-            tags = []
-            if service['state'] != 0:
-                tags.append('problem')
-                tags.append('problems')
-                if service['acknowledged'] == 0 and service['downtimes'] == []:
-                    tags.append('unhandled')
-            else:
-                tags.append('ok')
-            if service['acknowledged'] == 1:
-                tags.append('acknowledged')
-            if service['downtimes'] != []:
-                tags.append('downtime')
-            service['tags'] = ' '.join(tags)
 
     #    services[service['host_name']].append( service )
     for host in all_hosts:
         host['num_problems'] = host['num_services_crit'] +  host['num_services_warn'] +  host['num_services_unknown']
+        host['children'] = host['services_with_state']
         if len(services[host['name']]) > 0:
             host['status'] = state[host['state']]
             host['services'] = services[host['name']]
@@ -148,11 +153,17 @@ def _status(request):
     c['hosts'] = hosts
     seconds_in_a_day = 60*60*24
     today = time.time() % seconds_in_a_day # midnight of today
+    c['objects'] = hosts
     if request.GET.get('view', None) == 'servicegroups':
         servicegroups = livestatus.query('GET servicegroups')
         for i in servicegroups:
             i['children'] = i['members_with_state']
         c['objects'] = servicegroups
+    if request.GET.get('view', None) == 'hostgroups':
+        groups = livestatus.query('GET hostgroups')
+        for i in groups:
+            i['children'] = i['members_with_state']
+        c['objects'] = groups
     return c
 
 def status(request):
@@ -354,6 +365,35 @@ def status_hostgroup(request, hostgroup_name=None):
             pass
     return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
 
+def status_tiles(request, object_type="host"):
+    """
+    """
+    c = _status(request)
+    return render_to_response('status_tiles.html', c, context_instance = RequestContext(request))
+
+def status_host(request):
+    c =  _status(request)
+    c['host_name'] = request.GET.get('detail', None)
+    for host in c['hosts']:
+        ok = host.get('num_services_ok')
+        warn = host.get('num_services_warn')
+        crit = host.get('num_services_crit')
+        pending = host.get('num_services_pending')
+        unknown = host.get('num_services_unknown')
+        total = ok + warn + crit +pending + unknown
+        host['total'] = total
+        host['problems'] = warn + crit + unknown
+        try:
+            total = float(total)
+            host['health'] = float(ok) / total * 100.0
+            host['percent_ok'] = ok/total*100
+            host['percent_warn'] = warn/total*100
+            host['percent_crit'] = crit/total*100
+            host['percent_unknown'] = unknown/total*100
+            host['percent_pending'] = pending/total*100
+        except ZeroDivisionError:
+            host['health'] = 'n/a'
+    return render_to_response('status_host.html', c, context_instance = RequestContext(request))
 def status_boxview(request):
     c = _status(request)
 

@@ -1,0 +1,77 @@
+{% extends "base_status.html" %}
+
+{% block title %}Status Overview{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block adagios_hausinn %}
+{% endblock %}
+{% block largeheader %}Service Overview
+{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% load adagiostags %}
+
+{% block sidebar_outer %}
+{% endblock %}
+
+
+{% block view_buttons %}
+    <div class="btn-group pull-left" id="view_buttons" style="margin-right: 15px;">
+        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="glyph-eye-open" title="View"> </i> View<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="?view=hosts"> Hosts</a></li>
+            <hr>
+            <li><a href="?view=hostgroups"> Hostgroups</a></li>
+            <li><a href="?view=servicegroups"> Servicegroups</a></li>
+            <li><a href="?view=contactgroups"> Contactgroups</a></li>
+        </ul>
+    </div>
+{% endblock %}
+
+
+
+{% block content %}
+    {% if objects %}
+<style>
+    .tiles {
+        -moz-column-count: 4;
+        -moz-column-gap: 0;
+        -webkit-column-count: 4;
+        -webkit-column-gap: 0;
+        column-count: 4;
+        column-gap: 0;
+        width: 100%;
+        column-break-inside: avoid;
+    }
+    .tiles div {
+        -moz-column-break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+        column-break-inside: avoid;
+    }
+</style>
+
+        <div class="tiles">
+        {% for object in objects %}
+            {% if object.children %}
+
+                <div style="column-span: 0; min-height=65px; border-style: groove; padding: 2px; margin: 5px" class="state_{{ object.worst_service_state }}">
+                    <div style="color: black; font: bolder; text-align: center;">
+                        <a href="">{{ object.alias }}</a>
+                    </div>
+                    <hr style="margin-top: 0px; margin-bottom: 2px;">
+                    <div>
+                        {% for child in object.children %}
+                            <div style="border-color: #808080; {% if child.2 == 0 %} background-color: green;{% endif %}{% if child.2 == 1 %} background-color: yellow;{% endif %}{% if child.2 == 2 %} background-color: red;{% endif %}" title="{{ child.0 }} {{ child.1 }}"class="circle state_{{ child.1 }}"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            {% endif %}
+        {% endfor %}
+    {% else %}
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+{% block footer %} {{ block.super }} {% endblock %}

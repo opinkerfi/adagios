@@ -74,6 +74,14 @@
         a {
             color: black;
         }
+        .small{
+            width: 1px;
+        }
+        .subrow {
+            background-color: #fafaff;
+            font-size: 90%;
+        }
+
         .table tbody tr:hover td, .table tbody tr:hover th {
             background-color: lightblue;
         }
@@ -439,13 +447,17 @@
                 <li >
                     <a {% if num_problems %}style="color: red"{% endif %} href="{% url status.views.status %}?acknowledged=0&state__isnot=0">Problems {% if num_problems %}({{ num_problems }}){% endif %}</a>
                 </li>
+
                 <li><a href="{% url status.views.status_index %}">Overview </a></li>
+
+                <li><a href="{% url status.views.status_host %}">Hosts</a></li>
                 <li><a href="{% url status.views.status_hostgroup %}">Hostgroups</a></li>
                 <li><a href="{% url status.views.status %}">Services </a></li>
                 <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
             </ul>
             <h5>Experimental</h5>
             <ul class="nav nav-list">
+                <li><a href="{% url misc.views.map %}">Map</a></li>
                <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
                 <li><a href="{% url status.views.state_history %}">State History </a></li>
@@ -460,6 +472,7 @@
             {% block toolbar %}
             <div class id="toolbar row-fluid" style="margin-bottom: 40px;">
 
+                {% block view_buttons %}
                 <div class="btn-group pull-left" id="view_buttons" style="margin-right: 15px;">
                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
@@ -468,12 +481,12 @@
                         <li><a href="?q={{ request.GET.q }}&state__isnot=0"> All Problems</a></li>
                         <li><a href="?q={{ request.GET.q }}&state=0"> All OK</a></li>
                         <li><a href="?q={{ request.GET.q }}"> Everything</a></li>
-                        <hr>
-                        <li>More Action are available if you select any objects</li>
                     </ul>
                 </div>
+                {% endblock %}
 
                 <div class="pull-left" id="action_buttons" >
+                    {% block action_buttons %}
 
                             <button class="btn btn-small" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="reschedule();">
                                 <i class="glyph-refresh" > </i> <span id="reschedule_text">Recheck</span>
@@ -495,6 +508,7 @@
                                 <i class="glyph-bin" > </i>
                             </button>
 
+                    {% endblock %}
                 </div >
 
 
@@ -732,12 +746,22 @@
     </script>
 
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-        // When row is clicked, lets check the checkbox in front of the row
 
         $(document).ready(function() {
             // Set keyboard focus on the search box
             document.getElementById('search_field').focus();
 
+            // When searchbox button is pressed, filter table
+            var $rows = $('.searchtable tbody .mainrow');
+            $('#search_field').keyup(function() {
+                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+                $rows.show().filter(function() {
+                    var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                    return !~text.indexOf(val);
+                }).hide();
+            });
+
+            // When row in datatable is clicked. Select it.
             $('#datatable tr').click(function(e) {
                 if (e.target.type !== 'checkbox') {
                         $(':checkbox', this).trigger('click');

@@ -1,46 +1,225 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <title>Google Maps Multiple Markers</title>
-    <script src="http://maps.google.com/maps/api/js?sensor=false"
-            type="text/javascript"></script>
-</head>
-<body>
-<div id="map" style="width: 500px; height: 400px;"></div>
+{% extends "base_status.html" %}
 
-<script type="text/javascript">
-    var locations = [
-        ['Bondi Beach', -33.890542, 151.274856, 4],
-        ['Coogee Beach', -33.923036, 151.259052, 5],
-        ['Cronulla Beach', -34.028249, 151.157507, 3],
-        ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
-        ['Maroubra Beach', -33.950198, 151.259302, 1]
-    ];
 
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 10,
-        center: new google.maps.LatLng(-33.92, 151.25),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
+{% block header %}
+{{ block.super }}
+<script src="http://maps.google.com/maps/api/js?sensor=false"
+        type="text/javascript"></script>
+{% endblock %}
 
-    var infowindow = new google.maps.InfoWindow();
+{% block action_buttons %}
+    <button  class="button btn-small" onclick="refresh();" >
+        <i class="glyph-refresh" > </i></button>
+    <div id="place_new_host_container">
+        <button  id="place_new_host_button" class="hide button btn-small" data-toggle="modal"  data-target="#addhost_modal" >Place new host here</button>
+    </div>
+{% endblock %}
 
-    var marker, i;
+{% block content %}
+    <div id="map" style="width: 100%; height: 400px;"></div>
 
-    for (i = 0; i < locations.length; i++) {
-        marker = new google.maps.Marker({
-            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-            map: map
-        });
 
-        google.maps.event.addListener(marker, 'click', (function(marker, i) {
-            return function() {
-                infowindow.setContent(locations[i][0]);
-                infowindow.open(map, marker);
+
+
+
+
+    <!-- place new host modal -->
+    <div class="modal hide fade" id="addhost_modal">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Host location here</h3>
+            </div>
+            <div class="modal-body">
+                <p>Pick a host from the list below. The host will from now on be at those coordinates on the map.</p>
+
+
+                <div class="control-group">
+                    <label class="control-label" for="id_latitude">
+                        Latitude:
+                    </label>
+                    <div class="controls" >
+                            <input id="id_latitude" type=text disabled=disabled placeholder="Click on the map to get coordinates" value=""/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="id_longitude">
+                        Longitude:
+                    </label>
+                    <div class="controls" >
+                        <input id="id_longitude" type=text disabled=disabled placeholder="Click on the map to get coordinates" value=""/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="id_host_name">
+                        Host Name:
+                    </label>
+                    <div class="controls" id="host_name_field">
+                        <select name="host_name" id="id_host_name">
+                            {% for i in hosts %}
+                                <option value="{{ i.name }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                <a href="#" class="btn" onclick='$("#addhost_modal").modal("hide");'>Cancel</a>
+                <button type="submit" onclick='$("#addhost_modal").modal("hide"); change_host_coordinates();' class="btn btn-primary">Place this host here</button>
+            </div>
+    </div>
+    <!-- addhost modal ends -->
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block footer %}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        // Updates coordinates on one specific host
+        function change_host_coordinates() {
+            host_name = $('#id_host_name').val();
+            latitude = $('#id_latitude').val();
+            longitute = $('#id_longitude').val();
+
+            my_data = {
+                "host_name":host_name,
+                "latitude":latitude,
+                "longitude":longitute
             }
-        })(marker, i));
-    }
-</script>
-</body>
-</html>
+            $.ajax({
+                type: 'POST',
+                url: '{% url rest/status %}json/change_host_coordinates',
+                data: my_data,
+                async: true,
+                success: function(data) {
+                    refresh();
+                },
+                contentType: "application/json",
+                dataType: 'json'
+            });
+
+        }
+        // Returns a new marker that is used for adding a new host
+        function newHostMarker(map, location) {
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Place a new host here",
+                visible: false
+            });
+            return marker;
+
+        }
+        // Place a specific host on the map
+        function placeHostMarker(map, host) {
+
+            var icon = null;
+            var x = host.x_coordinates;
+            var y = host.y_coordinates;
+            var infowindow = new google.maps.InfoWindow();
+
+            if (host['state'] == 0)
+                icon = "http://maps.google.com/mapfiles/ms/micons/green.png";
+            if (host['state'] == 1)
+                icon = "http://maps.google.com/mapfiles/ms/micons/yellow.png";
+            if (host['state'] == 2)
+                icon = "http://maps.google.com/mapfiles/ms/micons/red.png";
+            if (host['state'] == 3)
+                icon = "http://maps.google.com/mapfiles/ms/micons/grey.png";
+
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(x,y),
+                map: map,
+                icon: icon,
+                title: host['name']
+            });
+
+            google.maps.event.addListener(marker, 'click', (function(marker) {
+                return function() {
+                    var url = "{% url status.views.status_host  %}" + "/" + host.name;
+                    html = '<div class="circle state_' + host.state +'"> </div>';
+                    html = html + ' <a href="' + url + '">'+ host.name +'</a>';
+                    html = html + " (" + host.address +")";
+                    html = html + "<hr>";
+                    // Do the services on this host
+                    var x = 0
+                    for (x = 0; x < host.services_with_state.length; x++) {
+                        service = host.services_with_state[x];
+                        html = html + '<br> <div class="circle state_' + service[1] +'"> </div> ';
+                        html = html + service[0]
+                    }
+                    infowindow.setContent(html);
+                    infowindow.open(map, marker);
+                }
+            })(marker));
+        }
+        function refresh() {
+            $('#place_new_host_button').hide();
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: new google.maps.LatLng(64.119595,-21.655426),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+
+            // Create an invisble marker that you can place down for new hosts
+            new_host_marker = newHostMarker(map, new google.maps.LatLng(0,0))
+
+
+
+            google.maps.event.addListener(new_host_marker, 'click', function(event) {
+                var infowindow = new google.maps.InfoWindow();
+                var html = "<a href='#' onclick='showmodal();'>Place new host here</a>";
+                infowindow.setContent("prufa");
+                infowindow.open(map, new_host_marker);
+            });
+
+            // When a user clicks somewhere on the map, place a new marker.
+            google.maps.event.addListener(map, 'click', function(event) {
+                new_host_marker.setPosition(event.latLng);
+                new_host_marker.setVisible(true);
+                infowindow.open(map, new_host_marker);
+                $("#id_latitude").val(event.latLng.lat());
+                $("#id_longitude").val(event.latLng.lng());
+                $("#action_buttons *").show();
+            });
+
+            // Get a list of of all hosts with positions
+            var url = '{% url rest/status %}json/get_map_data?host_name=';
+            $.getJSON(url, function(data) {
+                locations = data;
+                var marker, i, color,html;
+                for (i = 0; i < locations.length; i++) {
+                    host = locations[i];
+                    // placeHostMarker is responsible for putting the
+                    // Host as a marker on the map
+                    placeHostMarker(map, host);
+
+                }
+            });
+
+        }
+        function showmodal() {
+            $("#addhost_modal").modal("show");
+        }
+
+        $(document).ready(function() {
+            refresh();
+
+        });
+    </script>
+{% endblock %}

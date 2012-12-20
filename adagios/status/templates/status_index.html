@@ -5,6 +5,9 @@
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Status Overview{% endblock %}
 
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+
 {% block content %}
 
         <div class="span4">
@@ -20,7 +23,7 @@
                 <tbody>
                 <tr>
                     <td>Network Parents</td>
-                    <td>{{ parents|length }}</td>
+                    <td><a href="{% url status.views.status_parents %}">{{ parents|length }}</a></td>
                     <td>
                         {% if  network_problems|length_is:0 %}
                         {% else %}
@@ -34,7 +37,7 @@
                 </tr>
                 <tr>
                     <td>Hosts</td>
-                    <td>{{ hosts|length }}</td>
+                    <td><a href="{% url status.views.status_host %}">{{ hosts|length }}</a></td>
                     <td>
                         {% if  host_problems|length_is:0 %}
                         {% else %}
@@ -46,7 +49,7 @@
                 </tr>
                 <tr>
                     <td>Services</td>
-                    <td>{{ services|length }}</td>
+                    <td><a href="{% url status.views.status %}"> {{ services|length }}</a></td>
                     <td>
                         {% if  service_problems|length_is:0 %}
                         {% else %}
@@ -99,7 +102,7 @@
                 {% if forloop.counter0 < 5 %}
                 <tr>
                 <td><a href="{% url status.views.status_detail i.0 %}">{{ i.0 }}</a></td>
-                <td>{{ i.1 }}</td>
+                <td><a href="{% url status.views.status_log %}?class=1&host_name={{ i.0 }}">{{ i.1 }}</a></td>
                 </tr>
                 {% endif %}
             {% endfor %}

@@ -34,12 +34,16 @@ Network Parents
     </tr>
 
     {% for row in hosts %}
-        <tr >
-        <td>
-            <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+        <tr onclick='$(".host_{{ forloop.counter }}").toggle();'>
+            <td class=small >
+                <a href="#">
+                    <div class="host_{{ forloop.counter }}">&#x25b7;</div>
+                    <div class="host_{{ forloop.counter }} hide">&#x25bd;</div>
+                </a>
+            </td>
 
-        </td>
             <td><a style="color: black" href="{% url status.views.status_detail row.name %}">{{ row.name }}</a></td>
+
             <td>{{ row.address }}</td>
             {% if row.state  == 0 %}
                 <td class="alert alert-success">UP</td>
@@ -58,187 +62,22 @@ Network Parents
                 </div>
             </td>
         </tr>
+
+
+        {% for i in row.child_hosts %}
+            <tr style="background-color: #fafaff; font-size: 90%;" class="{{ row.name }} host_{{ forloop.parentloop.counter }} hide">
+                <td colspan=7><div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div> <a href="{% url status.views.status_detail i.name %}">{{ i.name }}</a></td>
+            </tr>
+        {% endfor %}
+
     {% endfor %}
-    </table>
+
+
 {% else %}
     No Network parents configured
 {% endif %}
 {% endblock %}
 
-{% block header %} {{ block.super }}
-    <style>
-        .progress {
-            -webkit-box-shadow:rgba(0, 0, 0, 0.0980392) 0 1px 2px inset;
-            background-color:#F7F7F7;
-            background-image:-webkit-linear-gradient(top, #F5F5F5, #F9F9F9);
-            background-repeat:repeat no-repeat;
-            border-bottom-left-radius:4px;
-            border-bottom-right-radius:4px;
-            border-top-left-radius:4px;
-            border-top-right-radius:4px;
-            box-shadow:rgba(0, 0, 0, 0.0980392) 0 1px 2px inset;
-            height:20px;
-            margin-bottom:0px;
-            overflow:hidden;
-        }
-        .progress .bar {
-            -webkit-box-shadow:rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-            -webkit-transition:width 0.6s ease;
-            background-color:#0E90D2;
-            background-image:-webkit-linear-gradient(top, #149BDF, #0480BE);
-            background-repeat:repeat no-repeat;
-            box-shadow:rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-            box-sizing:border-box;
-            color:#FFFFFF;
-            float:left;
-            font-size:12px;
-            height:100%;
-            text-align:center;
-            text-shadow:rgba(0, 0, 0, 0.247059) 0 -1px 0;
-            width:0;
-        }
-        .progress .bar + .bar {
-            -webkit-box-shadow:rgba(0, 0, 0, 0.14902) 1px 0 0 inset, rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-            box-shadow:rgba(0, 0, 0, 0.14902) 1px 0 0 inset, rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-        }
-        .progress-striped .bar {
-            -webkit-background-size:40px;
-            background-color:#149BDF;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-            background-size:40px;
-        }
-        .progress.active .bar {
-            -webkit-animation:progress-bar-stripes 2s linear infinite;
-        }
-        .progress-danger .bar, .progress .bar-danger {
-            background-color:#DD514C;
-            background-image:-webkit-linear-gradient(top, #EE5F5B, #C43C35);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-danger.progress-striped .bar, .progress-striped .bar-danger {
-            background-color:#EE5F5B;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-        .progress-success .bar, .progress .bar-success {
-            background-color:#5EB95E;
-            background-image:-webkit-linear-gradient(top, #62C462, #57A957);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-success.progress-striped .bar, .progress-striped .bar-success {
-            background-color:#62C462;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-        .progress-info .bar, .progress .bar-info {
-            background-color:#4BB1CF;
-            background-image:-webkit-linear-gradient(top, #5BC0DE, #339BB9);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-info.progress-striped .bar, .progress-striped .bar-info {
-            background-color:#5BC0DE;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-        .progress-warning .bar, .progress .bar-warning {
-            background-color:#FAA732;
-            background-image:-webkit-linear-gradient(top, #FBB450, #F89406);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-warning.progress-striped .bar, .progress-striped .bar-warning {
-            background-color:#FBB450;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-    </style>
-
-{% endblock %}
 
 
 
-{% block footer %} {{ block.super }} <style>
-    .input-append button.add-on {
-        height: inherit !important;
-    }
-</style> {% endblock %}
-
-{% block head %}
-    <style>
-        .progress {
-            -webkit-box-shadow:rgba(0, 0, 0, 0.0980392) 0 1px 2px inset;
-            background-color:#F7F7F7;
-            background-image:-webkit-linear-gradient(top, #F5F5F5, #F9F9F9);
-            background-repeat:repeat no-repeat;
-            border-bottom-left-radius:4px;
-            border-bottom-right-radius:4px;
-            border-top-left-radius:4px;
-            border-top-right-radius:4px;
-            box-shadow:rgba(0, 0, 0, 0.0980392) 0 1px 2px inset;
-            height:20px;
-            margin-bottom:0px;
-            overflow:hidden;
-        }
-        .progress .bar {
-            -webkit-box-shadow:rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-            -webkit-transition:width 0.6s ease;
-            background-color:#0E90D2;
-            background-image:-webkit-linear-gradient(top, #149BDF, #0480BE);
-            background-repeat:repeat no-repeat;
-            box-shadow:rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-            box-sizing:border-box;
-            color:#FFFFFF;
-            float:left;
-            font-size:12px;
-            height:100%;
-            text-align:center;
-            text-shadow:rgba(0, 0, 0, 0.247059) 0 -1px 0;
-            width:0;
-        }
-        .progress .bar + .bar {
-            -webkit-box-shadow:rgba(0, 0, 0, 0.14902) 1px 0 0 inset, rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-            box-shadow:rgba(0, 0, 0, 0.14902) 1px 0 0 inset, rgba(0, 0, 0, 0.14902) 0 -1px 0 inset;
-        }
-        .progress-striped .bar {
-            -webkit-background-size:40px;
-            background-color:#149BDF;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-            background-size:40px;
-        }
-        .progress.active .bar {
-            -webkit-animation:progress-bar-stripes 2s linear infinite;
-        }
-        .progress-danger .bar, .progress .bar-danger {
-            background-color:#DD514C;
-            background-image:-webkit-linear-gradient(top, #EE5F5B, #C43C35);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-danger.progress-striped .bar, .progress-striped .bar-danger {
-            background-color:#EE5F5B;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-        .progress-success .bar, .progress .bar-success {
-            background-color:#5EB95E;
-            background-image:-webkit-linear-gradient(top, #62C462, #57A957);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-success.progress-striped .bar, .progress-striped .bar-success {
-            background-color:#62C462;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-        .progress-info .bar, .progress .bar-info {
-            background-color:#4BB1CF;
-            background-image:-webkit-linear-gradient(top, #5BC0DE, #339BB9);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-info.progress-striped .bar, .progress-striped .bar-info {
-            background-color:#5BC0DE;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-        .progress-warning .bar, .progress .bar-warning {
-            background-color:#FAA732;
-            background-image:-webkit-linear-gradient(top, #FBB450, #F89406);
-            background-repeat:repeat no-repeat;
-        }
-        .progress-warning.progress-striped .bar, .progress-striped .bar-warning {
-            background-color:#FBB450;
-            background-image:-webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.14902) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.14902) 50%, rgba(255, 255, 255, 0.14902) 75%, transparent 75%, transparent);
-        }
-    </style>
-
-{% endblock %}

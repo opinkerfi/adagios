@@ -24,7 +24,7 @@
                     <hr style="margin-top: 0px; margin-bottom: 2px;">
                     <div>
                         {% for child in object.children %}
-                            <div style="border-color: #808080; {% if child.2 == 0 %} background-color: green;{% endif %}{% if child.2 == 1 %} background-color: yellow;{% endif %}{% if child.2 == 2 %} background-color: red;{% endif %}" title="{{ child.0 }} {{ child.1 }}"class="circle state_{{ child.3 }}"></div>
+                            <div style="border-color: #808080; {% if child.1 == 0 %} background-color: green;{% endif %}{% if child.1 == 1 %} background-color: yellow;{% endif %}{% if child.1 == 2 %} background-color: red;{% endif %}" title="{{ child.0 }} {{ child.1 }}" class="circle state_{{ child.1 }}"></div>
                         {% endfor %}
 
                     </div>
@@ -44,7 +44,7 @@
                     <div>
                         {% for service in host.services %}
                             <a href="{% url status.views.status_detail host.name service.description %}">
-                            <div style="border-color: #808080; {% if service.state == 0 %} background-color: green;{% endif %}{% if service.state == 1 %} background-color: yellow;{% endif %}{% if service.state == 2 %} background-color: red;{% endif %}" title="{{ service.description }} - {{ service.plugin_output }}"class="circle state_{{ service.state }}"></div>
+                            <div style="border-color: #808080; {% if service.state == 0 %} background-color: green;{% endif %}{% if service.state == 1 %} background-color: yellow;{% endif %}{% if service.state == 2 %} background-color: red;{% endif %}" title="{{ service.description }} - {{ service.plugin_output }}" class="circle state_{{ service.state }}"></div>
                             </a>
                         {% endfor %}
 

@@ -17,17 +17,17 @@
 
 
                     <!-- Object Browser -->
-                    <li>
-                        <a href="{% url status.views.status_index %}"><i class="glyph-white glyph-table"></i> Status</a>
+                    <li class="{% if urlname == "status"%}active{% endif %}">
+                        <a href="{% url status.views.status_index %}"><i class="glyph-grey glyph-table"></i> Status</a>
                     </li>
 
                     <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
-                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-white glyph-edit"></i> Configure</a>
+                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-grey glyph-edit"></i> Configure</a>
                     </li>
 
                     <!-- Nagios -->
                     <li>
-                        <a href="{% url misc.views.nagios %}"><i class="icon-list icon-white"></i> Nagios</a>
+                        <a href="{% url misc.views.nagios %}"><i class="glyph-list glyph-grey"></i> Nagios</a>
                     </li>
 
                     <!-- Any extra plugins can put an entry in the menubar -->
@@ -49,7 +49,7 @@
 		    <form action="{% url misc.views.nagios_service %}" method="POST">
 		    {% csrf_token %}
                       <input type="hidden" name="start" value="1" />
-                      <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-white glyph-play-button" alt="start"/>
+                      <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
                     </form>
                         </li>
                     {% endif %}
@@ -63,7 +63,7 @@
                         </li>
                     {% endif %}
                     {% if num_problems %}
-                        <li><a href="{% url status.views.status %}?state__isnot=0&acknowledged=0"><i class="glyph-white glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
+                        <li style="color: red";><a style="color: red"; href="{% url status.views.status %}?state__isnot=0&acknowledged=0"><i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
                     {% endif %}
                     <!--
                     <li>
@@ -74,12 +74,12 @@
                     </li>
                     -->
                     <!--
-                    <li class="dropdown"><a><i class="glyph-white glyph-clock"></i> {% now "Y-m-d h:i T" %}</a></li>
+                    <li class="dropdown"><a><i class="glyph-grey glyph-clock"></i> {% now "Y-m-d h:i T" %}</a></li>
                     -->
                     <li class="dropdown">
                         <a class="dropdown-toggle"
                            data-toggle="dropdown"
-                           href="#"><i class="glyph-user glyph-white"></i> {{ remote_user }}
+                           href="#"><i class="glyph-user glyph-grey"></i> {{ remote_user }}
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url misc.views.sign_out %}">Sign Out</a></li>
@@ -88,7 +88,7 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle"
                            data-toggle="dropdown"
-                           href="#"><i class="glyph-cogwheel glyph-white"></i>
+                           href="#"><i class="glyph-cogwheel glyph-grey"></i>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="http://opensource.is/adagios/newticket?type=defect">Report Bug</a></li>

@@ -87,6 +87,12 @@ def nagios(request):
 
 def map(request):
     c = {}
+    try:
+        import pynag.Parsers
+        livestatus = pynag.Parsers.mk_livestatus()
+        c['hosts'] = livestatus.get_hosts()
+    except Exception:
+        pass
     return render_to_response('map.html', c, context_instance = RequestContext(request))
 
 def gitlog(request):

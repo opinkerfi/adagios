@@ -218,3 +218,7 @@ div.controls input:not([type="checkbox"]):not([type="radio"]),
 textarea#id_filecontent {
     width:95%
 }
+
+.glyph-grey {
+    background-image: url("../img/glyph-sprite-grey.png");
+}

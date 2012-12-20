@@ -105,3 +105,44 @@ def edit(object_type, short_name, attribute_name, new_value):
     my_obj[attribute_name] = new_value
     my_obj.save()
     return str(my_obj)
+
+
+def get_map_data(host_name=None):
+    """ Returns a list of (host_name,2d_coords). If host_name is provided, returns a list with only that host """
+    livestatus = pynag.Parsers.mk_livestatus()
+    all_hosts = livestatus.query('GET hosts', )
+    hosts_with_coordinates = pynag.Model.Host.objects.filter(**{'2d_coords__exists':True})
+    result = []
+    for i in all_hosts:
+        name = i['name']
+        if host_name in (None, '', name):
+            # If x does not have any coordinates, break
+            coords = None
+            for x in hosts_with_coordinates:
+                if x.host_name == name:
+                    coords = x['2d_coords']
+                    break
+            if coords is None:
+                continue
+
+            tmp = coords.split(',')
+            if len(tmp) != 2:
+                continue
+
+            x,y = tmp
+            host = {}
+            host['host_name'] = name
+            host['state'] = i['state']
+            i['x_coordinates'] = x
+            i['y_coordinates'] = y
+
+            result.append( i )
+    return result
+
+
+def change_host_coordinates(host_name, latitude,longitude):
+    """ Updates longitude and latitude for one specific host """
+    host = pynag.Model.Host.objects.get_by_shortname(host_name)
+    coords = "%s,%s" % (latitude,longitude)
+    host['2d_coords'] = coords
+    host.save()

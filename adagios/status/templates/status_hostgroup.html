@@ -19,25 +19,12 @@
     {% endif %}
 {% endblock %}
 
-{% block toolbar %}{% endblock %}
 {% block content %}
 
     {% if hostgroups %}
-        <table class="table well table-condensed" style="line-height:6px; font-size:12px;" >
+        <table class="table well table-condensed searchtable" style="font-size:12px;" >
         <tr>
             <th>
-                <div class="btn-group" id="select_bar">
-                    <a class="" data-toggle="dropdown" href="#">
-                        <input style="margin-left: -2px; padding: 0px;" type="checkbox">
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href=""> All</a></li>
-                        <li><a href=""> None</a></li>
-                        <li><a href=""> Unhandled Problems</a></li>
-                        <li><a href=""> All Problems</a></li>
-                    </ul>
-                </div>
-
             </th>
             <th>Hostgroup</th>
             <th>Child Hostgroups</th>
@@ -49,9 +36,10 @@
         </tr>
         {% for row in hostgroups %}
             {% if row.members|length > 0 %}
-                <tr>
+                <tr onclick='$(".subrow_{{ forloop.counter }}").toggle();'>
                     <td>
-                        <input style="margin-left: -2px; padding: 0px;" type="checkbox">
+                        <div class="subrow_{{ forloop.counter }}">&#x25b7;</div>
+                        <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
                     </td>
                     <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
                     <td>
@@ -88,6 +76,20 @@
                         </div>
                     </td>
                 </tr>
+
+                {%  for i in row.child_hostgroups %}
+                    <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
+                        <td></td>
+                        <td colspan=7><a href="{% url status.views.status_hostgroup i %}">{{ i }}</a></td>
+                    </tr>
+
+                {% endfor %}
+                {% for i in row.members_with_state %}
+                    <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
+                        <td></td>
+                        <td colspan=7><div class="circle state_{{ i.1 }}"></div> <a href="{% url status.views.status_detail i.0 %}">{{ i.0 }}</a></td>
+                    </tr>
+                {% endfor %}
             {% else %}
                 <!-- hostgroup {{ row.name }} was empty and therefor skipped -->
             {% endif %}
