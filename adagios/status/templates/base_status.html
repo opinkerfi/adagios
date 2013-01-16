@@ -31,6 +31,7 @@
         }
         .state_0 {
             color: #468847;
+            background-color: #468847;
             background-color: #90ee90; /* DFF0D8 */
         }
         .state_1 {
@@ -39,10 +40,42 @@
         }
         .state_2 {
             color: #B94A48;
-            background-color: #F2DEDE; /* pink */
+            background-color:  #F2DEDE; /* pink */
         }
         .state_3 {
+            color: #d3d3d3;
             background-color: #d3d3d3;
+        }
+
+        .state_0unhandled {
+            color: #468847;
+            background-color: #468847;
+            background-color: #90ee90; /* DFF0D8 */
+            background-image: -moz-radial-gradient(10px 10px, circle cover, green, white);
+            background-image: -webkit-radial-gradient(10px 10px, circle cover, green, white);
+            background-image: radial-gradient(10px 10px, circle cover, green, white);
+        }
+        .state_1unhandled {
+            color: orange; /* yellow or orange */
+            background-color: #FCEFB0; /* yellow or orange */
+            background-image: -moz-radial-gradient(10px 10px, circle cover, orange, white);
+            background-image: -webkit-radial-gradient(10px 10px, circle cover, orange, white);
+            background-image: radial-gradient(10px 10px, circle cover, orange, white);
+        }
+        .state_2unhandled {
+            color: #B94A48;
+            background-color:  #F2DEDE; /* pink */
+            background-image: -moz-radial-gradient(10px 10px, circle cover, red, white);
+            background-image: -webkit-radial-gradient(10px 10px, circle cover, red, white);
+            background-image: radial-gradient(10px 10px, circle cover, red, white);
+        }
+        .state_3unhandled {
+            color: #d3d3d3;
+            background-color: #d3d3d3;
+            background-image: -moz-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+            background-image: -webkit-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+            background-image: radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+
         }
 
         .table td {
@@ -103,12 +136,13 @@
         img {
             background: url('{% url media path="select2/spinner.gif" %}') no-repeat;
         }
-        .circle-spin {
+        .circle_unhandled {
 
+            /*
             background-image: -moz-radial-gradient(12px 12px 12deg, circle cover, yellow 0%, orange 100%, red 95%);
             background-image: -webkit-radial-gradient(10px 10px, circle cover, red, white);
             background-image: radial-gradient(12px 12px 12deg, circle cover, yellow 0%, orange 100%, red 95%);
-
+            */
 
             /* webkit chrome, safari, mobile */
             -webkit-animation-name: spin;
@@ -461,7 +495,7 @@
                <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
                 <li><a href="{% url status.views.state_history %}">State History </a></li>
-                <li><a href="{% url status.views.status_log %}?class=1">Log </a></li>
+                <li><a href="{% url status.views.status_log %}?class_name=alerts">Log </a></li>
                 <li><a href="{% url status.views.status_problems %}?class=1">Big Screen </a></li>
 
             </ul>
@@ -498,15 +532,15 @@
                                 <i class="glyph-clock" > </i> Downtime
                             </button>
 
-                           <button class="btn btn-small">
-                                <i class="glyph-eye-open" title="Open in Nagios"> </i>
-                            </button>
+                           <a class="btn btn-small" title="Open in Nagios" {% if my_object %}href="{% url misc.views.nagios %}/extinfo.cgi?type=2&host={{ host.name }}&service={{ service_description }}"{% endif %}>
+                                <i class="glyph-eye-open"> </i>
+                            </a>
                             <a class="btn btn-small" title="Configure {{ my_object.object_type }}" id="configure_button" {% if my_object %}href="{% url edit_by_shortname my_object.object_type my_object.short_name %}"{% endif %}>
                                 <i class="glyph-edit" > </i>
                             </a>
-                            <button class="btn btn-small" title="Delete {{ my_object.object_type }}" id="delete_button">
+                            <a class="btn btn-small" title="Delete {{ my_object.object_type }}" id="delete_button" {% if my_object %}href="{% url delete_by_shortname my_object.object_type my_object.short_name %}"{% endif %}>
                                 <i class="glyph-bin" > </i>
-                            </button>
+                            </a>
 
                     {% endblock %}
                 </div >
@@ -592,6 +626,7 @@
 
 <script src="{% url media path="select2/select2.min.js" %}" type="text/javascript"></script>
 <script src="{% url media path="js/adagios.js" %}"></script>
+<script src="{% url media path="js/adagios_status.js" %}"></script>
 
 
 <script>
@@ -759,6 +794,13 @@
                     var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
                     return !~text.indexOf(val);
                 }).hide();
+
+                // Some views like status view hide repeated occurances of host_names
+                // That does not work well if something is being filtered
+                if (val == '')
+                    $('.repeated_content').hide();
+                else
+                    $('.repeated_content').show();
             });
 
             // When row in datatable is clicked. Select it.

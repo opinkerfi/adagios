@@ -591,6 +591,12 @@ def bulk_copy(request):
 
     return render_to_response('bulk_copy.html', c, context_instance = RequestContext(request))
 
+def delete_object_by_shortname(request, object_type, shortname):
+    """ Same as delete_object() but uses object type and shortname instead of object_id
+    """
+    obj_type = Model.string_to_class[object_type]
+    my_obj = obj_type.objects.get_by_shortname(shortname)
+    return delete_object(request, object_id=my_obj.get_id())
 def delete_object(request, object_id):
     ''' View to Delete a single object definition '''
     c = {}
@@ -608,6 +614,7 @@ def delete_object(request, object_id):
         except Exception, e:
             c['errors'].append( e )
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
+
 
 def copy_object(request, object_id):
     """ View to Copy a single object definition """

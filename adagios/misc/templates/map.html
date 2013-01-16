@@ -1,13 +1,23 @@
 {% extends "base_status.html" %}
-
+{% block title %}Map{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Map{% endblock %}
 
 {% block header %}
 {{ block.super }}
-<script src="{% url media path=" %}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <!-- This little hack makes sure that bootstrap does mess with the width
+    of images on infowindow overlays in google maps
+    -->
+    <style>
+        #map img {
+            max-width: none;
+        }
+    </style>
 {% endblock %}
 
 {% block action_buttons %}
-    <button  class="button btn-small" onclick="refresh();" >
+    <button  class="button btn-small refreshmap" >
         <i class="glyph-refresh" > </i>
     </button>
 
@@ -65,8 +75,9 @@
 
 
                 <div class="modal-footer">
-                <a href="#" class="btn" onclick='$("#addhost_modal").modal("hide");'>Cancel</a>
-                <button type="submit" onclick='$("#addhost_modal").modal("hide"); change_host_coordinates();' class="btn btn-primary">Place this host here</button>
+                    <a href="#" class="btn" onclick='$("#addhost_modal").modal("hide");'>Cancel</a>
+                    <button id="change_host_coordinates" type="submit" onclick='$("#addhost_modal").modal("hide");' class="btn btn-primary">Place this host here</button>
+                </div>
             </div>
     </div>
     <!-- addhost modal ends -->
@@ -89,7 +100,7 @@
 {% block footer %}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         // Updates coordinates on one specific host
-        function change_host_coordinates() {
+        function change_host_coordinates(map) {
             host_name = $('#id_host_name').val();
             latitude = $('#id_latitude').val();
             longitute = $('#id_longitude').val();
@@ -105,7 +116,7 @@
                 data: my_data,
                 async: true,
                 success: function(data) {
-                    refresh();
+                    refresh(map);
                 },
                 contentType: "application/json",
                 dataType: 'json'
@@ -129,7 +140,6 @@
             var icon = null;
             var x = host.x_coordinates;
             var y = host.y_coordinates;
-            var infowindow = new google.maps.InfoWindow();
 
             if (host['state'] == 0)
                 icon = "http://maps.google.com/mapfiles/ms/micons/green.png";
@@ -146,44 +156,63 @@
                 icon: icon,
                 title: host['name']
             });
+            map.markers.push(marker);
+            // When user clicks on this host marker, lets open up a infowindow
+            var url = "{% url status.views.status_host  %}" + "/" + host.name;
+            html = '<div class="circle state_' + host.state +'"> </div>';
+            html = html + ' <a href="' + url + '">'+ host.name +'</a>';
+            html = html + " (" + host.address +")";
+            html = html + "<hr>";
+            // Do the services on this host
+            var x = 0
+            for (x = 0; x < host.services_with_state.length; x++) {
+                service = host.services_with_state[x];
+                url = "{% url status.views.status_host  %}" + "/" + host.name + "/" + service[0];
+                html = html + '<br> <div class="circle state_' + service[1] +'"> </div> ';
+                html = html + '<a href="' + url + '">' + service[0] + '</a>';
+            }
+            var infowindow = new google.maps.InfoWindow();
+            infowindow.setContent(html);
+            map.infowindows.push(infowindow);
 
             google.maps.event.addListener(marker, 'click', (function(marker) {
                 return function() {
-                    var url = "{% url status.views.status_host  %}" + "/" + host.name;
-                    html = '<div class="circle state_' + host.state +'"> </div>';
-                    html = html + ' <a href="' + url + '">'+ host.name +'</a>';
-                    html = html + " (" + host.address +")";
-                    html = html + "<hr>";
-                    // Do the services on this host
-                    var x = 0
-                    for (x = 0; x < host.services_with_state.length; x++) {
-                        service = host.services_with_state[x];
-                        html = html + '<br> <div class="circle state_' + service[1] +'"> </div> ';
-                        html = html + service[0]
-                    }
-                    infowindow.setContent(html);
+                    // Close all other infowindows
+                    for(var i=0; i < map.infowindows.length; i++)
+                        map.infowindows[i].close();
+                    // And open this one
                     infowindow.open(map, marker);
                 }
             })(marker));
         }
-        function refresh() {
-            $('#place_new_host_button').hide();
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 10,
-                center: new google.maps.LatLng(64.119595,-21.655426),
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            });
+        function refresh(map) {
+            console.log("refreshing map markers..." + map.markers.length);
 
+            // Hide the add button since the addhost marker is invisible
+            $('#place_new_host_button').hide();
+
+            // clear all current markers
+            for(var i=0; i < map.markers.length; i++){
+                map.markers[i].setMap(null);
+            }
+            map.markers = new Array();
+            map.infowindows = new Array();
 
             // Create an invisble marker that you can place down for new hosts
             new_host_marker = newHostMarker(map, new google.maps.LatLng(0,0))
+            map.markers.push(new_host_marker);1
 
 
             var infowindow = new google.maps.InfoWindow();
-            var html = "<a href='#' onclick='showmodal();'>Place new host here</a>";
+            var html = "<div><a href='#' onclick='showmodal();'>Place new host here</a></div>";
             infowindow.setContent(html);
+            map.infowindows.push(infowindow);
 
             google.maps.event.addListener(new_host_marker, 'click', function(event) {
+                // Close all other infowindows
+                for(var i=0; i < map.infowindows.length; i++)
+                    map.infowindows[i].close();
+                // And open this one
                 infowindow.open(map, new_host_marker);
             });
 
@@ -191,6 +220,10 @@
             google.maps.event.addListener(map, 'click', function(event) {
                 new_host_marker.setPosition(event.latLng);
                 new_host_marker.setVisible(true);
+                // Close all other infowindows
+                for(var i=0; i < map.infowindows.length; i++)
+                    map.infowindows[i].close();
+                // And open this one
                 infowindow.open(map, new_host_marker);
                 $("#id_latitude").val(event.latLng.lat());
                 $("#id_longitude").val(event.latLng.lng());
@@ -207,7 +240,6 @@
                     // placeHostMarker is responsible for putting the
                     // Host as a marker on the map
                     placeHostMarker(map, host);
-
                 }
             });
 
@@ -215,10 +247,31 @@
         function showmodal() {
             $("#addhost_modal").modal("show");
         }
+        // Create a new google map and hook events
+        function initilize_map() {
+            // Create map
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: new google.maps.LatLng(64.119595,-21.655426),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            map.markers = new Array();
 
+            $(".refreshmap").click( function() {
+                        refresh(map);
+            });
+            $("#change_host_coordinates").click( function() {
+                change_host_coordinates(map);
+            })
+
+            // Call refresh so markers are put in place
+            refresh(map);
+        }
         $(document).ready(function() {
-            refresh();
+            initilize_map();
+
 
         });
     </script>
+
 {% endblock %}

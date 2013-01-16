@@ -110,6 +110,7 @@ def _status(request):
             tags.append('problems')
             if service['acknowledged'] == 0 and service['downtimes'] == []:
                 tags.append('unhandled')
+                service['unhandled'] = "unhandled"
         else:
             tags.append('ok')
         if service['acknowledged'] == 1:
@@ -195,12 +196,8 @@ def status_detail(request, host_name, service_description=None):
     if service_description is None:
         primary_object = my_host
         c['service_description'] = '_HOST_'
+        c['log'] = pynag.Parsers.LogFiles().get_state_history(host_name=host_name,service_description=None)
 
-        c['log'] = livestatus.query('GET log',
-            'Filter: time >= %s' % today,
-            'Limit: 50',
-            'Filter: host_name = %s' % host_name,
-        )
     else:
         try:
             c['service'] = my_service = livestatus.get_service(host_name,service_description)
@@ -208,12 +205,7 @@ def status_detail(request, host_name, service_description=None):
             c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
-            c['log'] = livestatus.query('GET log',
-                'Filter: time >= %s' % today,
-                'Filter: host_name = %s' % host_name,
-                'Filter: service_description = %s' % service_description,
-                'Limit: 50',
-            )
+            c['log'] = pynag.Parsers.LogFiles().get_state_history(host_name=host_name,service_description=service_description)
         except IndexError:
             c['errors'].append("Could not find any service named '%s'"%service_description)
             return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
@@ -240,11 +232,11 @@ def status_detail(request, host_name, service_description=None):
     # Create some state history progress bar from our logs:
     if len(c['log']) > 0:
         log = c['log']
-        start_time = log[-1]['time']
-        end_time = log[0]['time']
+        c['start_time'] = start_time = log[0]['time']
+        c['end_time'] = end_time = log[-1]['time']
         now = time.time()
 
-        duration = now - start_time
+        total_duration = now - start_time
         state_hist = []
         start = start_time
         last_item = None
@@ -253,19 +245,9 @@ def status_detail(request, host_name, service_description=None):
         css_hint[1] = 'warning'
         css_hint[2] = 'danger'
         css_hint[3] = 'info'
-        for i in reversed(log):
-            if not i['class'] == 1:
-                continue
-            if not last_item is None:
-                last_item['end_time'] = i['time']
-                last_item['duration'] = d = last_item['end_time'] - last_item['time']
-                last_item['duration_percent'] = 100*d/duration
+        for i in log:
+            i['duration_percent'] = 100*i['duration']/total_duration
             i['bootstrap_status'] = css_hint[i['state']]
-            last_item = i
-        if not last_item is None:
-            last_item['end_time'] = now
-            last_item['duration'] = d = last_item['end_time'] - last_item['time']
-            last_item['duration_percent'] = 100*d/duration
 
     # Lets get some graphs
     try:
@@ -610,10 +592,10 @@ def _parse_nagios_logline(line):
     timestamp, logtype, message = m.groups()
 
     result = {}
+    result['time'] = int(timestamp)
+    result['type'] = logtype
+    result['message'] = message
     if logtype in ('CURRENT HOST STATE', 'CURRENT SERVICE STATE', 'SERVICE ALERT', 'HOST ALERT'):
-        result['time'] = int(timestamp)
-        result['type'] = logtype
-        result['message'] = message
         if logtype.find('HOST') > -1:
             # This matches host current state:
             m = re.search('(.*?);(.*?);(.*);(.*?);(.*)', message)
@@ -641,6 +623,7 @@ def _get_state_history(start_time=None, end_time=None, host=None, service_descri
         if parsed_line !=  {}:
             result.append(parsed_line)
     return result
+
 def state_history(request):
     c = {}
     c['messages'] = []
@@ -659,13 +642,8 @@ def state_history(request):
         seconds_today = end_time % seconds_in_a_day # midnight of today
         start_time = end_time - seconds_today
     start_time = int(start_time)
-    c['log'] = log = _get_state_history()
-    #start_time = c['log'][0]['time']
-    #c['log'] = log = livestatus.query('GET log',
-    #    'Filter: time >= %s' % start_time,
-    #    'Filter: type ~ CURRENT',
-    #)
-    #log.reverse()
+    l = pynag.Parsers.LogFiles()
+    c['log'] = log = l.get_state_history()
     total_duration = end_time - start_time
     c['total_duration'] = total_duration
     css_hint = {}
@@ -737,43 +715,49 @@ def _status_log(request):
     c['messages'] = []
     c['errors'] = []
     livestatus = pynag.Parsers.mk_livestatus()
-    start_time = request.GET.get('start_time', None)
-    end_time = request.GET.get('end_time', None)
-    host_name = request.GET.get('host_name', None)
-    service_description = request.GET.get('service_description', None)
-    limit = request.GET.get('limit', None)
-    log_class = request.GET.get('class', None)
+    start_time = request.GET.get('start_time', '')
+    end_time = request.GET.get('end_time', '')
+    host_name = request.GET.get('host_name', '')
+    service_description = request.GET.get('service_description', '')
+    limit = request.GET.get('limit', '')
 
-    if end_time is None:
-        end_time = int(time.time())
-    end_time = int(end_time)
+    if end_time == '':
+        end_time = None
+    else:
+        end_time = float(end_time)
 
-    if start_time is None:
+    if start_time == '':
+        now = time.time()
         seconds_in_a_day = 60*60*24
-        seconds_today = end_time % seconds_in_a_day # midnight of today
-        start_time = end_time - seconds_today
-    start_time = int(start_time)
+        seconds_today = now % seconds_in_a_day # midnight of today
+        start_time = now - seconds_today
+    else:
+        start_time = float(start_time)
 
-    if limit is None:
+    if limit == '':
         limit = 500
-    query = ['GET log']
-    if start_time is not None:
-        query.append('Filter: time >= %s' % start_time)
-    #if end_time is not None:
-    #    query.append('Filter: time <= %s' % end_time)
-    if log_class is not None:
-        query.append('Filter: class = %s' % log_class)
-    if limit is not None:
-        query.append('Limit: %s' % limit)
-    if host_name is not None:
-        query.append('Filter: host_name = %s' % host_name)
-    if service_description is not None:
-        query.append('Filter: service_description = %s' % service_description)
-    c['log'] = log = livestatus.query(*query)
+    else:
+        limit = float(limit)
 
+    # Any querystring parameters we will treat as a search string to get_log_entries, but we need to massage them
+    # a little bit first
+    kwargs = {}
+    for k,v in request.GET.items():
+        if k == 'search':
+            k = 'search'
+        elif k in ('start_time', 'end_time'):
+            continue
+        elif v is None or len(v) == 0:
+            continue
+        k = str(k)
+        v = str(v)
+        kwargs[k] = v
+    l = pynag.Parsers.LogFiles()
+    c['log'] = l.get_log_entries(start_time=start_time,end_time=end_time, **kwargs)[:limit]
+    c['start_time'] = start_time
     return c
-
 def status_log(request):
     c = _status_log(request)
     c['request'] = request
+    c['log'].reverse()
     return render_to_response('status_log.html', c, context_instance = RequestContext(request))

@@ -43,7 +43,8 @@
                     </th>
                     <th>Host</th>
                     <th>Service Check</th>
-                    <th>Received</th>
+                    <th>Duration</th>
+                    <th>Last Check</th>
                 </tr>
             </thead>
             <tbody class="">
@@ -88,19 +89,29 @@
                                 -->
                                 {% endif %}
                             </td>
-                            <td style="white-space: nowrap;">{% ifchanged host.name %}
-                                <div title="{{ host.plugin_output }}" class="circle state_{{ host.state }}"></div>
-                                {{ host.name }}
-                            {% endifchanged %}</td>
+                            <td style="white-space: nowrap;">
+                                {% ifchanged host.name %}
+                                    <div title="{{ host.plugin_output }}" class="circle circle_{{ host.unhandled }} state_{{ host.state }}"></div>
+                                    <a href="{% url status.views.status_detail host.name %}" title='Details for host {{ host.name }}'>{{ host.name }}</a>
+                                {% else %}
+                                    <div class="repeated_content hide">
+                                    <div title="{{ host.plugin_output }}" class="circle circle_{{ host.unhandled }} state_{{ host.state }}"></div>
+                                    <a href="{% url status.views.status_detail host.name %}" title='Details for host {{ host.name }}'>{{ host.name }}</a>
+                                    </div>
+                                {% endifchanged %}
+                            </td>
                             <td  colspan=1 style="word-wrap: break-word;">
                                  <a href="{% url status.views.status_detail host.name service.description %}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
-                                     <div class="circle state_{{ service.state }}"> </div> {{ service.description }}</a>
+                                     <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}</a>
                                 <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
                                 <span title="{{ service.plugin_output }}" style="font-size: 80%; color: #808080; font-weight: normal;">
                                          {{ service.plugin_output|slice:"70" }}
                                  </span>
 
 
+                            </td>
+                            <td style="white-space: nowrap; font-size: 80%;">
+                                {{ service.last_state_change|timestamp|timesince }}
                             </td>
                             <td style="white-space: nowrap; font-size: 80%;">
                                 {{ service.last_check|timestamp|date:'Y-m-d H:i' }}

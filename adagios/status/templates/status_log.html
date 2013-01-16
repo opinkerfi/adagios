@@ -9,14 +9,35 @@
 
 {% block content %}
     <form method=GET action="#">
-    Host Name: <input name="host_name" value="{{ request.GET.host_name }}"/>
-    Service Description: <input name="service_description" value="{{ request.GET.service_description }}"/>
-    Class: <input name="class" value="{{ request.GET.class }}"/>
-    <button type="submit" name="submit" >Submit</button>
+        <div>
+            <input placeholder="Search ..." name="search" id="id_search" value="{{ request.GET.search }}"/>
+
+            <select placeholder="All log types" name="class_name" if="id_class_name" type="select">
+                <option value=""></option>
+                <option value="" {% if request.GET.class_name == "" %}selected=selected{% endif %}>All log types</option>
+                <option value="alerts" {% if request.GET.class_name == "alerts" %}selected=selected{% endif %}>Alert History</option>
+                <option value="notification" {% if request.GET.class_name == "notification" %}selected=selected{% endif %}>Notifications</option>
+                <option value="flapping" {% if request.GET.class_name == "flapping" %}selected=selected{% endif %}>Flapping Alerts</option>
+                <option value="command" {% if request.GET.class_name == "command" %}selected=selected{% endif %}>External Commands</option>
+                <option value="unclassified" {% if request.GET.class_name == "unclassified" %}selected=selected{% endif %}>Other</option>
+                </select>
+            <button type="submit" name="submit" >Search</button>
+        </div>
+Advanced:
+        <br>
+        <div>
+            <input placeholder="start time (default=today)" name="start_time" id="id_start_time" value="{{ request.GET.end_time  }}"/>
+            <input placeholder="end time" name="end_time" id="id_end_time" value="{{ request.GET.end_time }}"/>
+            <input placeholder="Any Host" name="host_name" id="id_host_name" value="{{ request.GET.host_name }}"/>
+            <input placeholder="Any Service" name="service_description" id="id_service_description" value="{{ request.GET.service_description }}"/>
+        </div>
+
     </form>
-    {% if request.GET.class == "1" %}
+
     Last {{ log|length }} log entries:
-        <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+    <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+
+            {% if request.GET.class_name == "alerts" %}
             <thead>
             <th>Time</th>
             <th>Host</th>
@@ -30,20 +51,157 @@
                 {% endifchanged %}
                 <tr>
                     <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
-                    <td><a href="?class={{ request.GET.class }}&host_name={{ line.host_name }}">{{ line.host_name }}</a></td>
-                    <td><a href="?class={{ request.GET.class }}&host_name={{ line.host_name }}&service_description={{ line.service_description }}">{{ line.service_description }}</a></td>
-                    <td><div class="circle state_{{ line.state }}"></div></td>
+                    <td><a href="?class_name={{ request.GET.class_name }}&host_name={{ line.host_name }}">{{ line.host_name }}</a></td>
+                    <td><a href="?class_name={{ request.GET.class_name }}&host_name={{ line.host_name }}&service_description={{ line.service_description }}">{{ line.service_description }}</a></td>
+                    <td><div class="circle-spin circle state_{{ line.state }}"></div></td>
                     <td>
-                        <div>{{ line.plugin_output }}</div></td>
+                        <div>{{ line.text }}</div></td>
                 </tr>
             {% endfor %}
-        </table>
-        </div>
-    {% endif %}
+            {% endif %}
+
+        {% if request.GET.class_name == 'unclassified' %}
+            <!-- Unclassified -->
+            <thead>
+            <th>Time</th>
+            <th></th>
+            <th>Message</th>
+            </thead>
+            {% for line in log %}
+                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                    <!-- <tr><td colspan=4></td></tr> -->
+                {% endifchanged %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                    <td><div class="circle state_{{ line.state }}"></div></td>
+                    <td>
+                        <div>{{ line.options }}</div></td>
+                </tr>
+            {% endfor %}
+
+        {% endif %}
+
+        {% if request.GET.class_name == 'notification' %}
+            <!-- Notifications -->
+            <thead>
+            <th>Time</th>
+            <th></th>
+            <th>Message</th>
+            </thead>
+            {% for line in log %}
+                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                    <!-- <tr><td colspan=4></td></tr> -->
+                {% endifchanged %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                    <td><div class="circle state_{{ line.state }}"></div></td>
+                    <td>
+                        <div>{{ line.text }}</div></td>
+                </tr>
+            {% endfor %}
+
+        {% endif %}
+
+        {% if request.GET.class_name == 'flapping' %}
+            <!-- Flapping -->
+            <thead>
+            <th>Time</th>
+            <th></th>
+            <th>Message</th>
+            </thead>
+            {% for line in log %}
+                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                    <!-- <tr><td colspan=4></td></tr> -->
+                {% endifchanged %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                    <td><div class="circle state_{{ line.state }}"></div></td>
+                    <td>
+                        <div>{{ line.text }}</div></td>
+                </tr>
+            {% endfor %}
+
+        {% endif %}
+
+        {% if request.GET.class_name == 'passive' %}
+            <!-- Passive Checks -->
+            <thead>
+            <th>Time</th>
+            <th></th>
+            <th>Message</th>
+            </thead>
+            {% for line in log %}
+                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                    <!-- <tr><td colspan=4></td></tr> -->
+                {% endifchanged %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                    <td><div class="circle state_{{ line.state }}"></div></td>
+                    <td>
+                        <div>{{ line.text }}</div></td>
+                </tr>
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% if request.GET.class_name == 'command' %}
+            <!-- External Commands -->
+            <thead>
+            <th>Time</th>
+            <th>Command</th>
+            <th></th>
+            <th>Message</th>
+            </thead>
+            {% for line in log %}
+                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                    <!-- <tr><td colspan=4></td></tr> -->
+                {% endifchanged %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                    <td><a href="?command_name={{ line.command_name }}">{{ line.command_name }}</a></td>
+                    <td><div class="circle state_{{ line.state }}"></div></td>
+                    <td>
+                        <div style="white-space: nowrap;">{{ line.text }}</div></td>
+                </tr>
+            {% endfor %}
+
+        {% endif %}
+
+
+
+        {% if request.GET.class_name %}
+            {% else %}
+                <!-- No class specified, printing general logfile -->
+                <thead>
+                <th>Time</th>
+                <th></th>
+                <th>Message</th>
+                </thead>
+                {% for line in log %}
+                    {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                        <!-- <tr><td colspan=4></td></tr> -->
+                    {% endifchanged %}
+                    <tr>
+                        <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                        <td>
+                            <a title="{{ line.class_name }} - {{ line.type }} "href="?type={{ line.type }}">
+                             <div class="circle state_{{ line.state }}"></div>
+                            </a>
+
+                        <td>
+                            <div style="white-space: nowrap;">{{ line.options }}</div></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+
+
+
+    </table>
 
 
 {% endblock %}
 
-
+{% block toolbar %} {% endblock %}
 
 {% block footer %} {{ block.super }} {% endblock %}
