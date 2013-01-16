@@ -96,13 +96,13 @@
             <table class="table-condensed well table">
                 <tr>
                     <th>Host</th>
-                    <th>Alerts today</th>
+                    <th>Recent Alerts</th>
                 </tr>
             {% for i in top_alert_producers %}
                 {% if forloop.counter0 < 5 %}
                 <tr>
                 <td><a href="{% url status.views.status_detail i.0 %}">{{ i.0 }}</a></td>
-                <td><a href="{% url status.views.status_log %}?class=1&host_name={{ i.0 }}">{{ i.1 }}</a></td>
+                <td><a href="{% url status.views.status_log %}?class_name=alerts&host_name={{ i.0 }}">{{ i.1 }}</a></td>
                 </tr>
                 {% endif %}
             {% endfor %}
