@@ -2,7 +2,7 @@
 {% load adagiostags %}
 {% block title %}{{ my_object.display_name }}{% endblock %}
 {% block smallheader %}
-    <a href="{% url status.views.status_detail host.name %}">
+    <a href="{% url status.views.status_detail %}?host_name={{ host.name }}">
         <small>{{ host.display_name }}</small>
     </a>
 {% endblock %}
@@ -54,7 +54,7 @@
                     </tr>
                     <tr >
                         <td>Host Name</td>
-                        <td><a href="{% url status.views.status_detail host.name %}" title="{{ host.plugin_output }}">
+                        <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
                             <div class="circle state_{{ host.state }}"></div> {{ host.display_name }}
                         </a></td>
                     </tr>
@@ -360,7 +360,7 @@
         <ul class="nav nav-list">
             {% for i in host.services_with_info %}
                 <li >
-                    <a title="{{ i.3 }}" href="{% url status.views.status_detail host.name i.0 %}">
+                    <a title="{{ i.3 }}" href="{% url status.views.status_detail %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
                         <div class="circle state_{{ i.1 }}"></div> {{ i.0 }}
                     </a>
                 </li>
@@ -383,7 +383,7 @@
         <h5>Network Parents</h5>
         <ul class="nav nav-list">
             {% for i in host.parents %}
-                <li><a href="{% url status.views.status_detail i %}">
+                <li><a href="{% url status.views.status_detail %}?host_name={{ i }}">
                     {{ i }}
                 </a></li>
             {% endfor %}

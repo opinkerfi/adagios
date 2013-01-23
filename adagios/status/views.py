@@ -171,11 +171,14 @@ def status(request):
     c = _status(request)
     return render_to_response('status.html', c, context_instance = RequestContext(request))
 
-def status_detail(request, host_name, service_description=None):
+def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """
     c = { }
     c['messages'] = []
     c['errors'] = []
+
+    host_name = request.GET.get('host_name')
+    service_description = request.GET.get('service_description')
     livestatus = pynag.Parsers.mk_livestatus()
     c['pnp_url'] = adagios.settings.pnp_url
     c['nagios_url'] = adagios.settings.nagios_url
@@ -191,9 +194,12 @@ def status_detail(request, host_name, service_description=None):
         my_host['short_name'] = my_host['name']
     except IndexError:
         c['errors'].append("Could not find any host named '%s'"%host_name)
-        return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
+        return error_page(request,c)
 
     if service_description is None:
+        tmp = request.GET.get('service_description')
+        if tmp is not None:
+            return status_detail(request, host_name, service_description=tmp)
         primary_object = my_host
         c['service_description'] = '_HOST_'
         c['log'] = pynag.Parsers.LogFiles().get_state_history(host_name=host_name,service_description=None)
@@ -208,7 +214,7 @@ def status_detail(request, host_name, service_description=None):
             c['log'] = pynag.Parsers.LogFiles().get_state_history(host_name=host_name,service_description=service_description)
         except IndexError:
             c['errors'].append("Could not find any service named '%s'"%service_description)
-            return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
+            return error_page(request,c)
 
     c['my_object'] = primary_object
 
@@ -761,3 +767,10 @@ def status_log(request):
     c['request'] = request
     c['log'].reverse()
     return render_to_response('status_log.html', c, context_instance = RequestContext(request))
+
+def error_page(request, context=None):
+    if context is None:
+        context = {}
+        context['errors'] = []
+        context['errors'].append('Error occured, but no error messages provided, what happened?')
+    return render_to_response('status_error.html', context, context_instance = RequestContext(request))

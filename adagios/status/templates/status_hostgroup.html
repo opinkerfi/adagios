@@ -87,7 +87,7 @@
                 {% for i in row.members_with_state %}
                     <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
                         <td></td>
-                        <td colspan=7><div class="circle state_{{ i.1 }}"></div> <a href="{% url status.views.status_detail i.0 %}">{{ i.0 }}</a></td>
+                        <td colspan=7><div class="circle state_{{ i.1 }}"></div> <a href="{% url status.views.status_detail %}?host_name={{ i.0 }}">{{ i.0 }}</a></td>
                     </tr>
                 {% endfor %}
             {% else %}
@@ -123,7 +123,7 @@
 
                         {% for row in hosts %}
                             <tr >
-                                <td><a style="color: black" href="{% url status.views.status_detail row.name %}">{{ row.name }}</a></td>
+                                <td><a style="color: black" href="{% url status.views.status_detail %}?host_name={{ row.name  }}">{{ row.name }}</a></td>
                                 <td>{{ row.address }}</td>
                                 {% if row.state  == 0 %}
                                     <td class="alert alert-success">UP</td>

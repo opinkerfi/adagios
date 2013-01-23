@@ -38,7 +38,7 @@
                 <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
             </td>
             <td>
-                <a id="{{ row.name }}" href="{% url status.views.status_detail row.name %}">
+                <a id="{{ row.name }}" href="{% url status.views.status_detail %}?host_name={{ row.name }}">
                     {{ row.name }}
                 </a>
             </td>
@@ -62,7 +62,7 @@
                     <td></td>
                     <td colspan=4>
                         <div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div>
-                        <a href="{% url status.views.status_detail row.name i.description %}">{{i.description }}</a>
+                        <a href="{% url status.views.status_detail %}?host_name={{ row.name }}&service_description={{ i.description }}">{{i.description }}</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -171,29 +171,29 @@ Advanced:
 
 
         {% if request.GET.class_name %}
-            {% else %}
-                <!-- No class specified, printing general logfile -->
-                <thead>
-                <th>Time</th>
-                <th></th>
-                <th>Message</th>
-                </thead>
-                {% for line in log %}
-                    {% ifchanged line.time|timestamp|date:"Y-m-d" %}
-                        <!-- <tr><td colspan=4></td></tr> -->
-                    {% endifchanged %}
-                    <tr>
-                        <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
-                        <td>
-                            <a title="{{ line.class_name }} - {{ line.type }} "href="?type={{ line.type }}">
-                             <div class="circle state_{{ line.state }}"></div>
-                            </a>
+        {% else %}
+            <!-- No class specified, printing general logfile -->
+            <thead>
+            <th>Time</th>
+            <th></th>
+            <th>Message</th>
+            </thead>
+            {% for line in log %}
+                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                    <!-- <tr><td colspan=4></td></tr> -->
+                {% endifchanged %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                    <td>
+                        <a title="{{ line.class_name }} - {{ line.type }} "href="?type={{ line.type }}">
+                         <div class="circle state_{{ line.state }}"></div>
+                        </a>
 
-                        <td>
-                            <div style="white-space: nowrap;">{{ line.options }}</div></td>
-                    </tr>
-                {% endfor %}
-            {% endif %}
+                    <td>
+                        <div style="white-space: nowrap;">{{ line.options }}</div></td>
+                </tr>
+            {% endfor %}
+        {% endif %}
 
 
 
