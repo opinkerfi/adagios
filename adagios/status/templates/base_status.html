@@ -495,7 +495,7 @@
                <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
                 <li><a href="{% url status.views.state_history %}">State History </a></li>
-                <li><a href="{% url status.views.status_log %}?class_name=alerts">Log </a></li>
+                <li><a href="{% url status.views.status_log %}">Log </a></li>
                 <li><a href="{% url status.views.status_problems %}?class=1">Big Screen </a></li>
 
             </ul>
@@ -641,7 +641,7 @@
         $(function() {
             oTable = $('.dtable').dataTable( {
                 "bPaginate": true,
-                "iDisplayLength": 100,
+                "iDisplayLength": 100
             });
             //$('#search_field').keypress(function(){
             //    oTable.fnFilter( $(this).val() );
@@ -805,12 +805,28 @@
 
             // When row in datatable is clicked. Select it.
             $('#datatable tr').click(function(e) {
-                if (e.target.type !== 'checkbox') {
+                if (e.target.type !== 'checkbox' && e.target.tagName != 'A') {
                         $(':checkbox', this).trigger('click');
+                }
+                else {
                 }
                 update_selected_rows();
             });
+
+            // Javascript to enable link to specific tab
+            var hash = document.location.hash;
+            var prefix = "tab_";
+            if (hash) {
+                $('.nav-tabs a[href='+hash.replace(prefix,"")+']').tab('show');
+            }
+
+            // Change hash for page-reload
+            $('.nav-tabs a').on('shown', function (e) {
+                window.location.hash = e.target.hash.replace("#", "#" + prefix);
+            });
+
         });
+
 
         /*
         // Enable shift+clicking to select multiple elements

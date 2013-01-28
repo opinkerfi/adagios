@@ -111,6 +111,8 @@ def _status(request):
             if service['acknowledged'] == 0 and service['downtimes'] == []:
                 tags.append('unhandled')
                 service['unhandled'] = "unhandled"
+            else:
+                tags.append('ishandled')
         else:
             tags.append('ok')
         if service['acknowledged'] == 1:
@@ -487,13 +489,13 @@ def status_paneview(request):
 def status_index(request):
     c = _status_combined(request)
     top_alert_producers = defaultdict(int)
-    top_alert_producers['test'] = 5
     for i in c['log']:
         top_alert_producers[i['host_name']] += 1
     top_alert_producers = top_alert_producers.items()
     top_alert_producers.sort(cmp=lambda a,b: cmp(a[1],b[1]), reverse=True)
     c['top_alert_producers'] = top_alert_producers
     return render_to_response('status_index.html', c, context_instance = RequestContext(request))
+
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
     c = { }
@@ -574,62 +576,14 @@ def _status_combined(request):
     host_totals = float(sum(host_status))
     c['service_status'] = map(lambda x: 100*x/service_totals, service_status)
     c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
-    seconds_in_a_day = 60*60*24
-    today = time.time() % seconds_in_a_day # midnight of today
-    c['log'] = livestatus.query('GET log',
-        'Filter: time >= %s' % today,
-        'Filter: type ~ ALERT',
-        'Limit: 100',
-    )
+    l = pynag.Parsers.LogFiles()
+    c['log'] = l.get_state_history()
     return c
 
 def status_problems(request):
-    #c = _status(request)
     c = _status_combined(request)
     return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
 
-
-def _parse_nagios_logline(line):
-    ''' Parse one nagios logline and return hashmap
-    '''
-    import re
-    m = re.search('^\[(.*?)\] (.*?): (.*)', line)
-    if m is None:
-        return {}
-    timestamp, logtype, message = m.groups()
-
-    result = {}
-    result['time'] = int(timestamp)
-    result['type'] = logtype
-    result['message'] = message
-    if logtype in ('CURRENT HOST STATE', 'CURRENT SERVICE STATE', 'SERVICE ALERT', 'HOST ALERT'):
-        if logtype.find('HOST') > -1:
-            # This matches host current state:
-            m = re.search('(.*?);(.*?);(.*);(.*?);(.*)', message)
-            host, state, hard, check_attempt, plugin_output = m.groups()
-            service_description=None
-        if logtype.find('SERVICE') > -1:
-            m = re.search('(.*?);(.*?);(.*?);(.*?);(.*?);(.*)', message)
-            host,service_description,state,hard,check_attempt,plugin_output = m.groups()
-        result['host_name'] = host
-        result['service_description'] = service_description
-        result['state'] = int( pynag.Plugins.state[state] )
-        result['check_attempt'] = check_attempt
-        result['plugin_output'] = plugin_output
-
-    return result
-def _get_state_history(start_time=None, end_time=None, host=None, service_description=None):
-    """ Parses nagios logfiles and returns state history  """
-    log_file = pynag.Model.config.get_cfg_value('log_file')
-    log_archive_path = pynag.Model.config.get_cfg_value('log_archive_path')
-
-    # First, lets peek in the logfiles and see how many files we have to read:
-    result = []
-    for line in open(log_file).readlines():
-        parsed_line = _parse_nagios_logline( line )
-        if parsed_line !=  {}:
-            result.append(parsed_line)
-    return result
 
 def state_history(request):
     c = {}
@@ -761,6 +715,13 @@ def _status_log(request):
         kwargs[k] = v
     l = pynag.Parsers.LogFiles()
     c['log'] = l.get_log_entries(start_time=start_time,end_time=end_time, **kwargs)[:limit]
+    c['log'].reverse()
+    c['logs'] = {'all':[]}
+    for line in c['log']:
+        if line['class_name'] not in c['logs'].keys():
+            c['logs'][line['class_name']] = []
+        c['logs'][line['class_name']].append(line)
+        c['logs']['all'].append(line)
     c['start_time'] = start_time
     return c
 def status_log(request):

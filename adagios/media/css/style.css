@@ -222,3 +222,7 @@ textarea#id_filecontent {
 .glyph-grey {
     background-image: url("../img/glyph-sprite-grey.png");
 }
+
+.nowrap {
+    white-space: nowrap;
+}

@@ -269,89 +269,89 @@
         This check has no custom variables defined.
         {% endif %}
     </div>
-        <div class="tab-pane" id="events">
-            <div width=500px class="progress">
-                {% for line in log reversed %}
-                    {% if line.class == 1 %}
-                        <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}" class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <div>
-                <div class="pull-left">
-                    ↖ {{ start_time|timestamp|date:'Y-m-d H:i' }}
-                </div>
-                <div class="pull-right">
-                    {{ end_time|timestamp|date:'Y-m-d H:i' }} ↗
-                </div>
-
-            </div>
-            <hr>
-            Last {{ log|length }} state changes (<a href="{% url status.views.status_log %}?host_name={{ host.name }}&service_description={{ service_description }}">see all log entries</a>):
-            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
-                <thead>
-                    <th>Time</th>
-                    <th>Duration</th>
-                    <th class="small"></th>
-                    <th>Message</th>
-                </thead>
-                {% for line in log reversed %}
-                    {% ifchanged line.time|timestamp|date:"Y-m-d" %}
-                    <tr><td colspan=4></td></tr>
-                    {% endifchanged %}
-                    <tr>
-                        <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
-                        <td><div>{{ line.duration|duration}}</div></td>
-                        <td class="small"><div class="circle state_{{ line.state }}"></div></td>
-                        <td>
-                            <div>{{ line.text }}</div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-
-
-        <div class="tab-pane" id="graphs">
-                {% if graph_urls %}
-                    <div id="graphs_tab" class="tabbable"> <!-- Only required for left/right tabs -->
-                        <ul  class="nav nav-pills" id="graphs_ul">
-                            <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
-                            <li><a href="#day" data-toggle="tab" id="25hours">25 Hours</a></li>
-                            <li><a href="#week" data-toggle="tab">One Week</a></li>
-                            <li><a href="#month" data-toggle="tab">One Month</a></li>
-                            <li><a href="#year" data-toggle="tab">One Year</a></li>
-                        </ul>
-
-                    <div class="tab-content" id="graphs_content">
-
-                        <div class="tab-pane graph-pane" id="hours">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane active" id="day">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane" id="week">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane" id="month">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane" id="year">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-
-                </div>
-            </div>
-                {% else %}
-                    No Performance data is available for this {{ my_object.object_type }}.
+    <div class="tab-pane" id="events">
+        <div width=500px class="progress">
+            {% for line in log reversed %}
+                {% if line.class == 1 %}
+                    <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}" class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
                 {% endif %}
+            {% endfor %}
         </div>
+        <div>
+            <div class="pull-left">
+                ↖ {{ start_time|timestamp|date:'Y-m-d H:i' }}
+            </div>
+            <div class="pull-right">
+                {{ end_time|timestamp|date:'Y-m-d H:i' }} ↗
+            </div>
+
+        </div>
+        <hr>
+        Last {{ log|length }} state changes (<a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">see all log entries for this host</a>):
+        <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <thead>
+                <th>Time</th>
+                <th>Duration</th>
+                <th class="small"></th>
+                <th>Message</th>
+            </thead>
+            {% for line in log reversed %}
+                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                <tr><td colspan=4></td></tr>
+                {% endifchanged %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                    <td><div>{{ line.duration|duration}}</div></td>
+                    <td class="small"><div class="circle state_{{ line.state }}"></div></td>
+                    <td>
+                        <div>{{ line.text }}</div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <div class="tab-pane" id="graphs">
+            {% if graph_urls %}
+                <div id="graphs_tab" class="tabbable"> <!-- Only required for left/right tabs -->
+                    <ul  class="nav nav-pills" id="graphs_ul">
+                        <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
+                        <li><a href="#day" data-toggle="tab" id="25hours">25 Hours</a></li>
+                        <li><a href="#week" data-toggle="tab">One Week</a></li>
+                        <li><a href="#month" data-toggle="tab">One Month</a></li>
+                        <li><a href="#year" data-toggle="tab">One Year</a></li>
+                    </ul>
+
+                <div class="tab-content" id="graphs_content">
+
+                    <div class="tab-pane graph-pane" id="hours">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+
+                    <div class="tab-pane active" id="day">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+
+                    <div class="tab-pane" id="week">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+
+                    <div class="tab-pane" id="month">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+
+                    <div class="tab-pane" id="year">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+
+
+            </div>
+        </div>
+            {% else %}
+                No Performance data is available for this {{ my_object.object_type }}.
+            {% endif %}
+    </div>
     </div>
 </div>
 <div class="span3" id="maincontent_right_side">
