@@ -543,7 +543,7 @@ def _status_combined(request):
         if len(host['childs']) > 0:
             parents.append(host)
         if host['state'] != 0 and host['acknowledged'] == 0 and host['downtimes'] == []:
-            hostnames_that_are_down.append(host['name'])
+            hostnames_that_are_down.append(str(host['name']))
             hosts_that_are_down.append(host)
 
     network_problems = []
@@ -555,10 +555,11 @@ def _status_combined(request):
         for i in host['parents']:
             if i in hostnames_that_are_down:
                 break
-        if len(host['childs']) == 0:
-            host_problems.append(host)
         else:
-            network_problems.append(host)
+            if len(host['childs']) == 0:
+                host_problems.append(host)
+            else:
+                network_problems.append(host)
     for service in services:
         service_status[service["state"]] += 1
         if service['state'] != 0 and service['acknowledged'] == 0 and len(service['downtimes']) == 0 and not service['host_name'] in hostnames_that_are_down:
