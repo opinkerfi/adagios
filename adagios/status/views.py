@@ -490,7 +490,8 @@ def status_index(request):
     c = _status_combined(request)
     top_alert_producers = defaultdict(int)
     for i in c['log']:
-        top_alert_producers[i['host_name']] += 1
+        if 'host_name' in i and 'state' in i and i['state'] > 0:
+            top_alert_producers[i['host_name']] += 1
     top_alert_producers = top_alert_producers.items()
     top_alert_producers.sort(cmp=lambda a,b: cmp(a[1],b[1]), reverse=True)
     c['top_alert_producers'] = top_alert_producers
@@ -564,7 +565,7 @@ def _status_combined(request):
                 network_problems.append(host)
     for service in services:
         service_status[service["state"]] += 1
-        if service['state'] != 0 and service['acknowledged'] == 0 and len(service['downtimes']) == 0 and not service['host_name'] in hostnames_that_are_down:
+        if service['state'] != 0 and service['acknowledged'] == 0 and len(service['downtimes']) == 0 and service['host_state'] == 0:
             service_problems.append(service)
     c['network_problems'] = network_problems
     c['host_problems'] = host_problems
@@ -577,7 +578,7 @@ def _status_combined(request):
     c['service_status'] = map(lambda x: 100*x/service_totals, service_status)
     c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
     l = pynag.Parsers.LogFiles()
-    c['log'] = l.get_state_history()
+    c['log'] = reversed(l.get_state_history())
     return c
 
 def status_problems(request):
