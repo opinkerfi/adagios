@@ -146,3 +146,17 @@ def change_host_coordinates(host_name, latitude,longitude):
     coords = "%s,%s" % (latitude,longitude)
     host['2d_coords'] = coords
     host.save()
+
+def autocomplete(q):
+    """ Returns a list of {'hosts':[], 'hostgroups':[],'services':[]} matching search query q
+    """
+    if q is None:
+        q = ''
+    result = {}
+    hosts = pynag.Model.Host.objects.filter(host_name__contains=q)
+    services = pynag.Model.Service.objects.filter(service_description__contains=q)
+    hostgroups = pynag.Model.Hostgroup.objects.filter(hostgroup_name__contains=q)
+    result['hosts'] = sorted(set(map(lambda x: x.host_name, hosts)))
+    result['hostgroups'] = sorted(set(map(lambda x: x.hostgroup_name, hostgroups)))
+    result['services'] = sorted(set(map(lambda x: x.service_description, services)))
+    return result

@@ -21,15 +21,15 @@
         </tr>
         -->
         {% for i in network_problems %}
-            <tr class=state_{{ i.state }} style="color: black;">
-                <td><div class="circle state_{{ i.state }}"></div></td>
+            <tr style="color: black;">
+                <td><div class="circle circle-spin state_{{ i.state }}"></div></td>
                 <td>{{ i.name }}</td>
                 <td></td>
                 <td>
-                    {{ i.last_state_change|timestamp|timesince }}
+                    {{ i.plugin_output }}
                 </td>
                 <td>
-                    {{ i.plugin_output }}
+                    {{ i.last_state_change|timestamp|timesince }}
                 </td>
 
             </tr>
@@ -51,15 +51,15 @@
         </tr>
         -->
         {% for i in host_problems %}
-            <tr class=state_{{ i.state }} style="color: black;">
-                <td><div class="circle state_{{ i.state }}"></div></td>
+            <tr style="color: black;">
+                <td><div class="circle circle-spin state_{{ i.state }}"></div></td>
                 <td>{{ i.name }}</td>
                 <td></td>
                 <td>
-                    {{ i.last_state_change|timestamp|timesince }}
+                    {{ i.plugin_output }}
                 </td>
                 <td>
-                    {{ i.plugin_output }}
+                    {{ i.last_state_change|timestamp|timesince }}
                 </td>
             </tr>
         {% endfor %}
@@ -81,16 +81,16 @@
         -->
         {% for i in service_problems %}
             <tr>
-                <td><div class="circle state_{{ i.state }}"></div></td>
+                <td><div class="circle  state_{{ i.state }}{{ i.unhandled }}"></div></td>
                 <td>{{ i.host_name }}</td>
                 <td>
                     {{ i.description }}
                 </td>
                 <td>
-                    {{ i.last_state_change|timestamp|timesince }}
+                    {{ i.plugin_output }}
                 </td>
                 <td>
-                    {{ i.plugin_output }}
+                    {{ i.last_state_change|timestamp|timesince }}
                 </td>
             </tr>
         {% endfor %}
