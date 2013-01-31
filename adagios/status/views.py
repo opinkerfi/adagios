@@ -737,3 +737,48 @@ def error_page(request, context=None):
         context['errors'] = []
         context['errors'].append('Error occured, but no error messages provided, what happened?')
     return render_to_response('status_error.html', context, context_instance = RequestContext(request))
+
+def contact_list(request):
+    """ Display a list of active contacts
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    l = pynag.Parsers.mk_livestatus()
+    c['contacts'] = l.query('GET contacts')
+    c['contactgroups'] = l.query('GET contactgroups')
+    return render_to_response('status_contacts.html', c, context_instance = RequestContext(request))
+
+def contact_detail(request, contact_name):
+    """ Detailed information for one specific contact
+    """
+    c= {}
+    c['messages'] = []
+    c['errors'] = []
+    c['contact_name'] = contact_name
+    l = pynag.Parsers.mk_livestatus()
+
+    # Fetch contact and basic information
+    result = l.query("GET contacts", "Filter: name = %s" % contact_name)
+    if result == []:
+        c['errors'].append("Contact named '%s' was not found." % contact_name)
+        return render_to_response('status_error.html', c, context_instance = RequestContext(request))
+    else:
+        contact = result[0]
+        c['contact'] = contact
+
+    # Active comments
+    c['comments'] = l.query('GET comments', 'Filter: comment ~ %s' % contact_name, )
+    for i in c['comments']:
+        if i.get('type') == 1:
+            i['state'] = i['host_state']
+        else:
+            i['state'] = i['service_state']
+
+    # Activity log
+    c['log'] = pynag.Parsers.LogFiles().get_log_entries(search=str(contact_name))
+
+    # Contact groups
+    c['groups'] = l.query('GET contactgroups', 'Filter: members >= %s' % contact_name)
+
+    return render_to_response('status_contact.html', c, context_instance = RequestContext(request))

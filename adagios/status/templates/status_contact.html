@@ -1,0 +1,156 @@
+{% extends "base_status.html" %}
+
+{% block title %}{{ contact_name }}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{{ contact_name }}{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% load adagiostags %}
+
+{% block content %}
+    <ul class="nav nav-tabs" id="objecttab">
+        <li class="active"><a href="#general" data-toggle="tab">General</a></li>
+        <li><a href="#activity" data-toggle="tab">Activity</a></li>
+        <li><a href="#problems" data-toggle="tab">Comment Feed</a></li>
+        <li><a href="#debug" data-toggle="tab">Debug</a></li>
+    </ul>
+    <div class="tab-content">
+
+        <div class="tab-pane active" id="general">
+            <table class="table">
+                <tr>
+                    <td>Contact Name</td>
+                    <td>{{ contact.name }}</td>
+                </tr>
+                <tr>
+                    <td>Alias</td>
+                    <td>{{ contact.alias }}</td>
+                </tr>
+                <tr>
+                    <td>E-mail</td>
+                    <td>{{ contact.email }}</td>
+                </tr>
+                <tr>
+                    <td>Pager</td>
+                    <td>{{ contact.pager }}</td>
+                </tr>
+                <tr>
+                    <td>Groups</td>
+                    <td>
+                        {% for i in groups %}
+                            <a href="{% url status.views.contact_detail i.name %}">{{ i.name }}</a>,
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="tab-pane" id="activity">
+            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+                <thead>
+                <th>Time</th>
+                <th>Type</th>
+                <th></th>
+                <th>Message</th>
+                </thead>
+                {% for line in log  %}
+                    {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                        <!-- <tr><td colspan=4></td></tr> -->
+                    {% endifchanged %}
+                    <tr>
+                        <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                        <td class="nowrap">{{ line.type }}</td>
+                        <td>
+                            <a title="{{ line.class_name }} - {{ line.type }} "href="?type={{ line.type }}">
+                                <div class="circle state_{{ line.state }}"></div>
+                            </a>
+
+                        <td>
+                            <div style="white-space: nowrap;">{{ line.options }}</div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="tab-pane" id="problems">
+            <table class="table table-condensed table-striped">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Time</th>
+                    <th>Author</th>
+                    <th>Host</th>
+                    <th>Service</th>
+                    <th>Comment</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+                {% for i in comments %}
+                    <tr>
+                        <td>
+                            <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
+                            {% if i.entry_type == 1 %}
+                                <i class="glyph-chat" title="User Comment"> </i>
+                            {% endif %}
+                            {% if i.entry_type == 2 %}
+                                <i class="glyph-stopwatch" title="Downtime"> </i>
+                            {% endif %}
+                            {% if i.entry_type == 3 %}
+                                <i class="glyph-random" title="Flap"> </i>
+                            {% endif %}
+                            {% if i.entry_type == 4 %}
+                                <i class="glyph-ok-2" title="Acknowledgement"> </i>
+                            {% endif %}
+                        </td>
+                        <td>{{ i.entry_time|timestamp|date }}</td>
+                        <td>{{ i.author }}</td>
+                        <td>
+                            <div class="circle state_{{ i.host_state }}"></div>
+                            <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}">
+                                {{ i.host_display_name }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="circle state_{{ i.service_state }}"></div>
+                            <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
+                                {{ i.service_display_name}}
+                            </a>
+                        </td>
+                        <td>{{ i.comment }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <table>
+                {% for k,v in comments.0.items %}
+                    <tr>
+                        <td>{{ k }}</td>
+                        <td>{{ v }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="tab-pane" id="debug">
+            <h4>Information available via livestatus:</h4>
+            <table class="table-condensed table">
+                {% for k,v in contact.items %}
+                    <tr>
+                        <td>                {{ k }}
+                        </td>
+                        <td>
+                            {{ v }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block toolbar %}{{ block.super }} {% endblock %}
+
+{% block footer %} {{ block.super }} {% endblock %}

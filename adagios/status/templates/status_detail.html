@@ -167,7 +167,7 @@
                             <div class="alert alert-info">
                                 <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
                                     <i class="glyph-bin"></i></button>
-                                <i class="glyph-user"></i> <a href="">{{ i.1 }}</a>: {{ i.2 }}
+                                <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
                             </div>
                         {% endfor %}
                         <div id="div_add_comment" class="alert alert-info">
