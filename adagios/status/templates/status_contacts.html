@@ -47,9 +47,14 @@
                     <td>{{ i.alias }}</td>
                     <td>
                         {% for x in i.members %}
+<<<<<<< HEAD
                         <a href="{% url status.views.contact_detail x %}">{{ x }}</a>,
                         {% endfor %}
                     </td>
+=======
+                        <a href="{% url status.views.contact_detail x %}">{{ x }}</a>, </td>
+                        {% endfor %}
+>>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
                 </tr>
             {% endfor %}
         </table>
@@ -58,7 +63,11 @@
     </div>
 {% endblock %}
 
+<<<<<<< HEAD
 {% block view_buttons %}{% endblock %}
 {% block action_buttons %}{% endblock %}
+=======
+{% block toolbar %}{{ block.super }} {% endblock %}
+>>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
 
 {% block footer %} {{ block.super }} {% endblock %}
