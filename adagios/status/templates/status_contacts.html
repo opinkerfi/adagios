@@ -1,0 +1,64 @@
+{% extends "base_status.html" %}
+
+{% block title %}Contacts{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Contacts{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% load adagiostags %}
+
+{% block content %}
+    <ul class="nav nav-tabs" id="objecttab">
+        <li class="active"><a href="#contacts" data-toggle="tab">Contacts</a></li>
+        <li><a href="#contactgroups" data-toggle="tab">Contactgroups</a></li>
+    </ul>
+    <div class="tab-content">
+
+    <div class="tab-pane active" id="contacts">
+        <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <thead>
+            <th>Contact Name</th>
+            <th>Alias</th>
+            <th>E-mail</th>
+            <th>Pager</th>
+            </thead>
+            {% for i in contacts  %}
+                <tr>
+                    <td>
+                        <a href="{% url status.views.contact_detail i.name %}">{{ i.name }}</a></td>
+                    <td>{{ i.alias }}</td>
+                    <td>{{ i.email}}</td>
+                    <td>{{ i.pager }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="tab-pane " id="contactgroups">
+        <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <thead>
+            <th>Group Name</th>
+            <th>Alias</th>
+            <th>Members</th>
+            </thead>
+            {% for i in contactgroups  %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td>{{ i.alias }}</td>
+                    <td>
+                        {% for x in i.members %}
+                        <a href="{% url status.views.contact_detail x %}">{{ x }}</a>,
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    </div>
+{% endblock %}
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+
+{% block footer %} {{ block.super }} {% endblock %}

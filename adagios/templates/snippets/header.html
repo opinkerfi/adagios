@@ -82,6 +82,7 @@
                            href="#"><i class="glyph-user glyph-grey"></i> {{ remote_user }}
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a href="{% url status.views.contact_detail remote_user %}">My Profile</a></li>
                             <li><a href="{% url misc.views.sign_out %}">Sign Out</a></li>
                         </ul>
                     </li>
