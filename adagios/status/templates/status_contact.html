@@ -10,15 +10,10 @@
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
         <li class="active"><a href="#general" data-toggle="tab">General</a></li>
-<<<<<<< HEAD
         <li><a href="#history" data-toggle="tab">History</a></li>
+        <li><a href="#contactgroups" data-toggle="tab">Groups</a></li>
         <!-- <li><a href="#problems" data-toggle="tab">Comment Feed</a></li> -->
         <!-- <li><a href="#debug" data-toggle="tab">Debug</a></li> -->
-=======
-        <li><a href="#activity" data-toggle="tab">Activity</a></li>
-        <li><a href="#problems" data-toggle="tab">Comment Feed</a></li>
-        <li><a href="#debug" data-toggle="tab">Debug</a></li>
->>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
     </ul>
     <div class="tab-content">
 
@@ -40,73 +35,60 @@
                     <td>Pager</td>
                     <td>{{ contact.pager }}</td>
                 </tr>
-                <tr>
-                    <td>Comments:</td>
-                    <td>
-                        {% if comments %}
-                            <table class="table table-condensed well">
-                                <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Type</th>
-                                    <th>Author</th>
-                                    <th>Host</th>
-                                    <th>Service</th>
-                                    <th>Comment</th>
-                                </tr>
-
-                                </thead>
-
-                                <tbody>
-                                {% for i in comments %}
-                                    <tr>
-                                        <td>{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
-                                        <td>
-                                            <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
-                                            {% if i.entry_type == 1 %}
-                                                <i class="glyph-user" title="User Comment"> </i>
-                                            {% endif %}
-                                            {% if i.entry_type == 2 %}
-                                                <i class="glyph-stopwatch" title="Downtime"> </i>
-                                            {% endif %}
-                                            {% if i.entry_type == 3 %}
-                                                <i class="glyph-random" title="Flap"> </i>
-                                            {% endif %}
-                                            {% if i.entry_type == 4 %}
-                                                <i class="glyph-ok-2" title="Acknowledgement"> </i>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <a href="{% url status.views.contact_detail i.author %}">{{ i.author }}</a></td>
-                                        <td>
-                                            <div class="circle state_{{ i.host_state }}"></div>
-                                            <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}">
-                                                {{ i.host_display_name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <div class="circle state_{{ i.service_state }}"></div>
-                                            <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
-                                                {{ i.service_display_name}}
-                                            </a>
-                                        </td>
-                                        <td>{{ i.comment }}</td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Groups</td>
-                    <td>
-                        {% for i in groups %}
-                            <a href="{% url status.views.contact_list i.name %}">{{ i.name }}</a>,
-                        {% endfor %}
-                    </td>
-                </tr>
             </table>
+            {% if comments %}
+                <table class="table table-condensed well">
+                    <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Author</th>
+                        <th>Host</th>
+                        <th>Service</th>
+                        <th>Comment</th>
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+                    {% for i in comments %}
+                        <tr>
+                            <td>{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
+                            <td>
+                                <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
+                                {% if i.entry_type == 1 %}
+                                    <i class="glyph-user" title="User Comment"> </i>
+                                {% endif %}
+                                {% if i.entry_type == 2 %}
+                                    <i class="glyph-stopwatch" title="Downtime"> </i>
+                                {% endif %}
+                                {% if i.entry_type == 3 %}
+                                    <i class="glyph-random" title="Flap"> </i>
+                                {% endif %}
+                                {% if i.entry_type == 4 %}
+                                    <i class="glyph-ok-2" title="Acknowledgement"> </i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url status.views.contact_detail i.author %}">{{ i.author }}</a></td>
+                            <td>
+                                <div class="circle state_{{ i.host_state }}"></div>
+                                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}">
+                                    {{ i.host_display_name }}
+                                </a>
+                            </td>
+                            <td>
+                                <div class="circle state_{{ i.service_state }}"></div>
+                                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
+                                    {{ i.service_display_name}}
+                                </a>
+                            </td>
+                            <td>{{ i.comment }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
 
         </div>
 
@@ -137,7 +119,15 @@
             </table>
         </div>
 
-        <div class="tab-pane" id="problems">
+        <div class="tab-pane" id="contactgroups">
+            <table class="table well">
+                {% for i in groups %}
+                    <tr>
+                        <td> {{ i.name }} </td>
+                        <td> {{ i.alias }} </td>
+                    </tr>
+                {% endfor %}
+            </table>
         </div>
 
         <div class="tab-pane" id="debug">
