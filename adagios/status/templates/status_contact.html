@@ -41,7 +41,6 @@
                     <td>{{ contact.pager }}</td>
                 </tr>
                 <tr>
-<<<<<<< HEAD
                     <td>Comments:</td>
                     <td>
                         {% if comments %}
@@ -104,29 +103,14 @@
                     <td>
                         {% for i in groups %}
                             <a href="{% url status.views.contact_list i.name %}">{{ i.name }}</a>,
-=======
-                    <td>Groups</td>
-                    <td>
-                        {% for i in groups %}
-                            <a href="{% url status.views.contact_detail i.name %}">{{ i.name }}</a>,
->>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
                         {% endfor %}
                     </td>
                 </tr>
             </table>
-<<<<<<< HEAD
-
-
-
 
         </div>
 
         <div class="tab-pane" id="history">
-=======
-        </div>
-
-        <div class="tab-pane" id="activity">
->>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
             <table style="font-size: 80%;" class="table well table-condensed" table-striped>
                 <thead>
                 <th>Time</th>
@@ -154,67 +138,6 @@
         </div>
 
         <div class="tab-pane" id="problems">
-<<<<<<< HEAD
-=======
-            <table class="table table-condensed table-striped">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Time</th>
-                    <th>Author</th>
-                    <th>Host</th>
-                    <th>Service</th>
-                    <th>Comment</th>
-                </tr>
-
-                </thead>
-
-                <tbody>
-                {% for i in comments %}
-                    <tr>
-                        <td>
-                            <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
-                            {% if i.entry_type == 1 %}
-                                <i class="glyph-chat" title="User Comment"> </i>
-                            {% endif %}
-                            {% if i.entry_type == 2 %}
-                                <i class="glyph-stopwatch" title="Downtime"> </i>
-                            {% endif %}
-                            {% if i.entry_type == 3 %}
-                                <i class="glyph-random" title="Flap"> </i>
-                            {% endif %}
-                            {% if i.entry_type == 4 %}
-                                <i class="glyph-ok-2" title="Acknowledgement"> </i>
-                            {% endif %}
-                        </td>
-                        <td>{{ i.entry_time|timestamp|date }}</td>
-                        <td>{{ i.author }}</td>
-                        <td>
-                            <div class="circle state_{{ i.host_state }}"></div>
-                            <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}">
-                                {{ i.host_display_name }}
-                            </a>
-                        </td>
-                        <td>
-                            <div class="circle state_{{ i.service_state }}"></div>
-                            <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
-                                {{ i.service_display_name}}
-                            </a>
-                        </td>
-                        <td>{{ i.comment }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <table>
-                {% for k,v in comments.0.items %}
-                    <tr>
-                        <td>{{ k }}</td>
-                        <td>{{ v }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
->>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
         </div>
 
         <div class="tab-pane" id="debug">
@@ -233,7 +156,6 @@
         </div>
 
     </div>
-<<<<<<< HEAD
     <style>
         .table tbody tr:hover td, .table tbody tr:hover th {
             background-color: white;
@@ -244,10 +166,5 @@
 
 {% block view_buttons %}{% endblock %}
 {% block action_buttons %}{% endblock %}
-=======
-{% endblock %}
-
-{% block toolbar %}{{ block.super }} {% endblock %}
->>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
 
 {% block footer %} {{ block.super }} {% endblock %}

@@ -762,12 +762,8 @@ def contact_detail(request, contact_name):
     result = l.query("GET contacts", "Filter: name = %s" % contact_name)
     if result == []:
         c['errors'].append("Contact named '%s' was not found." % contact_name)
-<<<<<<< HEAD
         if contact_name != 'anonymous':
             return render_to_response('status_error.html', c, context_instance = RequestContext(request))
-=======
-        return render_to_response('status_error.html', c, context_instance = RequestContext(request))
->>>>>>> d402b7ff6a50a1b72f4361a565e3072a3bc4f74f
     else:
         contact = result[0]
         c['contact'] = contact
