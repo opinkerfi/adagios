@@ -8,8 +8,27 @@
 {% load adagiostags %}
 
 {% block content %}
+    <table class="table">
+        <tr>
+            <td>Contact Name</td>
+            <td>{{ contact.name }}</td>
+        </tr>
+        <tr>
+            <td>Alias</td>
+            <td>{{ contact.alias }}</td>
+        </tr>
+        <tr>
+            <td>E-mail</td>
+            <td>{{ contact.email }}</td>
+        </tr>
+        <tr>
+            <td>Pager</td>
+            <td>{{ contact.pager }}</td>
+        </tr>
+    </table>
+
     <ul class="nav nav-tabs" id="objecttab">
-        <li class="active"><a href="#general" data-toggle="tab">General</a></li>
+        <li class="active"><a href="#feed" data-toggle="tab">Comment Feed</a></li>
         <li><a href="#history" data-toggle="tab">History</a></li>
         <li><a href="#contactgroups" data-toggle="tab">Groups</a></li>
         <!-- <li><a href="#problems" data-toggle="tab">Comment Feed</a></li> -->
@@ -17,25 +36,7 @@
     </ul>
     <div class="tab-content">
 
-        <div class="tab-pane active" id="general">
-            <table class="table">
-                <tr>
-                    <td>Contact Name</td>
-                    <td>{{ contact.name }}</td>
-                </tr>
-                <tr>
-                    <td>Alias</td>
-                    <td>{{ contact.alias }}</td>
-                </tr>
-                <tr>
-                    <td>E-mail</td>
-                    <td>{{ contact.email }}</td>
-                </tr>
-                <tr>
-                    <td>Pager</td>
-                    <td>{{ contact.pager }}</td>
-                </tr>
-            </table>
+        <div class="tab-pane active" id="feed">
             {% if comments %}
                 <table class="table table-condensed well">
                     <thead>
@@ -53,7 +54,7 @@
                     <tbody>
                     {% for i in comments %}
                         <tr>
-                            <td>{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
+                            <td class="small nowrap">{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
                             <td>
                                 <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
                                 {% if i.entry_type == 1 %}
@@ -78,10 +79,15 @@
                                 </a>
                             </td>
                             <td>
-                                <div class="circle state_{{ i.service_state }}"></div>
-                                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
-                                    {{ i.service_display_name}}
-                                </a>
+                                {% if i.service_description %}
+                                    <div class="circle state_{{ i.service_state }}"></div>
+                                    <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
+                                        {{ i.service_display_name}}
+                                    </a>
+                                {% else %}
+                                    <!-- No service_description if this is a host check -->n/a
+                                {% endif %}
+
                             </td>
                             <td>{{ i.comment }}</td>
                         </tr>
@@ -93,7 +99,7 @@
         </div>
 
         <div class="tab-pane" id="history">
-            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
                 <th>Time</th>
                 <th>Type</th>

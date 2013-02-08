@@ -1,6 +1,6 @@
 <!-- snippets/header.html starts. This is the top navigation header on our page -->
 
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top" xmlns="http://www.w3.org/1999/html">
     <div class="navbar-inner">
         <div class="container-fluid" style="padding-right: 0px;">
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -80,8 +80,17 @@
                         <a class="dropdown-toggle"
                            data-toggle="dropdown"
                            href="#"><i class="glyph-user glyph-grey"></i> {{ remote_user }}
+                            {% if tagged_comments %}({{ tagged_comments }}){% endif %}
                         </a>
                         <ul class="dropdown-menu">
+                            {% if tagged_comments %}
+                                <li>
+
+                                <a href="{% url status.views.contact_detail remote_user %}">
+                                    User {{ remote_user }} is mentioned in {{ tagged_comments }} comments.
+                                </a>
+                                </li>
+                            {% endif %}
                             <li><a href="{% url status.views.contact_detail remote_user %}">My Profile</a></li>
                             <li><a href="{% url misc.views.sign_out %}">Sign Out</a></li>
                         </ul>

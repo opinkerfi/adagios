@@ -738,6 +738,15 @@ def error_page(request, context=None):
         context['errors'].append('Error occured, but no error messages provided, what happened?')
     return render_to_response('status_error.html', context, context_instance = RequestContext(request))
 
+def comment_list(request):
+    """ Display a list of all comments """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    l = pynag.Parsers.mk_livestatus()
+    c['comments'] = l.query('GET comments')
+    return render_to_response('status_comments.html', c, context_instance = RequestContext(request))
+
 def contact_list(request):
     """ Display a list of active contacts
     """

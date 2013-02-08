@@ -13,6 +13,8 @@ def on_page_load(request):
         results[k] = v
     for k,v in get_httpuser(request).items():
         results[k] = v
+    for k,v in get_tagged_comments(request).items():
+        results[k] = v
     for k,v in check_nagios_running(request).items():
         results[k] = v
     for k,v in check_nagios_needs_reload(request).items():
@@ -60,6 +62,21 @@ def get_httpuser(request):
         i.modified_by = remote_user
     return {'remote_user': remote_user }
 
+
+def get_tagged_comments(request):
+    """ (for status view) returns number of comments that mention the remote_user"""
+    try:
+        remote_user = request.META.get('REMOTE_USER', 'anonymous')
+        livestatus = mk_livestatus()
+        tagged_comments = len( livestatus.query('GET comments', 'Filter: comment ~ %s' % remote_user ))
+        if tagged_comments > 0:
+            return {'tagged_comments': tagged_comments }
+        else:
+            return {}
+    except Exception:
+        return {}
+
+
 def get_unhandled_problems(request):
     """ Get number of any unhandled problems via livestatus """
     results = {}
@@ -71,6 +88,7 @@ def get_unhandled_problems(request):
     except Exception:
         pass
     return results
+
 def check_nagios_cfg(request):
     """ Check availability of nagios.cfg """
     return { 'nagios_cfg' : pynag.Model.config.cfg_file }
