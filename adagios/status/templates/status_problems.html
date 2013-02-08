@@ -1,6 +1,7 @@
 {% extends "base1.html" %}
 
 {% load adagiostags %}
+{% block title %}Problems{% endblock %}
 {% block titlebar %} {% endblock %}
 {% block maincontent %}
     <table class="table table-condensed" style="white-space: nowrap;">
@@ -99,7 +100,7 @@
 
 {% if log %}
     <h3>Last {{ log|length }} alerts:</h3>
-    <table style="font-size: 80%;" class="table table-condensed" table-striped>
+    <table style="font-size: 80%;" class="table table-condensed">
         {% for line in log %}
                 <tr>
                     <td width=20px style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>

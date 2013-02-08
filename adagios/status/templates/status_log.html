@@ -28,6 +28,7 @@
         <li class="active"><a href="#all" data-toggle="tab">All Logs</a></li>
         <li><a href="#alerts" data-toggle="tab">State Changes</a></li>
         <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
+        <li><a href="#warning" data-toggle="tab">Warnings</a></li>
         <li><a href="#flapping" data-toggle="tab">Flapping Alerts</a></li>
         <li><a href="#commands" data-toggle="tab" >External Commands</a></li>
         <li><a href="#passive" data-toggle="tab" >Passive checks</a></li>
@@ -89,7 +90,7 @@
         </div>
         <div class="tab-pane " id="flapping">
             Last {{ logs.flapping|length }} Flapping alerts:
-            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
                 <th>Time</th>
                 <th></th>
@@ -108,9 +109,30 @@
                 {% endfor %}
             </table>
         </div>
+        <div class="tab-pane " id="warning">
+            Last {{ logs.warning|length }} Warnings:
+            <table style="font-size: 80%;" class="table well table-condensed">
+                <thead>
+                <th>Time</th>
+                <th></th>
+                <th>Message</th>
+                </thead>
+                {% for line in logs.warning %}
+                    {% ifchanged line.time|timestamp|date:"Y-m-d" %}
+                        <!-- <tr><td colspan=4></td></tr> -->
+                    {% endifchanged %}
+                    <tr>
+                        <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
+                        <td><div class="circle state_{{ line.state }}"></div></td>
+                        <td>
+                            <div>{{ line.text }}</div></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
         <div class="tab-pane " id="commands">
             Last {{ logs.command|length }} External commands:
-            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
                 <th>Time</th>
                 <th>Command</th>
@@ -133,7 +155,7 @@
         </div>
         <div class="tab-pane " id="passive">
             Last {{ logs.passive|length }} passive check results:
-            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
                 <th>Time</th>
                 <th>Host</th>
@@ -158,7 +180,7 @@
         </div>
         <div class="tab-pane " id="unclassified">
             Last {{ logs.unclassified|length }} misc entries:
-            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
                 <th>Time</th>
                 <th></th>
@@ -183,7 +205,7 @@
         </div>
         <div class="tab-pane active" id="all">
             Last {{ logs.all|length }} log entries:
-            <table style="font-size: 80%;" class="table well table-condensed" table-striped>
+            <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
                 <th>Time</th>
                 <th>Type</th>
