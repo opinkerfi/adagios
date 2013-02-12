@@ -272,7 +272,7 @@
     <div class="tab-pane" id="events">
         {% if log %}
             <div width=500px class="progress">
-                {% for line in log reversed %}
+                {% for line in log %}
                     {% if line.class == 1 %}
                         <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}" class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
                     {% endif %}

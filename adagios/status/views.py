@@ -744,8 +744,40 @@ def comment_list(request):
     c['messages'] = []
     c['errors'] = []
     l = pynag.Parsers.mk_livestatus()
-    c['comments'] = l.query('GET comments')
+    comments = l.query('GET comments')
+    args = request.GET.copy()
+    c['comments'] = grep_dict(comments, **args)
+    print args
     return render_to_response('status_comments.html', c, context_instance = RequestContext(request))
+
+def grep_dict(array, **kwargs):
+    """  Returns all the elements from array that match the keywords in **kwargs
+
+    TODO: Refactor pynag.Model.ObjectDefinition.objects.filter() and reuse it here.
+    Arguments:
+        array -- a list of dict that is to be searched
+        kwargs -- Any search argument provided will be checked against every dict
+    Examples:
+    array = [
+    {'host_name': 'examplehost', 'state':0},
+    {'host_name': 'example2', 'state':1},
+    ]
+    grep_dict(array, state=0)
+    # should return [{'host_name': 'examplehost', 'state':0},]
+
+    """
+    result = []
+    for current_item in array:
+        # Iterate through every keyword provided:
+        for k,v in kwargs.items():
+            if type(v) == type([]):
+                v = v[0]
+            if str(v) != str(current_item.get(k, None)):
+                break
+        else:
+            # If we get here, none of the search arguments are invalid
+            result.append(current_item)
+    return result
 
 def contact_list(request):
     """ Display a list of active contacts
