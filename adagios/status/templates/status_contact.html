@@ -1,36 +1,20 @@
 {% extends "base_status.html" %}
 
 {% block title %}{{ contact_name }}{% endblock %}
-{% block smallheader %}{% endblock %}
-{% block largeheader %}{{ contact_name }}{% endblock %}
+{% block smallheader %}contact{% endblock %}
+{% block largeheader %}{{ contact_name }} ({{ contact.alias }}){% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}">Contacts</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
-    <table class="table">
-        <tr>
-            <td>Contact Name</td>
-            <td>{{ contact.name }}</td>
-        </tr>
-        <tr>
-            <td>Alias</td>
-            <td>{{ contact.alias }}</td>
-        </tr>
-        <tr>
-            <td>E-mail</td>
-            <td>{{ contact.email }}</td>
-        </tr>
-        <tr>
-            <td>Pager</td>
-            <td>{{ contact.pager }}</td>
-        </tr>
-    </table>
 
     <ul class="nav nav-tabs" id="objecttab">
         <li class="active"><a href="#feed" data-toggle="tab">Comment Feed</a></li>
         <li><a href="#history" data-toggle="tab">History</a></li>
         <li><a href="#contactgroups" data-toggle="tab">Groups</a></li>
+        <li><a href="#services" data-toggle="tab">Services</a></li>
         <!-- <li><a href="#problems" data-toggle="tab">Comment Feed</a></li> -->
         <!-- <li><a href="#debug" data-toggle="tab">Debug</a></li> -->
     </ul>
@@ -38,6 +22,7 @@
 
         <div class="tab-pane active" id="feed">
             {% if comments %}
+                Comments that mention {{ contact_name }}
                 <table class="table table-condensed well">
                     <thead>
                     <tr>
@@ -94,12 +79,15 @@
                     {% endfor %}
                     </tbody>
                 </table>
+            {% else %}
+                {{ contact_name }} is not tagged in any current problems.
             {% endif %}
 
         </div>
 
         <div class="tab-pane" id="history">
-            <table style="font-size: 80%;" class="table well table-condensed">
+            {% if log %}
+               <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
                 <th>Time</th>
                 <th>Type</th>
@@ -123,20 +111,38 @@
                     </tr>
                 {% endfor %}
             </table>
+            {% else %}
+                {{ contact_name }} is not mentioned in any recent log entries.
+            {% endif %}
         </div>
 
         <div class="tab-pane" id="contactgroups">
-            <table class="table well">
-                {% for i in groups %}
-                    <tr>
-                        <td> {{ i.name }} </td>
-                        <td> {{ i.alias }} </td>
-                    </tr>
-                {% endfor %}
-            </table>
+            {% if groups %}
+                {{ contact_name }} belongs to the following groups:
+                <table class="table well">
+                    {% for i in groups %}
+                        <tr>
+                            <td> {{ i.name }} </td>
+                            <td> {{ i.alias }} </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                {{ contact_name }} does not belong to any groups.
+            {% endif %}
         </div>
 
-        <div class="tab-pane" id="debug">
+        <div class="tab-pane" id="services">
+            {% if services %}
+                {{ contact_name }} is a contact for the following services:
+                {% include "snippets/status_servicelist_snippet.html" %}
+            {% else %}
+                {{ contact_name }} is not a contact for any services.
+            {% endif %}
+            </div>
+
+
+    <div class="tab-pane" id="debug">
             <h4>Information available via livestatus:</h4>
             <table class="table-condensed table">
                 {% for k,v in contact.items %}

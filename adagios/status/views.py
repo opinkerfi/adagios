@@ -113,6 +113,7 @@ def _status(request):
                 service['unhandled'] = "unhandled"
             else:
                 tags.append('ishandled')
+                service['handled'] = "handled"
         else:
             tags.append('ok')
         if service['acknowledged'] == 1:
@@ -787,6 +788,7 @@ def contact_list(request):
     c['errors'] = []
     l = pynag.Parsers.mk_livestatus()
     c['contacts'] = l.query('GET contacts')
+    c['contacts'] = pynag.Utils.grep(c['contacts'], **request.GET)
     c['contactgroups'] = l.query('GET contactgroups')
     return render_to_response('status_contacts.html', c, context_instance = RequestContext(request))
 
@@ -816,6 +818,9 @@ def contact_detail(request, contact_name):
             i['state'] = i['host_state']
         else:
             i['state'] = i['service_state']
+
+    # Services this contact can see
+    c['services'] = l.query('GET services', "Filter: contacts >= %s" % contact_name)
 
     # Activity log
     c['log'] = pynag.Parsers.LogFiles().get_log_entries(search=str(contact_name))
