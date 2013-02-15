@@ -6,6 +6,8 @@ from adagios.misc.rest import add_notification,clear_notification
 import adagios
 from pynag import Model
 from pynag.Parsers import mk_livestatus
+import time
+
 def on_page_load(request):
     """ Collection of actions that take place every page load """
     results = {}
@@ -35,8 +37,17 @@ def on_page_load(request):
         results[k] = v
     for k,v in check_nagios_cfg(request).items():
         results[k] = v
+    for k,v in get_current_time(request).items():
+        results[k] = v
     return results
 
+def get_current_time(request):
+    """ Make current timestamp available to templates
+    """
+    try:
+        return {'current_timestamp':int(time.time())}
+    except Exception:
+        return {}
 def activate_plugins(request):
     """ Activates any plugins specified in settings.plugins """
     for k,v in settings.plugins.items():
@@ -68,7 +79,7 @@ def get_tagged_comments(request):
     try:
         remote_user = request.META.get('REMOTE_USER', 'anonymous')
         livestatus = mk_livestatus()
-        tagged_comments = len( livestatus.query('GET comments', 'Filter: comment ~ %s' % remote_user ))
+        tagged_comments = livestatus.query('GET comments', 'Stats: comment ~ %s' % remote_user )[0]
         if tagged_comments > 0:
             return {'tagged_comments': tagged_comments }
         else:
@@ -82,9 +93,8 @@ def get_unhandled_problems(request):
     results = {}
     try:
         livestatus = mk_livestatus()
-        problems = livestatus.query('GET services','Filter: state != 0', 'Filter: acknowledged = 0', 'Filter: scheduled_downtime_depth = 0')
-        results['problems'] = problems
-        results['num_problems'] = len(problems)
+        num_problems = livestatus.query('GET services','Filter: state != 0', 'Filter: acknowledged = 0', 'Filter: scheduled_downtime_depth = 0', 'Stats: state != 0')
+        results['num_problems'] = num_problems[0]
     except Exception:
         pass
     return results

@@ -488,7 +488,7 @@ def status_paneview(request):
     return render_to_response('status_paneview.html', c, context_instance = RequestContext(request))
 
 def status_index(request):
-    c = _status_combined(request)
+    c = _status_combined(request, optimized=True)
     top_alert_producers = defaultdict(int)
     for i in c['log']:
         if 'host_name' in i and 'state' in i and i['state'] > 0:
@@ -530,13 +530,19 @@ def test_livestatus(request):
 
     return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
 
-def _status_combined(request):
+def _status_combined(request, optimized=False):
     """ Returns a combined status of network outages, host problems and service problems
+
+    If optimized is True, fewer attributes are loaded it, makes it run faster but with less data
     """
     c = {}
     livestatus = pynag.Parsers.mk_livestatus()
-    hosts = livestatus.get_hosts()
-    services = livestatus.get_services()
+    if optimized == True:
+        hosts = livestatus.get_hosts('Columns: name state acknowledged downtimes childs parents')
+        services = livestatus.get_services('Columns: host_name description state acknowledged downtimes host_state')
+    else:
+        hosts = livestatus.get_hosts()
+        services = livestatus.get_services()
     hosts_that_are_down = []
     hostnames_that_are_down = []
     service_status = [0,0,0,0]
@@ -576,8 +582,14 @@ def _status_combined(request):
     c['parents'] = parents
     service_totals = float(sum(service_status))
     host_totals = float(sum(host_status))
-    c['service_status'] = map(lambda x: 100*x/service_totals, service_status)
-    c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
+    if service_totals == 0:
+        c['service_status'] = 0
+    else:
+        c['service_status'] = map(lambda x: 100*x/service_totals, service_status)
+    if host_totals == 0:
+        c['host_status'] = 0
+    else:
+        c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
     l = pynag.Parsers.LogFiles()
     c['log'] = reversed(l.get_state_history())
     return c
@@ -716,7 +728,7 @@ def _status_log(request):
         v = str(v)
         kwargs[k] = v
     l = pynag.Parsers.LogFiles()
-    c['log'] = l.get_log_entries(start_time=start_time,end_time=end_time, **kwargs)[:limit]
+    c['log'] = l.get_log_entries(start_time=start_time,end_time=end_time, **kwargs)[-limit:]
     c['log'].reverse()
     c['logs'] = {'all':[]}
     for line in c['log']:

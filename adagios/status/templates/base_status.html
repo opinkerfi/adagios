@@ -529,7 +529,7 @@
                             <button class="btn btn-small" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
                                 <i class="glyph-check" > </i><span id="acknowledge_text"> Acknowledge</span>
                             </button>
-                            <button class="btn btn-small" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" id="downtime_button">
+                            <button class="btn btn-small" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="downtime_text"> Running...</span>'>
                                 <i class="glyph-clock" > </i> Downtime
                             </button>
 
@@ -613,7 +613,62 @@
         </form>
     </div>
     <!-- Acknowledge modal ends -->
-</div>
+
+
+    <!-- downtime modal -->
+    <div class="modal hide fade" id="downtime_modal">
+        <form class="form-horizontal" onsubmit='$("#downtime_modal").modal("hide"); downtime(); return false;' >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Schedule Downtime</h3>
+            </div>
+            <div class="modal-body">
+                <p>Putting hosts and services into scheduled downtime means they are expected to fail during that period. Nagios will not send out any notifications during scheduled downtime and problems will not show up as unhandled problems.</p>
+                <div class="control-group">
+                    <label class="control-label" for="id_downtime_author">
+                        Author
+                    </label>
+                    <div class="controls" id="downtime_author_field">
+                        <input id="id_downtime_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="id_downtime_start_time">
+                        Start Time
+                    </label>
+                    <div class="controls" id="downtime_start_time_field">
+                        <input id="id_downtime_start_time" type="text" class="required" placeholder="start time" value="{{ current_timestamp }}" name="start_time" />
+                        <label class="help-block">start_time</label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="id_downtime_end_time">
+                        End Time
+                    </label>
+                    <div class="controls" id="id_downtime_end_time_field">
+                        <input id="id_downtime_end_time" type="text" class="required" placeholder="end_time" name="end_time" />
+                        <label class="help-block">End Time</label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="id_downtime_comment">
+                        Comment
+                    </label>
+                    <div class="controls" id="downtime_comment_field">
+                        <input id="id_downtime_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
+                        <label class="help-block">Other people looking at this service will see this comment.</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" onclick='$("#downtime_modal").modal("hide");'>Cancel</a>
+                <button type="submit" class="btn btn-primary">Schedule Downtime</button>
+            </div>
+        </form>
+    </div>
+    <!-- Downtime modal ends -->
+
+
 </div> <!-- /container -->
 
 <!-- Le javascript
@@ -656,6 +711,11 @@
         // When somebody clicks the acknowledge button, lets focus on the comment field
         $('#acknowledge_modal').on('shown', function () {
             document.getElementById('id_comment').focus()
+        });
+
+        // When somebody clicks the downtime button, lets focus on the comment field
+        $('#downtime_modal').on('shown', function () {
+            document.getElementById('id_downtime_comment').focus()
         });
 
         function reschedule() {
@@ -721,6 +781,49 @@
                         $("#acknowledge_text").html(services_done + "/" + my_services.length + " done")
                         if (services_done >= my_services.length) {
                             $("#acknowledge_text").html('All Done. Reloading page.');
+                            location.reload();
+                        }
+                    },
+                    contentType: "application/json",
+                    dataType: 'json'
+                });
+            });
+        }
+
+        // This function responsible for downtime on all selected rows
+        function downtime() {
+            $('#downtime_modal').modal('hide');
+            var comment = document.getElementById("id_downtime_comment").value;
+            if (comment == '') {
+                comment = "No comment was entered...";
+            }
+            var start_time = document.getElementById("id_downtime_start_time").value;
+            var end_time = document.getElementById("id_downtime_end_time").value;
+            $("#downtime_button").button('loading');
+            var my_services = get_selected_services();
+            var services_done = 0;
+            $.each(my_services, function(i, item) {
+                host_name =  item['host_name'];
+                service_description = item['service_description'];
+
+                my_data = {
+                    "host_name":host_name,
+                    "service_description":service_description,
+                    "comment":comment,
+                    "author":"{{ remote_user }}",
+                    "start_time":start_time,
+                    "end_time":end_time
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url rest/status %}json/downtime',
+                    data: my_data,
+                    async: false,
+                    success: function(data) {
+                        services_done++;
+                        $("#downtime_text").html(services_done + "/" + my_services.length + " done")
+                        if (services_done >= my_services.length) {
+                            $("#downtime_text").html('All Done. Reloading page.');
                             location.reload();
                         }
                     },

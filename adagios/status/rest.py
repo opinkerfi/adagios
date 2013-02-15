@@ -39,6 +39,45 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1,persiste
             comment=comment,
         )
 
+def downtime(host_name,service_description=None,start_time=None,end_time=None,fixed=1,trigger_id=0,duration=7200,author='adagios',comment='Downtime scheduled by adagios',all_services_on_host=False):
+    """ Schedule downtime for a host or a service """
+    if fixed == 1 and start_time is None:
+        start_time = time.time()
+    if fixed == 1 and end_time is None:
+        end_time = start_time + duration
+    if all_services_on_host == True:
+        return pynag.Control.Command.schedule_host_svc_downtime(host_name=host_name,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+        )
+    elif not service_description:
+        return pynag.Control.Command.schedule_host_downtime(host_name=host_name,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+        )
+    else:
+        return pynag.Control.Command.schedule_svc_downtime(host_name=host_name,
+            service_description=service_description,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+        )
+    return "error"
+
 def reschedule(host_name,service_description, check_time=time.time(), wait=0):
     """ Reschedule a check of this service/host
 
@@ -160,3 +199,12 @@ def autocomplete(q):
     result['hostgroups'] = sorted(set(map(lambda x: x.hostgroup_name, hostgroups)))
     result['services'] = sorted(set(map(lambda x: x.service_description, services)))
     return result
+
+
+if __name__ == '__main__':
+    start = int(time.time())
+    end = start+500
+    print downtime(host_name='nagios.example.com',service_description='Ping',
+        start_time=start,
+        end_time=end,
+        comment='test by palli')
