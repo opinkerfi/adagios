@@ -27,7 +27,7 @@
             <li><a href="#general" data-toggle="tab">General</a></li>
             <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
             <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
-            <li id="macros_li" class="hide"><a href="#macros_tab" data-toggle="tab">Macros</a></li>
+            <li id="macros_li"><a href="#macros_tab" data-toggle="tab">Macros</a></li>
             <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
         </ul>
         <form class="form-horizontal" action="#" method="POST">
@@ -93,7 +93,7 @@
                         {%  endif %}
 
                         {% for field in form %}
-                            {%  if field.label|slice:":2" == "__" %}
+                            {%  if field.label|slice:":1" == "_" %}
                                 {% include "bootstrap_field.html" with field=field %}
                             {% endif %}
                         {% endfor %}

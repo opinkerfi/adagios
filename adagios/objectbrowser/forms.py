@@ -277,6 +277,7 @@ class AdvancedEditForm(forms.Form):
             if field_name in object_definitions[object_type]:
                 help_text=object_definitions[object_type][field_name].get('help_text', "No help available for this item")
             self.fields[field_name] = forms.CharField(required=False,label=field_name, help_text=help_text)
+        self.fields.keyOrder = sorted( self.fields.keys() )
 
 class GeekEditObjectForm(forms.Form):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
