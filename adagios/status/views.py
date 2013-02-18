@@ -269,10 +269,73 @@ def status_detail(request, host_name=None, service_description=None):
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
 
-def status_hostgroup(request, hostgroup_name=None):
+def status_hostgroup(request, hostgroup_name):
+    """ Status detail for one specific hostgroup  """
     c = { }
     c['messages'] = []
     c['errors'] = []
+    c['hostgroup_name'] = hostgroup_name
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+
+
+    my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
+    c['my_hostgroup'] = livestatus.get_hostgroups('Filter: name = %s' % hostgroup_name)[0]
+    subgroups = my_hostgroup.hostgroup_members or ''
+    subgroups = subgroups.split(',')
+    if subgroups == ['']: subgroups = []
+    c['hostgroups'] = map(lambda x: livestatus.get_hostgroups('Filter: name = %s' % x)[0], subgroups)
+    _add_statistics_to_hostgroups(c['hostgroups'])
+    c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
+    _add_statistics_to_hosts(c['hosts'])
+
+    c['services'] = livestatus.query('GET services', 'Filter: host_groups >= %s' % hostgroup_name)
+
+    return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
+
+def _add_statistics_to_hostgroups(hostgroups):
+    """ Enriches a list of hostgroup dicts with information about subgroups and parentgroups
+    """
+    # Lets establish a good list of all hostgroups and parentgroups
+    all_hostgroups = pynag.Model.Hostgroup.objects.all
+    all_subgroups = set() # all hostgroups that belong in some other hostgroup
+    hostgroup_parentgroups = defaultdict(set) # "subgroup":['master1','master2']
+    hostgroup_childgroups = pynag.Model.ObjectRelations.hostgroup_hostgroups
+
+    for hostgroup,subgroups in hostgroup_childgroups.items():
+        map(lambda x: hostgroup_parentgroups[x].add(hostgroup), subgroups)
+
+    for i in hostgroups:
+        i['child_hostgroups'] = hostgroup_childgroups[i['name']]
+        i['parent_hostgroups'] = hostgroup_parentgroups[i['name']]
+
+    # Extra statistics for our hostgroups
+    for hg in hostgroups:
+        ok = hg.get('num_services_ok')
+        warn = hg.get('num_services_warn')
+        crit = hg.get('num_services_crit')
+        pending = hg.get('num_services_pending')
+        unknown = hg.get('num_services_unknown')
+        total = ok + warn + crit +pending + unknown
+        hg['total'] = total
+        hg['problems'] = warn + crit + unknown
+        try:
+            total = float(total)
+            hg['health'] = float(ok) / total * 100.0
+            hg['health'] = float(ok) / total * 100.0
+            hg['percent_ok'] = ok/total*100
+            hg['percent_warn'] = warn/total*100
+            hg['percent_crit'] = crit/total*100
+            hg['percent_unknown'] = unknown/total*100
+            hg['percent_pending'] = pending/total*100
+        except ZeroDivisionError:
+            pass
+
+
+def status_hostgroups(request):
+    c = { }
+    c['messages'] = []
+    c['errors'] = []
+    hostgroup_name=None
     livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
@@ -354,7 +417,7 @@ def status_hostgroup(request, hostgroup_name=None):
             hg['percent_pending'] = pending/total*100
         except ZeroDivisionError:
             pass
-    return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_hostgroups.html', c, context_instance = RequestContext(request))
 
 def status_tiles(request, object_type="host"):
     """
@@ -486,6 +549,35 @@ def status_paneview(request):
     c['pane3_object'] = pane3_object
 
     return render_to_response('status_paneview.html', c, context_instance = RequestContext(request))
+
+def _add_statistics_to_hosts(hosts):
+    """ Takes a list of dict hosts, and adds to the list statistics
+     Following is an example of attributes added to the dicts:
+     num_services_ok
+     num_services_warn
+     problems (number of problems)
+     health (percent of services ok)
+     percent_problems
+    """
+    for host in hosts:
+        ok = host.get('num_services_ok')
+        warn = host.get('num_services_warn')
+        crit = host.get('num_services_crit')
+        pending = host.get('num_services_pending')
+        unknown = host.get('num_services_unknown')
+        total = ok + warn + crit +pending + unknown
+        host['total'] = total
+        host['problems'] = warn + crit + unknown
+        try:
+            total = float(total)
+            host['health'] = float(ok) / total * 100.0
+            host['percent_ok'] = ok/total*100
+            host['percent_warn'] = warn/total*100
+            host['percent_crit'] = crit/total*100
+            host['percent_unknown'] = unknown/total*100
+            host['percent_pending'] = pending/total*100
+        except ZeroDivisionError:
+            host['health'] = 'n/a'
 
 def status_index(request):
     c = _status_combined(request, optimized=True)

@@ -155,7 +155,7 @@
                     </tr>
                     {% for commit in gitlog %}
                         <tr id="{{ commit.hash }}">
-                            <td>{{ commit.author_time }}</td>
+                            <td>{{ commit.timestamp|timestamp|date:'Y-m-d H:i'}}</td>
                             <td>{{ commit.comment }}</td>
                             <td>{{ commit.author_name }}</td>
                             <td>{{ commit.author_email }}</td>
