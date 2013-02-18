@@ -13,7 +13,9 @@ from pynag import Parsers
 from pynag import Control
 from pynag import __version__
 from socket import gethostbyname_ex
-_config = Parsers.config()
+import adagios.settings
+
+_config = Parsers.config(adagios.settings.nagios_config)
 _config.parse()
 maincfg_values = _config.maincfg_values
 cfg_file = _config.cfg_file
