@@ -15,6 +15,7 @@
         <li><a href="#history" data-toggle="tab">History</a></li>
         <li><a href="#contactgroups" data-toggle="tab">Groups</a></li>
         <li><a href="#services" data-toggle="tab">Services</a></li>
+        <li><a href="#gitlog" data-toggle="tab">Audit Log</a></li>
         <!-- <li><a href="#problems" data-toggle="tab">Comment Feed</a></li> -->
         <!-- <li><a href="#debug" data-toggle="tab">Debug</a></li> -->
     </ul>
@@ -141,6 +142,49 @@
             {% endif %}
             </div>
 
+        <div class="tab-pane" id="gitlog">
+            {% if gitlog %}
+                Git commits made by {{ contact_name }}
+                <table class="table table-condensed well" >
+                    <tr>
+                        <th>Date</th>
+                        <th>Summary</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for commit in gitlog %}
+                        <tr id="{{ commit.hash }}">
+                            <td>{{ commit.author_time }}</td>
+                            <td>{{ commit.comment }}</td>
+                            <td>{{ commit.author_name }}</td>
+                            <td>{{ commit.author_email }}</td>
+                            <td>
+                                {% if commit_id != commit.hash %}
+                                    <a href="{% url misc.views.gitlog %}?show={{ commit.hash }}#{{ commit.hash }}">diff</a>
+                                {% else %}
+                                    <a href="{% url misc.views.gitlog %}">hide</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if commit_id == commit.hash %}
+                            <tr>
+                                <td colspan=5>
+                <pre>
+                {{ diff }}
+                </pre>
+                                </td>
+                            </tr>
+                        {% endif %}
+
+                    {% endfor %}
+                </table>
+
+            {% else %}
+                {{ contact_name }} has no commits in git log.
+            {% endif %}
+
+        </div>
 
     <div class="tab-pane" id="debug">
             <h4>Information available via livestatus:</h4>

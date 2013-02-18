@@ -842,4 +842,8 @@ def contact_detail(request, contact_name):
     # Contact groups
     c['groups'] = l.query('GET contactgroups', 'Filter: members >= %s' % contact_name)
 
+    # Git audit logs
+    nagiosdir = dirname(adagios.settings.nagios_config)
+    git = pynag.Utils.GitRepo(directory=nagiosdir)
+    c['gitlog'] = git.log(author_name=contact_name)
     return render_to_response('status_contact.html', c, context_instance = RequestContext(request))

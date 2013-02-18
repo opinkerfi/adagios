@@ -26,6 +26,7 @@ import pynag.Model
 import pynag.Utils
 import pynag.Control
 import pynag.Model.EventHandlers
+import pynag.Utils
 import os.path
 from time import mktime, sleep
 from datetime import datetime
@@ -101,12 +102,25 @@ def gitlog(request):
     c.update(csrf(request))
     c['messages'] = m = []
     c['errors'] = []
-    nagiosdir = dirname( pynag.Model.config.cfg_file or '/etc/nagios/')
+
+    # Get information about the committer
+    author_name = request.META.get('REMOTE_USER', 'anonymous')
+    try:
+        contact = pynag.Model.Contact.get_by_shortname(author_name)
+        author_email = contact.email or None
+    except Exception:
+        author_email = None
+    nagiosdir = dirname( pynag.Model.config.cfg_file or None)
+    git = pynag.Utils.GitRepo(directory=nagiosdir, author_name=author_name, author_email=author_email)
+
+
+
+
     c['nagiosdir'] = nagiosdir
-    c['commits'] = result = []
+    c['commits'] = []
     if request.method == 'POST':
+
         try:
-            git = pynag.Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
             if 'git_init' in request.POST:
                 git._git_init()
             elif 'git_commit' in request.POST:
@@ -119,13 +133,12 @@ def gitlog(request):
                         filelist.append( filename )
                 if len(filelist) == 0:
                     raise Exception("No files selected.")
-                git._git_commit(filename=None, message=commit_message, filelist=filelist)
+                git.commit(message=commit_message, filelist=filelist)
                 m.append("%s files successfully commited." % len(filelist))
         except Exception, e:
             c['errors'].append( e )
     # Check if nagiosdir has a git repo or not
     try:
-        git = pynag.Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
         c['uncommited_files'] = git.get_uncommited_files()
     except pynag.Model.EventHandlers.EventHandlerError, e:
         if e.errorcode == 128:
@@ -134,23 +147,12 @@ def gitlog(request):
 
     # Show git history
     try:
-        fh = Popen(["git", "log" ,"-20", "--pretty=%H:%an:%ae:%at:%s"], cwd=nagiosdir, stdin=None, stdout=PIPE )
-        gitstring = fh.communicate()[0]
+        c['commits'] = git.log()
 
-        for logline in gitstring.splitlines():
-            hash,author, authoremail, authortime, comment = logline.split(":", 4)
-            result.append( {
-                "hash": hash,
-                "author": author,
-                "authoremail": authoremail,
-                "authortime": datetime.fromtimestamp(float(authortime)),
-                "comment": comment,
-                })
-        # If a single commit was named in querystring, also fetch the diff for that commit
         commit = request.GET.get('show', False)
         if commit != False:
-            fh = Popen(["git", "show" , commit], cwd=nagiosdir, stdin=None, stdout=PIPE )
-            c['diff'] = fh.communicate()[0]
+            c['diff'] = git.diff(commit)
+            c['commit_id'] = commit
     except Exception, e:
         c['errors'].append( e )
     return render_to_response('gitlog.html', c, context_instance = RequestContext(request))
