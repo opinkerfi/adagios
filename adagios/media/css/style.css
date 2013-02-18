@@ -25,8 +25,8 @@ body {
 .form-horizontal .controls {
     padding-bottom: 18px;
 }
-.inherited input {
-    background: #feeebd;
+input.inherited  {
+    color: #888888;
 }
 
 #id_geek_edit textarea {

@@ -128,7 +128,7 @@ class PynagForm(forms.Form):
             # If we reach here, it is save to modify our pynag object.
             self.pynag_object[k] = value
             # Additionally, update the field for the return form
-            self.fields[k] = self.get_pynagField(k, css_tag="defined_attribute")
+            self.fields[k] = self.get_pynagField(k, css_tag="defined")
             self.fields[k].value = value
         self.pynag_object.save()
     def __init__(self, pynag_object ,*args, **kwargs):
@@ -147,8 +147,12 @@ class PynagForm(forms.Form):
             if i in inherited_attributes: continue
             self.undefined_attributes.append( i )
         # Find out which attributes to show
-        for field_name in defined_attributes + inherited_attributes + self.undefined_attributes:
-            self.fields[field_name] = self.get_pynagField(field_name)
+        for field_name in defined_attributes:
+            self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
+        for field_name in inherited_attributes:
+            self.fields[field_name] = self.get_pynagField(field_name, css_tag="inherited")
+        for field_name in self.undefined_attributes:
+            self.fields[field_name] = self.get_pynagField(field_name, css_tag='undefined')
         return
     def get_pynagField(self, field_name, css_tag=""):
         """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
