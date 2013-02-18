@@ -24,62 +24,7 @@
         <div class="tab-pane active" id="feed">
             {% if comments %}
                 Comments that mention {{ contact_name }}
-                <table class="table table-condensed well">
-                    <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Type</th>
-                        <th>Author</th>
-                        <th>Host</th>
-                        <th>Service</th>
-                        <th>Comment</th>
-                    </tr>
-
-                    </thead>
-
-                    <tbody>
-                    {% for i in comments %}
-                        <tr>
-                            <td class="small nowrap">{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
-                            <td>
-                                <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
-                                {% if i.entry_type == 1 %}
-                                    <i class="glyph-user" title="User Comment"> </i>
-                                {% endif %}
-                                {% if i.entry_type == 2 %}
-                                    <i class="glyph-stopwatch" title="Downtime"> </i>
-                                {% endif %}
-                                {% if i.entry_type == 3 %}
-                                    <i class="glyph-random" title="Flap"> </i>
-                                {% endif %}
-                                {% if i.entry_type == 4 %}
-                                    <i class="glyph-ok-2" title="Acknowledgement"> </i>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{% url status.views.contact_detail i.author %}">{{ i.author }}</a></td>
-                            <td>
-                                <div class="circle state_{{ i.host_state }}"></div>
-                                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}">
-                                    {{ i.host_display_name }}
-                                </a>
-                            </td>
-                            <td>
-                                {% if i.service_description %}
-                                    <div class="circle state_{{ i.service_state }}"></div>
-                                    <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
-                                        {{ i.service_display_name}}
-                                    </a>
-                                {% else %}
-                                    <!-- No service_description if this is a host check -->n/a
-                                {% endif %}
-
-                            </td>
-                            <td>{{ i.comment }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                {% include "snippets/status_commentlist_snippet.html" %}
             {% else %}
                 {{ contact_name }} is not tagged in any current problems.
             {% endif %}
