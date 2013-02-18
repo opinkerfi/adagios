@@ -227,6 +227,10 @@ class PynagForm(forms.Form):
         # At the moment, our database of required objects is incorrect
         field.required = False
 
+        # Put inherited value in the placeholder
+        inherited_value = self.pynag_object._inherited_attributes.get(field_name)
+        if inherited_value is not None:
+            self.add_placeholder(field, '%s (inherited from template)' % (inherited_value))
 
         if field_name in MULTICHOICE_FIELDS:
             self.add_css_tag(field=field, css_tag="multichoice")
@@ -239,6 +243,9 @@ class PynagForm(forms.Form):
             field.css_tag = ''
         field.widget.attrs['class'] += " " + css_tag 
         field.css_tag += " " + css_tag
+    def add_placeholder(self, field, placeholder="Insert some value here"):
+        field.widget.attrs['placeholder'] = placeholder
+        field.placeholder = placeholder
 
 
 class AdvancedEditForm(forms.Form):
