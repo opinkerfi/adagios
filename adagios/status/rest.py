@@ -41,10 +41,11 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1,persiste
 
 def downtime(host_name,service_description=None,start_time=None,end_time=None,fixed=1,trigger_id=0,duration=7200,author='adagios',comment='Downtime scheduled by adagios',all_services_on_host=False):
     """ Schedule downtime for a host or a service """
-    if fixed == 1 and start_time is None:
+    if fixed in (1,'1') and start_time in (None,''):
         start_time = time.time()
-    if fixed == 1 and end_time is None:
-        end_time = start_time + duration
+    if fixed in (1,'1') and end_time in (None,''):
+        end_time = int(start_time) + int(duration)
+    print "doing downtime, %s - %s" % (start_time, end_time)
     if all_services_on_host == True:
         return pynag.Control.Command.schedule_host_svc_downtime(host_name=host_name,
             start_time=start_time,
@@ -200,6 +201,18 @@ def autocomplete(q):
     result['services'] = sorted(set(map(lambda x: x.service_description, services)))
     return result
 
+def delete_downtime(downtime_id, is_service=True):
+    """ Delete one specific downtime with id that matches downtime_id.
+
+    Arguments:
+      downtime_id -- Id of the downtime to be deleted
+      is_service  -- If set to True or 1, then this is assumed to be a service downtime, otherwise assume host downtime
+    """
+    print "Deleting downtime %s which is service: %s" % (downtime_id, is_service)
+    if is_service in (True,1,'1'):
+        return pynag.Control.Command.del_svc_downtime(downtime_id)
+    else:
+        return pynag.Control.Command.del_host_downtime(downtime_id)
 
 if __name__ == '__main__':
     start = int(time.time())

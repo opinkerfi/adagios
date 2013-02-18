@@ -6,11 +6,12 @@ from django.utils import simplejson
 #from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
+from django.core.urlresolvers import resolve
 
 
 import inspect
 from django import forms
-
+import os
 my_module = None
 
 
@@ -19,6 +20,38 @@ def _load(module_name):
     #if not my_module:
     my_module = __import__(module_name, None, None, [''])
     return my_module
+
+
+def _get_function_information(module_name, function_name,):
+    m = _load(module_name)
+    # Get every member of this module (be it variable, function, whatever)
+    members = {}
+    for k,v in inspect.getmembers(m):
+        members[k] = v
+    my_function = members[function_name]
+    docstring = inspect.getdoc(my_function)
+
+    # Generate fields which resemble our functions default arguments
+    argspec = inspect.getargspec( os.chdir )
+    args,varargs,varkw,defaults = argspec
+    if defaults is None:
+        defaults = []
+    else:
+        defaults = list(defaults)
+    print args
+    print varargs
+    print varkw
+    print defaults
+    return
+    for k,v in function_paramaters.items():
+        self.fields[k] = forms.CharField( label=k, initial=v)
+
+    while len(defaults) > 0:
+        value = defaults.pop()
+        field = args.pop()
+        self.fields[field].initial = value
+
+
 
 @csrf_exempt
 def handle_request(request, module_name, attribute, format):
@@ -75,6 +108,7 @@ def handle_request(request, module_name, attribute, format):
     else:
         raise BaseException("Unsupported format: '%s'. Valid formats: json xml txt" % format)
     return HttpResponse(result, mimetype=mimetype)
+
 def index( request, module_name ):
     m = _load(module_name)
     gets,puts = [],[]
@@ -94,6 +128,65 @@ def index( request, module_name ):
     c['puts'] = puts
     c['module_documenation'] = inspect.getdoc(m)
     return render_to_response('index.html', c, context_instance = RequestContext(request))
+
+def javascript(request, module_name):
+    """ Create a javascript library that will wrap around module_name module """
+    m = _load(module_name)
+    variables,functions = [],[]
+    blacklist = ( 'argv', 'environ', 'exit', 'path', 'putenv', 'getenv', )
+    members = {}
+    for k,v in inspect.getmembers(m):
+        if k.startswith('_'):
+            continue
+        if k in blacklist:
+            continue
+        if inspect.ismodule(v):
+            continue
+        if inspect.isfunction(v):
+            functions.append( k )
+            members[k] = v
+        else:
+            variables.append( k )
+    c = {}
+    c['module_name'] = module_name
+    c['gets'] = variables
+    c['puts'] = functions
+    c['module_documenation'] = inspect.getdoc(m)
+    current_url =  request.get_full_path()
+    baseurl = current_url.replace('.js','')
+    # Find every function, prepare what is needed so template can
+    # print arguments with their default values.
+    for i in functions:
+        argspec = inspect.getargspec( members[i] )
+        args,varargs,varkw,defaults = argspec
+        docstring = inspect.getdoc(i)
+        if defaults is None:
+            defaults = []
+        else:
+            defaults = list(defaults)
+            # Lets create argstring, for the javascript needed
+        tmp = [] + args
+        argstring = []
+        for num,default in enumerate(reversed(defaults)):
+            argstring.append('%s=%s' % (tmp.pop(), default) )
+        argstring.reverse()
+        argstring = tmp + argstring
+        argstring = ','.join(argstring)
+
+        members[i] = {}
+        members[i]['args'] = args
+        members[i]['argstring'] = ','.join(args)
+        members[i]['varargs'] = varargs
+        members[i]['varkw'] = varkw
+        members[i]['defaults'] = defaults
+        members[i]['docstring'] = docstring
+        members[i]['url'] = baseurl + "/json/" + i
+        args,varargs,varkw,defaults = argspec
+    c['functions'] = members
+    #return c
+    #_get_function_information('os','curdir')
+    return render_to_response('javascript.html', c, mimetype="text/javascript", context_instance = RequestContext(request))
+
 
 class CallFunctionForm(forms.Form):
     def __init__(self, function, *args, **kwargs):

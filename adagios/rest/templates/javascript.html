@@ -1,0 +1,46 @@
+/* Javascript wrapper around {{ module_name }} */
+
+{% if module_documenation %}
+/* Module documentation: */
+/*
+    {{ module_documenation }}
+*/
+{% else %}
+/* This module has no documentation. */
+{% endif %}
+
+
+{% for i,v in functions.items %}
+
+/*
+===============================================================
+    Function {{ i }}
+===============================================================
+{{ v.docstring }}
+*/
+
+function {{ i }}({{ v.argstring }}) {
+    my_data = {
+    {% for arg in v.args %}
+        "{{ arg }}": {{ arg }},
+    {% endfor %}
+    }
+    // Send out actual request
+    var kaka = null;
+    $.ajax({
+        type: 'POST',
+        url: '{{ v.url }}',
+        data: my_data,
+        async: false,
+        success: function(data) {
+            kaka = data;
+        },
+        contentType: "application/json",
+        dataType: 'json'
+    });
+    return kaka;
+
+    //alert("Hello {{ i }}");
+}; /* end of function {{ i }} */
+
+{% endfor %}

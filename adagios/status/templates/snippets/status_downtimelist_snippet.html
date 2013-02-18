@@ -1,0 +1,62 @@
+<!-- snippet status_downtimelist_snippet.html starts -->
+{% load adagiostags %}
+
+<table class="table table-condensed well searchtable" id="datatable" style="font-size:12px;">
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Author</th>
+            <th colspan=2>Host</th>
+            <th colspan=2>Service</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Duration</th>
+            <th>Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for i in downtimes %}
+        <tr class="mainrow">
+            <td class="nowrap">{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
+            <td>
+                <a href="{% url status.views.contact_detail i.author %}">{{ i.author }}</a>
+            </td>
+            <td class=small>
+                <div class="circle state_{{ i.host_state }}"></div>
+            </td>
+            <td>
+                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}">
+                    {{ i.host_display_name }}
+                </a>
+            </td>
+            <td class=small>
+                <div class="circle state_{{ i.service_state }}"></div>
+            </td>
+            <td>
+                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
+                    {{ i.service_display_name}}
+                </a>
+            </td>
+            <td>
+                {{ i.start_time|timestamp|date:'Y-m-d H:i' }}
+            </td>
+            <td>
+                {{ i.end_time|timestamp|date:'Y-m-d H:i' }}
+
+            </td>
+            <td>
+                {{ i.duration|duration }}
+            </td>
+            <td>{{ i.comment }}</td>
+            <td>
+                <button class="close delete_downtime" data-dismiss="alert" title="Delete downtime {{ i.id }}" onclick="$.getJSON('{% url rest/status %}json/delete_downtime?downtime_id={{ i.id }}&is_service={{ i.is_service }}');">
+                    <i class="glyph-bin"></i>
+                </button>
+            </td>
+
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+<!-- snippet status_downtimelist_snippet.html ends -->
