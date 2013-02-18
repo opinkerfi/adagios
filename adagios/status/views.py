@@ -51,7 +51,7 @@ def status_parents(request):
     c['messages'] = []
     from collections import defaultdict
     authuser = request.GET.get('contact_name', None)
-    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config,authuser=authuser)
     all_hosts = livestatus.get_hosts()
     all_services = livestatus.get_services()
     all_contacts = livestatus.get_contacts()
@@ -92,7 +92,7 @@ def _status(request):
     c['messages'] = []
     from collections import defaultdict
     authuser = request.GET.get('contact_name', None)
-    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config,authuser=authuser)
     all_hosts = livestatus.get_hosts()
     all_services = livestatus.get_services()
     all_contacts = livestatus.get_contacts()
@@ -182,7 +182,7 @@ def status_detail(request, host_name=None, service_description=None):
 
     host_name = request.GET.get('host_name')
     service_description = request.GET.get('service_description')
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     c['pnp_url'] = adagios.settings.pnp_url
     c['nagios_url'] = adagios.settings.nagios_url
     c['request'] = request
@@ -205,7 +205,7 @@ def status_detail(request, host_name=None, service_description=None):
             return status_detail(request, host_name, service_description=tmp)
         primary_object = my_host
         c['service_description'] = '_HOST_'
-        c['log'] = pynag.Parsers.LogFiles().get_state_history(host_name=host_name,service_description=None)
+        c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name,service_description=None)
 
     else:
         try:
@@ -214,7 +214,7 @@ def status_detail(request, host_name=None, service_description=None):
             c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
-            c['log'] = pynag.Parsers.LogFiles().get_state_history(host_name=host_name,service_description=service_description)
+            c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name,service_description=service_description)
         except IndexError:
             c['errors'].append("Could not find any service named '%s'"%service_description)
             return error_page(request,c)
@@ -273,7 +273,7 @@ def status_hostgroup(request, hostgroup_name=None):
     c = { }
     c['messages'] = []
     c['errors'] = []
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
     c['request'] = request
@@ -453,7 +453,7 @@ def status_paneview(request):
         pane3_object = pynag.Model.ObjectDefinition.objects.get_by_id(pane3)
         pane3_objects = get_related_objects(pane3)
 
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     hosts = livestatus.get_hosts()
     services = livestatus.get_services()
 
@@ -504,7 +504,7 @@ def test_livestatus(request):
     c['messages'] = []
     c['table'] = table = request.GET.get('table')
 
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     if table is not None:
         columns = livestatus.query('GET columns', 'Filter: table = %s' % table)
         c['columns'] = columns
@@ -536,7 +536,7 @@ def _status_combined(request, optimized=False):
     If optimized is True, fewer attributes are loaded it, makes it run faster but with less data
     """
     c = {}
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     if optimized == True:
         hosts = livestatus.get_hosts('Columns: name state acknowledged downtimes childs parents')
         services = livestatus.get_services('Columns: host_name description state acknowledged downtimes host_state')
@@ -590,7 +590,7 @@ def _status_combined(request, optimized=False):
         c['host_status'] = 0
     else:
         c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
-    l = pynag.Parsers.LogFiles()
+    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     c['log'] = reversed(l.get_state_history())
     return c
 
@@ -604,7 +604,7 @@ def state_history(request):
     c['messages'] = []
     c['errors'] = []
 
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     start_time = request.GET.get('start_time', None)
     end_time = request.GET.get('end_time', None)
     if end_time is None:
@@ -617,7 +617,7 @@ def state_history(request):
         seconds_today = end_time % seconds_in_a_day # midnight of today
         start_time = end_time - seconds_today
     start_time = int(start_time)
-    l = pynag.Parsers.LogFiles()
+    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     c['log'] = log = l.get_state_history()
     total_duration = end_time - start_time
     c['total_duration'] = total_duration
@@ -689,7 +689,7 @@ def _status_log(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     start_time = request.GET.get('start_time', '')
     end_time = request.GET.get('end_time', '')
     host_name = request.GET.get('host_name', '')
@@ -727,7 +727,7 @@ def _status_log(request):
         k = str(k)
         v = str(v)
         kwargs[k] = v
-    l = pynag.Parsers.LogFiles()
+    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     c['log'] = l.get_log_entries(start_time=start_time,end_time=end_time, **kwargs)[-limit:]
     c['log'].reverse()
     c['logs'] = {'all':[]}
@@ -756,11 +756,13 @@ def comment_list(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = pynag.Parsers.mk_livestatus()
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     comments = l.query('GET comments')
+    downtimes = l.query('GET downtimes')
     args = request.GET.copy()
     c['comments'] = grep_dict(comments, **args)
-    print args
+    c['acknowledgements'] = grep_dict(comments, entry_type=4)
+    c['downtimes'] = grep_dict(downtimes, **args)
     return render_to_response('status_comments.html', c, context_instance = RequestContext(request))
 
 def grep_dict(array, **kwargs):
@@ -798,7 +800,7 @@ def contact_list(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = pynag.Parsers.mk_livestatus()
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     c['contacts'] = l.query('GET contacts')
     c['contacts'] = pynag.Utils.grep(c['contacts'], **request.GET)
     c['contactgroups'] = l.query('GET contactgroups')
@@ -811,7 +813,7 @@ def contact_detail(request, contact_name):
     c['messages'] = []
     c['errors'] = []
     c['contact_name'] = contact_name
-    l = pynag.Parsers.mk_livestatus()
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
 
     # Fetch contact and basic information
     result = l.query("GET contacts", "Filter: name = %s" % contact_name)
@@ -835,7 +837,7 @@ def contact_detail(request, contact_name):
     c['services'] = l.query('GET services', "Filter: contacts >= %s" % contact_name)
 
     # Activity log
-    c['log'] = pynag.Parsers.LogFiles().get_log_entries(search=str(contact_name))
+    c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_log_entries(search=str(contact_name))
 
     # Contact groups
     c['groups'] = l.query('GET contactgroups', 'Filter: members >= %s' % contact_name)
