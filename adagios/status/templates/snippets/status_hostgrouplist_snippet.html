@@ -56,14 +56,13 @@
                         </div>
                     </td>
                 </tr>
-
                 {%  for i in row.child_hostgroups %}
                     <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
                         <td></td>
                         <td colspan=7><a href="{% url status.views.status_hostgroup i %}">{{ i }}</a></td>
                     </tr>
-
                 {% endfor %}
+
                 {% for i in row.members_with_state %}
                     <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
                         <td></td>

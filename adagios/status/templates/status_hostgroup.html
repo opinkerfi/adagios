@@ -11,6 +11,7 @@
         <li><a href="#child_hostgroups" data-toggle="tab">Child Hostgroups</a></li>
         <li><a href="#hosts" data-toggle="tab">Hosts</a></li>
         <li><a href="#services" data-toggle="tab">Services</a></li>
+        <li><a href="#history" data-toggle="tab">History</a></li>
         <li><a href="#debug" data-toggle="tab">Debug</a></li>
 
     </ul>
@@ -46,7 +47,14 @@
                     </td>
                     <td><textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
                 </tr>
-
+                <tr>
+                    <td>Parent Hostgroups</td>
+                    <td>
+                        {% for i in my_hostgroup.parent_hostgroups %}
+                            <a href="{% url status.views.status_hostgroup i %}">{{ i }}</a>,
+                        {% endfor %}
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <table class="table well table-condensed">
@@ -118,6 +126,7 @@
         {% include "snippets/status_hostgrouplist_snippet.html" %}
 
     </div>
+
     <div class="tab-pane " id="hosts">
         Hosts that belong to {{ hostgroup_name }}
         {% include "snippets/status_hostlist_snippet.html" %}
@@ -128,6 +137,13 @@
         {% include "snippets/status_servicelist_snippet.html" %}
     </div>
 
+    <div class="tab-pane" id="history">
+        {% if log %}
+        {% include "snippets/status_statehistory_snippet.html" %}
+        {% else %}
+            No recent state history changes in this hostgroup. Try <a href="{% url status.views.status_log %}#tab_all">Log view</a> to search in older logs.
+        {% endif %}
+    </div>
     <div class="tab-pane" id="debug">
         <h4>Information available via livestatus:</h4>
         <table class="table-condensed table">
@@ -142,6 +158,7 @@
             {% endfor %}
         </table>
     </div>
+
 
 
 {% endblock %}

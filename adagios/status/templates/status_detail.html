@@ -271,45 +271,7 @@
     </div>
     <div class="tab-pane" id="events">
         {% if log %}
-            <div width=500px class="progress">
-                {% for line in log %}
-                    {% if line.class == 1 %}
-                        <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}" class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <div>
-                <div class="pull-left">
-                    ↖ {{ start_time|timestamp|date:'Y-m-d H:i' }}
-                </div>
-                <div class="pull-right">
-                    {{ end_time|timestamp|date:'Y-m-d H:i' }} ↗
-                </div>
-
-            </div>
-            <hr>
-        Last {{ log|length }} state changes (<a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">see all log entries for this host</a>):
-        <table style="font-size: 80%;" class="table well table-condensed">
-            <thead>
-                <th>Time</th>
-                <th>Duration</th>
-                <th class="small"></th>
-                <th>Message</th>
-            </thead>
-            {% for line in log reversed %}
-                {% ifchanged line.time|timestamp|date:"Y-m-d" %}
-                <tr><td colspan=4></td></tr>
-                {% endifchanged %}
-                <tr>
-                    <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
-                    <td><div>{{ line.duration|duration}}</div></td>
-                    <td class="small"><div class="circle state_{{ line.state }}"></div></td>
-                    <td>
-                        <div>{{ line.text }}</div>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
+            {% include "snippets/status_statehistory_snippet.html" %}
         {% else %}
             Host has no recent log entries. Try <a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">Log view</a> to search in older logs.
         {% endif %}

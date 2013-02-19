@@ -14,10 +14,10 @@
     </thead>
     <tbody>
     {% for row in hosts %}
-        <tr class="mainrow" id="row_{{ forloop.counter }}" onclick='$(".subrow_{{ forloop.counter }}").toggle();'>
+        <tr class="mainrow" id="row_{{ forloop.counter }}" onclick='$(".hostsubrow_{{ forloop.counter }}").toggle();'>
             <td class=small style="cursor: pointer;">
-                <div class="subrow_{{ forloop.counter }}">&#x25b7;</div>
-                <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
+                <div class="hostsubrow_{{ forloop.counter }}">&#x25b7;</div>
+                <div class="hostsubrow_{{ forloop.counter }} hide">&#x25bd;</div>
             </td>
             <td>
                 <a id="{{ row.name }}" href="{% url status.views.status_detail %}?host_name={{ row.name }}">
@@ -43,7 +43,7 @@
             </td>
         </tr>
         {% for i in row.services_with_info %}
-            <tr class="subrow {{ row.name }} subrow_{{ forloop.parentloop.counter }} hide">
+            <tr class="subrow {{ row.name }} hostsubrow_{{ forloop.parentloop.counter }} hide">
                 <td></td>
                 <td colspan=5>
                     <div style="margin-left: 10px;" class="circle state_{{ i.1 }}"></div>
