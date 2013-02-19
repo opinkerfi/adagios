@@ -73,6 +73,14 @@ Same goes for nagios, start it if it is ready
 	service nagios restart
 	chkconfig nagios on
 	
+If you intend to use the "status" view, which is a partial replacement for nagios web interface. Then you need
+mk_livestatus and pnp4nagios broker modules installed:
+	
+	yum install -y pnp4nagios mk-livestatus
+	pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+	pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
+	service nagios reload
+
 It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
 everything in /etc/nagios to the nagios user.
 
