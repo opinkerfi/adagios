@@ -478,27 +478,36 @@
         <div class="span2"   id="left_sidebar">
             <h5>Shortcuts</h5>
             <ul class="nav nav-list">
-                <li >
-                    <a {% if num_problems %}style="color: red"{% endif %} href="{% url status.views.status %}?acknowledged=0&state__isnot=0">Problems {% if num_problems %}({{ num_problems }}){% endif %}</a>
-                </li>
-
                 <li><a href="{% url status.views.status_index %}">Overview </a></li>
-
+                <li >
+                    <a {% if num_problems %}style="color: red"{% endif %} href="{% url status.views.status %}?acknowledged=0&state__isnot=0&scheduled_downtime_depth=0">Problems {% if num_problems %}({{ num_problems }}){% endif %}</a>
+                </li>
                 <li><a href="{% url status.views.status_host %}">Hosts</a></li>
-                <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
                 <li><a href="{% url status.views.status %}">Services </a></li>
+                <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
                 <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
-                <li><a href="{% url status.views.status_log %}">Log</a></li>
             </ul>
+
+            <h5>Groups</h5>
+            <ul class="nav nav-list">
+                <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
+                <li><a href="{% url status.views.contact_list %}#tab_contactgroups">Contactgroups</a></li>
+            </ul>
+
+            <h5>Reports</h5>
+            <ul class="nav nav-list">
+                <li><a href="{% url status.views.state_history %}">State History </a></li>
+                <li><a href="{% url status.views.status_log %}">Log</a></li>
+                <li><a href="{% url status.views.comment_list %}">Comments</a></li>
+                <li><a href="{% url status.views.comment_list %}#tab_downtimes">Downtimes</a></li>
+            </ul>
+
             <h5>Experimental</h5>
             <ul class="nav nav-list">
                 <li><a href="{% url misc.views.map %}">Map</a></li>
                 <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
-                <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
-                <li><a href="{% url status.views.state_history %}">State History </a></li>
                 <li><a href="{% url status.views.status_problems %}?class=1">Big Screen </a></li>
-
             </ul>
         </div>
 
@@ -512,7 +521,7 @@
                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="?q={{ request.GET.q }}&acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                        <li><a href="?q={{ request.GET.q }}&acknowledged=0&state__isnot=0&scheduled_downtime_depth=0"> Open Problems</a></li>
                         <li><a href="?q={{ request.GET.q }}&state__isnot=0"> All Problems</a></li>
                         <li><a href="?q={{ request.GET.q }}&state=0"> All OK</a></li>
                         <li><a href="?q={{ request.GET.q }}"> Everything</a></li>
