@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.utils import unittest
+from django.test.client import Client
+
 import pynag.Parsers
 import os
 
@@ -25,3 +27,7 @@ class LiveStatusTestCase(unittest.TestCase):
                 self.assertTrue(os.path.exists(socket_file),'Livestatus socket file was not found (%s). Make sure nagios is running and that livestatus module is loaded' % socket_file)
                 return
         self.assertTrue(False,'Nagios Broker module not found. Is livestatus installed and configured?')
+    def testPageLoad(self):
+        c = Client()
+        response = c.get('/status/')
+        self.assertEqual(response.status_code, 200)

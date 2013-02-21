@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 from django.utils import unittest
+from django.test.client import Client
+
 import pynag.Parsers
 from adagios.settings import nagios_config
-import os
 import functions
 
 class PNP4NagiosTestCase(unittest.TestCase):
@@ -29,4 +32,7 @@ class PNP4NagiosTestCase(unittest.TestCase):
     def testGetJson(self):
         result = functions.run_pnp('json')
         self.assertGreaterEqual(len(result),0,msg="Tried to get json from pnp4nagios but result was improper")
-
+    def testPageLoad(self):
+        c = Client()
+        response = c.get('/pnp/json')
+        self.assertEqual(response.status_code, 200)
