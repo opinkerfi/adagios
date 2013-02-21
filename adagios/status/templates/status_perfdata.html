@@ -1,9 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+{% extends "base_status.html" %}
 
-</body>
-</html>
+{% block title %}Performance Data Metrics{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Performance Data Metrics{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% load adagiostags %}
+
+{% block content %}
+    <table class="table table-condensed searchtable well" style="font-size:12px;" >
+        <thead>
+        <tr>
+            <th class="small"></th>
+            <th>host</th>
+            <th class="small"></th>
+            <th>service</th>
+            <th>label</th>
+            <th>value</th>
+            <th>warn</th>
+            <th>crit</th>
+            <th>min</th>
+            <th>max</th>
+            <th></th>
+            <th>pnp</th>
+        </tr>
+        </thead>
+    {% for service in perfdata %}
+        {% for i in service.metrics %}
+            <tr class=mainrow>
+                <td class="small"> <div class="circle state_{{ service.host_state }}"></div></td>
+                <td>{{ service.host_name }}</td>
+                <td class="small"> <div class="circle state_{{ service.state }}"></div></td>
+                <td>{{ service.description }}</td>
+                <td>{{ i.label }}</td>
+                <td>{{ i.value }} {{ i.uom }}</td>
+                <td>{{ i.warn }}  </td>
+                <td>{{ i.crit }}  </td>
+                <td>{{ i.min }}   </td>
+                <td>{{ i.max }}   </td>
+                <td class="nowrap"><div class="circle state_{{ i.get_status }}"> </div></td>
+                <td>
+                    <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+{% endblock %}

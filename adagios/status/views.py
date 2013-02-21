@@ -918,6 +918,18 @@ def grep_dict(array, **kwargs):
             result.append(current_item)
     return result
 
+def perfdata(request):
+    """ Display a list of perfdata
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    perfdata = l.query('GET services','Columns: host_name description perf_data state host_state')
+    for i in perfdata:
+        i['metrics'] = pynag.Utils.PerfData(i['perf_data']).metrics
+    c['perfdata'] = pynag.Utils.grep(perfdata, **request.GET)
+    return render_to_response('status_perfdata.html', c, context_instance = RequestContext(request))
 def contact_list(request):
     """ Display a list of active contacts
     """
