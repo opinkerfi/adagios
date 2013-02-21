@@ -10,8 +10,8 @@
 {% block content %}
     <form method=GET action="#tab_all">
         <div>
-            <input placeholder="start time (default=today)" name="start_time" id="id_start_time" value="{{ request.GET.end_time  }}"/>
-            <input placeholder="end time" name="end_time" id="id_end_time" value="{{ request.GET.end_time }}"/>
+            <input placeholder="start time (default=today)" name="start_time" id="id_start_time" value="{{ request.GET.start_time  }}"/>
+            <input placeholder="end time (default=now)" name="end_time" id="id_end_time" value="{{ request.GET.end_time }}"/>
             <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search logs">
             <button type="submit" name="submit" >Search</button>
         </div>
