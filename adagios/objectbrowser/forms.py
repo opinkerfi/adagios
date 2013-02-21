@@ -193,11 +193,11 @@ class PynagForm(forms.Form):
             field = PynagChoiceField(choices=sorted(choices),inline_help_text="No %s selected" % (field_name))
         elif field_name.endswith('_period'):
             all = Model.Timeperiod.objects.filter(timeperiod_name__contains='')
-            choices = map(lambda x: (x.timeperiod_name, x.timeperiod_name), all)
+            choices = [('','')] + map(lambda x: (x.timeperiod_name, x.timeperiod_name), all)
             field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_commands'):
             all = Model.Command.objects.filter(command_name__contains='')
-            choices = map(lambda x: (x.command_name, x.command_name), all)
+            choices = [('','')] + map(lambda x: (x.command_name, x.command_name), all)
             field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_options') and self.pynag_object.object_type =='host':
             field = PynagChoiceField(choices=HOST_NOTIFICATION_OPTIONS,inline_help_text="No %s selected" % (field_name))
