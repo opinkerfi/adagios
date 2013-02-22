@@ -68,9 +68,20 @@
             {% if commit_id == commit.hash %}
             <tr>
             <td colspan=5>
-                <pre>
-                {{ diff }}
-                </pre>
+                <table class="well">
+                <thead>
+                <tr>
+                    <th>Diff</th>
+                </tr>
+                </thead>
+                    {% for i in difflines %}
+                            <tr class={{ i.tag }}>
+                                <td>
+                                    <div class={{ i.tag }}>{{ i.line }}</div>
+                                </td>
+                            </tr>
+                    {% endfor %}
+                </table>
             </td>
             </tr>
             {% endif %}
@@ -81,6 +92,13 @@
         <h2>No git commits found in {{ nagiosdir }}</h2>
     {% endif %}
 
+    <style>
+        .table tbody tr:hover td, .table tbody tr:hover th {
+        background-color: transparent;
+        }
+        .filename {
+        }
+    </style>
  {% endblock %}
 
 {% block sidebar %} {{ block.super }} {% endblock %}

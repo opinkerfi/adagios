@@ -153,6 +153,26 @@ def gitlog(request):
         commit = request.GET.get('show', False)
         if commit != False:
             c['diff'] = git.diff(commit)
+            difflines = []
+            for i in c['diff'].splitlines():
+                if i.startswith('---'):
+                    tag = 'hide'
+                elif i.startswith('+++'):
+                    tag = 'hide'
+                elif i.startswith('index'):
+                    tag = 'hide'
+                elif i.startswith('-'):
+                    tag = "alert-danger"
+                elif i.startswith('+'):
+                    tag = "alert-success"
+                elif i.startswith('@@'):
+                    tag = 'alert-info'
+                elif i.startswith('diff'):
+                    tag = "filename"
+                else:
+                    continue
+                difflines.append({'tag':tag,'line':i})
+            c['difflines'] = difflines
             c['commit_id'] = commit
     except Exception, e:
         c['errors'].append( e )
