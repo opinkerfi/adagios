@@ -132,9 +132,18 @@ def check_git(request):
             else:
                 clear_notification(notification_id="uncommited")
             clear_notification(notification_id="git_missing")
+
         except Model.EventHandlers.EventHandlerError, e:
             if e.errorcode == 128:
                 add_notification(level="warning", notification_id="git_missing", message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
+        # if okconfig is installed, make sure okconfig is notified of git settings
+        try:
+            author = request.META.get('REMOTE_USER', 'anonymous')
+            from pynag.Utils import GitRepo
+            import okconfig
+            okconfig.git = GitRepo(directory=os.path.dirname(adagios.settings.nagios_config), auto_init=False, author_name=author)
+        except Exception:
+            pass
     return {}
 
 def check_nagios_running(request):
