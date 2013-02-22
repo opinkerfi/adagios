@@ -21,6 +21,7 @@ from django.shortcuts import HttpResponse
 from django.template import RequestContext
 import forms
 import os
+import mimetypes
 
 import pynag.Model
 import pynag.Utils
@@ -86,7 +87,7 @@ def nagios(request):
     c['nagios_url'] = adagios.settings.nagios_url
     return render_to_response('nagios.html', c, context_instance = RequestContext(request))
 
-def map(request):
+def map_view(request):
     c = {}
     try:
         import pynag.Parsers
@@ -238,6 +239,36 @@ def edit_file(request, filename):
     return render_to_response('editfile.html', c, context_instance = RequestContext(request))
 
 
+def icons(request, image_name=None):
+    """ Use this view to see nagios icons/logos
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    image_path = '/usr/share/nagios3/htdocs/images/logos/'
+    filenames = []
+    for root,subfolders,files in os.walk(image_path):
+        for filename in files:
+            filenames.append(os.path.join(root, filename))
+    # Cut image_path out of every filename
+    filenames = map(lambda x: x[len(image_path):], filenames)
+
+    # Filter out those silly .gd2 files that don't display inside a browser
+    filenames = filter(lambda x: not x.lower().endswith('.gd2'), filenames)
+
+    filenames.sort()
+    if not image_name:
+        # Return a list of images
+        c['images'] = filenames
+        return render_to_response('icons.html', c, context_instance = RequestContext(request))
+    else:
+        if image_name in filenames:
+            file_extension = image_name.split('.').pop()
+            mime_type=mimetypes.types_map.get(file_extension)
+            fsock = open("%s/%s" % (image_path, image_name,))
+            return HttpResponse(fsock, mimetype=mime_type)
+        else:
+            raise Exception("Not allowed to see this image")
 def sign_out(request):
     """ Use this to force browser to update authentication """
     return HttpResponse('You have been signed out', status=401)

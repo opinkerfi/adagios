@@ -1,0 +1,32 @@
+{% extends "base_misc.html" %}
+
+{% block title %}Icons{% endblock %}
+{% block smallheader %}view{% endblock %}
+{% block largeheader %}Icons{% endblock %}
+{% block nav1 %}misc{% endblock %}
+
+
+{% block content %}
+        {% for i in images %}
+            <li><img width=20 height=20 src="{% url logo i %}">{{ i }}</li>
+        {% endfor %}
+    <ul>
+    </ul>
+ {% endblock %}
+
+{% block sidebar %} {{ block.super }} {% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    function format(image) {
+        if (!image.id) return image.text; // optgroup
+        return "<img class='flag' src='images/flags/" + image.id.toLowerCase() + ".png'/>" + image.text;
+    }
+    $("#icon_image_selector").select2({
+        formatResult: format,
+        formatSelection: format,
+        escapeMarkup: function(m) { return m; }
+    });
+    </script>
+{% endblock %}
