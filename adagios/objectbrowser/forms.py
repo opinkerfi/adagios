@@ -19,6 +19,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
 
 from pynag import Model
+from pynag.Utils import AttributeList
 from help_text import object_definitions
 from pynag.Model import ObjectDefinition
 
@@ -67,10 +68,10 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         Takes a comma separated string, removes + if it is prefixed so. Returns a list
         """
-        if type(value) == type(''):
-            if value.startswith('+'): self.__prefix = '+'
-            value = value.strip('+')
-            return value.split(',')
+        if isinstance(value, str):
+            self.attributelist = AttributeList(value)
+            self.__prefix = self.attributelist.operator
+            return self.attributelist.fields
         return value
 
 class PynagRadioWidget(forms.widgets.HiddenInput):
@@ -121,8 +122,8 @@ class PynagForm(forms.Form):
             # Multichoice fields have a special restriction, sometimes they contain
             # the same values as before but in a different order.
             if k in MULTICHOICE_FIELDS:
-                original = Model.AttributeList( self.pynag_object[k] )
-                new = Model.AttributeList( value )
+                original = AttributeList( self.pynag_object[k] )
+                new = AttributeList( value )
                 if sorted(original.fields) == sorted(new.fields):
                     continue
             # If we reach here, it is save to modify our pynag object.
