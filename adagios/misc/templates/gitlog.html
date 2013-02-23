@@ -68,20 +68,26 @@
             {% if commit_id == commit.hash %}
             <tr>
             <td colspan=5>
-                <table class="well">
-                <thead>
-                <tr>
-                    <th>Diff</th>
-                </tr>
-                </thead>
-                    {% for i in difflines %}
+                {% if difflines %}
+                    <table class="well" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Diff</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in difflines %}
                             <tr class={{ i.tag }}>
                                 <td>
                                     <div class={{ i.tag }}>{{ i.line }}</div>
                                 </td>
                             </tr>
-                    {% endfor %}
-                </table>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <pre>There is nothing in this commit</pre>
+                {% endif %}
             </td>
             </tr>
             {% endif %}

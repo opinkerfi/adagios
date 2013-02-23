@@ -166,7 +166,7 @@ def gitlog(request):
                 elif i.startswith('+'):
                     tag = "alert-success"
                 elif i.startswith('@@'):
-                    tag = 'alert-info'
+                    tag = 'alert-unknown'
                 elif i.startswith('diff'):
                     tag = "filename"
                 else:
