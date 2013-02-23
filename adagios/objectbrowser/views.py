@@ -280,7 +280,10 @@ def _edit_service( request, c):
         c['command_line'] = service.get_effective_command_line()
     except KeyError:
         c['command_line'] = None
-    c['object_macros'] = service.get_all_macros()
+    try:
+        c['object_macros'] = service.get_all_macros()
+    except KeyError:
+        c['object_macros'] = None
     # Get the current status from Nagios
     try:
         s = status()
@@ -315,7 +318,7 @@ def _edit_service( request, c):
     except KeyError, e: c['errors'].append( "Could not find hostgroup: %s" % str(e))
 
     try: c['effective_command'] = service.get_effective_check_command()
-    except KeyError, e: pass
+    except KeyError, e: c['errors'].append( "Could not find check_command: %s" % str(e))
 
     return render_to_response('edit_service.html', c, context_instance = RequestContext(request))
 
@@ -367,7 +370,11 @@ def _edit_host( request, c):
         c['command_line'] = host.get_effective_command_line()
     except KeyError:
         c['command_line'] = None
-    c['object_macros'] = host.get_all_macros()
+    try:
+        c['object_macros'] = host.get_all_macros()
+    except KeyError:
+        c['object_macros'] = None
+
     if not c.has_key('errors'): c['errors'] = []
 
     try: c['effective_services'] = sorted(host.get_effective_services(), key=lambda x: x.get_description())
