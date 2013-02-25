@@ -15,31 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
-from django.shortcuts import HttpResponse
-
-from django.template import RequestContext
-import os
 import time
+from os.path import dirname
+from collections import defaultdict
+import json
 
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 import pynag.Model
 import pynag.Utils
 import pynag.Control
 import pynag.Plugins
 import pynag.Model.EventHandlers
-import os.path
-from time import mktime
-from datetime import datetime
-from os.path import dirname
-from subprocess import Popen, PIPE
 
 import adagios.settings
-from adagios import __version__
-from collections import defaultdict
-
 import pnp.functions
-import json
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -49,7 +39,6 @@ state[2] = "critical"
 def status_parents(request):
     c = {}
     c['messages'] = []
-    from collections import defaultdict
     authuser = request.GET.get('contact_name', None)
     livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config,authuser=authuser)
     all_hosts = livestatus.get_hosts()
@@ -597,17 +586,17 @@ def _add_statistics_to_hosts(hosts):
         crit = host.get('num_services_crit')
         pending = host.get('num_services_pending')
         unknown = host.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
+        total = ok + warn + crit + pending + unknown
         host['total'] = total
         host['problems'] = warn + crit + unknown
         try:
             total = float(total)
             host['health'] = float(ok) / total * 100.0
-            host['percent_ok'] = ok/total*100
-            host['percent_warn'] = warn/total*100
-            host['percent_crit'] = crit/total*100
-            host['percent_unknown'] = unknown/total*100
-            host['percent_pending'] = pending/total*100
+            host['percent_ok'] = ok / total * 100
+            host['percent_warn'] = warn / total * 100
+            host['percent_crit'] = crit / total * 100
+            host['percent_unknown'] = unknown / total * 100
+            host['percent_pending'] = pending / total * 100
         except ZeroDivisionError:
             host['health'] = 'n/a'
 
