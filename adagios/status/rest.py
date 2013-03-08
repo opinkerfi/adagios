@@ -1,20 +1,23 @@
 
-'''
+"""
 
 Convenient stateless functions for pynag. This module is used by the /rest/ interface of adagios.
 
-'''
+"""
 
 import time
 import pynag.Control.Command
 import pynag.Model
+import django.core.mail
+import pynag.Utils
 
 def hosts(**kwargs):
-    """ Get status information about hosts
+    """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
 
     """
     livestatus = pynag.Parsers.mk_livestatus()
-    return livestatus.get_hosts()
+    hosts = livestatus.get_hosts()
+    return pynag.Utils.grep(hosts, **kwargs)
 
 
 def acknowledge(host_name, service_description=None, sticky=1, notify=1,persistent=0,author='adagios',comment='acknowledged by Adagios'):
@@ -77,7 +80,6 @@ def downtime(host_name,service_description=None,start_time=None,end_time=None,fi
             author=author,
             comment=comment,
         )
-    return "error"
 
 def reschedule(host_name,service_description, check_time=time.time(), wait=0):
     """ Reschedule a check of this service/host
@@ -120,6 +122,9 @@ def comment(author,comment,host_name,service_description=None,persistent=1):
 def delete_comment(comment_id, host_name, service_description=None):
     """
     """
+    if not host_name:
+        # TODO host_name is not used here, why do we need it ?
+        pass
     if not service_description:
         pynag.Control.Command.del_host_comment(comment_id=comment_id)
     else:

@@ -21,134 +21,143 @@
 
 {% block content %}
 
-    {% if hostgroups %}
-        <table class="table well table-condensed searchtable" style="font-size:12px;" >
-        <tr>
-            <th>
-            </th>
-            <th>Hostgroup</th>
-            <th>Child Hostgroups</th>
-            <th>Parent Hostgroups</th>
-            <th>Hosts</th>
-            <th>Services</th>
-            <th>Health</th>
-            <th colspan=2>Service Status</th>
-        </tr>
-        {% for row in hostgroups %}
-            {% if row.members|length > 0 %}
-                <tr onclick='$(".subrow_{{ forloop.counter }}").toggle();'>
-                    <td>
-                        <div class="subrow_{{ forloop.counter }}">&#x25b7;</div>
-                        <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
-                    </td>
-                    <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
-                    <td>
-                        <div title="{{ row.child_hostgroups }}">
-                            {{ row.child_hostgroups|length }}
-                        </div>
-                    </td>
-                    <td>
-                        <div title="{{ row.parent_hostgroups }}">
-                            {{ row.parent_hostgroups|length }}
-                        </div>
-                    </td>
-                    <td>
-                        {{ row.members|length }}
-                    </td>
-                    <td>
-                        {{ row.total }}
-                    </td>
+    <ul class="nav nav-tabs" id="objecttabs">
+        <li ><a href="{% url status.views.status_host %}" data-toggle="tabs">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
+        <li class=active><a href="#hostgroups" data-toggle="tabs">Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
+    </ul>
+    <div class="tab-content">
 
-                    <td>
-                        {% if row.health > -1 %}
-                        {{ row.health|floatformat }}%
-                        {% else %}
-                        0
-                        {% endif %}
-                    </td>
+        <div class="tab-pane active" id="hostgroups">
 
-                    <td>
-                        <div title="{{ row.total  }} services -- {{ row.problems }} problems" class="progress">
-                            <div class="bar bar-success" style=" width: {{ row.percent_ok }}%;"></div>
-                            <div class="bar bar-warning" style=" width: {{ row.percent_warn }}%;"></div>
-                            <div class="bar bar-danger" style=" width: {{ row.percent_crit }}%;"></div>
-                            <div class="bar bar-info" style=" width: {{ row.percent_unknown }}%;"></div>
-                        </div>
-                    </td>
-                </tr>
+        {% if hostgroups %}
+            <table class="table well table-condensed searchtable" style="font-size:12px;" >
+            <tr>
+                <th>
+                </th>
+                <th>Hostgroup</th>
+                <th>Child Hostgroups</th>
+                <th>Parent Hostgroups</th>
+                <th>Hosts</th>
+                <th>Services</th>
+                <th>Health</th>
+                <th colspan=2>Service Status</th>
+            </tr>
+            {% for row in hostgroups %}
+                {% if row.members|length > 0 %}
+                    <tr onclick='$(".subrow_{{ forloop.counter }}").toggle();'>
+                        <td>
+                            <div class="subrow_{{ forloop.counter }}">&#x25b7;</div>
+                            <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
+                        </td>
+                        <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
+                        <td>
+                            <div title="{{ row.child_hostgroups }}">
+                                {{ row.child_hostgroups|length }}
+                            </div>
+                        </td>
+                        <td>
+                            <div title="{{ row.parent_hostgroups }}">
+                                {{ row.parent_hostgroups|length }}
+                            </div>
+                        </td>
+                        <td>
+                            {{ row.members|length }}
+                        </td>
+                        <td>
+                            {{ row.total }}
+                        </td>
 
-                {%  for i in row.child_hostgroups %}
-                    <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
-                        <td></td>
-                        <td colspan=7><a href="{% url status.views.status_hostgroup i %}">{{ i }}</a></td>
+                        <td>
+                            {% if row.health > -1 %}
+                            {{ row.health|floatformat }}%
+                            {% else %}
+                            0
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div title="{{ row.total  }} services -- {{ row.problems }} problems" class="progress">
+                                <div class="bar bar-success" style=" width: {{ row.percent_ok }}%;"></div>
+                                <div class="bar bar-warning" style=" width: {{ row.percent_warn }}%;"></div>
+                                <div class="bar bar-danger" style=" width: {{ row.percent_crit }}%;"></div>
+                                <div class="bar bar-info" style=" width: {{ row.percent_unknown }}%;"></div>
+                            </div>
+                        </td>
                     </tr>
 
-                {% endfor %}
-                {% for i in row.members_with_state %}
-                    <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
-                        <td></td>
-                        <td colspan=7><div class="circle state_{{ i.1 }}"></div> <a href="{% url status.views.status_detail %}?host_name={{ i.0 }}">{{ i.0 }}</a></td>
-                    </tr>
-                {% endfor %}
-            {% else %}
-                <!-- hostgroup {{ row.name }} was empty and therefor skipped -->
-            {% endif %}
-        {% endfor %}
-        </table>
-    {% else %}
-        <h5>This hostgroup has no hostgroups</h5>
-    {% endif %}
-
-{% if hostgroup_name %}
-
-    <div class="accordion" id="accordion2">
-        <div class="accordion-group">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                    <h4>Hostgroup {{ hostgroup_name }} has {{ hosts|length }} hosts</h4>
-                </a>
-            </div>
-            <div id="collapseTwo" class="accordion-body ">
-                <div class="accordion-inner">
-                    {% if hosts %}
-
-                        <table class="table well table-condensed" style="line-height:6px; font-si"h: 75%;" >
-                        <tr>
-                            <th>Host Name</th>
-                            <th>Address</th>
-                            <th>Status</th>
-                            <th>Service Status</th>
+                    {%  for i in row.child_hostgroups %}
+                        <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
+                            <td></td>
+                            <td colspan=7><a href="{% url status.views.status_hostgroup i %}">{{ i }}</a></td>
                         </tr>
 
-                        {% for row in hosts %}
-                            <tr >
-                                <td><a style="color: black" href="{% url status.views.status_detail %}?host_name={{ row.name  }}">{{ row.name }}</a></td>
-                                <td>{{ row.address }}</td>
-                                {% if row.state  == 0 %}
-                                    <td class="alert alert-success">UP</td>
-                                {% else %}
-                                    <td class="alert alert-danger">Down</td>
-                                {% endif %}
-                                <td>
-                                    <div class="progress">
-                                        <div class="bar bar-success" style="width: {{ row.percent_ok }}%;"></div>
-                                        <div class="bar bar-warning" style="width: {{ row.percent_warn }}%;"></div>
-                                        <div class="bar bar-danger" style="width: {{ row.percent_crit }}%;"></div>
-                                        <div class="bar bar-info" style="width: {{ row.percent_unknown }}%;"></div>
-                                    </div>
-                                </td>
+                    {% endfor %}
+                    {% for i in row.members_with_state %}
+                        <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
+                            <td></td>
+                            <td colspan=7><div class="circle state_{{ i.1 }}"></div> <a href="{% url status.views.status_detail %}?host_name={{ i.0 }}">{{ i.0 }}</a></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <!-- hostgroup {{ row.name }} was empty and therefor skipped -->
+                {% endif %}
+            {% endfor %}
+            </table>
+        {% else %}
+            <h5>This hostgroup has no hostgroups</h5>
+        {% endif %}
+
+    {% if hostgroup_name %}
+
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                        <h4>Hostgroup {{ hostgroup_name }} has {{ hosts|length }} hosts</h4>
+                    </a>
+                </div>
+                <div id="collapseTwo" class="accordion-body ">
+                    <div class="accordion-inner">
+                        {% if hosts %}
+
+                            <table class="table well table-condensed" style="line-height:6px; font-si"h: 75%;" >
+                            <tr>
+                                <th>Host Name</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Service Status</th>
                             </tr>
-                        {% endfor %}
-                        </table>
-                    {% else %}
-                        No hosts in this hostgroup.
-                    {% endif %}
+
+                            {% for row in hosts %}
+                                <tr >
+                                    <td><a style="color: black" href="{% url status.views.status_detail %}?host_name={{ row.name  }}">{{ row.name }}</a></td>
+                                    <td>{{ row.address }}</td>
+                                    {% if row.state  == 0 %}
+                                        <td class="alert alert-success">UP</td>
+                                    {% else %}
+                                        <td class="alert alert-danger">Down</td>
+                                    {% endif %}
+                                    <td>
+                                        <div class="progress">
+                                            <div class="bar bar-success" style="width: {{ row.percent_ok }}%;"></div>
+                                            <div class="bar bar-warning" style="width: {{ row.percent_warn }}%;"></div>
+                                            <div class="bar bar-danger" style="width: {{ row.percent_crit }}%;"></div>
+                                            <div class="bar bar-info" style="width: {{ row.percent_unknown }}%;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </table>
+                        {% else %}
+                            No hosts in this hostgroup.
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-{% endif %}
+    {% endif %}
+</div>
 {% endblock %}
 
 {% block header %} {{ block.super }}

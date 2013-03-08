@@ -8,9 +8,9 @@
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
         <li class="active"><a href="#information" data-toggle="tab">Information</a></li>
-        <li><a href="#child_hostgroups" data-toggle="tab">Child Hostgroups</a></li>
-        <li><a href="#hosts" data-toggle="tab">Hosts</a></li>
-        <li><a href="#services" data-toggle="tab">Services</a></li>
+        <li><a href="#child_hostgroups" data-toggle="tab">Child Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
+        <li><a href="#hosts" data-toggle="tab">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
+        <li><a href="#services" data-toggle="tab">Services {% if services %}<span class="muted">({{ services|length }})</span>{% endif %}</a></li>
         <li><a href="#history" data-toggle="tab">History</a></li>
         <li><a href="#debug" data-toggle="tab">Debug</a></li>
 
@@ -163,8 +163,17 @@
 
 {% endblock %}
 
-{% block footer %} {{ block.super }} <style>
+{% block footer %}
+    {{ block.super }}
+    <style>
     .input-append button.add-on {
         height: inherit !important;
     }
-</style> {% endblock %}
+        /* avoid bootstrap highlight */
+    .table tbody tr:hover td, .table tbody tr:hover th {
+        background-color: transparent;
+    }
+    </style>
+    </style>
+
+{% endblock %}

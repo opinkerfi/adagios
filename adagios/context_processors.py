@@ -39,6 +39,8 @@ def on_page_load(request):
         results[k] = v
     for k,v in get_current_time(request).items():
         results[k] = v
+    for k,v in get_okconfig(request).items():
+        results[k] = v
     return results
 
 def get_current_time(request):
@@ -170,6 +172,14 @@ def get_notifications(request):
     """ Returns a hash map of adagios.notifications """
     return { "notifications": notifications  }
 
+def get_okconfig(request):
+    """ Returns {"okconfig":True} if okconfig module is installed.
+    """
+    try:
+        import okconfig
+        return {"okconfig":True}
+    except Exception:
+        return {}
 
 
 def reload_configfile(request):

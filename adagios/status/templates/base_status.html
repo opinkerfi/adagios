@@ -436,17 +436,19 @@
             </h2>
         </div>
         <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" id="right_of_title">
-            <div class="pull-right btn-group">
-                <a class="btn btn-success" href="{% url okconfig_.views.addhost %}">
-                    Add Host
-                </a>
-                <a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Add Check to host</a></li>
-                    <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Install Agent on host</a></li>
-                </ul>
-            </div>
-            <br>
+            {% if okconfig %}
+                <div class="pull-right btn-group">
+                    <a class="btn btn-success" href="{% url okconfig_.views.addhost %}">
+                        Add Host
+                    </a>
+                    <a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Add Check to host</a></li>
+                        <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Install Agent on host</a></li>
+                    </ul>
+                </div>
+                <br>
+            {% endif %}
 
         </div>
         <div id="error_messages" style="margin-left: 30px;" class="pull-left">
@@ -486,12 +488,6 @@
                 <li><a href="{% url status.views.status %}">Services </a></li>
                 <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
                 <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
-            </ul>
-
-            <h5>Groups</h5>
-            <ul class="nav nav-list">
-                <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
-                <li><a href="{% url status.views.contact_list %}#tab_contactgroups">Contactgroups</a></li>
             </ul>
 
             <h5>Reports</h5>
@@ -855,7 +851,7 @@
                 "service_description":service_description,
                 "comment":comment,
                 "author":"{{ remote_user }}",
-                "persistent":"1",
+                "persistent":"1"
             }
             $.ajax({
                 type: 'POST',
@@ -876,7 +872,7 @@
                 "object_type": object_type,
                 "short_name": short_name,
                 "attribute_name":attribute_name,
-                "new_value":new_value,
+                "new_value":new_value
             }
             $.ajax({
                 type: 'POST',

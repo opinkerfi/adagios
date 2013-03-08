@@ -20,7 +20,21 @@
 {% endblock %}
 
 {% block content %}
-    {% include "snippets/status_hostlist_snippet.html" %}
+    <ul class="nav nav-tabs" id="objecttabs">
+        <li class=active><a href="#hosts" data-toggle="tab">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
+        <li><a href="{% url status.views.status_hostgroups %}" data-toggle="tabs">Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
+    </ul>
+    <div class="tab-content">
+
+        <div class="tab-pane active" id="hosts">
+            {% include "snippets/status_hostlist_snippet.html" %}
+        </div>
+
+        <div class="tab-pane active" id="hostgroups">
+            {% include "snippets/status_hostgrouplist_snippet.html" %}
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block header %} {{ block.super }}
