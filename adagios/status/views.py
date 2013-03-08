@@ -286,7 +286,7 @@ def status_hostgroup(request, hostgroup_name):
     c['services'] = livestatus.query('GET services', 'Filter: host_groups >= %s' % hostgroup_name)
 
     # Get recent log entries for this hostgroup
-    l = pynag.Parsers.LogFiles()
+    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     all_history = l.get_state_history()
     c['log'] = filter(lambda x: x['host_name'] in c['my_hostgroup']['members'], all_history)
 
