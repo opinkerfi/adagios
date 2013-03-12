@@ -91,7 +91,9 @@ def _status(request):
 
     services = defaultdict(list)
     hosts = []
-    for service in all_services:
+
+    my_services = pynag.Utils.grep(all_services, **request.GET)
+    for service in my_services:
         # Tag the service with tags such as problems and unhandled
         tags = []
         if service['state'] != 0:
@@ -111,26 +113,8 @@ def _status(request):
             tags.append('downtime')
         service['tags'] = ' '.join(tags)
 
-        for k,v in request.GET.items():
-            if k == 'q' and v is not None and v != '':
-                q = str(v).lower()
-                if q in service['description'].lower() or q in service['host_name'].lower() or q in service['tags']:
-                    continue
-                else:
-                    break
-            elif k in service:
-                if type(service[k]) is type([]) and str(v) in service[k]:
-                    continue
-                elif str(service[k]) == str(v):
-                    continue
-                else:
-                    break
-            elif k.endswith('__isnot') and k[:-1*len("__isnot")] in service:
-                if str(service[k[:-1*len("__isnot")]]) == str(v):
-                    break
-        else:
-            service['status'] = state[service['state']]
-            services[ service['host_name'] ].append(service)
+        service['status'] = state[service['state']]
+        services[ service['host_name'] ].append(service)
 
     #    services[service['host_name']].append( service )
     for host in all_hosts:
@@ -284,7 +268,7 @@ def status_hostgroup(request, hostgroup_name):
 
     # Get services that belong in this hostgroup
     c['services'] = livestatus.query('GET services', 'Filter: host_groups >= %s' % hostgroup_name)
-
+    c['services'] = pynag.Utils.grep(c['services'], **request.GET)
     # Get recent log entries for this hostgroup
     l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     all_history = l.get_state_history()
