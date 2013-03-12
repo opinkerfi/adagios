@@ -22,6 +22,7 @@ from pynag import Model
 from pynag.Utils import AttributeList
 from help_text import object_definitions
 from pynag.Model import ObjectDefinition
+from adagios.forms import AdagiosForm
 
 
 # These fields are special, they are a comma seperated list, and may or may not have +/- in front of them.
@@ -46,6 +47,9 @@ HOST_NOTIFICATION_OPTIONS = (
 
 
 BOOLEAN_CHOICES = ( ('', 'not set'),('1','1'),('0','0'))
+
+
+
 
 class PynagChoiceField(forms.MultipleChoiceField):
     """ multichoicefields that accepts comma seperated input as values """
@@ -95,7 +99,7 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
         output += prefix
         return mark_safe(output)
 
-class PynagForm(forms.Form):
+class PynagForm(AdagiosForm):
     def clean(self):
         cleaned_data = super(self.__class__, self).clean()
         for k,v in cleaned_data.items():
@@ -249,7 +253,7 @@ class PynagForm(forms.Form):
         field.placeholder = placeholder
 
 
-class AdvancedEditForm(forms.Form):
+class AdvancedEditForm(AdagiosForm):
     """ A form for pynag.Model.Objectdefinition
 
     This form will display a charfield for every attribute of the objectdefinition
@@ -291,7 +295,7 @@ class AdvancedEditForm(forms.Form):
             self.fields[field_name] = forms.CharField(required=False,label=field_name, help_text=help_text)
         self.fields.keyOrder = sorted( self.fields.keys() )
 
-class GeekEditObjectForm(forms.Form):
+class GeekEditObjectForm(AdagiosForm):
     definition= forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
     def __init__(self,pynag_object=None, *args,**kwargs):
         self.pynag_object = pynag_object
@@ -307,7 +311,7 @@ class GeekEditObjectForm(forms.Form):
         definition = self.cleaned_data['definition']
         self.pynag_object.rewrite( str_new_definition=definition )
 
-class DeleteObjectForm(forms.Form):
+class DeleteObjectForm(AdagiosForm):
     """ Form used to handle deletion of one single object """
     def __init__(self, pynag_object, *args, **kwargs):
         self.pynag_object = pynag_object
@@ -324,7 +328,7 @@ class DeleteObjectForm(forms.Form):
             recursive = True
         self.pynag_object.delete(recursive)
 
-class CopyObjectForm(forms.Form):
+class CopyObjectForm(AdagiosForm):
     """ Form to assist a user to copy a single object definition
     """
     def __init__(self, pynag_object, *args, **kwargs):
@@ -392,7 +396,7 @@ class CopyObjectForm(forms.Form):
         return self._clean_shortname()
 
 
-class BaseBulkForm(forms.Form):
+class BaseBulkForm(AdagiosForm):
     """ To make changes to multiple objects at once
 
     * any POST data that has the name change_<OBJECTID> will be fetched
@@ -442,6 +446,7 @@ class BulkEditForm(BaseBulkForm):
             value = self.cleaned_data['new_value']
             i[key] = value
             i.save()
+
 
 class BulkCopyForm(BaseBulkForm):
     attribute_name = forms.CharField()

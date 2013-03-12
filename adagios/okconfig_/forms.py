@@ -5,6 +5,7 @@ import re
 from django.core.exceptions import ValidationError
 import socket
 from pynag import Model
+from adagios.forms import AdagiosForm
 
 def get_all_hosts():
     return [('','Select a host')] + map(lambda x: (x, x), helpers.get_host_names())
@@ -20,7 +21,7 @@ def get_inactive_services():
     inactive_services.sort()
     return inactive_services
 
-class ScanNetworkForm(forms.Form):
+class ScanNetworkForm(AdagiosForm):
     network_address = forms.CharField()
     def clean_network_address(self):
         addr = self.cleaned_data['network_address']
@@ -47,12 +48,12 @@ class ScanNetworkForm(forms.Form):
             return False
         return True
 
-class AddGroupForm(forms.Form):
+class AddGroupForm(AdagiosForm):
     group_name = forms.CharField(help_text="Example: databases")
     alias = forms.CharField(help_text="Human friendly name for the group")
     force = forms.BooleanField(required=False, help_text="Overwrite group if it already exists.")
 
-class AddHostForm(forms.Form):
+class AddHostForm(AdagiosForm):
     host_name = forms.CharField(help_text="Name of the host to add")
     address = forms.CharField(help_text="IP Address of this host")
     group_name = forms.ChoiceField(initial="default", help_text="host/contact group to put this host in")
@@ -75,7 +76,7 @@ class AddHostForm(forms.Form):
         return cleaned_data
 
 
-class AddTemplateForm(forms.Form):
+class AddTemplateForm(AdagiosForm):
     # Attributes
     host_name = forms.ChoiceField(help_text="Add templates to this host")
     templates = forms.MultipleChoiceField(required=False, help_text="Add standard template of checks to this host" )
@@ -103,7 +104,7 @@ class AddTemplateForm(forms.Form):
         for i in templates:
             self.filelist+=okconfig.addtemplate(host_name=host_name, template_name=i,force=force)
 
-class InstallAgentForm(forms.Form):
+class InstallAgentForm(AdagiosForm):
     remote_host = forms.CharField(help_text="Host or ip address")
     install_method = forms.ChoiceField( initial='ssh', help_text="Make sure firewalls are not blocking ports 22(for ssh) or 445(for winexe)",
             choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
@@ -111,13 +112,13 @@ class InstallAgentForm(forms.Form):
     windows_domain = forms.CharField(required=False, help_text="If remote machine is running a windows domain")
     password = forms.CharField(required=False, widget=forms.PasswordInput, help_text="Leave empty if using kerberos or ssh keys")
 
-class ChooseHostForm(forms.Form):
+class ChooseHostForm(AdagiosForm):
     host_name = forms.ChoiceField(help_text="Select which host to edit")
     def __init__(self, service=Model.Service(), *args, **kwargs):
         super(forms.Form,self).__init__(*args, **kwargs)
         self.fields['host_name'].choices = get_all_hosts()
 
-class AddServiceToHostForm(forms.Form):
+class AddServiceToHostForm(AdagiosForm):
     host_name = forms.ChoiceField(help_text="Select host which you want to add service check to")
     service = forms.ChoiceField(help_text="Select which service check you want to add to this host")
     def __init__(self, service=Model.Service(), *args, **kwargs):
@@ -126,7 +127,7 @@ class AddServiceToHostForm(forms.Form):
         self.fields['service'].choices = get_inactive_services()
 
 
-class EditTemplateForm(forms.Form):
+class EditTemplateForm(AdagiosForm):
     def __init__(self, service=Model.Service(), *args, **kwargs):
         self.service = service
         super(forms.Form,self).__init__(*args, **kwargs)
