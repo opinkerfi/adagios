@@ -226,7 +226,7 @@ def status_detail(request, host_name=None, service_description=None):
         css_hint[0] = 'success'
         css_hint[1] = 'warning'
         css_hint[2] = 'danger'
-        css_hint[3] = 'info'
+        css_hint[3] = 'unknown'
         for i in log:
             i['duration_percent'] = 100*i['duration']/total_duration
             i['bootstrap_status'] = css_hint[i['state']]
