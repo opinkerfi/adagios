@@ -266,7 +266,7 @@ def status_hostgroup(request, hostgroup_name):
     c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
     _add_statistics_to_hosts(c['hosts'])
     # Sort by service status
-    c['hosts'].sort(reverse=True, cmp=lambda a,b: cmp(a['num_problems'], b['num_problems']))
+    c['hosts'].sort(cmp=lambda a,b: cmp(a['percent_ok'], b['percent_ok']))
 
     # Get services that belong in this hostgroup
     c['services'] = livestatus.query('GET services', 'Filter: host_groups >= %s' % hostgroup_name)
