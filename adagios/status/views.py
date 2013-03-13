@@ -91,8 +91,13 @@ def _status(request):
 
     services = defaultdict(list)
     hosts = []
-
+    search_filter = request.GET.copy()
+    q = None
+    if 'q' in search_filter:
+        q = search_filter['q']
+        del search_filter['q']
     my_services = pynag.Utils.grep(all_services, **request.GET)
+
     for service in my_services:
         # Tag the service with tags such as problems and unhandled
         tags = []
@@ -107,13 +112,17 @@ def _status(request):
                 service['handled'] = "handled"
         else:
             tags.append('ok')
-        if service['acknowledged'] == 1:
+        if service['acknowledged'] == 1:1
             tags.append('acknowledged')
         if service['downtimes'] != []:
             tags.append('downtime')
         service['tags'] = ' '.join(tags)
 
         service['status'] = state[service['state']]
+
+        if q is not None: # Something is in the search box:
+            if q not in service['host_name'] and q not in service['description'] and q not in service['tags']:
+                continue
         services[ service['host_name'] ].append(service)
 
     #    services[service['host_name']].append( service )
