@@ -17,148 +17,148 @@
     </ul>
     <div class="tab-content">
 
-    <div class="tab-pane active" id="information">
-        {% if my_hostgroup %}
-            <table class="table">
-                <tr>
-                    <td>Hostgroup Name</td>
-                    <td>{{ my_hostgroup.name }}</td>
-                </tr>
-                <tr>
-                    <td>Alias</td>
-                    <td>{{ my_hostgroup.alias }}</td>
-                </tr>
-                <tr>
-                    <td>External links</td>
-                    <td>
-                        {% if my_hostgroup.action_url %}
-                            <a href="{{ my_hostgroup.action_url }}">action url</a>
-                        {% endif %}
+        <div class="tab-pane active" id="information">
+            {% if my_hostgroup %}
+                <table class="table">
+                    <tr>
+                        <td>Hostgroup Name</td>
+                        <td>{{ my_hostgroup.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Alias</td>
+                        <td>{{ my_hostgroup.alias }}</td>
+                    </tr>
+                    <tr>
+                        <td>External links</td>
+                        <td>
+                            {% if my_hostgroup.action_url %}
+                                <a href="{{ my_hostgroup.action_url }}">action url</a>
+                            {% endif %}
 
-                        {% if my_hostgroup.notes_url %}
-                            <a href="{{ my_hostgroup.notes_url }}">notes_url</a>
-                        {% endif %}
+                            {% if my_hostgroup.notes_url %}
+                                <a href="{{ my_hostgroup.notes_url }}">notes_url</a>
+                            {% endif %}
 
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="id_notes">Notes</label>
-                    </td>
-                    <td><textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
-                </tr>
-                <tr>
-                    <td>Parent Hostgroups</td>
-                    <td>
-                        {% for i in my_hostgroup.parent_hostgroups %}
-                            <a href="{% url status.views.status_hostgroup i %}">{{ i }}</a>,
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <table class="table well table-condensed">
-                            <thead>
-                            <tr><td colspan=2>Host Status</td></tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td><div class="circle state_0"> </div> Hosts up: <t/d>
-                                <td>{{ my_hostgroup.num_hosts_up }}</td>
-                            </tr>
-                            <tr>
-                                <td><div class="circle state_2"> </div> Hosts down: </td>
-                                <td>{{ my_hostgroup.num_hosts_down }}</td>
-                            </tr>
-                            <tr>
-                                <td><div class="circle state_3"> </div> Hosts unreachable: </td>
-                                <td>{{ my_hostgroup.num_hosts_unreach }}</td>
-                            </tr>
-                            <tr><td colspan=2>...</td></tr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="id_notes">Notes</label>
+                        </td>
+                        <td><textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
+                    </tr>
+                    <tr>
+                        <td>Parent Hostgroups</td>
+                        <td>
+                            {% for i in my_hostgroup.parent_hostgroups %}
+                                <a href="{% url status.views.status_hostgroup i %}">{{ i }}</a>,
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table class="table well table-condensed">
+                                <thead>
+                                <tr><td colspan=2>Host Status</td></tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><div class="circle state_0"> </div> Hosts up: <t/d>
+                                    <td>{{ my_hostgroup.num_hosts_up }}</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="circle state_2"> </div> Hosts down: </td>
+                                    <td>{{ my_hostgroup.num_hosts_down }}</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="circle state_3"> </div> Hosts unreachable: </td>
+                                    <td>{{ my_hostgroup.num_hosts_unreach }}</td>
+                                </tr>
+                                <tr><td colspan=2>...</td></tr>
 
-                            <tr>
-                                <th>Total:</th>
-                                <th>{{ my_hostgroup.num_hosts }}</th>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                    <td>
-                        <table class="table well table-condensed">
-                            <thead>
-                            <tr><td colspan=2>Service Status</td></tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td><div class="circle state_0"> </div> OK: </td>
-                                <td>{{ my_hostgroup.num_services_ok }}</td>
-                            </tr>
-                            <tr>
-                                <td><div class="circle state_1"> </div> Warning: </td>
-                                <td>{{ my_hostgroup.num_services_warn }}</td>
-                            </tr>
-                            <tr>
-                                <td><div class="circle state_2"> </div> Critical: </td>
-                                <td>{{ my_hostgroup.num_services_crit }}</td>
-                            </tr>
-                            <tr>
-                                <td><div class="circle state_3"> </div> Unknown: </td>
-                                <td>{{ my_hostgroup.num_services_unknown }}</td>
-                            </tr>
-                            <tr>
-                                <th>Total:</th>
-                                <th>{{ my_hostgroup.num_services }}</th>
-                            </tr>
-                            </tbody>
-                        </table>
+                                <tr>
+                                    <th>Total:</th>
+                                    <th>{{ my_hostgroup.num_hosts }}</th>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <table class="table well table-condensed">
+                                <thead>
+                                <tr><td colspan=2>Service Status</td></tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><div class="circle state_0"> </div> OK: </td>
+                                    <td>{{ my_hostgroup.num_services_ok }}</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="circle state_1"> </div> Warning: </td>
+                                    <td>{{ my_hostgroup.num_services_warn }}</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="circle state_2"> </div> Critical: </td>
+                                    <td>{{ my_hostgroup.num_services_crit }}</td>
+                                </tr>
+                                <tr>
+                                    <td><div class="circle state_3"> </div> Unknown: </td>
+                                    <td>{{ my_hostgroup.num_services_unknown }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Total:</th>
+                                    <th>{{ my_hostgroup.num_services }}</th>
+                                </tr>
+                                </tbody>
+                            </table>
 
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                </table>
+            {% else %}
+                No Information found for hostgroup {{ hostgroup_name }}. Are you sure it exists ?
+            {% endif %}
+
+        </div>
+
+        <div class="tab-pane " id="child_hostgroups">
+            hostgroups that belong to {{ hostgroup_name }}
+            {% include "snippets/status_hostgrouplist_snippet.html" %}
+
+        </div>
+
+        <div class="tab-pane " id="hosts">
+            Hosts that belong to {{ hostgroup_name }}
+            {% include "snippets/status_hostlist_snippet.html" %}
+        </div>
+
+        <div class="tab-pane " id="services">
+            Services that belong to {{ hostgroup_name }}
+            {% include "snippets/status_servicelist_snippet.html" %}
+        </div>
+
+        <div class="tab-pane" id="history">
+            {% if log %}
+            {% include "snippets/status_statehistory_snippet.html" %}
+            {% else %}
+                No recent state history changes in this hostgroup. Try <a href="{% url status.views.status_log %}#tab_all">Log view</a> to search in older logs.
+            {% endif %}
+        </div>
+        <div class="tab-pane" id="debug">
+            <h4>Information available via livestatus:</h4>
+            <table class="table-condensed table">
+                {% for k,v in my_hostgroup.items %}
+                    <tr>
+                        <td>                {{ k }}
+                        </td>
+                        <td>
+                            {{ v }}
+                        </td>
+                    </tr>
+                {% endfor %}
             </table>
-        {% else %}
-            No Information found for hostgroup {{ hostgroup_name }}. Are you sure it exists ?
-        {% endif %}
-
+        </div>
     </div>
-
-    <div class="tab-pane " id="child_hostgroups">
-        hostgroups that belong to {{ hostgroup_name }}
-        {% include "snippets/status_hostgrouplist_snippet.html" %}
-
-    </div>
-
-    <div class="tab-pane " id="hosts">
-        Hosts that belong to {{ hostgroup_name }}
-        {% include "snippets/status_hostlist_snippet.html" %}
-    </div>
-
-    <div class="tab-pane " id="services">
-        Services that belong to {{ hostgroup_name }}
-        {% include "snippets/status_servicelist_snippet.html" %}
-    </div>
-
-    <div class="tab-pane" id="history">
-        {% if log %}
-        {% include "snippets/status_statehistory_snippet.html" %}
-        {% else %}
-            No recent state history changes in this hostgroup. Try <a href="{% url status.views.status_log %}#tab_all">Log view</a> to search in older logs.
-        {% endif %}
-    </div>
-    <div class="tab-pane" id="debug">
-        <h4>Information available via livestatus:</h4>
-        <table class="table-condensed table">
-            {% for k,v in my_hostgroup.items %}
-                <tr>
-                    <td>                {{ k }}
-                    </td>
-                    <td>
-                        {{ v }}
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-
 
 
 {% endblock %}

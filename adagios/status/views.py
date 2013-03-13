@@ -265,6 +265,8 @@ def status_hostgroup(request, hostgroup_name):
     # Get hosts that belong in this hostgroup
     c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
     _add_statistics_to_hosts(c['hosts'])
+    # Sort by service status
+    c['hosts'].sort(reverse=True, cmp=lambda a,b: cmp(a['num_problems'], b['num_problems']))
 
     # Get services that belong in this hostgroup
     c['services'] = livestatus.query('GET services', 'Filter: host_groups >= %s' % hostgroup_name)
@@ -573,6 +575,7 @@ def _add_statistics_to_hosts(hosts):
         total = ok + warn + crit + pending + unknown
         host['total'] = total
         host['problems'] = warn + crit + unknown
+        host['num_problems'] = warn + crit + unknown
         try:
             total = float(total)
             host['health'] = float(ok) / total * 100.0
