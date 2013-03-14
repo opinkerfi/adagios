@@ -112,7 +112,7 @@ def _status(request):
                 service['handled'] = "handled"
         else:
             tags.append('ok')
-        if service['acknowledged'] == 1:1
+        if service['acknowledged'] == 1:
             tags.append('acknowledged')
         if service['downtimes'] != []:
             tags.append('downtime')
@@ -595,6 +595,11 @@ def _add_statistics_to_hosts(hosts):
             host['percent_pending'] = pending / total * 100
         except ZeroDivisionError:
             host['health'] = 'n/a'
+            host['percent_ok'] = 0
+            host['percent_warn'] = 0
+            host['percent_crit'] = 0
+            host['percent_unknown'] = 0
+            host['percent_pending'] = 0
 
 def status_index(request):
     c = _status_combined(request, optimized=True)
@@ -662,7 +667,7 @@ def _status_combined(request, optimized=False):
         if len(host['childs']) > 0:
             parents.append(host)
         if host['state'] != 0 and host['acknowledged'] == 0 and host['downtimes'] == []:
-            hostnames_that_are_down.append(str(host['name']))
+            hostnames_that_are_down.append(host['name'])
             hosts_that_are_down.append(host)
 
     network_problems = []
