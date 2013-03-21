@@ -350,8 +350,9 @@ class CopyObjectForm(AdagiosForm):
             self.fields['address'] = forms.CharField(help_text="Select a new ip address for this host")
             self.fields['recursive'] = forms.BooleanField(required=False, label="Copy Services",help_text="Check this box if you also want to copy all services of this host.")
         elif object_type == 'service':
-            new_host_name = "%s-copy" % pynag_object.host_name
-            self.fields['host_name'] = forms.CharField(help_text="Select a new host name for this service", initial=new_host_name)
+            service_description = "%s-copy" % pynag_object.service_description
+            self.fields['host_name'] = forms.CharField(help_text="Select a new host name for this service", initial=pynag_object.host_name)
+            self.fields['service_description'] = forms.CharField(help_text="Select new service description for this service", initial=service_description)
         else:
             field_name = "%s_name" % object_type
             initial = "%s-copy" % pynag_object[field_name]
