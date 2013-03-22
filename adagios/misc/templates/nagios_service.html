@@ -1,55 +1,65 @@
-{% extends "base_misc.html" %}
+{% extends "base_status.html" %}
 
 {% block title %}Nagios Service{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Nagios Service{% endblock %}
+{% block largeheader %}Nagios Service is <b> {{ friendly_status }}</b>{% endblock %}
 {% block nav1 %}Nagios Service{% endblock %}
 
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
 {% block content %}
-Service nagios status:
-
+<div class="alert alert-info">
+<b>Nagios Service is:</b>
     {% if status  == 0 %}
-        Started
+        <b>Started</b>
     {% endif %}
     {% if status  == 1 %}
-        Stopped
+        <b>Stopped</b>
     {% endif %}
     {% if status  > 1 %}
-        unknown ("service nagios status" returned {{ status }})
+        <b>unknown</b> ("service nagios status" returned {{ status }})
     {% endif %}
+</div>
+    {% if command %}
+    <div class="alert alert-info">Executing <b>service nagios {{ command }}</b>
+        {% if stderr %}
+            <h4>Errors</h4>
+            <pre>{{ stderr }}</pre>
+        {% endif %}
+        {% if stdout %}
+            <pre>{{ stdout }}</pre>
+        {% endif %}
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+
+{% block toolbar %}
     {% if form %}
         <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-            <div class="form-actions">
-		{% if status == 0 %}
-                <button class="btn btn-success" type="submit" name="reload">Reload</button>
-                <button class="btn " type="submit" name="stop">Stop</button>
-                <button class="btn " type="submit" name="restart">Restart</button>
-		{% endif %}
-		{% if status == 1 %}
-                <button class="btn btn-success" type="submit" name="start">Start</button>
-		{% endif %}
-		{% if status > 1 %}
-                <button class="btn " type="submit" name="stop">Stop</button>
-                <button class="btn " type="submit" name="restart">Restart</button>
-                <button class="btn btn-success" type="submit" name="reload">Reload</button>
-		{% endif %}
+                {% if status == 0 %}
+                    <button class="btn btn-success" type="submit" name="reload">Reload</button>
+                    <button class="btn " type="submit" name="stop">Stop</button>
+                    <button class="btn " type="submit" name="restart">Restart</button>
+                {% endif %}
+                {% if status == 1 %}
+                    <button class="btn btn-success" type="submit" name="start">Start</button>
+                {% endif %}
+                {% if status > 1 %}
+                    <button class="btn btn-success" type="submit" name="start">Start</button>
+                    <button class="btn " type="submit" name="stop">Stop</button>
+                    <button class="btn " type="submit" name="restart">Restart</button>
+                    <button class="btn" type="submit" name="reload">Reload</button>
+                {% endif %}
                 <button class="btn " type="submit" name="status">Status</button>
-            </div>
         </form>
     {% else %}
-    No form found
+        No form found
     {%  endif %}
-    {% if stderr %}
-        <h4>Errors</h4>
-        <pre>{{ stderr }}</pre>
-    {% endif %}
-    {% if stdout %}
-        <h4>output</h4>
-        <pre>{{ stdout }}</pre>
-    {% endif %}
+
 {% endblock %}
+
 
 {% block header %} {{ block.super }} {% endblock %}
 

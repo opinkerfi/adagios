@@ -194,10 +194,18 @@ def nagios_service(request):
             form.save()
             c['stdout'] = form.stdout
             c['stderr'] = form.stderr
+            c['command'] = form.command
     c['form'] = form
+    sleep(1)
     service = pynag.Control.daemon(nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
     sleep(1)
-    c['status'] = service.status()
+    c['status'] = s = service.status()
+    if s == 0:
+        c['friendly_status'] = "started"
+    elif s == 1:
+        c['friendly_status'] = "stopped"
+    else:
+        c['friendly_status'] = 'unknown'
     needs_reload = pynag.Model.config.needs_reload()
     if needs_reload == True:
         c['messages'].append('Nagios Service Needs to be reloaded to apply latest configuration changes. Click Reload to reload Nagios Service now.')

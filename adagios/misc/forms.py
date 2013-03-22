@@ -326,6 +326,7 @@ class NagiosServiceForm(forms.Form):
             command = "start"
         elif "status" in self.data:
             command = "status"
+        self.command = command
         nagios_init = settings.nagios_init_script
         #command = self.cleaned_data['command']
         from subprocess import Popen, PIPE
