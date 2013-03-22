@@ -26,6 +26,7 @@ import sys
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.encoding import smart_str
 import pynag.Model
 import pynag.Utils
 import pynag.Control
@@ -243,6 +244,11 @@ def status_detail(request, host_name=None, service_description=None):
         datum.status = state[datum.get_status()]
     c['perfdata'] = perfdata.metrics
 
+    # Get a complete list of network parents
+    try:
+        c['network_parents'] = reversed( _get_network_parents(host_name) )
+    except Exception, e:
+        c['errors'].append(e)
     # Create some state history progress bar from our logs:
     if len(c['log']) > 0:
         log = c['log']
@@ -273,6 +279,44 @@ def status_detail(request, host_name=None, service_description=None):
     c['graph_urls'] = tmp
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
+
+def _get_network_parents(host_name):
+    """ Returns a list of hosts that are network parents (or grandparents) to host_name
+
+     Every item in the list is a host dictionary from mk_livestatus
+
+     Returns:
+        List of lists
+
+     Example:
+        _get_network_parents('remotehost.example.com')
+        [
+            ['gateway.example.com', 'mod_gearman.example.com'],
+            ['localhost'],
+        ]
+    """
+    result = []
+    livestatus = pynag.Parsers.mk_livestatus()
+    if isinstance(host_name, unicode):
+        host_name = smart_str(host_name)
+
+    if isinstance(host_name, str):
+        host = livestatus.get_host(host_name)
+    elif isinstance(host_name, dict):
+        host = host_name
+    else:
+        raise KeyError('host_name must be str or dict (got %s)' % type(host_name))
+    parent_names = host['parents']
+    while len(parent_names) > 0:
+        parents = map(lambda x: livestatus.get_host(x), parent_names)
+
+        # generate a list of grandparent names:
+        grand_parents = set()
+        for i in parents:
+            map(lambda x: grand_parents.add(x ), i.get('parents'))
+        result.append( parents )
+        parent_names = list(grand_parents)
+    return result
 
 def status_hostgroup(request, hostgroup_name):
     """ Status detail for one specific hostgroup  """

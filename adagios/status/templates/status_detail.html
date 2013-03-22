@@ -264,6 +264,28 @@
                     Unknown
                     {% endif %}
             </tr>
+            <tr>
+                <td>Network Parents</td>
+                <td>
+                    {% if network_parents %}
+                        <table>
+                        <tbody>
+
+                        {% for parent_level in network_parents %}
+                            <tr>
+                                {% for parent in parent_level %}
+                                    <td>
+                                        <div class="alert state_{{ parent.state }}">
+                                            <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                    {% endif %}
+            </tr>
         </table>
     </div>
 
