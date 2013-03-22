@@ -20,6 +20,10 @@ from os.path import dirname
 from collections import defaultdict
 import json
 
+import traceback
+import StringIO
+import sys
+
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 import pynag.Model
@@ -30,11 +34,30 @@ import pynag.Model.EventHandlers
 
 import adagios.settings
 import pnp.functions
+from pynag.Parsers import ParserError
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
+
+def error_handler(fn):
+    """ This is a python decorator intented for all views in the status module.
+
+     It catches all unhandled exceptions and displays them on a generic web page.
+
+     Kind of what the django exception page does when debug mode is on.
+    """
+    def wrapper(*args,**kwargs):
+        try:
+            fn(*args,**kwargs)
+        except Exception, e:
+            c = {}
+            c['exception'] = e
+            c['exception_type'] = str(type(e).__name__)
+            c['traceback'] = traceback.format_exc()
+            return error_page(*args, context=c)
+    return wrapper
 
 def status_parents(request):
     c = {}
@@ -600,9 +623,14 @@ def _add_statistics_to_hosts(hosts):
             host['percent_crit'] = 0
             host['percent_unknown'] = 0
             host['percent_pending'] = 0
-
+@error_handler
 def status_index(request):
-    c = _status_combined(request, optimized=True)
+    try:
+        c = _status_combined(request, optimized=True)
+    except KeyError, e:
+        c = {}
+        c['errors'] = [e]
+        return error_page(request, c)
     top_alert_producers = defaultdict(int)
     for i in c['log']:
         if 'host_name' in i and 'state' in i and i['state'] > 0:
@@ -747,7 +775,6 @@ def state_history(request):
         short_name = "%s/%s" % (i['host_name'],i['service_description'])
         for k,v in request.GET.items():
             if k in i.keys() and i[k] != v:
-                print k, "found in ", short_name
                 break
         else:
             if short_name not in services:
@@ -973,3 +1000,5 @@ def contact_detail(request, contact_name):
     git = pynag.Utils.GitRepo(directory=nagiosdir)
     c['gitlog'] = git.log(author_name=contact_name)
     return render_to_response('status_contact.html', c, context_instance = RequestContext(request))
+
+
