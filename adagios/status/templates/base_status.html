@@ -448,12 +448,8 @@
         </div>
         <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" id="right_of_title">
             {% if okconfig %}
-                <div class="pull-right btn-group">
-                    <a class="btn btn-success" href="{% url okconfig_.views.addhost %}">
-                        Add Host
-                    </a>
-                    <a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-                    <ul class="dropdown-menu">
+                <div class="pull-right btn-group"><a class="btn btn-success" href="{% url okconfig_.views.addhost %}">Add Host
+                </a><a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a><ul class="dropdown-menu">
                         <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Add Check to host</a></li>
                         <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Install Agent on host</a></li>
                     </ul>
@@ -570,11 +566,7 @@
                         <div class="pull-left">
                             <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" value="{{ request.GET.q }}" class="search-query" placeholder="hosts, services, etc..." />
                         </div>
-                        <div class="btn-group pull-left">
-                            <button class="btn btn-small"  type="submit" href="{% url status.views.status %}">
-                                <i class="icon-search"></i> Search
-                            </button>
-                            <a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+                        <div class="btn-group pull-left"><button class="btn btn-small"  type="submit" href="{% url status.views.status %}"><i class="icon-search"></i> Search</button><a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0"> Open Problems</a></li>
                                 <li><a href="{% url status.views.status %}?state__isnot=0"> All Problems</a></li>
