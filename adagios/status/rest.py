@@ -10,15 +10,35 @@ import pynag.Control.Command
 import pynag.Model
 import django.core.mail
 import pynag.Utils
+import adagios.status.utils
 
-def hosts(**kwargs):
+def hosts(fields=None, *args, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
 
-    """
-    livestatus = pynag.Parsers.mk_livestatus()
-    hosts = livestatus.get_hosts()
-    return pynag.Utils.grep(hosts, **kwargs)
+        Arguments:
+            fields -- If specified, a list of attributes to return. If unspecified, all fields are returned.
 
+            Any *args will be passed to livestatus directly
+            Any **kwargs will be treated as a pynag.Utils.grep()-style filter
+    """
+    query = list(args)
+    if not fields is None:
+        # fields should be a list, lets create a Column: query for livestatus
+        if isinstance(fields, (str,unicode) ):
+            fields = fields.split(',')
+        if len(fields) > 0:
+            argument = 'Columns: %s' % ( ' '.join(fields))
+            query.append(argument)
+    livestatus_arguments = pynag.Utils.grep_to_livestatus(*query, **kwargs)
+
+    livestatus = pynag.Parsers.mk_livestatus()
+    hosts = livestatus.get_hosts(*livestatus_arguments)
+    return hosts
+
+def services(fields=None,*args,**kwargs):
+    """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
+    """
+    return adagios.status.utils.get_services(fields=fields,*args,**kwargs)
 
 def acknowledge(host_name, service_description=None, sticky=1, notify=1,persistent=0,author='adagios',comment='acknowledged by Adagios'):
     """ Acknowledge one single host or service check

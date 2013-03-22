@@ -1,0 +1,21 @@
+{% extends "base_status.html" %}
+
+{% block title %}Status Overview{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block adagios_hausinn %}
+{% endblock %}
+{% block largeheader %}Service Overview
+{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% load adagiostags %}
+
+{% block sidebar_outer %}
+{% endblock %}
+
+{% block content %}
+        {% include "snippets/status_servicelist_snippet.html" %}
+{% endblock %}
+
+
+
+{% block footer %} {{ block.super }} {% endblock %}

@@ -36,6 +36,7 @@ import pynag.Model.EventHandlers
 import adagios.settings
 import pnp.functions
 from pynag.Parsers import ParserError
+import utils
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -177,9 +178,18 @@ def _status(request):
     return c
 
 def status(request):
-    c = _status(request)
-    return render_to_response('status.html', c, context_instance = RequestContext(request))
+    #c = _status(request)
+    #return render_to_response('status.html', c, context_instance = RequestContext(request))
+    # Left here for compatibility reasons:
+    return services(request)
 
+def services(request):
+    """ This view handles list of services  """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    c['services'] = utils.get_services(**request.GET)
+    return render_to_response('status_services.html', c, context_instance = RequestContext(request))
 def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """
     c = { }
