@@ -120,7 +120,7 @@ def _status(request):
     if 'q' in search_filter:
         q = search_filter['q']
         del search_filter['q']
-    my_services = pynag.Utils.grep(all_services, **request.GET)
+    my_services = pynag.Utils.grep(all_services, **search_filter)
 
     for service in my_services:
         # Tag the service with tags such as problems and unhandled
