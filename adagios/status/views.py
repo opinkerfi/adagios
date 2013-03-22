@@ -50,7 +50,7 @@ def error_handler(fn):
     """
     def wrapper(*args,**kwargs):
         try:
-            fn(*args,**kwargs)
+            return fn(*args,**kwargs)
         except Exception, e:
             c = {}
             c['exception'] = e
