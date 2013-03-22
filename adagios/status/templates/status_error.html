@@ -1,13 +1,24 @@
 {% extends "base_status.html" %}
 
-{% block title %}Status Log{% endblock %}
+{% block title %}Error{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Status Log{% endblock %}
+{% block largeheader %}Oh no, something went wrong while loading the webpage :({% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
+    {% if exception %}
+        <div class="alert alert-danger">
+            <b>{{ exception_type }}</b>: {{ exception }}
+        </div>
+
+    {% endif %}
+
+    {% if traceback %}
+    <p>If you think this is a bug. Send the following information to the developers:</p>
+        <pre>{{ traceback }}</pre>
+    {% endif %}
 {% endblock %}
 
 {% block toolbar %} {% endblock %}
