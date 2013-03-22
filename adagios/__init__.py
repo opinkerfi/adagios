@@ -7,28 +7,6 @@ active_plugins = {}
 misc_menubar_items = []
 menubar_items = []
 
-def startup():
-    """ Do some pre-loading and parsing of objects
-
-    Returns:
-        None
-    """
-    from adagios import settings
-
-    pynag.Model.cfg_file = settings.nagios_config
-    pynag.Model.pynag_directory = settings.destination_directory
-
-    # Pre load objects on startup
-    pynag.Model.ObjectDefinition.objects.get_all()
-
-    if settings.enable_githandler == True:
-        from pynag.Model import EventHandlers
-        pynag.Model.eventhandlers.append(
-            pynag.Model.EventHandlers.GitEventHandler(os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
-        )
-    for k,v in settings.plugins.items():
-        add_plugin(k,v)
-
 def add_plugin(name="myplugin", modulepath=None):
     """ Adds a new django application dynamically to adagios.
 
@@ -62,8 +40,16 @@ def add_plugin(name="myplugin", modulepath=None):
         menubar_items.append( "%s_menubar.html" % name)
 
 
+
+# Any plugins og third party extensions to adagios are loaded here.
+# We will silently ignore any errors and make sure that the webserver
+# will successfully start up if any of the plugins have errors
 try:
-    import pynag.Model
-    startup()
+    from adagios import settings
+    for k,v in settings.plugins.items():
+        try:
+            add_plugin(k,v)
+        except Exception:
+            pass
 except Exception:
     pass
