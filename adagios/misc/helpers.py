@@ -8,12 +8,14 @@ Convenient stateless functions for pynag. This module is used by the /rest/ inte
 
 
 
+import platform
 from pynag import Model
 from pynag import Parsers
 from pynag import Control
 from pynag import __version__
 from socket import gethostbyname_ex
 import adagios.settings
+
 
 _config = Parsers.config(adagios.settings.nagios_config)
 _config.parse()
@@ -160,6 +162,8 @@ def run_check_command(object_id):
     Returns:
         [return_code,stdout,stderr]
     '''
+    if platform.node() == 'adagios.opensource.is':
+        return (1, 'Running check commands is disabled in demo-environment')
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     return o.run_check_command()
 
