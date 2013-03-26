@@ -11,6 +11,8 @@ import pynag.Model
 import django.core.mail
 import pynag.Utils
 import adagios.status.utils
+import pynag.Parsers
+import collections
 
 def hosts(fields=None, *args, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
@@ -246,3 +248,61 @@ if __name__ == '__main__':
         start_time=start,
         end_time=end,
         comment='test by palli')
+
+
+def top_alert_producers(limit=5, start_time=None,end_time=None):
+    """ Return a list of ["host_name",number_of_alerts]
+
+     Arguments:
+        limit      -- Limit output to top n hosts (default 5)
+        start_time -- Search log starting with start_time (default since last log rotation)
+    """
+    if start_time == '':
+        start_time = None
+    if end_time == '':
+        end_time = None
+    l = pynag.Parsers.LogFiles()
+    log = l.get_state_history(start_time=start_time,end_time=end_time)
+    top_alert_producers = collections.defaultdict(int)
+    for i in log:
+        if 'host_name' in i and 'state' in i and i['state'] > 0:
+            top_alert_producers[i['host_name']] += 1
+    top_alert_producers = top_alert_producers.items()
+    top_alert_producers.sort(cmp=lambda a,b: cmp(a[1],b[1]), reverse=True)
+    if limit > len(top_alert_producers):
+        top_alert_producers = top_alert_producers[:int(limit)]
+    return top_alert_producers
+
+
+def log_entries(*args, **kwargs):
+    """ Same as pynag.Parsers.Logfiles().get_log_entries()
+
+    Arguments:
+   start_time -- unix timestamp. if None, return all entries from today
+   end_time -- If specified, only fetch log entries older than this (unix timestamp)
+   strict   -- If True, only return entries between start_time and end_time, if False,
+            -- then return entries that belong to same log files as given timeset
+   search   -- If provided, only return log entries that contain this string (case insensitive)
+   kwargs   -- All extra arguments are provided as filter on the log entries. f.e. host_name="localhost"
+    Returns:
+   List of dicts
+
+    """
+    l = pynag.Parsers.LogFiles()
+    return l.get_log_entries(*args,**kwargs)
+
+def state_history(start_time=None, end_time=None, host_name=None, service_description=None):
+    """ Returns a list of dicts, with the state history of hosts and services. Parameters behaves similar to get_log_entries
+
+    """
+    if start_time == '':
+        start_time = None
+    if end_time == '':
+        end_time = None
+    if host_name == '':
+        host_name = None
+    if service_description == '':
+        service_description = None
+
+    l = pynag.Parsers.LogFiles()
+    return l.get_state_history(start_time=start_time, end_time=end_time,host_name=host_name, service_description=service_description)
