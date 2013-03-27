@@ -169,7 +169,7 @@ def run_check_command(object_id):
 
 def set_maincfg_attribute(attribute,new_value, old_value='None', append=False):
     """ Sets specific configuration values of nagios.cfg
-	
+
 	Required Arguments:
 		attribute   -- Attribute to change (i.e. process_performance_data)
 		new_value   -- New value for the attribute (i.e. "1")

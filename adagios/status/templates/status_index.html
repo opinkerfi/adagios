@@ -23,13 +23,13 @@
                 <tbody>
                 <tr>
                     <td>Network Parents</td>
-                    <td><a href="{% url status.views.status_parents %}">{{ parents|length }}</a></td>
+                    <td><a href="{% url status.views.status_parents %}">{{ total_network_parents }}</a></td>
                     <td>
-                        {% if  network_problems|length_is:0 %}
+                        {% if  total_network_problems == 0 %}
                         {% else %}
 
                                 <a href="{%  url status.views.status %}?state__isnot=0&acknowledged__isnot=1">
-                                    {{ network_problems|length }}
+                                    {{ total_network_problems }}
                                 </a>
 
                         {% endif %}
@@ -37,24 +37,24 @@
                 </tr>
                 <tr>
                     <td>Hosts</td>
-                    <td><a href="{% url status.views.status_host %}">{{ hosts|length }}</a></td>
+                    <td><a href="{% url status.views.status_host %}">{{ total_hosts }}</a></td>
                     <td>
-                        {% if  host_problems|length_is:0 %}
+                        {% if  unhandled_hosts == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status %}?state__isnot=0&acknowledged__isnot=1">
-                                {{ host_problems|length }}
+                            <a href="{%  url status.views.status_host %}?state__isnot=0&acknowledged=0&scheduled_downtime_depth=0">
+                                {{ unhandled_hosts }}
                             </a>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td>Services</td>
-                    <td><a href="{% url status.views.status %}"> {{ services|length }}</a></td>
+                    <td><a href="{% url status.views.status %}"> {{ total_services }}</a></td>
                     <td>
-                        {% if  service_problems|length_is:0 %}
+                        {% if  unhandled_services == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status %}?state__isnot=0&acknowledged__isnot=1">
-                                {{ service_problems|length }}
+                            <a href="{%  url status.views.status %}?state__isnot=0&acknowledged=0&scheduled_downtime_depth=0">
+                                {{ unhandled_services }}
                             </a>
                         {% endif %}
                     </td>

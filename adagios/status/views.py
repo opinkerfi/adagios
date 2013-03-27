@@ -37,6 +37,7 @@ import adagios.settings
 import pnp.functions
 from pynag.Parsers import ParserError
 import utils
+import adagios.status.rest
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -67,8 +68,6 @@ def status_parents(request):
     authuser = request.GET.get('contact_name', None)
     livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config,authuser=authuser)
     all_hosts = livestatus.get_hosts()
-    all_services = livestatus.get_services()
-    all_contacts = livestatus.get_contacts()
     host_dict = {}
     map(lambda x: host_dict.__setitem__(x['name'], x), all_hosts)
     c['hosts'] = []
@@ -178,6 +177,8 @@ def _status(request):
     return c
 
 def status(request):
+    """ Compatibility layer around status.views.services
+    """
     #c = _status(request)
     #return render_to_response('status.html', c, context_instance = RequestContext(request))
     # Left here for compatibility reasons:
@@ -519,27 +520,11 @@ def status_tiles(request, object_type="host"):
     return render_to_response('status_tiles.html', c, context_instance = RequestContext(request))
 
 def status_host(request):
-    c =  _status(request)
+    c =  {}
+    c['messages'] = []
+    c['errors'] = []
+    c['hosts'] = utils.get_hosts(request, **request.GET)
     c['host_name'] = request.GET.get('detail', None)
-    for host in c['hosts']:
-        ok = host.get('num_services_ok')
-        warn = host.get('num_services_warn')
-        crit = host.get('num_services_crit')
-        pending = host.get('num_services_pending')
-        unknown = host.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
-        host['total'] = total
-        host['problems'] = warn + crit + unknown
-        try:
-            total = float(total)
-            host['health'] = float(ok) / total * 100.0
-            host['percent_ok'] = ok/total*100
-            host['percent_warn'] = warn/total*100
-            host['percent_crit'] = crit/total*100
-            host['percent_unknown'] = unknown/total*100
-            host['percent_pending'] = pending/total*100
-        except ZeroDivisionError:
-            host['health'] = 'n/a'
     return render_to_response('status_host.html', c, context_instance = RequestContext(request))
 def status_boxview(request):
     c = _status(request)
@@ -679,19 +664,8 @@ def _add_statistics_to_hosts(hosts):
             host['percent_pending'] = 0
 @error_handler
 def status_index(request):
-    try:
-        c = _status_combined(request, optimized=True)
-    except KeyError, e:
-        c = {}
-        c['errors'] = [e]
-        return error_page(request, c)
-    top_alert_producers = defaultdict(int)
-    for i in c['log']:
-        if 'host_name' in i and 'state' in i and i['state'] > 0:
-            top_alert_producers[i['host_name']] += 1
-    top_alert_producers = top_alert_producers.items()
-    top_alert_producers.sort(cmp=lambda a,b: cmp(a[1],b[1]), reverse=True)
-    c['top_alert_producers'] = top_alert_producers
+    c = adagios.status.utils.get_statistics(request)
+    c['top_alert_producers'] = adagios.status.rest.top_alert_producers(limit=5)
     return render_to_response('status_index.html', c, context_instance = RequestContext(request))
 
 def test_livestatus(request):
@@ -786,8 +760,8 @@ def _status_combined(request, optimized=False):
         c['host_status'] = 0
     else:
         c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
-    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    c['log'] = reversed(l.get_state_history())
+    #l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
+    #c['log'] = reversed(l.get_state_history())
     return c
 
 def status_problems(request):
