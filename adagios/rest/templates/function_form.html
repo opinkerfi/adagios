@@ -1,8 +1,7 @@
-<html>
-<body>
-<pre>
+{% extends "base_misc.html" %}
 
 
+{% block content %}
 <h1>{{ function_name }}()</h1>
 <form action="{{function_name}}" method="post">
 <table>
@@ -12,4 +11,5 @@
 </form>
 
 ----- docstring ------
-{{ docstring }}
+<pre>{{ docstring }}</pre>
+{% endblock %}

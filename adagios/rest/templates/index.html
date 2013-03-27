@@ -5,36 +5,41 @@
 {% block largeheader %}{{ module_name }}{% endblock %}
 {% block sidebar %}{% endblock %}
 {% block content %}
-                The following GET operations are supported:
-                <table border=1>
-                    {% for i in gets %}
-	                <tr>
-		                <td> {{ i }} </td>
-                        <td><a href="txt/{{ i }}">txt</a></td>
-                        <td><a href="json/{{ i }}">json</a></td>
-                        <td><a href="xml/{{ i }}">xml</a></td>
-	                </tr>
-                    {% endfor %}
-                </table>
+        {% if module_documenation %}
+            <p>
+                The following is the documentation for the {{ module_name }} module:
+            </p>
+            <pre>{{ module_documenation }}</pre>
+        {% else %}
+            This module has no documentation.
+        {% endif %}
 
-                The following POST operations are supported:
-                <table border=1>
-                    {% for i in puts %}
-	                <tr>
-		                <td><a href="help/{{ i }}">{{ i }}</a></td>
-		                <td><a href="txt/{{ i }}">txt</a></td>
-		                <td><a href="json/{{ i }}">json</a></td>
-		                <td><a href="xml/{{ i }}">xml</a></td>
-	                </tr>
-                    {% endfor %}
-                </table>
-                {% if module_documenation %}
-                    <p>
-                        The following is the documentation for the module you requested:
-                    </p>
-                    <pre>{{ module_documenation }}</pre>
-                {% else %}
-                    This module has no documentation.
-                {% endif %}
+        {% if gets %}
+        The following GET operations are supported:
+        <table border=1 >
+            {% for i in gets %}
+            <tr>
+                <td> {{ i }} </td>
+                <td><a href="txt/{{ i }}">txt</a></td>
+                <td><a href="json/{{ i }}">json</a></td>
+                <td><a href="xml/{{ i }}">xml</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+
+        The following POST operations are supported:
+        <table border=1>
+            {% for i in puts %}
+            <tr>
+                <td><a href="help/{{ i }}">{{ i }}</a></td>
+                <td><a href="txt/{{ i }}">txt</a></td>
+                <td><a href="json/{{ i }}">json</a></td>
+                <td><a href="xml/{{ i }}">xml</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+
 
 {% endblock %}
