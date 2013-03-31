@@ -31,3 +31,7 @@ class LiveStatusTestCase(unittest.TestCase):
         c = Client()
         response = c.get('/status/')
         self.assertEqual(response.status_code, 200)
+    def testPageLoadServices(self):
+        c = Client()
+        response = c.get('/status/services')
+        self.assertEqual(response.status_code, 200)

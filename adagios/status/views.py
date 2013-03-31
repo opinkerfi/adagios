@@ -662,10 +662,12 @@ def _add_statistics_to_hosts(hosts):
             host['percent_crit'] = 0
             host['percent_unknown'] = 0
             host['percent_pending'] = 0
+
 @error_handler
 def status_index(request):
     c = adagios.status.utils.get_statistics(request)
     c['top_alert_producers'] = adagios.status.rest.top_alert_producers(limit=5)
+
     return render_to_response('status_index.html', c, context_instance = RequestContext(request))
 
 def test_livestatus(request):
@@ -1028,5 +1030,6 @@ def contact_detail(request, contact_name):
     git = pynag.Utils.GitRepo(directory=nagiosdir)
     c['gitlog'] = git.log(author_name=contact_name)
     return render_to_response('status_contact.html', c, context_instance = RequestContext(request))
+
 
 

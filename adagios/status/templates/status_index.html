@@ -41,7 +41,7 @@
                     <td>
                         {% if  unhandled_hosts == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status_host %}?state__isnot=0&acknowledged=0&scheduled_downtime_depth=0">
+                            <a href="{%  url status.views.status_host %}?state__isnot=0&acknowledged=0&">
                                 {{ unhandled_hosts }}
                             </a>
                         {% endif %}
@@ -53,7 +53,7 @@
                     <td>
                         {% if  unhandled_services == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status %}?state__isnot=0&acknowledged=0&scheduled_downtime_depth=0">
+                            <a href="{%  url status.views.status %}?state__isnot=0&acknowledged=0&">
                                 {{ unhandled_services }}
                             </a>
                         {% endif %}
@@ -69,10 +69,10 @@
                     <td  style="white-space: nowrap" width=20px>All hosts</td>
                     <th>
                         <div class="progress">
-                            <div class="bar bar-success" style=" width: {{ host_status.0 }}%;">{{ host_status.0|floatformat }}%</div>
-                            <div class="bar bar-warning" style=" width: {{ host_status.1 }}%;"></div>
-                            <div class="bar bar-danger" style=" width: {{ host_status.2 }}%;"></div>
-                            <div class="bar bar-unknown" style=" width: {{ host_status.3 }}%;"></div>
+                            <div class="bar bar-success" style=" width: {{ host_totals_percent.0 }}%;">{{ host_totals_percent.0|floatformat }}%</div>
+                            <div class="bar bar-warning" style=" width: {{ host_totals_percent.1 }}%;"></div>
+                            <div class="bar bar-danger" style=" width: {{ host_totals_percent.2 }}%;"></div>
+                            <div class="bar bar-unknown" style=" width: {{ host_totals_percent.3 }}%;"></div>
                         </div>
 
                     </th>
@@ -81,10 +81,10 @@
                     <td style="white-space: nowrap" width=20px>All services</td>
                     <th>
                         <div class="progress">
-                            <div class="bar bar-success" style=" width: {{ service_status.0 }}%;">{{ service_status.0|floatformat }}%</div>
-                            <div class="bar bar-warning" style=" width: {{ service_status.1 }}%;"></div>
-                            <div class="bar bar-danger" style=" width: {{ service_status.2 }}%;"></div>
-                            <div class="bar bar-unknown" style=" width: {{ service_status.3 }}%;"></div>
+                            <div class="bar bar-success" style=" width: {{ service_totals_percent.0 }}%;">{{ service_totals_percent.0|floatformat }}%</div>
+                            <div class="bar bar-warning" style=" width: {{ service_totals_percent.1 }}%;"></div>
+                            <div class="bar bar-danger" style=" width: {{ service_totals_percent.2 }}%;"></div>
+                            <div class="bar bar-unknown" style=" width: {{ service_totals_percent.3 }}%;"></div>
                         </div>
 
                     </th>

@@ -151,6 +151,9 @@ def get_statistics(request):
     l = pynag.Parsers.mk_livestatus()
     c['service_totals'] = l.query('GET services', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2','Stats: state = 3',)
     c['host_totals'] = l.query('GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2',)
+    c['service_totals_percent'] = map(lambda x: float(100.0 * x / sum(c['service_totals'])), c['service_totals'])
+    c['host_totals_percent'] = map(lambda x: float(100.0 * x / sum(c['host_totals'])), c['host_totals'])
+
     c['total_hosts'] = sum(c['host_totals'])
     c['total_services'] = sum(c['service_totals'])
     c['unhandled_services'] = l.query('GET services',
