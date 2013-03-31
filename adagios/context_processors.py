@@ -150,8 +150,13 @@ def check_git(request):
 
 def check_nagios_running(request):
     """ Notify user if nagios is not running """
-    nagios_pid = pynag.Model.config._get_pid()
-    return { "nagios_running":(nagios_pid is not None)}
+    try:
+        if pynag.Model.config is None:
+            pynag.Model.Timeperiod.objects.get_all() # force a config reload
+        nagios_pid = pynag.Model.config._get_pid()
+        return { "nagios_running":(nagios_pid is not None)}
+    except Exception:
+        return {}
 
 def check_nagios_needs_reload(request):
     """ Notify user if nagios needs a reload """
