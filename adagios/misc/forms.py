@@ -334,3 +334,40 @@ class NagiosServiceForm(forms.Form):
         p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
         self.stdout = p.stdout.read()
         self.stderr = p.stdout.read()
+
+
+
+class SendEmailForm(forms.Form):
+    """ Form used to send email to one or more contacts regarding particular services
+    """
+    to = forms.CharField(
+        required=False,
+        help_text="E-mail address",
+        )
+    message = forms.CharField(
+        widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
+        help_text="Message that is to be sent to recipients",
+        )
+    def __init__(self, contact_name, contact_email, initial=None, *args, **kwargs):
+        """ Create a new instance of SendEmailForm, contact name and email is used as from address.
+        """
+        self.contact_name = contact_name
+        self.contact_email = contact_email
+        super(self.__class__,self).__init__(initial=initial,*args,**kwargs)
+    def save(self):
+        print "Calling save"
+        from_address = '%s <%s>' % (self.contact_name, self.contact_email)
+        to_address = ["palli@ok.is"]
+        subject = "Suggestion from Adagios"
+
+        sender = self.cleaned_data['sender']
+        message = self.cleaned_data['message']
+
+        msg = """
+        topic: %s
+        from: %s
+
+        %s
+        """ % (sender,message)
+        send_mail(subject, msg, from_address, to_address, fail_silently=False)
+        print "Mail was sent"

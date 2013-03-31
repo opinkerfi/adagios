@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.core.context_processors import csrf
+from django.forms.formsets import BaseFormSet
 from django.shortcuts import render_to_response
 from django.shortcuts import HttpResponse
 from django.template import RequestContext
@@ -35,6 +36,7 @@ from os.path import dirname
 from subprocess import Popen, PIPE
 
 import adagios.settings
+import adagios.objectbrowser
 from adagios import __version__
 from collections import defaultdict
 state = defaultdict(lambda: "unknown")
@@ -300,3 +302,23 @@ def icons(request, image_name=None):
 def sign_out(request):
     """ Use this to force browser to update authentication """
     return HttpResponse('You have been signed out', status=401)
+
+
+def send_email(request):
+    """ Send a notification email to one or more contacts regarding hosts or services """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+
+    if request.method == 'GET':
+        c['form'] = forms.SendEmailForm('test', 'test@localhost', request.GET)
+    elif request.method == 'POST':
+        print "this is a post"
+        c['form'] = forms.SendEmailForm('test', 'test@localhost', request.POST)
+        if c['form'].is_valid():
+            "print form is valid"
+            c['form'].save()
+        else:
+            print "form is not valid"
+    return render_to_response('send_notification.html', c, context_instance = RequestContext(request))
+
