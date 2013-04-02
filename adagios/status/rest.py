@@ -70,7 +70,6 @@ def downtime(host_name,service_description=None,start_time=None,end_time=None,fi
         start_time = time.time()
     if fixed in (1,'1') and end_time in (None,''):
         end_time = int(start_time) + int(duration)
-    print "doing downtime, %s - %s" % (start_time, end_time)
     if all_services_on_host == True:
         return pynag.Control.Command.schedule_host_svc_downtime(host_name=host_name,
             start_time=start_time,
@@ -235,19 +234,10 @@ def delete_downtime(downtime_id, is_service=True):
       downtime_id -- Id of the downtime to be deleted
       is_service  -- If set to True or 1, then this is assumed to be a service downtime, otherwise assume host downtime
     """
-    print "Deleting downtime %s which is service: %s" % (downtime_id, is_service)
     if is_service in (True,1,'1'):
         return pynag.Control.Command.del_svc_downtime(downtime_id)
     else:
         return pynag.Control.Command.del_host_downtime(downtime_id)
-
-if __name__ == '__main__':
-    start = int(time.time())
-    end = start+500
-    print downtime(host_name='nagios.example.com',service_description='Ping',
-        start_time=start,
-        end_time=end,
-        comment='test by palli')
 
 
 def top_alert_producers(limit=5, start_time=None,end_time=None):

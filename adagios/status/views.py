@@ -783,8 +783,6 @@ def state_history(request):
         end_time = time.time()
     end_time = int(end_time)
     if start_time is None:
-        #start_time = livestatus.query('GET status')[0]['last_log_rotation']
-        #print start_time
         seconds_in_a_day = 60*60*24
         seconds_today = end_time % seconds_in_a_day # midnight of today
         start_time = end_time - seconds_today

@@ -4,6 +4,7 @@
 
 import pynag.Utils
 import pynag.Parsers
+import adagios.settings
 from collections import defaultdict
 
 state = defaultdict(lambda: "unknown")
@@ -170,10 +171,15 @@ def get_statistics(request):
     tmp = l.query('GET hosts',
                      'Filter: acknowledged = 0',
                      'Filter: scheduled_downtime_depth = 0',
-                     'Filter: childs = ',
+                     'Filter: childs != ',
                      'Stats: state >= 0',
                      'Stats: state > 0',
                      )
-    print tmp
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
+
+def query(request, *args,**kwargs):
+    """ Wrapper around pynag.Parsers.mk_livestatus().query(). Any authorization logic should be performed here. """
+    authuser = request.META.get('REMOTE_USER', None)
+    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
+    return livestatus.query(nagios_cfg_file=adagios.settings.nagios_config, *args, **kwargs)
