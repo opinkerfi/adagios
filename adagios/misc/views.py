@@ -304,21 +304,21 @@ def sign_out(request):
     return HttpResponse('You have been signed out', status=401)
 
 
-def send_email(request):
+def mail(request):
     """ Send a notification email to one or more contacts regarding hosts or services """
     c = {}
     c['messages'] = []
     c['errors'] = []
+    c.update(csrf(request))
 
     if request.method == 'GET':
-        c['form'] = forms.SendEmailForm('test', 'test@localhost', request.GET)
+        c['form'] = forms.SendEmailForm('contact_name', 'contact_email', initial=request.GET)
     elif request.method == 'POST':
-        print "this is a post"
-        c['form'] = forms.SendEmailForm('test', 'test@localhost', request.POST)
+        c['form'] = forms.SendEmailForm('contact_name', 'contact_email', request.POST)
         if c['form'].is_valid():
-            "print form is valid"
             c['form'].save()
+            c['messages'].append('Message has been sent.')
         else:
-            print "form is not valid"
-    return render_to_response('send_notification.html', c, context_instance = RequestContext(request))
+            c['errors'].append("invalid form")
+    return render_to_response('misc_mail.html', c, context_instance = RequestContext(request))
 

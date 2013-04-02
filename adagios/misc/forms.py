@@ -341,33 +341,32 @@ class SendEmailForm(forms.Form):
     """ Form used to send email to one or more contacts regarding particular services
     """
     to = forms.CharField(
-        required=False,
+        required=True,
         help_text="E-mail address",
         )
     message = forms.CharField(
         widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
         help_text="Message that is to be sent to recipients",
         )
-    def __init__(self, contact_name, contact_email, initial=None, *args, **kwargs):
+    def __init__(self, contact_name, contact_email, *args, **kwargs):
         """ Create a new instance of SendEmailForm, contact name and email is used as from address.
         """
         self.contact_name = contact_name
         self.contact_email = contact_email
-        super(self.__class__,self).__init__(initial=initial,*args,**kwargs)
+        self.services = []
+        return super(self.__class__,self).__init__(*args,**kwargs)
     def save(self):
-        print "Calling save"
+
         from_address = '%s <%s>' % (self.contact_name, self.contact_email)
         to_address = ["palli@ok.is"]
         subject = "Suggestion from Adagios"
 
-        sender = self.cleaned_data['sender']
+        to = self.cleaned_data['to']
         message = self.cleaned_data['message']
 
-        msg = """
-        topic: %s
-        from: %s
+        msg = message
 
-        %s
-        """ % (sender,message)
+        servicetext = []
+        for service in self.services:
+            string = "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % service
         send_mail(subject, msg, from_address, to_address, fail_silently=False)
-        print "Mail was sent"

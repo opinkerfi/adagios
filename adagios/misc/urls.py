@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     (r'^/pnp4nagios/?', 'misc.views.pnp4nagios'),
     (r'^/editfile(?P<filename>.+)$', 'misc.views.edit_file'),
     (r'^/signout$', 'misc.views.sign_out'),
-    (r'^/notify$', 'misc.views.send_email'),
+    (r'^/mail', 'misc.views.mail'),
     url(r'^/images/(?P<path>.+)$', 'django.views.static.serve', {'document_root': '/usr/share/nagios3/htdocs/images/logos/'}, name="logo"),
     (r'^/images/?$', 'misc.views.icons'),
 )

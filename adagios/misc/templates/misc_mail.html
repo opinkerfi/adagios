@@ -1,0 +1,20 @@
+{% extends "base2.html" %}
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+
+    {% if form %}
+        <form method="post" class="form-horizontal">{% csrf_token %}
+            {% include "bootstrap_fields.html" with fields=form %}
+            <div class="form-actions">
+                <button class="btn btn-success" type="submit">Save</button>
+            </div>
+        </form>
+
+        <script>
+        $('#zesubmit').button();
+        </script>
+    {% endif %}
+
+{% endblock %}
+    
