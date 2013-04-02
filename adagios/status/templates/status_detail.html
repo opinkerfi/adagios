@@ -501,7 +501,6 @@
 
         // Treat acknowledge button depending on if acknowledgements are needed
         $(document).ready(function() {
-            $('#dp3').datepicker();
             {% if my_object.state == 0 %}
             $('#acknowledge_button').hide();
             {% endif %}
