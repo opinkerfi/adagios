@@ -24,7 +24,7 @@
         }
 
 
-        $('#objecttabs a:[href="#' + anchor + '-tab"]').tab('show');
+        $('#objecttabs').find('a[href="#' + anchor + '-tab"]').tab('show');
 
         $('table#service-table').adagios_ob_configure_dataTable(
                 [
