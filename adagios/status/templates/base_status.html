@@ -556,6 +556,10 @@
                                 <i class="glyph-bin" > </i>
                             </a>
 
+                            <a class="btn btn-small" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
+                                <i class="glyph-envelope" > </i>
+                            </a>
+
                     {% endblock %}
                 </div >
 
@@ -677,6 +681,38 @@
     </div>
     <!-- Downtime modal ends -->
 
+    <!-- Mail modal -->
+    <div class="modal hide fade" id="mail_modal">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Mail</h3>
+            </div>
+            <div class="modal-body">
+                <p>You can send manual e-mail notification to a specified email address.</p>
+                <div class="control-group">
+                    <label class="control-label" for="id_mail_to">
+                        To:
+                    </label>
+                    <div class="controls" id="mail_to_field">
+                        <input id="id_mail_to" type="text" class="required" value="" name="to" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="id_mail_message">
+                        Message
+                    </label>
+                    <div class="controls" id="id_mail_message_field">
+                        <input id="id_mail_message" type="text" class="required" placeholder="Write something clever" name="message" />
+                        <label class="help-block">Write something clever</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>Cancel</a>
+                <button type="submit" class="btn btn-primary" onclick='$("#mail_modal").modal("hide"); send_mail();'>Send</button>
+            </div>
+    </div>
+    <!-- Downtime modal ends -->
 
 </div> <!-- /container -->
 
@@ -840,6 +876,36 @@
                     dataType: 'json'
                 });
             });
+        }
+        // This function sends email to selected recipients for all selected rows
+        function send_mail() {
+            $('#mail_modal').modal('hide');
+            my_data = {
+                "to":document.getElementById("id_mail_to").value,
+                "csrfmiddlewaretoken": window.csrftoken,
+                "message":document.getElementById("id_mail_message").value,
+                "service": []
+            }
+
+            var my_services = get_selected_services();
+            for (i=0;i<my_services.length;i++){
+                shortname = my_services[i]["host_name"] + "/" + my_services[i]["service_description"];
+                my_data['service'].push( shortname);
+            }
+            jQuery.param( my_data["service"], true);
+            console.log(my_data['service']);
+            $.ajax({
+                type: 'POST',
+                url: '{% url misc.views.mail %}',
+                data: my_data,
+                async: true,
+                success: function(data) {
+                    $("#mail_button_text").html("Sent")
+                },
+                contentType: "application/json",
+                dataType: 'json'
+            });
+
         }
 
         function comment(comment,host_name, service_description, persistent ) {

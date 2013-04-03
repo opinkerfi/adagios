@@ -18,6 +18,8 @@
 from django.core.context_processors import csrf
 from django.forms.formsets import BaseFormSet
 from django.shortcuts import render_to_response
+from django.shortcuts import render
+
 from django.shortcuts import HttpResponse
 from django.template import RequestContext
 import forms
@@ -38,6 +40,8 @@ from subprocess import Popen, PIPE
 import adagios.settings
 import adagios.objectbrowser
 from adagios import __version__
+import adagios.status.utils
+
 from collections import defaultdict
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -310,15 +314,41 @@ def mail(request):
     c['messages'] = []
     c['errors'] = []
     c.update(csrf(request))
-
+    c['http_origin'] = request.META.get('HTTP_ORIGIN', '')
+    remote_user = request.META.get('REMOTE_USER', 'anonymous adagios user')
     if request.method == 'GET':
-        c['form'] = forms.SendEmailForm('contact_name', 'contact_email', initial=request.GET)
+        c['form'] = forms.SendEmailForm(remote_user, 'contact_email', initial=request.GET)
+        services = request.GET.getlist('service') or request.GET.getlist('service[]')
+        if services == []:
+            c['form'].services = adagios.status.utils.get_services(request,host_name='localhost')
     elif request.method == 'POST':
-        c['form'] = forms.SendEmailForm('contact_name', 'contact_email', request.POST)
-        if c['form'].is_valid():
-            c['form'].save()
-            c['messages'].append('Message has been sent.')
-        else:
-            c['errors'].append("invalid form")
+        c['form'] = forms.SendEmailForm(remote_user, 'contact_email', request.POST)
+        services = request.POST.getlist('service') or request.POST.getlist('service[]')
+
+
+    for i in services:
+        try:
+            host_name,service_description = i.split('/',1)
+            service = adagios.status.utils.get_services(request,
+                                                        host_name=host_name,
+                                                        service_description=service_description
+            )
+            if len(service) == 0:
+                c['errors'].append('Service "%s"" not found. Maybe a typo or you do not have access to it ?' % i)
+            for x in service:
+                c['form'].services.append( x )
+                #c['messages'].append( x )
+        except AttributeError:
+            pass
+        except KeyError, e:
+            c['errors'].append("Error adding service '%s': %s"% (i,e))
+
+    c['services'] = c['form'].services
+    c['form'].html_content = render(request, "snippets/misc_mail_servicelist.html", c).content
+
+    if request.method == 'POST' and c['form'].is_valid():
+        c['form'].save()
+    print request.POST.keys()
+    print "hah",request.POST.getlist('service[]')
     return render_to_response('misc_mail.html', c, context_instance = RequestContext(request))
 

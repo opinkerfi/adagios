@@ -21,6 +21,8 @@ from django.core.mail import send_mail
 import os.path
 from adagios import settings
 from pynag import Model, Control
+from django.core.mail import EmailMultiAlternatives
+
 
 TOPIC_CHOICES = (
     ('general', 'General Suggestion'),
@@ -357,16 +359,26 @@ class SendEmailForm(forms.Form):
         return super(self.__class__,self).__init__(*args,**kwargs)
     def save(self):
 
+        subject = "%s sent you a a message through adagios" % self.contact_name
+
         from_address = '%s <%s>' % (self.contact_name, self.contact_email)
-        to_address = ["palli@ok.is"]
-        subject = "Suggestion from Adagios"
+        to_address = self.cleaned_data['to']
+        to_address = to_address.split(',')
+        text_content = self.cleaned_data['message']
 
-        to = self.cleaned_data['to']
-        message = self.cleaned_data['message']
+        #html_content = render(request, "snippets/status_servicelist_snippet.html", {"services":self.services})
+        #html_content = "<p>%s</p>" % text_content
+        #html_content += "<table border=1>"
+        #for service in self.services:
+        #    html_content += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (
+        #        service.get('host_name'),
+        #        service.get('description'),
+        #        service.get('state')
+        #    )
+        #html_content += "</table>"
 
-        msg = message
-
-        servicetext = []
-        for service in self.services:
-            string = "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % service
-        send_mail(subject, msg, from_address, to_address, fail_silently=False)
+        # Here we actually send some email:
+        msg = EmailMultiAlternatives(subject, text_content, from_address, to_address)
+        msg.attach_alternative(text_content + "<p></p>" + self.html_content, "text/html")
+        msg.send()
+        #send_mail(subject, msg, from_address, to_address, fail_silently=False)
