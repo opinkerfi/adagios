@@ -430,6 +430,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
       if data[2]
         $("#run_check_plugin #error pre").text data[2]
         $("#run_check_plugin div#error").show()
+      else
+        $("#run_check_plugin #error pre").text = ""
+        $("#run_check_plugin div#error").hide()
       $("#run_check_plugin_refresh").show()
       $("#run_check_plugin div.progress").hide()
       $("#run_check_plugin_refresh").unbind('click').click ->
