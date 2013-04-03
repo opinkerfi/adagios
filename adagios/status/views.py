@@ -189,7 +189,7 @@ def services(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    c['services'] = utils.get_services(**request.GET)
+    c['services'] = utils.get_services(request,**request.GET)
     return render_to_response('status_services.html', c, context_instance = RequestContext(request))
 def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """

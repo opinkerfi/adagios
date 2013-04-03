@@ -12,6 +12,19 @@ state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
+
+def query(request, *args,**kwargs):
+    """ Wrapper around pynag.Parsers.mk_livestatus().query(). Any authorization logic should be performed here. """
+    livestatus = livestatus(request)
+    return livestatus.query(nagios_cfg_file=adagios.settings.nagios_config, *args, **kwargs)
+
+def livestatus(request):
+    """ Returns a new pynag.Parsers.mk_livestatus() object with authauser automatically set from request.META['remoteuser']
+    """
+    authuser = request.META.get('REMOTE_USER', None)
+    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
+    return livestatus
+
 def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     """ Get a list of hosts from mk_livestatus
 
@@ -29,11 +42,18 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         A list of dict (hosts)
     """
     if 'q' in kwargs:
-        q = kwargs['q']
+        q = kwargs.get('q')
         del kwargs['q']
+        if not isinstance(q, list):
+            q = [q]
     else:
-        q = None
+        q = []
     arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
+
+    # if "q" came in from the querystring, lets filter on host_name
+    for i in q:
+        arguments.append('Filter: name ~ %s' % i)
+
 
     if not fields is None:
     # fields should be a list, lets create a Column: query for livestatus
@@ -42,8 +62,9 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         if len(fields) > 0:
             argument = 'Columns: %s' % ( ' '.join(fields))
             arguments.append(argument)
-    livestatus = pynag.Parsers.mk_livestatus()
-    result = livestatus.get_hosts(*arguments)
+    l = livestatus(request)
+    result = l.get_hosts(*arguments)
+
 
     # Add statistics to every hosts:
     for host in result:
@@ -97,11 +118,20 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
 
     """
     if 'q' in kwargs:
-        q = kwargs['q']
+        q = kwargs.get('q')
         del kwargs['q']
     else:
-        q = None
+        q = []
+    if not isinstance(q, list):
+        q = [q]
     arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
+
+    # If q was added, it is a fuzzy filter on services
+    for i in q:
+        arguments.append('Filter: host_name ~ %s' % i)
+        arguments.append('Filter: description ~ %s' % i)
+        arguments.append('Or: 2')
+
 
     if not fields is None:
     # fields should be a list, lets create a Column: query for livestatus
@@ -110,8 +140,8 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
         if len(fields) > 0:
             argument = 'Columns: %s' % ( ' '.join(fields))
             arguments.append(argument)
-    livestatus = pynag.Parsers.mk_livestatus()
-    result = livestatus.get_services(*arguments)
+    l = livestatus(request)
+    result = l.get_services(*arguments)
 
 
     # Add custom tags to our service list
@@ -149,7 +179,7 @@ def get_statistics(request):
     """ Return a list of dict. That contains various statistics from mk_livestatus (like service totals and host totals)
     """
     c = {}
-    l = pynag.Parsers.mk_livestatus()
+    l = livestatus(request)
     c['service_totals'] = l.query('GET services', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2','Stats: state = 3',)
     c['host_totals'] = l.query('GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2',)
     c['service_totals_percent'] = map(lambda x: float(100.0 * x / sum(c['service_totals'])), c['service_totals'])
@@ -177,9 +207,3 @@ def get_statistics(request):
                      )
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
-
-def query(request, *args,**kwargs):
-    """ Wrapper around pynag.Parsers.mk_livestatus().query(). Any authorization logic should be performed here. """
-    authuser = request.META.get('REMOTE_USER', None)
-    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
-    return livestatus.query(nagios_cfg_file=adagios.settings.nagios_config, *args, **kwargs)
