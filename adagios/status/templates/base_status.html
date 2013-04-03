@@ -763,6 +763,19 @@
             document.getElementById('id_downtime_comment').focus()
         });
 
+        // When somebody clicks the notification button, lets load contact email addresses
+        $('#mail_modal').on('shown', function () {
+            var url = '{% url rest/status %}json/emails?fields=email';
+            $.getJSON(url, function(data) {
+                $("#id_mail_to").select2({
+                    tags:data,
+                    tokenSeparators: [","],
+                    placeholder:"Comma seperated list of email addresses to send to"
+                });
+            })
+        });
+
+
         function reschedule() {
             $("#reschedule_button").button('loading');
             var my_services = get_selected_services();

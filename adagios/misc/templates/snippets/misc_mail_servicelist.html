@@ -92,12 +92,13 @@
     </tr>
     </thead>
     <tbody>
+
     {% for service in services %}
-        <tr >
+        <tr>
             <td style="white-space: nowrap;">
                     <div title="{{ service.host_plugin_output }}" class="circle  state_{{ service.host_state }}"></div>
                     <a href="{{ http_origin }}{% url status.views.status_detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
-                    <input type="hidden" name="service" value="{{ service.host_name }}/{{ service.description }}"
+                    <input type="hidden" name="service" value="{{ service.host_name }}/{{ service.description }}"/>
             </td>
 
             <td  colspan=1 style="word-wrap: break-word;">

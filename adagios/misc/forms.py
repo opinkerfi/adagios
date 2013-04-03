@@ -362,6 +362,7 @@ class SendEmailForm(forms.Form):
         subject = "%s sent you a a message through adagios" % self.contact_name
 
         from_address = '%s <%s>' % (self.contact_name, self.contact_email)
+        from_address = self.contact_email
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')
         text_content = self.cleaned_data['message']
@@ -378,7 +379,7 @@ class SendEmailForm(forms.Form):
         #html_content += "</table>"
 
         # Here we actually send some email:
-        msg = EmailMultiAlternatives(subject, text_content, from_address, to_address)
+        msg = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_address, to=to_address)
         msg.attach_alternative(text_content + "<p></p>" + self.html_content, "text/html")
         msg.send()
         #send_mail(subject, msg, from_address, to_address, fail_silently=False)

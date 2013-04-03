@@ -1,4 +1,4 @@
-{% extends "base2.html" %}
+{% extends "base_status.html" %}
 {% block title %}Contact Us{% endblock %}
 
 {% block content %}
@@ -9,13 +9,29 @@
             {% include "snippets/misc_mail_servicelist.html" %}
 
             <div class="form-actions">
-                <button class="btn btn-success" type="submit">Save</button>
+                <button id="zesubmit" class="btn btn-success" type="submit">Save</button>
             </div>
         </form>
         <script>
-        $('#zesubmit').button();
         </script>
     {% endif %}
 
+
 {% endblock %}
-    
+
+{% block footer %}
+    {{ block.super }}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        $(document).ready(function() {
+            var url = '{% url rest/status %}json/emails?fields=email';
+            $.getJSON(url, function(data) {
+                $("#id_to").select2({
+                    tags:data,
+                    tokenSeparators: [",", " "],
+                    placeholder:"Comma seperated list of email addresses to send to"
+                });
+            })
+        })
+    </script>
+
+{% endblock %}

@@ -42,6 +42,19 @@ def services(fields=None,*args,**kwargs):
     """
     return adagios.status.utils.get_services(fields=fields,*args,**kwargs)
 
+def contacts(fields=None,*args,**kwargs):
+    """ Wrapper around pynag.Parsers.mk_livestatus.get_contacts()
+    """
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    return l.get_contacts(*args,**kwargs)
+
+def emails(*args,**kwargs):
+    """ Returns a list of all emails of all contacts
+    """
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    return map(lambda x: x['email'], l.get_contacts('Filter: email !='))
+
+
 def acknowledge(host_name, service_description=None, sticky=1, notify=1,persistent=0,author='adagios',comment='acknowledged by Adagios'):
     """ Acknowledge one single host or service check
 
