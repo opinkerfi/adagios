@@ -495,3 +495,20 @@ $(document).ready ->
           console.log "Unable to do stuff for #{id}"
       return e.preventDefault()
     true
+
+  # https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
+  getCookie = (name) ->
+    cookieValue = null
+    if document.cookie and document.cookie isnt ""
+      cookies = document.cookie.split(";")
+      i = 0
+
+      while i < cookies.length
+        cookie = jQuery.trim(cookies[i])
+
+        # Does this cookie string begin with the name we want?
+        if cookie.substring(0, name.length + 1) is (name + "=")
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+          break
+        i++
+    cookieValue
