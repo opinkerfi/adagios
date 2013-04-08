@@ -572,7 +572,7 @@
                         </div>
                         <div class="btn-group pull-left"><button class="btn btn-small"  type="submit" href="{% url status.views.status %}"><i class="icon-search"></i> Search</button><a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0&scheduled_downtime_depth=0"> Open Problems</a></li>
                                 <li><a href="{% url status.views.status %}?state__isnot=0"> All Problems</a></li>
                                 <li><a href="{% url status.views.status %}?state=0"> All OK</a></li>
                                 <li><a href="{% url status.views.status %}"> Everything</a></li>

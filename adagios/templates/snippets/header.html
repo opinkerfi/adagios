@@ -63,7 +63,7 @@
                         </li>
                     {% endif %}
                     {% if num_problems %}
-                        <li style="color: red";><a style="color: red"; href="{% url status.views.status %}?state__isnot=0&acknowledged=0"><i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
+                        <li style="color: red";><a style="color: red"; href="{% url status.views.status %}?state__isnot=0&acknowledged=0&scheduled_downtime_depth=0"><i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
                     {% endif %}
                     <!--
                     <li>
