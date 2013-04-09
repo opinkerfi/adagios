@@ -13,17 +13,17 @@ state[1] = "warning"
 state[2] = "critical"
 
 
-def query(request, *args,**kwargs):
-    """ Wrapper around pynag.Parsers.mk_livestatus().query(). Any authorization logic should be performed here. """
-    livestatus = livestatus(request)
-    return livestatus.query(nagios_cfg_file=adagios.settings.nagios_config, *args, **kwargs)
-
 def livestatus(request):
     """ Returns a new pynag.Parsers.mk_livestatus() object with authauser automatically set from request.META['remoteuser']
     """
     authuser = request.META.get('REMOTE_USER', None)
-    livestatus = pynag.Parsers.mk_livestatus(authuser=authuser)
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
     return livestatus
+
+def query(request, *args,**kwargs):
+    """ Wrapper around pynag.Parsers.mk_livestatus().query(). Any authorization logic should be performed here. """
+    l = livestatus(request)
+    return l.query(*args, **kwargs)
 
 def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     """ Get a list of hosts from mk_livestatus
@@ -68,7 +68,7 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
 
     # Add statistics to every hosts:
     for host in result:
-        host['num_problems'] = host['num_services_crit'] +  host['num_services_warn'] +  host['num_services_unknown']
+        host['num_problems'] = host['num_services_crit'] + host['num_services_warn'] + host['num_services_unknown']
         host['children'] = host['services_with_state']
         host['status'] = state[host['state']]
 
