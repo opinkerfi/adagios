@@ -186,11 +186,17 @@ def get_statistics(request):
     l = livestatus(request)
     c['service_totals'] = l.query('GET services', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2','Stats: state = 3',)
     c['host_totals'] = l.query('GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2',)
-    c['service_totals_percent'] = map(lambda x: float(100.0 * x / sum(c['service_totals'])), c['service_totals'])
-    c['host_totals_percent'] = map(lambda x: float(100.0 * x / sum(c['host_totals'])), c['host_totals'])
-
     c['total_hosts'] = sum(c['host_totals'])
     c['total_services'] = sum(c['service_totals'])
+    try:
+        c['service_totals_percent'] = map(lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
+    except ZeroDivisionError:
+        c['service_totals_percent'] = [0,0,0,0]
+    try:
+        c['host_totals_percent'] = map(lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
+    except ZeroDivisionError:
+        c['host_totals_percent'] = [0,0,0,0]
+
     c['unhandled_services'] = l.query('GET services',
                                             'Filter: acknowledged = 0',
                                             'Filter: scheduled_downtime_depth = 0',
