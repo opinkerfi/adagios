@@ -767,7 +767,45 @@ def _status_combined(request, optimized=False):
     return c
 
 def status_problems(request):
-    c = _status_combined(request)
+    #c = _status_combined(request)
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+
+    all_down_hosts = utils.get_hosts(request,fields=['state','name','childs','parents', 'plugin_output', 'last_state_change', 'acknowledged', 'scheduled_downtime_depth'],state__isnot='0',**request.GET)
+    hostnames_that_are_down = map(lambda x: x.get('name'), all_down_hosts)
+    # Discover network outages,
+
+
+    # Remove acknowledgements and also all hosts where all parent hosts are down
+    c['host_problems'] = [] # Unhandled host problems
+    c['network_problems'] = [] # Network outages
+    for i in all_down_hosts:
+        if i.get('acknowledged') != 0:
+            break
+        if i.get('scheduled_downtime_depth') != 0:
+            break
+
+        # Do nothing if parent of this host is also down
+        for parent in i.get('parents'):
+            if parent in hostnames_that_are_down:
+                print parent, "is in ", hostnames_that_are_down
+                parent_is_down = True
+                break
+        else:
+            parent_is_down = False
+
+        if parent_is_down == True:
+            continue
+
+        # If host has network childs, put them in the network outages box
+        if i.get('childs') == []:
+            c['host_problems'].append(i)
+        else:
+            c['network_problems'].append(i)
+
+    # Service problems
+    c['service_problems'] = utils.get_services(request, state__isnot="0", acknowledged="0",scheduled_downtime_depth="0", host_state="0",**request.GET)
     return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
 
 

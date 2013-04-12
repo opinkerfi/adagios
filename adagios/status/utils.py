@@ -48,8 +48,8 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
             q = [q]
     else:
         q = []
-    arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
 
+    arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
     # if "q" came in from the querystring, lets filter on host_name
     for i in q:
         arguments.append('Filter: name ~ %s' % i)
@@ -68,28 +68,32 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
 
     # Add statistics to every hosts:
     for host in result:
-        host['num_problems'] = host['num_services_crit'] + host['num_services_warn'] + host['num_services_unknown']
-        host['children'] = host['services_with_state']
-        host['status'] = state[host['state']]
-
-        ok = host.get('num_services_ok')
-        warn = host.get('num_services_warn')
-        crit = host.get('num_services_crit')
-        pending = host.get('num_services_pending')
-        unknown = host.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
-        host['total'] = total
-        host['problems'] = warn + crit + unknown
         try:
-            total = float(total)
-            host['health'] = float(ok) / total * 100.0
-            host['percent_ok'] = ok/total*100
-            host['percent_warn'] = warn/total*100
-            host['percent_crit'] = crit/total*100
-            host['percent_unknown'] = unknown/total*100
-            host['percent_pending'] = pending/total*100
-        except ZeroDivisionError:
-            host['health'] = 'n/a'
+            host['num_problems'] = host['num_services_crit'] + host['num_services_warn'] + host['num_services_unknown']
+            host['children'] = host['services_with_state']
+            host['status'] = state[host['state']]
+
+            ok = host.get('num_services_ok')
+            warn = host.get('num_services_warn')
+            crit = host.get('num_services_crit')
+            pending = host.get('num_services_pending')
+            unknown = host.get('num_services_unknown')
+            total = ok + warn + crit +pending + unknown
+            host['total'] = total
+            host['problems'] = warn + crit + unknown
+            try:
+                total = float(total)
+                host['health'] = float(ok) / total * 100.0
+                host['percent_ok'] = ok/total*100
+                host['percent_warn'] = warn/total*100
+                host['percent_crit'] = crit/total*100
+                host['percent_unknown'] = unknown/total*100
+                host['percent_pending'] = pending/total*100
+            except ZeroDivisionError:
+                host['health'] = 'n/a'
+        except Exception:
+            host['num_problems'] = 'n/a'
+            pass
 
     # Sort by service status
     result.sort(reverse=True, cmp=lambda a,b: cmp(a['num_problems'], b['num_problems']))

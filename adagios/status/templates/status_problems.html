@@ -4,28 +4,17 @@
 {% block title %}Problems{% endblock %}
 {% block titlebar %} {% endblock %}
 {% block maincontent %}
-    <table class="table table-condensed" style="white-space: nowrap;">
+    <h2>Unhandled Problems</h2>
+    <table class="table  table-condensed" style="white-space: nowrap;" xmlns="http://www.w3.org/1999/html"
+           xmlns="http://www.w3.org/1999/html">
 
     {% if network_problems %}
-        <tr>
-        <th colspan=5>
-            <h3>Network outage:</h3>
-        </th>
-        </tr>
-        <!--
-        <tr>
-            <th style="width: 20px; max-width: 20px;"></th>
-            <th>Host Name</th>
-            <th></th>
-            <th>Description</th>
 
-        </tr>
-        -->
         {% for i in network_problems %}
             <tr style="color: black;">
-                <td><div class="circle circle-spin state_{{ i.state }}"></div></td>
-                <td>{{ i.name }}</td>
                 <td></td>
+                <td>{{ i.name }}</td>
+                <td><div class="circle circle-spin state_2"></div><b> Network Outage</b></td>
                 <td>
                     {{ i.plugin_output }}
                 </td>
@@ -38,11 +27,8 @@
 
     {% endif %}
     {% if host_problems %}
-        <tr>
-        <th colspan=5>
-            <h3>Unhandled Host Problems:</h3>
-        </th>
-        </tr>
+        <tr><td colspan="5"></td></tr>
+
         <!--
         <tr>
             <th style="width: 20px; max-width: 20px;"></th>
@@ -52,10 +38,10 @@
         </tr>
         -->
         {% for i in host_problems %}
-            <tr style="color: black;">
-                <td><div class="circle circle-spin state_{{ i.state }}"></div></td>
-                <td>{{ i.name }}</td>
+            <tr  style="color: black;">
                 <td></td>
+                <td>{{ i.name }}</td>
+                <td><b><div class="circle  state_2"></div> Host down</b></td>
                 <td>
                     {{ i.plugin_output }}
                 </td>
@@ -67,11 +53,8 @@
     {% endif %}
 
     {% if service_problems %}
-        <tr>
-        <td colspan=5>
-            <h3>Unhandled Service problems:</h3>
-        </td>
-        </tr>
+        <tr><td colspan="5"></td></tr>
+
         <!--
         <tr>
             <th style="width: 20px; max-width: 20px;"></th>
@@ -82,10 +65,10 @@
         -->
         {% for i in service_problems %}
             <tr>
-                <td><div class="circle  state_{{ i.state }}{{ i.unhandled }}"></div></td>
+                <td></td>
                 <td>{{ i.host_name }}</td>
-                <td class="state_{{ i.state }}">
-                    {{ i.description }}
+                <td >
+                    <div class="circle  state_{{ i.state }} circle_unhandled"></div> <b>{{ i.description }}</b>
                 </td>
                 <td>
                     {{ i.plugin_output }}
