@@ -4,9 +4,10 @@ import os
 from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
 import adagios
+import adagios.status.utils
 from pynag import Model
-from pynag.Parsers import mk_livestatus
 import time
+
 
 def on_page_load(request):
     """ Collection of actions that take place every page load """
@@ -80,7 +81,7 @@ def get_tagged_comments(request):
     """ (for status view) returns number of comments that mention the remote_user"""
     try:
         remote_user = request.META.get('REMOTE_USER', 'anonymous')
-        livestatus = mk_livestatus()
+        livestatus = adagios.status.utils.livestatus(request)
         tagged_comments = livestatus.query('GET comments', 'Stats: comment ~ %s' % remote_user )[0]
         if tagged_comments > 0:
             return {'tagged_comments': tagged_comments }
@@ -94,7 +95,7 @@ def get_unhandled_problems(request):
     """ Get number of any unhandled problems via livestatus """
     results = {}
     try:
-        livestatus = mk_livestatus()
+        livestatus = adagios.status.utils.livestatus(request)
         num_problems = livestatus.query('GET services','Filter: state != 0', 'Filter: acknowledged = 0', 'Filter: scheduled_downtime_depth = 0', 'Stats: state != 0')
         results['num_problems'] = num_problems[0]
     except Exception:

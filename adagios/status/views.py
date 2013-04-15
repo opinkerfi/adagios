@@ -772,7 +772,7 @@ def status_problems(request):
     c['messages'] = []
     c['errors'] = []
 
-    all_down_hosts = utils.get_hosts(request,fields=['state','name','childs','parents', 'plugin_output', 'last_state_change', 'acknowledged', 'scheduled_downtime_depth'],state__isnot='0',**request.GET)
+    all_down_hosts = utils.get_hosts(request,state__isnot='0',**request.GET)
     hostnames_that_are_down = map(lambda x: x.get('name'), all_down_hosts)
     # Discover network outages,
 
@@ -803,7 +803,8 @@ def status_problems(request):
             c['host_problems'].append(i)
         else:
             c['network_problems'].append(i)
-
+    #
+    c['hosts'] = c['network_problems'] + c['host_problems']
     # Service problems
     c['service_problems'] = utils.get_services(request, state__isnot="0", acknowledged="0",scheduled_downtime_depth="0", host_state="0",**request.GET)
     return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
@@ -1067,5 +1068,33 @@ def contact_detail(request, contact_name):
     c['gitlog'] = git.log(author_name=contact_name)
     return render_to_response('status_contact.html', c, context_instance = RequestContext(request))
 
+def contactgroup_detail(request, contactgroup_name):
+    """ Detailed information for one specific contactgroup
+    """
+    c= {}
+    c['messages'] = []
+    c['errors'] = []
+    c['contactgroup_name'] = contactgroup_name
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+
+    # Fetch contact and basic information
+    result = l.query("GET contactgroups", "Filter: name = %s" % contactgroup_name)
+    if result == []:
+        c['errors'].append("Contactgroup named '%s' was not found." % contactgroup_name)
+    else:
+        contactgroup = result[0]
+        c['contactgroup'] = contactgroup
+
+    # Services this contact can see
+    c['services'] = l.query('GET services', "Filter: contact_groups >= %s" % contactgroup_name)
+
+    # Services this contact can see
+    c['hosts'] = l.query('GET hosts', "Filter: contact_groups >= %s" % contactgroup_name)
+
+    # Contact groups
+    #c['contacts'] = l.query('GET contacts', 'Filter: contactgroup_ >= %s' % contact_name)
+
+
+    return render_to_response('status_contactgroup.html', c, context_instance = RequestContext(request))
 
 
