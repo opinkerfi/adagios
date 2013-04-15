@@ -15,23 +15,7 @@
     <div class="tab-content">
 
     <div class="tab-pane active" id="contacts">
-        <table style="font-size: 80%;" class="table table-striped table-condensed well">
-            <thead>
-            <th>Contact Name</th>
-            <th>Alias</th>
-            <th>E-mail</th>
-            <th>Pager</th>
-            </thead>
-            {% for i in contacts  %}
-                <tr>
-                    <td>
-                        <a href="{% url status.views.contact_detail i.name %}">{{ i.name }}</a></td>
-                    <td>{{ i.alias }}</td>
-                    <td>{{ i.email}}</td>
-                    <td>{{ i.pager }}</td>
-                </tr>
-            {% endfor %}
-        </table>
+        {% include "snippets/status_contactlist_snippet.html" %}
     </div>
 
     <div class="tab-pane " id="contactgroups">

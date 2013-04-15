@@ -184,10 +184,15 @@ def get_statistics(request):
     """
     c = {}
     l = livestatus(request)
+    # Get host/service totals as an array of [ok,warn,crit,unknown]
     c['service_totals'] = l.query('GET services', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2','Stats: state = 3',)
     c['host_totals'] = l.query('GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2',)
+
+    # Get total number of host/services
     c['total_hosts'] = sum(c['host_totals'])
     c['total_services'] = sum(c['service_totals'])
+
+    # Calculate percentage of hosts/services that are "ok"
     try:
         c['service_totals_percent'] = map(lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
     except ZeroDivisionError:
@@ -196,6 +201,7 @@ def get_statistics(request):
         c['host_totals_percent'] = map(lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
     except ZeroDivisionError:
         c['host_totals_percent'] = [0,0,0,0]
+
 
     c['unhandled_services'] = l.query('GET services',
                                             'Filter: acknowledged = 0',

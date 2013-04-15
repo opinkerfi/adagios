@@ -29,9 +29,9 @@
                 {{ row.last_check|timestamp|timesince }} ago
             </td>
             {% if row.state  == 0 %}
-                <td class="alert alert-success">UP</td>
+                <td class="alert alert-success">Host UP</td>
             {% else %}
-                <td class="alert alert-danger">Down</td>
+                <td class="alert alert-danger">{% if row.childs %}Network outage {% else %}Host Down {% endif %}</td>
             {% endif %}
             <td>
                 <div class="progress" >
