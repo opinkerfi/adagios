@@ -17,20 +17,6 @@
                 </ul>
             </div>
         </th>
-        <!--
-        <th class="small">
-            <i class=" glyph-stopwatch  glyph-grey" title="downtimes"></i>
-        </th>
-        <th class="small">
-            <i class="glyph-chat glyph-grey" title="Comments"></i>
-        </th>
-        <th class="small">
-            <i class="glyph-envelope glyph-grey" title="Notifications"></i>
-        </th>
-        <th class="small">
-            <i class=" glyph-warning-sign glyph-grey" title="Unhandled"></i>
-        </th>
-        -->
         <th>Host</th>
         <th>Service Check</th>
         <td></td>
@@ -46,36 +32,7 @@
                     <input type="hidden" class="input_hostname" name="host_name" value="{{ service.host_name }}">
                     <input type="hidden" class="input_service_description" name="service_description" value="{{ service.description }}">
                 </td>
-                <!--
-                                <td>
 
-                                {% if service.downtimes or service.host_downtimes %}
-                                    <i class=" glyph-stopwatch  glyph-grey" title="{{ service.downtimes }}"></i>
-                                {% endif %}
-
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-
-                                {% if service.max_check_attempts == service.current_attempt and service.state > 0 %}
-                                    <i class="glyph-envelope glyph-grey" rel="tooltip" title="Service is in Hard State" data-content="<ul><li>Service has failed at least {{ service.current_attempt  }} times and has reached HARD STATE.</li><li>{% if service.no_more_notifications == 0 %}Nagios is actively sending out notifications because of this problem.{% else %}Nagios has stopped sending out notifications because of this problem{% endif %}</li><li>Last notification was {{ service.last_notification|timestamp|timesince }} ago. </li><li>{% if service.next_notification == 0 %}No more notifications will be sent.{% else %}Next notification will be sent in {{ service.next_notification|timestamp|timeuntil }}{% endif %}</li></ul>"></i>
-                                {% endif %}
-
-                            </td>
-                            <td>
-                                {% if service.state != 0 and service.acknowledged == 0 and service.host_acknowledged  == 0 %}
-
-                                    <i class="glyph-warning-sign glyph-grey" rel=tooltip data-content="You should acknowledge this problem to indicate that someone is working on a fix and stop nagios from sending out more notifications." title="Unhandled problem"></i>
-
-                                {% else %}
-
-                                    acknowledged: {{ service.acknowledged  }}
-                                    host_acknowledged: {{ service.host_acknowledged  }}
-
-                                {% endif %}
-                            </td>
-                            -->
                 <td style="white-space: nowrap;">
                     {% ifchanged service.host_name %}
                         <div title="{{ service.host_plugin_output }}" class="circle  state_{{ service.host_state }}"></div>

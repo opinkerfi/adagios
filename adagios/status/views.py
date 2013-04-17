@@ -189,7 +189,8 @@ def services(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    c['services'] = utils.get_services(request,**request.GET)
+    fields = ['host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state', 'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes']
+    c['services'] = utils.get_services(request,fields=fields,**request.GET)
     return render_to_response('status_services.html', c, context_instance = RequestContext(request))
 def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """
@@ -666,7 +667,7 @@ def _add_statistics_to_hosts(hosts):
 @error_handler
 def status_index(request):
     c = adagios.status.utils.get_statistics(request)
-    c['top_alert_producers'] = adagios.status.rest.top_alert_producers(limit=5)
+    #c['top_alert_producers'] = adagios.status.rest.top_alert_producers(limit=5)
 
     return render_to_response('status_index.html', c, context_instance = RequestContext(request))
 

@@ -309,3 +309,15 @@ def state_history(start_time=None, end_time=None, host_name=None, service_descri
 
     l = pynag.Parsers.LogFiles()
     return l.get_state_history(start_time=start_time, end_time=end_time,host_name=host_name, service_description=service_description)
+
+def command_line(host_name,service_description=None):
+    """ Returns effective command line for a host or a service (i.e. resolves check_command)
+    """
+    try:
+        if service_description is None or service_description=='':
+            obj = pynag.Model.Host.objects.get_by_shortname(host_name)
+        else:
+            obj = pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
+        return obj.get_effective_command_line()
+    except KeyError:
+        return "Could not resolve commandline. Object not found"

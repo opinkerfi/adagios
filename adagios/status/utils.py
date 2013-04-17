@@ -52,8 +52,10 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
     # if "q" came in from the querystring, lets filter on host_name
     for i in q:
-        arguments.append('Filter: name ~ %s' % i)
-
+        arguments.append('Filter: name ~~ %s' % i)
+        arguments.append('Filter: address ~~ %s' % i)
+        arguments.append('Filter: plugin_output ~~ %s' % i)
+        arguments.append('Or: 3' % i)
 
     if not fields is None:
     # fields should be a list, lets create a Column: query for livestatus
@@ -132,9 +134,11 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
 
     # If q was added, it is a fuzzy filter on services
     for i in q:
-        arguments.append('Filter: host_name ~ %s' % i)
-        arguments.append('Filter: description ~ %s' % i)
-        arguments.append('Or: 2')
+        arguments.append('Filter: host_name ~~ %s' % i)
+        arguments.append('Filter: description ~~ %s' % i)
+        arguments.append('Filter: plugin_output ~~ %s' % i)
+        arguments.append('Filter: host_address ~~ %s' % i)
+        arguments.append('Or: 4')
 
 
     if not fields is None:

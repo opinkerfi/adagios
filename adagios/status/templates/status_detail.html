@@ -147,6 +147,7 @@
 
     <div class="tab-pane" id="information">
         <table class="table">
+
             <tr>
                 <td>External Links </td>
                 <td>
@@ -157,12 +158,19 @@
                         <a href="{{ my_object.action_url_expanded }}">actions</a>
                     {% endif %}
             </tr>
+            <tr>
+                <td>
+                    Check command
+                </td>
+                <td id="effective_check_command"> Loading...</td>
+            </tr>
             <tr></tr>
             <tr>
                 <td>
                 <label for="id_notes">Notes</label>
                 </td>
-                <td><textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
+                <td>
+                    <textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
             </tr>
             <tr>
                 <td>
@@ -508,6 +516,14 @@
                 $('#acknowledge_button').attr('disabled','disabled');
                 $('#acknowledge_text').html('Is acknowledged');
             {% endif %}
+
+            // Fetch the effective check command for this object
+            var url = '{{ BASE_URL }}/rest/status/json/command_line?host_name={{ host_name }}&service_description={{ service_description }}';
+            $.getJSON(url, function(data){
+                $('#effective_check_command').text(data);
+            });
+
+
         });
         //$("#acknowledge_button").click(function(){
         //    $.getJSON('{{ BASE_URL }}/rest/status/json/acknowledge?host_name={{ host_name }}&service_description={{ service_description }}&comment=test&author={{ remote_user }}');
@@ -557,6 +573,7 @@
             var attribute_name = $(e.target).attr('name');
             var object_type = "{{ my_object.object_type }}";
             var short_name = "{{ my_object.short_name }}";
+            console.log(new_value);
             if (old_value == new_value)
                 return false;
 
