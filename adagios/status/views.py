@@ -769,7 +769,10 @@ def _status_combined(request, optimized=False):
 
 def status_problems(request):
     #c = _status_combined(request)
-    c = {}
+
+    # Get statistics
+    c = adagios.status.utils.get_statistics(request)
+
     c['messages'] = []
     c['errors'] = []
 
@@ -808,6 +811,9 @@ def status_problems(request):
     c['hosts'] = c['network_problems'] + c['host_problems']
     # Service problems
     c['service_problems'] = utils.get_services(request, state__isnot="0", acknowledged="0",scheduled_downtime_depth="0", host_state="0",**request.GET)
+    # Sort problems by state and last_check as secondary sort field
+    c['service_problems'].sort(reverse=True,cmp=lambda a,b: cmp(a['last_check'], b['last_check']))
+    c['service_problems'].sort(reverse=True,cmp=lambda a,b: cmp(a['state'], b['state']))
     return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
 
 
