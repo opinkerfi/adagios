@@ -37,11 +37,11 @@
                     <td>Network Parents</td>
                     <td><a href="{% url status.views.status_parents %}">{{ total_network_parents }}</a></td>
                     <td>
-                        {{ total_network_problems }}
+                        <div class="alert alert-warning">{{ total_network_problems }}</div>
                     </td>
                     <td>
                         {% if network_problems|length == 0 %}
-                        0
+                            <div class="alert alert-success">{{ network_problems|length }}</div>
                         {% else %}
                             <div class="alert alert-danger">{{ network_problems|length }}</div>
                         {% endif %}
@@ -51,11 +51,11 @@
                     <td>Hosts</td>
                     <td><a href="{% url status.views.status_host %}">{{ total_hosts }}</a></td>
                     <td>
-                        {{  total_host_problems }}
+                        <div class="alert alert-warning">{{  total_host_problems }}</div>
                     </td>
                     <td>
                         {% if host_problems|length == 0 %}
-                            0
+                            <div class="alert alert-success">{{ host_problems|length }}</div>
                         {% else %}
                             <div class="alert alert-danger">{{ host_problems|length }}</div>
                         {% endif %}
@@ -66,11 +66,11 @@
                     <td>Services</td>
                     <td><a href="{% url status.views.status %}"> {{ total_services }}</a></td>
                     <td>
-                        {{ total_service_problems }}
+                        <div class="alert alert-warning">{{ total_service_problems }}</div>
                     </td>
                     <td>
                         {% if service_problems|length == 0 %}
-                            0
+                            <div class="alert alert-success">{{ service_problems|length }}</div>
                         {% else %}
                             <div class="alert alert-danger">{{ service_problems|length }}</div>
                         {% endif %}
