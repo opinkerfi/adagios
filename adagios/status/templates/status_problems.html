@@ -12,33 +12,78 @@
         body {
             background-color: #d5d8de;
         }
+        .alert {
+            margin-bottom: 0px;
+            padding:  4px 4px 4px 14px;
+        }
     </style>
     <div class="container-fluid" style="margin: 20px;" >
     <div class="row-fluid row" >
 
-        <!-- Host Problems -->
-        <div class="span8">
-            <table class="table  well table-condensed" >
+        <!-- Tactical Overview -->
+        <div class="span6">
+            <table class="table well table-condensed">
+                <thead>
                 <tr>
-                    <th><h4>Unhandled Host Problems</h4></th>
+                    <th>Tactical Overview</th>
+                    <th>Total</th>
+                    <th>Problems</th>
+                    <th>Unhandled</th>
+                    <!-- <th><i class="glyph-warning-sign" title="Unhandled Problems"></i></th>-->
                 </tr>
-            <tr>
-                <td>
-                    {% if host_problems %}
-                        {% include "snippets/status_hostlist_snippet.html" %}
-                    {% else %}
-                        <h4>There are no unhandled host problems.</h4>
-                    {% endif %}
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Network Parents</td>
+                    <td><a href="{% url status.views.status_parents %}">{{ total_network_parents }}</a></td>
+                    <td>
+                        {{ total_network_problems }}
+                    </td>
+                    <td>
+                        {% if network_problems|length == 0 %}
+                        0
+                        {% else %}
+                            <div class="alert alert-danger">{{ network_problems|length }}</div>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Hosts</td>
+                    <td><a href="{% url status.views.status_host %}">{{ total_hosts }}</a></td>
+                    <td>
+                        {{  total_host_problems }}
+                    </td>
+                    <td>
+                        {% if host_problems|length == 0 %}
+                            0
+                        {% else %}
+                            <div class="alert alert-danger">{{ host_problems|length }}</div>
+                        {% endif %}
+                    </td>
 
-                </td>
-            </tr>
+                </tr>
+                <tr>
+                    <td>Services</td>
+                    <td><a href="{% url status.views.status %}"> {{ total_services }}</a></td>
+                    <td>
+                        {{ total_service_problems }}
+                    </td>
+                    <td>
+                        {% if service_problems|length == 0 %}
+                            0
+                        {% else %}
+                            <div class="alert alert-danger">{{ service_problems|length }}</div>
+                        {% endif %}
+                    </td>
 
+                </tr>
+                </tbody>
             </table>
 
-
-
-
         </div>
+
+        <!-- Unused space -->
+        <div class="span2"> </div>
 
         <!-- Current Health Percentage -->
         <div class="span4" style="align: right;">
@@ -76,7 +121,21 @@
 
     </div>
 
+    <div class="row-fluid row" >
+        {% if host_problems %}
+            <h4>Unhandled Host Problems</h4>
+            <!-- Host Problems -->
+            {% include "snippets/status_hostlist_snippet.html" %}
+        {% else %}
+            <h4>There are no unhandled host problems.</h4>
+        {% endif %}
+
+    </div>
+
     <div class="row row-fluid">
+
+
+
         {% if service_problems%}
         <div class="span12">
             <h4>Unhandled Service Problems</h4>

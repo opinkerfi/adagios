@@ -194,8 +194,10 @@ def get_statistics(request):
 
     # Get total number of host/services
     c['total_hosts'] = sum(c['host_totals'])
-    c['total_services'] = sum(c['service_totals'])
+    c['total_host_problems'] = c['total_hosts'] - c['host_totals'][0]
 
+    c['total_services'] = sum(c['service_totals'])
+    c['total_service_problems'] = c['total_services'] - c['service_totals'][0]
     # Calculate percentage of hosts/services that are "ok"
     try:
         c['service_totals_percent'] = map(lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
@@ -218,6 +220,10 @@ def get_statistics(request):
                                          'Filter: scheduled_downtime_depth = 0',
                                          'Stats: state > 0',
                                          )[0]
+    c['total_network_problems'] = l.query('GET hosts',
+                                          'Filter: childs != ',
+                                          'Stats: state >= 0',
+                                          )[0]
     tmp = l.query('GET hosts',
                      'Filter: acknowledged = 0',
                      'Filter: scheduled_downtime_depth = 0',
@@ -225,5 +231,5 @@ def get_statistics(request):
                      'Stats: state >= 0',
                      'Stats: state > 0',
                      )
-    c['total_network_parents'], c['total_network_problems'] = tmp
+    c['total_network_parents'], c['total_unhandled_network_problems'] = tmp
     return c
