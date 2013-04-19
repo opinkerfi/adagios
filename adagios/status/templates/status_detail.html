@@ -518,16 +518,18 @@
             {% endif %}
 
             // Fetch the effective check command for this object
-            var url = '{{ BASE_URL }}/rest/status/json/command_line?host_name={{ host_name }}&service_description={{ service_description }}';
-            $.getJSON(url, function(data){
-                $('#effective_check_command').text(data);
-            });
+            var url = '{% url rest/status %}json/command_line?host_name={{ host_name }}&service_description={{ service_description }}';
+            $.getJSON(url)
+                    .done( function(data) {
+                        $('#effective_check_command').text(data);
+                    })
+                    .fail( function(data) {
+                        $('#effective_check_command').text("Failed to load check_command.");
+                        console.log(data);
+                    });
 
 
         });
-        //$("#acknowledge_button").click(function(){
-        //    $.getJSON('{{ BASE_URL }}/rest/status/json/acknowledge?host_name={{ host_name }}&service_description={{ service_description }}&comment=test&author={{ remote_user }}');
-        //});
         // When graphs link is clicked, simulate a click on 25hours tab as well
         $('#graphs_link').click(function(event) {
             $('#25hours').click();
@@ -539,8 +541,14 @@
                     var title = event.target.text;
                     my_element = document.getElementById(anchor);
 
+
                     if (my_element.childElementCount == 0) {
-                        $.getJSON('{% url pnp.views.pnp 'json' %}?host={{ host_name }}&srv={{ service_description }}', function(data) {
+                        spinner = document.createElement( 'img');
+                        spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
+                        my_element.appendChild( spinner );
+                        var url = '{% url pnp.views.pnp 'json' %}?host={{ host_name }}&srv={{ service_description }}';
+                        $.getJSON(url)
+                                .done( function(data) {
                                     $.each(data, function(i, item) {
                                         if (item['title'] == title) {
                                             new_img = document.createElement( 'img');
@@ -549,9 +557,16 @@
                                             }
                                         }
                                     )
-                                }
-                        )
+
+                                })
+                                .fail( function() {
+                                    console.log('failed to fetch info from pnp4nagios');
+                                })
+                                .always( function() {
+                                    spinner.setAttribute('class', 'hide');
+                                });
                     }
+
         });
         // When enter is pressed in comment form. Post a new comment.
         $('#write_a_comment').keyup(function (e) {

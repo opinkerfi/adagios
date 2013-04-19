@@ -62,11 +62,12 @@ def error_handler(fn):
             return error_page(*args, context=c)
     return wrapper
 
+@error_handler
 def status_parents(request):
     c = {}
     c['messages'] = []
     authuser = request.GET.get('contact_name', None)
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config,authuser=authuser)
+    livestatus = utils.livestatus(request)
     all_hosts = livestatus.get_hosts()
     host_dict = {}
     map(lambda x: host_dict.__setitem__(x['name'], x), all_hosts)
@@ -91,7 +92,7 @@ def status_parents(request):
 
     return render_to_response('status_parents.html', c, context_instance = RequestContext(request))
 
-
+@error_handler
 def _status(request):
     """ Helper function for a lot of status views, handles fetching of objects, populating context, and filtering, etc.
 
@@ -176,6 +177,7 @@ def _status(request):
         c['objects'] = groups
     return c
 
+@error_handler
 def status(request):
     """ Compatibility layer around status.views.services
     """
@@ -184,6 +186,7 @@ def status(request):
     # Left here for compatibility reasons:
     return services(request)
 
+@error_handler
 def services(request):
     """ This view handles list of services  """
     c = {}
@@ -192,6 +195,8 @@ def services(request):
     fields = ['host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state', 'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes']
     c['services'] = utils.get_services(request,fields=fields,**request.GET)
     return render_to_response('status_services.html', c, context_instance = RequestContext(request))
+
+@error_handler
 def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """
     c = { }
@@ -200,7 +205,7 @@ def status_detail(request, host_name=None, service_description=None):
 
     host_name = request.GET.get('host_name')
     service_description = request.GET.get('service_description')
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = utils.livestatus(request)
     c['pnp_url'] = adagios.settings.pnp_url
     c['nagios_url'] = adagios.settings.nagios_url
     c['request'] = request
@@ -292,6 +297,7 @@ def status_detail(request, host_name=None, service_description=None):
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
 
+
 def _get_network_parents(host_name):
     """ Returns a list of hosts that are network parents (or grandparents) to host_name
 
@@ -330,6 +336,7 @@ def _get_network_parents(host_name):
         parent_names = list(grand_parents)
     return result
 
+@error_handler
 def status_hostgroup(request, hostgroup_name):
     """ Status detail for one specific hostgroup  """
     c = { }
@@ -387,6 +394,7 @@ def status_hostgroup(request, hostgroup_name):
 
     return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
 
+@error_handler
 def _add_statistics_to_hostgroups(hostgroups):
     """ Enriches a list of hostgroup dicts with information about subgroups and parentgroups
     """
@@ -425,13 +433,13 @@ def _add_statistics_to_hostgroups(hostgroups):
         except ZeroDivisionError:
             pass
 
-
+@error_handler
 def status_hostgroups(request):
     c = { }
     c['messages'] = []
     c['errors'] = []
     hostgroup_name=None
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = utils.livestatus(request)
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
     c['request'] = request
@@ -514,12 +522,14 @@ def status_hostgroups(request):
             pass
     return render_to_response('status_hostgroups.html', c, context_instance = RequestContext(request))
 
+@error_handler
 def status_tiles(request, object_type="host"):
     """
     """
     c = _status(request)
     return render_to_response('status_tiles.html', c, context_instance = RequestContext(request))
 
+@error_handler
 def status_host(request):
     c =  {}
     c['messages'] = []
@@ -527,6 +537,8 @@ def status_host(request):
     c['hosts'] = utils.get_hosts(request, **request.GET)
     c['host_name'] = request.GET.get('detail', None)
     return render_to_response('status_host.html', c, context_instance = RequestContext(request))
+
+@error_handler
 def status_boxview(request):
     c = _status(request)
 
@@ -548,6 +560,8 @@ def get_related_objects(object_id):
         result += my_object.get_effective_network_children()
         result += my_object.get_effective_services()
     return result
+
+@error_handler
 def status_paneview(request):
     #c = _status(request)
     c = {}
@@ -671,6 +685,7 @@ def status_index(request):
 
     return render_to_response('status_index.html', c, context_instance = RequestContext(request))
 
+@error_handler
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
     c = { }
@@ -767,6 +782,7 @@ def _status_combined(request, optimized=False):
     #c['log'] = reversed(l.get_state_history())
     return c
 
+@error_handler
 def status_problems(request):
     #c = _status_combined(request)
 
@@ -793,7 +809,6 @@ def status_problems(request):
         # Do nothing if parent of this host is also down
         for parent in i.get('parents'):
             if parent in hostnames_that_are_down:
-                print parent, "is in ", hostnames_that_are_down
                 parent_is_down = True
                 break
         else:
@@ -816,7 +831,7 @@ def status_problems(request):
     c['service_problems'].sort(reverse=True,cmp=lambda a,b: cmp(a['state'], b['state']))
     return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
 
-
+@error_handler
 def state_history(request):
     c = {}
     c['messages'] = []
@@ -953,11 +968,14 @@ def _status_log(request):
         c['logs']['all'].append(line)
     c['start_time'] = start_time
     return c
+
+@error_handler
 def status_log(request):
     c = _status_log(request)
     c['request'] = request
     c['log'].reverse()
     return render_to_response('status_log.html', c, context_instance = RequestContext(request))
+
 
 def error_page(request, context=None):
     if context is None:
@@ -966,6 +984,7 @@ def error_page(request, context=None):
         context['errors'].append('Error occured, but no error messages provided, what happened?')
     return render_to_response('status_error.html', context, context_instance = RequestContext(request))
 
+@error_handler
 def comment_list(request):
     """ Display a list of all comments """
     c = {}
@@ -1009,6 +1028,7 @@ def grep_dict(array, **kwargs):
             result.append(current_item)
     return result
 
+@error_handler
 def perfdata(request):
     """ Display a list of perfdata
     """
@@ -1021,6 +1041,8 @@ def perfdata(request):
         i['metrics'] = pynag.Utils.PerfData(i['perf_data']).metrics
     c['perfdata'] = pynag.Utils.grep(perfdata, **request.GET)
     return render_to_response('status_perfdata.html', c, context_instance = RequestContext(request))
+
+@error_handler
 def contact_list(request):
     """ Display a list of active contacts
     """
@@ -1033,6 +1055,7 @@ def contact_list(request):
     c['contactgroups'] = l.query('GET contactgroups')
     return render_to_response('status_contacts.html', c, context_instance = RequestContext(request))
 
+@error_handler
 def contact_detail(request, contact_name):
     """ Detailed information for one specific contact
     """
@@ -1075,6 +1098,7 @@ def contact_detail(request, contact_name):
     c['gitlog'] = git.log(author_name=contact_name)
     return render_to_response('status_contact.html', c, context_instance = RequestContext(request))
 
+@error_handler
 def contactgroup_detail(request, contactgroup_name):
     """ Detailed information for one specific contactgroup
     """

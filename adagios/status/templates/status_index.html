@@ -99,7 +99,7 @@
                     <th>Recent Alerts</th>
                 </tr>
                 <tr id="top_alert_producers_loading">
-                    <td colspan=2><img src="{% url media path="select2/spinner.gif" %}"> Loading...</td>
+                    <td id="top_alert_loading_message" colspan=2><img src="{% url media path="select2/spinner.gif" %}"> Loading...</td>
                 </tr>
             </table>
         </div>
@@ -225,12 +225,17 @@
         // Hide the action buttons
         $('#action_buttons').hide();
 
-        // Load top_alert_producers table. We get a list of alert_producers via getJSON
-        // And then dynamically add them to table "top_alert_producers"
-        var url = '{% url rest/status %}json/top_alert_producers?limit=5';
-        var table=document.getElementById("top_alert_producers");
-        $.getJSON(url, function(data) {
+        // Update top_alert_producers
+        update_top_alert_producers(5);
 
+    });
+    // Fetch information about top_alert_producers ajax style and update table
+    // with id "top_alert_producers"
+    function update_top_alert_producers(limit) {
+        var url = '{% url rest/status %}json/top_alert_producers?limit=' + limit;
+        var table=document.getElementById("top_alert_producers");
+        var top_alert_producers = $.getJSON(url)
+        .done( function(data) {
             for (i=0;i<data.length;i++){
                 // Hide the loading message
                 $('#top_alert_producers_loading').hide();
@@ -248,8 +253,16 @@
                 cell2.innerHTML=cell2_html;
                 console.log(host_name);
             }
+        })
+        .fail( function(data) {
+                        // Fail scenario
+                        var td = document.getElementById("top_alert_loading_message");
+                        td.innerHTML = "update_top_alert_producers() failed";
+                        return data;
         });
-    });
+
+
+    }
     </script>
 {% endblock %}
 
