@@ -356,7 +356,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
   #
   #     Calling button/href needs to have data-object-id="12312abc...."
   #     
-  $.fn.adagios_ob_run_check_command = ->
+  $.fn.adagios_ob_run_check_command = (click_event) ->
     
     # Fetch the calling object
     modal = $(this)
@@ -366,6 +366,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     object_type = modal.attr("data-object-type")
     unless id
       alert "Error, no data-object-id for run command"
+      click_event.preventDefault()
       return false
     
     # Reset the class on the button
@@ -435,8 +436,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
         $("#run_check_plugin div#error").hide()
       $("#run_check_plugin_refresh").show()
       $("#run_check_plugin div.progress").hide()
-      $("#run_check_plugin_refresh").unbind('click').click ->
-        $(this).adagios_ob_run_check_command()
+      $("#run_check_plugin_refresh").unbind('click').click  (click_event) ->
+        $(this).adagios_ob_run_check_command(click_event)
 
     ).error (jqXHR) ->
 

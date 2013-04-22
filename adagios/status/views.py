@@ -19,10 +19,7 @@ import time
 from os.path import dirname
 from collections import defaultdict
 import json
-
 import traceback
-import StringIO
-import sys
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -32,12 +29,13 @@ import pynag.Utils
 import pynag.Control
 import pynag.Plugins
 import pynag.Model.EventHandlers
+from pynag.Parsers import ParserError
 
 import adagios.settings
 import pnp.functions
-from pynag.Parsers import ParserError
 import utils
 import adagios.status.rest
+
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -940,9 +938,9 @@ def _status_log(request):
         start_time = float(start_time)
 
     if limit == '':
-        limit = 500
+        limit = 2000
     else:
-        limit = float(limit)
+        limit = int(limit)
 
     # Any querystring parameters we will treat as a search string to get_log_entries, but we need to massage them
     # a little bit first
@@ -950,7 +948,7 @@ def _status_log(request):
     for k,v in request.GET.items():
         if k == 'search':
             k = 'search'
-        elif k in ('start_time', 'end_time'):
+        elif k in ('start_time', 'end_time', 'start_time_picker', 'end_time_picker'):
             continue
         elif v is None or len(v) == 0:
             continue
@@ -967,6 +965,7 @@ def _status_log(request):
         c['logs'][line['class_name']].append(line)
         c['logs']['all'].append(line)
     c['start_time'] = start_time
+    c['end_time'] = end_time
     return c
 
 @error_handler

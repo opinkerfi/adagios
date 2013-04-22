@@ -8,20 +8,27 @@
 {% load adagiostags %}
 
 {% block content %}
-    <form method=GET action="#tab_all">
+    <form method="GET" action="#tab_all">
+        <div id="datepicker_start_time" class="input-append date pull-left" data-date="01/01/2001" data-date-format="dd/mm/yyyy">
+            Start
+            <input class="span6" name="start_time_picker" type="text"><span class="add-on">
+              <i class="icon-th">
+              </i>
+            </span>
+        </div>
+        <div id="datepicker_end_time" class="input-append date pull-left" data-date="01/01/2001" data-date-format="dd/mm/yyyy">
+            End
+            <input class="span6" name="end_time_picker" type="text"><span class="add-on">
+              <i class="icon-th">
+              </i>
+            </span>
+        </div>
+        <input name="start_time" type="hidden" value="{{ start_time }}">
+        <input name="end_time" type="hidden" value="{{ end_time }}">
         <div>
-            <input placeholder="start time (default=today)" name="start_time" id="id_start_time" value="{{ request.GET.start_time  }}"/>
-            <input placeholder="end time (default=now)" name="end_time" id="id_end_time" value="{{ request.GET.end_time }}"/>
             <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search logs">
             <button type="submit" name="submit" >Search</button>
         </div>
-<!-- Advanced:
-        <br>
-        <div>
-            <input placeholder="Any Host" name="host_name" id="id_host_name" value="{{ request.GET.host_name }}"/>
-            <input placeholder="Any Service" name="service_description" id="id_service_description" value="{{ request.GET.service_description }}"/>
-        </div>
--->
     </form>
 
     <ul class="nav nav-tabs" id="objecttab">
@@ -236,4 +243,43 @@
 
 {% block toolbar %} {% endblock %}
 
-{% block footer %} {{ block.super }} {% endblock %}
+{% block footer %} {{ block.super }}
+    <script type="text/javascript">
+        function epochToDate(epoch) {
+            return new Date(epoch * 1000);
+        }
+        function dateToEpoch(date) {
+            return date.getTime() / 1000;
+        }
+        function dateStr(date) {
+            return date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+        }
+
+        $(document).ready(function() {
+            // Get the hidden inputs
+            var end_time = $("input[name='end_time']");
+            var start_time = $("input[name='start_time']");
+
+            if (end_time.val() == "None") {
+                today = new Date;
+                end_time.val(dateToEpoch(new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)) + 86399);
+            }
+            end_time.data("dateobj", epochToDate(end_time.val()));
+            start_time.data("dateobj", epochToDate(start_time.val()));
+
+            $("input[name='start_time_picker']").val(dateStr(start_time.data('dateobj')));
+            $("input[name='end_time_picker']").val(dateStr(end_time.data('dateobj')));
+
+            $("#datepicker_start_time").datepicker('setValue', start_time.data('dateobj')).on('changeDate', function(ev) {
+                console.log(ev.date.valueOf());
+                start_time.val(ev.date.valueOf() / 1000);
+                return true;
+            });
+            $("#datepicker_end_time").datepicker('setValue', end_time.data('dateobj')).on('changeDate', function(ev) {
+                end_time.val((ev.date.valueOf() / 1000) + 86399);
+                return true;
+            });
+        });
+    </script>
+
+{% endblock %}
