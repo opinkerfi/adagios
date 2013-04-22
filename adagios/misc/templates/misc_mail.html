@@ -7,7 +7,6 @@
         <form method="post" class="form-horizontal">{% csrf_token %}
             {% include "bootstrap_fields.html" with fields=form %}
             {% include "snippets/misc_mail_servicelist.html" %}
-
             <div class="form-actions">
                 <button id="zesubmit" class="btn btn-success" type="submit">Save</button>
             </div>

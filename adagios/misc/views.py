@@ -317,12 +317,12 @@ def mail(request):
     c['http_origin'] = request.META.get('HTTP_ORIGIN', '')
     remote_user = request.META.get('REMOTE_USER', 'anonymous adagios user')
     if request.method == 'GET':
-        c['form'] = forms.SendEmailForm(remote_user, None, initial=request.GET)
+        c['form'] = forms.SendEmailForm(remote_user, initial=request.GET)
         services = request.GET.getlist('service') or request.GET.getlist('service[]')
         if services == []:
             c['form'].services = adagios.status.utils.get_services(request,host_name='localhost')
     elif request.method == 'POST':
-        c['form'] = forms.SendEmailForm(remote_user,  None, request.POST)
+        c['form'] = forms.SendEmailForm(remote_user, data=request.POST)
         services = request.POST.getlist('service') or request.POST.getlist('service[]')
 
 

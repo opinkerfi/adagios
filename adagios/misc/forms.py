@@ -18,10 +18,15 @@
 from django import forms
 
 from django.core.mail import send_mail
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 import os.path
 from adagios import settings
 from pynag import Model, Control
 from django.core.mail import EmailMultiAlternatives
+import pynag.Parsers
+
 
 
 TOPIC_CHOICES = (
@@ -350,19 +355,22 @@ class SendEmailForm(forms.Form):
         widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
         help_text="Message that is to be sent to recipients",
         )
-    def __init__(self, contact_name, contact_email, *args, **kwargs):
+    def __init__(self, remote_user, *args, **kwargs):
         """ Create a new instance of SendEmailForm, contact name and email is used as from address.
         """
-        self.contact_name = contact_name
-        self.contact_email = contact_email
+        self.remote_user = remote_user
+        #self.contact_email = contact_email
         self.services = []
+        self._resolve_remote_user(self.remote_user)
         return super(self.__class__,self).__init__(*args,**kwargs)
+
     def save(self):
 
-        subject = "%s sent you a a message through adagios" % self.contact_name
+        subject = "%s sent you a a message through adagios" % self.remote_user
 
-        from_address = '%s <%s>' % (self.contact_name, self.contact_email)
-        from_address = self.contact_email
+        #from_address = '%s <%s>' % (self.contact_name, self.contact_email)
+        #from_address = self.contact_email
+        from_address = self._resolve_remote_user( self.remote_user )
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')
         text_content = self.cleaned_data['message']
@@ -383,3 +391,16 @@ class SendEmailForm(forms.Form):
         msg.attach_alternative(text_content + "<p></p>" + self.html_content, "text/html")
         msg.send()
         #send_mail(subject, msg, from_address, to_address, fail_silently=False)
+    def _resolve_remote_user(self, username):
+        """ Returns a valid "Full Name <email@example.com>" for remote http authenticated user.
+         If Remote user is a nagios contact, then return: Contact_Alias <contact_email>"
+         Else if remote user is a valid email address, return that address
+         Else return None
+        """
+        livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=settings.nagios_config)
+        try:
+            contact = livestatus.get_contact( username )
+            return "%s <%s>" % (contact.get('alias'), contact.get('email'))
+        except IndexError:
+            # If we get here, then remote_user does not exist as a contact.
+            return username

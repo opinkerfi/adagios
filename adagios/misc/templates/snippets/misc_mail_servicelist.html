@@ -1,87 +1,9 @@
 <!-- snippet misc_mail_servicelist.html ends -->
 {% load adagiostags %}
 
-<style>
-    .state_0 {
-        color: #468847;
-        background-color: #468847;
-        background-color: #90ee90; /* DFF0D8 */
-    }
-    .state_1 {
-        color: orange; /* yellow or orange */
-        background-color: #FCEFB0; /* yellow or orange */
-    }
-    .state_2 {
-        color: #B94A48;
-        background-color:  #F2DEDE; /* pink */
-    }
-    .state_3 {
-        color: #d3d3d3;
-        background-color: #d3d3d3;
-    }
+For more information, click <a href="{{ http_origin }}">Here</a>.
 
-    .state_0unhandled {
-        color: #468847;
-        background-color: #468847;
-        background-color: #90ee90; /* DFF0D8 */
-        background-image: -moz-radial-gradient(10px 10px, circle cover, green, white);
-        background-image: -webkit-radial-gradient(10px 10px, circle cover, green, white);
-        background-image: radial-gradient(10px 10px, circle cover, green, white);
-    }
-    .state_1unhandled {
-        color: orange; /* yellow or orange */
-        background-color: #FCEFB0; /* yellow or orange */
-        background-image: -moz-radial-gradient(10px 10px, circle cover, orange, white);
-        background-image: -webkit-radial-gradient(10px 10px, circle cover, orange, white);
-        background-image: radial-gradient(10px 10px, circle cover, orange, white);
-    }
-    .state_2unhandled {
-        color: #B94A48;
-        background-color:  #F2DEDE; /* pink */
-        background-image: -moz-radial-gradient(10px 10px, circle cover, red, white);
-        background-image: -webkit-radial-gradient(10px 10px, circle cover, red, white);
-        background-image: radial-gradient(10px 10px, circle cover, red, white);
-    }
-    .state_3unhandled {
-        color: #d3d3d3;
-        background-color: #d3d3d3;
-        background-image: -moz-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
-        background-image: -webkit-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
-        background-image: radial-gradient(10px 10px, circle cover, #d3d3d3, white);
-
-    }
-    .circle {
-        border-radius: 50%;
-        width: 12px;
-        height: 12px;
-        display: inline-block;
-        border-style: solid;
-        border-width: 1px;
-        /* width and height can be anything, as long as they're equal */
-    }
-
-    .table td {
-        line-height: 10px;
-    }
-    .circle {
-        border-radius: 50%;
-        width: 12px;
-        height: 12px;
-        display: inline-block;
-        /* width and height can be anything, as long as they're equal */
-    }
-    .table {
-        width: 100%;
-        display: table;
-        border-collapse: collapse;
-        border-spacing: 0;
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        font-size: 13px;
-        line-height: 18px;
-        color: #333;
-    }
-</style>
-<table class="table" style="font-size:12px;">
+<table class="table well" style="font-size: 12px;width: 100%;display: table;border-collapse: collapse;border-spacing: 0;font-family: &quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;line-height: 18px;color: #333;">
     <thead>
     <tr>
 
@@ -95,15 +17,38 @@
 
     {% for service in services %}
         <tr>
-            <td style="white-space: nowrap;">
-                    <div title="{{ service.host_plugin_output }}" class="circle  state_{{ service.host_state }}"></div>
-                    <a href="{{ http_origin }}{% url status.views.status_detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
-                    <input type="hidden" name="service" value="{{ service.host_name }}/{{ service.description }}"/>
+            <td style="white-space: nowrap;line-height: 10px;">
+                {% if service.host_state == 0 %}
+                    <div class="circle circle_0  state_0" style="color: #468847;background-color: #90ee90;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                {% endif %}
+                {% if service.host_state == 1 %}
+                    <div class="circle circle_1  state_1" style="color: orange;background-color: #FCEFB0;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                {% endif %}
+                {% if service.host_state == 2 %}
+                    <div class="circle circle_2  state_2" style="color: #B94A48;background-color: #F2DEDE;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                {% endif %}
+                {% if service.host_state == 3 %}
+                    <div class="circle circle_3  state_3" style="color: #d3d3d3;background-color: #d3d3d3;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                {% endif %}
+                <a href="{{ http_origin }}{% url status.views.status_detail%}?host_name={{ service.host_name }}" title="Details for host {{ service.host_name }}">{{ service.host_name }}</a>
+                <input type="hidden" name="service" value="{{ service.host_name }}/{{ service.description }}">
             </td>
 
-            <td  colspan=1 style="word-wrap: break-word;">
-                <a href="{{ http_origin }}{% url status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
-                    <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}</a>
+            <td colspan="1" style="word-wrap: break-word;line-height: 10px;">
+                <a href="{{ http_origin }}{% url status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}" title="{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}">
+                    {% if service.state == 0 %}
+                        <div class="circle circle_0  state_0" style="color: #468847;background-color: #90ee90;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                    {% endif %}
+                    {% if service.state == 1 %}
+                        <div class="circle circle_1  state_1" style="color: orange;background-color: #FCEFB0;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                    {% endif %}
+                    {% if service.state == 2 %}
+                        <div class="circle circle_2  state_2" style="color: #B94A48;background-color: #F2DEDE;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                    {% endif %}
+                    {% if service.state == 3 %}
+                        <div class="circle circle_3  state_3" style="color: #d3d3d3;background-color: #d3d3d3;border-radius: 50%;width: 12px;height: 12px;display: inline-block;border-style: solid;border-width: 1px;"> </div>
+                    {% endif %}
+                    {{ service.description }}</a>
                 <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
                 <span title="{{ service.plugin_output }}" style="font-size: 80%; color: #808080; font-weight: normal;">
                          {{ service.plugin_output|slice:"70" }}
@@ -112,11 +57,11 @@
             </td>
 
 
-            <td style="white-space: nowrap; font-size: 80%;">
+            <td style="white-space: nowrap;font-size: 80%;line-height: 10px;">
                 {{ service.last_state_change|timestamp|timesince }}
             </td>
 
-            <td style="white-space: nowrap; font-size: 80%;">
+            <td style="white-space: nowrap;font-size: 80%;line-height: 10px;">
                 {{ service.last_check|timestamp|date:'Y-m-d H:i' }}
             </td>
             <!-- <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td> -->
