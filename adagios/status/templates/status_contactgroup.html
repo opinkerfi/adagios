@@ -1,0 +1,70 @@
+{% extends "base_status.html" %}
+
+{% block title %}{{ contactgroup_name }}{% endblock %}
+{% block smallheader %}contactgroup{% endblock %}
+{% block largeheader %}{{ contactgroup_name }} ({{ contactgroup.alias }}){% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}#tab_contactgroups">Contactgroups</a>{% endblock %}
+{% load adagiostags %}
+
+{% block content %}
+
+    <ul class="nav nav-tabs" id="objecttab">
+        <li><a href="#history" data-toggle="tab">History</a></li>
+        <li><a href="#contacts" data-toggle="tab">Members</a></li>
+        <li><a href="#services" data-toggle="tab">Services</a></li>
+        <li><a href="#debug" data-toggle="tab">Debug</a></li>
+        <!-- <li><a href="#problems" data-toggle="tab">Comment Feed</a></li> -->
+        <!-- <li><a href="#debug" data-toggle="tab">Debug</a></li> -->
+    </ul>
+    <div class="tab-content">
+
+
+
+        <div class="tab-pane" id="contactgroups">
+            {% if contacts %}
+                {{ contactgroup_name }} Has the following members:
+                {% include "snippets/status_contactlist_snippet.html" %}
+            {% else %}
+                {{ contactgroup_name }} Has no contacts.
+            {% endif %}
+        </div>
+
+        <div class="tab-pane" id="services">
+            {% if services %}
+                {{ contactgroup_name }} is a contact for the following services:
+                {% include "snippets/status_servicelist_snippet.html" %}
+            {% else %}
+                {{ contactgroup_name }} is not a contact for any services.
+            {% endif %}
+        </div>
+
+        <div class="tab-pane" id="debug">
+            <h4>Information available via livestatus:</h4>
+            <table class="table-condensed table">
+                {% for k,v in contactgroup.items %}
+                    <tr>
+                        <td>                {{ k }}
+                        </td>
+                        <td>
+                            {{ v }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+    <style>
+        .table tbody tr:hover td, .table tbody tr:hover th {
+            background-color: white;
+        }
+
+    </style>
+{% endblock %}
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+
+{% block footer %} {{ block.super }} {% endblock %}

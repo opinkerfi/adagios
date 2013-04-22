@@ -1,0 +1,30 @@
+<!-- snippet status_contactlist_snippet.html starts -->
+
+<table style="font-size: 80%;" class="table table-striped table-condensed well">
+    <thead>
+    <th>Contact Name</th>
+    <th>Alias</th>
+    <th>E-mail</th>
+    <th>Pager</th>
+    <th>Host Notification Period</th>
+    <th>Service Notification Period</th>
+    </thead>
+    {% for i in contacts  %}
+        <tr>
+            <td>
+                <a href="{% url status.views.contact_detail i.name %}">{{ i.name }}</a></td>
+            <td>{{ i.alias }}</td>
+            <td>{{ i.email}}</td>
+            <td>{{ i.pager }}</td>
+            <td class="enable_notifications_{{ i.host_notifications_enabled }}">
+                <div title="test">
+                    {{ i.host_notification_period }}
+
+                </div>
+            </td>
+            <td class="enable_notifications_{{ i.service_notifications_enabled }}">{{ i.service_notification_period }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<!-- snippet status_contactlist_snippet.html ends -->

@@ -512,7 +512,7 @@
                 <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
                 <li><a href="{% url status.views.perfdata %}">Performance Data</a></li>
-                <li><a href="{% url status.views.status_problems %}?class=1">Big Screen </a></li>
+                <li><a href="{% url status.views.status_problems %}">Problems</a></li>
             </ul>
         </div>
 
@@ -573,7 +573,7 @@
                         </div>
                         <div class="btn-group pull-left"><button class="btn btn-small"  type="submit" href="{% url status.views.status %}"><i class="icon-search"></i> Search</button><a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0&scheduled_downtime_depth=0"> Open Problems</a></li>
                                 <li><a href="{% url status.views.status %}?state__isnot=0"> All Problems</a></li>
                                 <li><a href="{% url status.views.status %}?state=0"> All OK</a></li>
                                 <li><a href="{% url status.views.status %}"> Everything</a></li>
