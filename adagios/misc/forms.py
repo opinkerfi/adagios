@@ -360,37 +360,25 @@ class SendEmailForm(forms.Form):
         """
         self.remote_user = remote_user
         #self.contact_email = contact_email
+        self.html_content = "There is now HTML content with this message."
         self.services = []
         self._resolve_remote_user(self.remote_user)
-        return super(self.__class__,self).__init__(*args,**kwargs)
-
+        super(self.__class__,self).__init__(*args,**kwargs)
     def save(self):
 
         subject = "%s sent you a a message through adagios" % self.remote_user
 
-        #from_address = '%s <%s>' % (self.contact_name, self.contact_email)
-        #from_address = self.contact_email
         from_address = self._resolve_remote_user( self.remote_user )
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')
         text_content = self.cleaned_data['message']
-
-        #html_content = render(request, "snippets/status_servicelist_snippet.html", {"services":self.services})
-        #html_content = "<p>%s</p>" % text_content
-        #html_content += "<table border=1>"
-        #for service in self.services:
-        #    html_content += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (
-        #        service.get('host_name'),
-        #        service.get('description'),
-        #        service.get('state')
-        #    )
-        #html_content += "</table>"
+        # self.html_content is rendered in misc.views.mail()
+        html_content = text_content + "<p></p>" + self.html_content
 
         # Here we actually send some email:
         msg = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_address, to=to_address)
-        msg.attach_alternative(text_content + "<p></p>" + self.html_content, "text/html")
+        msg.attach_alternative(html_content, "text/html")
         msg.send()
-        #send_mail(subject, msg, from_address, to_address, fail_silently=False)
     def _resolve_remote_user(self, username):
         """ Returns a valid "Full Name <email@example.com>" for remote http authenticated user.
          If Remote user is a nagios contact, then return: Contact_Alias <contact_email>"
