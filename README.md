@@ -104,6 +104,7 @@ Adagios has an experimental status view intended to partially replace the classi
 	yum install -y pnp4nagios mk-livestatus
 	pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
 	pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
+	pynag config --set "process_performance_data=1"
 	
 	# Add nagios to apache group so it has permissions to pnp4nagios's session files
 	usermod -G apache nagios
@@ -111,6 +112,8 @@ Adagios has an experimental status view intended to partially replace the classi
 	# We need to restart both apache and nagios so new changes take effect
 	service nagios restart
 	service httpd restart
+	service npcd restart
+	chkconfig npcd on
 
 Communicate with us
 ===================
