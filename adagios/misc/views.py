@@ -314,7 +314,8 @@ def mail(request):
     c['messages'] = []
     c['errors'] = []
     c.update(csrf(request))
-    c['http_origin'] = request.build_absolute_uri()
+    c['http_origin'] = request.META.get("HTTP_REFERER")
+
     remote_user = request.META.get('REMOTE_USER', 'anonymous adagios user')
     if request.method == 'GET':
         c['form'] = forms.SendEmailForm(remote_user, initial=request.GET)
@@ -345,7 +346,6 @@ def mail(request):
 
     c['services'] = c['form'].services
     c['form'].html_content = render(request, "snippets/misc_mail_servicelist.html", c).content
-
     if request.method == 'POST' and c['form'].is_valid():
         c['form'].save()
     return render_to_response('misc_mail.html', c, context_instance = RequestContext(request))
