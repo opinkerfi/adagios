@@ -355,6 +355,10 @@ class SendEmailForm(forms.Form):
         widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
         help_text="Message that is to be sent to recipients",
         )
+    add_myself_to_cc = forms.BooleanField(
+        required=False,
+        help_text="If checked, you will be added automatically to CC"
+    )
     def __init__(self, remote_user, *args, **kwargs):
         """ Create a new instance of SendEmailForm, contact name and email is used as from address.
         """
@@ -368,6 +372,7 @@ class SendEmailForm(forms.Form):
 
         subject = "%s sent you a a message through adagios" % self.remote_user
 
+        cc_address = []
         from_address = self._resolve_remote_user( self.remote_user )
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')
@@ -375,8 +380,12 @@ class SendEmailForm(forms.Form):
         # self.html_content is rendered in misc.views.mail()
         html_content = text_content + "<p></p>" + self.html_content
 
+        if self.cleaned_data['add_myself_to_cc']:
+            print self.cleaned_data['add_myself_to_cc']
+            cc_address.append(from_address)
+
         # Here we actually send some email:
-        msg = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_address, to=to_address)
+        msg = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_address, cc=cc_address, to=to_address)
         msg.attach_alternative(html_content, "text/html")
         msg.send()
     def _resolve_remote_user(self, username):
