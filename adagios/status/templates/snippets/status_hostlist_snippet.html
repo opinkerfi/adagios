@@ -14,10 +14,12 @@
     </thead>
     <tbody>
     {% for row in hosts %}
-        <tr class="mainrow" id="row_{{ forloop.counter }}" onclick='$(".hostsubrow_{{ forloop.counter }}").toggle();'>
-            <td class=small style="cursor: pointer;">
+        <tr class="mainrow" id="row_{{ forloop.counter }}" >
+            <td class=small style="cursor: pointer;" onclick='$(".hostsubrow_{{ forloop.counter }}").toggle();'>
+                <a href="#">
                 <div class="hostsubrow_{{ forloop.counter }}">&#x25b7;</div>
                 <div class="hostsubrow_{{ forloop.counter }} hide">&#x25bd;</div>
+                </a>
             </td>
             <td>
                 <a id="{{ row.name }}" href="{% url status.views.status_detail %}?host_name={{ row.name }}">

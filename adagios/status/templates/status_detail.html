@@ -580,15 +580,16 @@
         });
         // When an editable field is change, lets update configuration
         $('.editable_field').focus(function(e) {
-            $(e.target).data('orig-value', $(e.target).attr('value'));
+            $(e.target).data('orig-value', "" + $(e.target).attr('value'));
+            console.log("old value Changed to " + $(e.target).data('orig-value'));
         })
         $('.editable_field').blur(function(e) {
-            var old_value = $(e.target).data('orig-value');
-            var new_value = $(e.target).attr('value');
-            var attribute_name = $(e.target).attr('name');
+            var old_value = "" + $(e.target).data('orig-value');
+            var new_value = "" + $(e.target).attr('value');
+            var attribute_name = "" + $(e.target).attr('name');
             var object_type = "{{ my_object.object_type }}";
             var short_name = "{{ my_object.short_name }}";
-            console.log(new_value);
+            console.log("Changed from " + old_value + " to " + new_value);
             if (old_value == new_value)
                 return false;
 

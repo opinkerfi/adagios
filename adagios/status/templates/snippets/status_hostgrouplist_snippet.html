@@ -16,10 +16,12 @@
         </tr>
         {% for row in hostgroups %}
             {% if row.members|length > 0 %}
-                <tr onclick='$(".subrow_{{ forloop.counter }}").toggle();'>
-                    <td>
+                <tr >
+                    <td onclick='$(".subrow_{{ forloop.counter }}").toggle();'>
+                        <a href="#">
                         <div class="subrow_{{ forloop.counter }}">&#x25b7;</div>
                         <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
+                            </a>
                     </td>
                     <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
                     <td>
