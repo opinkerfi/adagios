@@ -43,7 +43,7 @@ These installation instructions apply for rhel6. If running Fedora, please modif
 
 For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):
 
-	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-7.noarch.rpm
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-8.noarch.rpm
 
 Next step is to install OK yum repository:
 
