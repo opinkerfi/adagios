@@ -314,7 +314,8 @@ def mail(request):
     c['messages'] = []
     c['errors'] = []
     c.update(csrf(request))
-    c['http_origin'] = request.META.get("HTTP_REFERER")
+    c['http_referer'] = request.META.get("HTTP_REFERER")
+    c['http_origin'] = request.META.get("HTTP_ORIGIN")
 
     remote_user = request.META.get('REMOTE_USER', 'anonymous adagios user')
     if request.method == 'GET':

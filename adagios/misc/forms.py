@@ -379,9 +379,7 @@ class SendEmailForm(forms.Form):
         text_content = self.cleaned_data['message']
         # self.html_content is rendered in misc.views.mail()
         html_content = text_content + "<p></p>" + self.html_content
-
         if self.cleaned_data['add_myself_to_cc']:
-            print self.cleaned_data['add_myself_to_cc']
             cc_address.append(from_address)
 
         # Here we actually send some email:
