@@ -189,8 +189,8 @@ def get_statistics(request):
     c = {}
     l = livestatus(request)
     # Get host/service totals as an array of [ok,warn,crit,unknown]
-    c['service_totals'] = l.query('GET services', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2','Stats: state = 3',)
-    c['host_totals'] = l.query('GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2',)
+    c['service_totals'] = l.query('GET services', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2','Stats: state = 3',columns=False)
+    c['host_totals'] = l.query('GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2',columns=False)
 
     # Get total number of host/services
     c['total_hosts'] = sum(c['host_totals'])
@@ -214,15 +214,18 @@ def get_statistics(request):
                                             'Filter: scheduled_downtime_depth = 0',
                                             'Filter: host_state = 0',
                                             'Stats: state > 0',
+                                            columns=False
     )[0]
     c['unhandled_hosts'] = l.query('GET hosts',
                                          'Filter: acknowledged = 0',
                                          'Filter: scheduled_downtime_depth = 0',
                                          'Stats: state > 0',
+                                         columns=False,
                                          )[0]
     c['total_network_problems'] = l.query('GET hosts',
                                           'Filter: childs != ',
                                           'Stats: state >= 0',
+                                          columns=False
                                           )[0]
     tmp = l.query('GET hosts',
                      'Filter: acknowledged = 0',
@@ -230,6 +233,7 @@ def get_statistics(request):
                      'Filter: childs != ',
                      'Stats: state >= 0',
                      'Stats: state > 0',
+                     columns=False
                      )
     c['total_network_parents'], c['total_unhandled_network_problems'] = tmp
     return c

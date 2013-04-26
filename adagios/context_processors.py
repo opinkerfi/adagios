@@ -82,7 +82,7 @@ def get_tagged_comments(request):
     try:
         remote_user = request.META.get('REMOTE_USER', 'anonymous')
         livestatus = adagios.status.utils.livestatus(request)
-        tagged_comments = livestatus.query('GET comments', 'Stats: comment ~ %s' % remote_user )[0]
+        tagged_comments = livestatus.query('GET comments', 'Stats: comment ~ %s' % remote_user , columns=False)[0]
         if tagged_comments > 0:
             return {'tagged_comments': tagged_comments }
         else:
@@ -96,7 +96,7 @@ def get_unhandled_problems(request):
     results = {}
     try:
         livestatus = adagios.status.utils.livestatus(request)
-        num_problems = livestatus.query('GET services','Filter: state != 0', 'Filter: acknowledged = 0', 'Filter: scheduled_downtime_depth = 0', 'Stats: state != 0')
+        num_problems = livestatus.query('GET services','Filter: state != 0', 'Filter: acknowledged = 0', 'Filter: scheduled_downtime_depth = 0', 'Stats: state != 0', columns=False)
         results['num_problems'] = num_problems[0]
     except Exception:
         pass
