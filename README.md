@@ -12,6 +12,7 @@ Features
   - Tons of pre-bundled plugins and configuration templates
   - Network scan
   - Remote installation of linux/windows agents
+  - Modern Status view as an alternative to default nagios web interface
   - Rest interface for status of hosts/services
   - Rest interface for viewing and modifying configuration
   - Full audit of any changes made
@@ -117,7 +118,7 @@ Adagios has an experimental status view intended to partially replace the classi
 	service npcd restart
 	chkconfig npcd on
 
-Contact us us
+Contact us
 ===================
 If you need any help with getting adagios to work, feel free to open up an issue on github issue tracker. If you want to chat you can contact us on:
 
