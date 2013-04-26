@@ -782,7 +782,10 @@ def _status_combined(request, optimized=False):
 
 @error_handler
 def status_problems(request):
-    #c = _status_combined(request)
+    return dashboard(request)
+
+@error_handler
+def dashboard(request):
 
     # Get statistics
     c = adagios.status.utils.get_statistics(request)
