@@ -12,6 +12,7 @@
     <!-- Le styles -->
     <link href="{% url media path="css/style.css" %}" rel="stylesheet">
     <link href="{% url media path="datepicker/css/datepicker.css" %}" rel="stylesheet">
+    <link href="{% url media path="slider/css/slider.css" %}" rel="stylesheet">
     <style>
         body {
             padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
@@ -731,7 +732,12 @@
 <script src="{% url media path="js/adagios_status.js" %}"></script>
 
 <script src="{% url media path="datepicker/js/bootstrap-datepicker.js" %}"></script>
-
+<script src="{% url media path="slider/js/bootstrap-slider.js" %}"></script>
+<style>
+    .slider-handle {
+        width: 10px;
+    }
+</style>
 
 <script>
     var BASE_URL = "{% url home %}";

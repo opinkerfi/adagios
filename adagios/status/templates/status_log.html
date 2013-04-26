@@ -9,17 +9,20 @@
 
 {% block content %}
     <form method="GET" action="#tab_all">
-        <div id="datepicker_start_time" class="input-append date pull-left" data-date="01/01/2001" data-date-format="dd/mm/yyyy">
-            Start
-            <input class="span6" name="start_time_picker" type="text"><span class="add-on">
-              <i class="icon-th">
-              </i>
-            </span>
+        <div id="datepicker_start_time" class="input-prepend date pull-left" data-date="01/01/2001" data-date-format="dd/mm/yyyy">
+            <span class="add-on"><i class="icon-arrow-left"></i>
+            </span><input name="start_time_picker" style="width: 70px" type="text">
         </div>
+        <div class="pull-left">
+            &nbsp;<input name="start_hours" style="width: 60px" type="text" value="0:00">
+        </div>
+        <div class="pull-left">
+            &nbsp;<input name="end_hours" style="width: 60px" type="text" value="23:59">
+        </div>
+
         <div id="datepicker_end_time" class="input-append date pull-left" data-date="01/01/2001" data-date-format="dd/mm/yyyy">
-            End
-            <input class="span6" name="end_time_picker" type="text"><span class="add-on">
-              <i class="icon-th">
+            &nbsp;<input style="width: 70px" name="end_time_picker" type="text"><span class="add-on">
+              <i class="icon-arrow-right">
               </i>
             </span>
         </div>
@@ -28,6 +31,9 @@
         <div>
             <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search logs">
             <button type="submit" name="submit" >Search</button>
+        </div><br>
+        <div>
+            <input type="text" class="slider" value="">
         </div>
     </form>
 
@@ -245,6 +251,7 @@
 
 {% block footer %} {{ block.super }}
     <script type="text/javascript">
+
         function epochToDate(epoch) {
             return new Date(epoch * 1000);
         }
@@ -256,6 +263,31 @@
         }
 
         $(document).ready(function() {
+            var timeperiod = $('.slider').slider({
+                value: [0, 96],
+                min: 0,
+                max: 96,
+                tooltip: "hide"
+            }).on('slide', function (ev) {
+                    //console.log(ev);
+                    var time_range = [];
+                    for (var x = 0;x < 2;x++) {
+                        value = ev.value[x];
+                        var hour = parseInt(value / 4);
+                        var time = (value % 4) * 15;
+                        if (time < 10) {
+                            time = "0" + time;
+                        }
+                        if (value == 96) {
+                            hour = 23;
+                            time = 59;
+                        }
+                        time_range[x] = hour + ":" + time;
+                    }
+                    $("input[name='start_hours']").val(time_range[0]);
+                    $("input[name='end_hours']").val(time_range[1]);
+            });
+
             // Get the hidden inputs
             var end_time = $("input[name='end_time']");
             var start_time = $("input[name='start_time']");
