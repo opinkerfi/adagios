@@ -191,7 +191,8 @@ def get_map_data(host_name=None):
     livestatus = pynag.Parsers.mk_livestatus()
     all_hosts = livestatus.query('GET hosts', )
     hosts_with_coordinates = pynag.Model.Host.objects.filter(**{'2d_coords__exists':True})
-    result = []
+    hosts = []
+    connections = []
     for i in all_hosts:
         name = i['name']
         if host_name in (None, '', name):
@@ -215,7 +216,26 @@ def get_map_data(host_name=None):
             i['x_coordinates'] = x
             i['y_coordinates'] = y
 
-            result.append( i )
+            hosts.append( i )
+
+    # For all hosts that have network parents, lets return a proper line for those two
+    for i in hosts:
+        # Loop through all network parents. If network parent is also in our hostlist
+        # Then create a connection between the two
+        for parent in i.get('parents'):
+            for x in hosts:
+                if x.get('name') == parent:
+                    connection = {}
+                    connection['parent_x_coordinates'] = x.get('x_coordinates')
+                    connection['parent_y_coordinates'] = x.get('y_coordinates')
+                    connection['child_x_coordinates'] = i.get('x_coordinates')
+                    connection['child_y_coordinates'] = i.get('y_coordinates')
+                    connection['state'] = i.get('state')
+                    connection['description'] = i.get('name')
+                    connections.append(connection)
+    result = {}
+    result['hosts'] = hosts
+    result['connections'] = connections
     return result
 
 

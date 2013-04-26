@@ -233,15 +233,59 @@
             // Get a list of of all hosts with positions
             var url = '{% url rest/status %}json/get_map_data?host_name=';
             $.getJSON(url, function(data) {
-                locations = data;
+                var hosts = data['hosts'];
+                var connections = data['connections']
                 var marker, i, color,html;
-                for (i = 0; i < locations.length; i++) {
-                    host = locations[i];
+                for (i = 0; i < hosts.length; i++) {
+                    host = hosts[i];
                     // placeHostMarker is responsible for putting the
                     // Host as a marker on the map
                     placeHostMarker(map, host);
                 }
+
+                // If any connections returned from webservice, draw a polyline between host
+                // and network parent
+                for (i = 0; i < connections.length; i++) {
+                    placeConnection(map, connections[i]);
+                }
             });
+
+
+
+        }
+        // Puts a Polyline on the map, indicating status between host and its network parent
+        function placeConnection(map, connection) {
+            var colour;
+            if (connection.state == 0) {
+                colour = 'green';
+            }
+            else if (connection.state == 1) {
+                colour = 'warning';
+            }
+            else if (connection.state == 1) {
+                colour = 'red';
+            }
+            else if (connection.state == 2) {
+                colour = 'red';
+            }
+            else if (connection.state == 3) {
+                colour = 'red';
+            }
+            else {
+                colour = "blue";
+            }
+            var points = [
+                new google.maps.LatLng(connection.parent_x_coordinates, connection.parent_y_coordinates),
+                new google.maps.LatLng(connection.child_x_coordinates, connection.child_y_coordinates)
+            ];
+            var polyline = new google.maps.Polyline({
+                path: points,
+                strokeColor: colour,
+                strokeOpacity: 0.2,
+                strokeWeight: 5
+            });
+
+            polyline.setMap(map);
 
         }
         function showmodal() {

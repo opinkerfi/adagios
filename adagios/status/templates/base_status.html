@@ -691,23 +691,35 @@
             </div>
             <div class="modal-body">
                 <p>You can send manual e-mail notification to a specified email address.</p>
+
                 <div class="control-group">
                     <label class="control-label" for="id_mail_to">
                         To:
                     </label>
                     <div class="controls" id="mail_to_field">
-                        <input id="id_mail_to" type="text" class="required" value="" name="to" />
+                        <input id="id_mail_to" type="text" class="required" value="" name="to"   style="width: 100%" />
                     </div>
                 </div>
+
+
                 <div class="control-group">
                     <label class="control-label" for="id_mail_message">
                         Message
                     </label>
                     <div class="controls" id="id_mail_message_field">
-                        <input id="id_mail_message" type="text" class="required" placeholder="Write something clever" name="message" />
-                        <label class="help-block">Write something clever</label>
+                        <textarea id="id_mail_message" type="text" class="required" placeholder="Hey everyone, please check the link and services below." name="message" ></textarea>
                     </div>
                 </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="id_add_myself_to_cc">
+                    </label>
+                    <div class="controls" id="id_add_myself_to_cc_field">
+                        <input type="checkbox" checked="checked" name="add_myself_to_cc" value="on" id="id_add_myself_to_cc" />
+                        Add myself to CC
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>Cancel</a>
@@ -749,7 +761,7 @@
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         // Change our table into a jquery datatable
         $(function() {
-            oTable = $('.dtable').dataTable( {
+            oTable = $('.datatable').dataTable( {
                 "bPaginate": true,
                 "iDisplayLength": 100
             });
@@ -767,6 +779,7 @@
             document.getElementById('id_comment').focus()
         });
 
+
         // When somebody clicks the downtime button, lets focus on the comment field
         $('#downtime_modal').on('shown', function () {
             document.getElementById('id_downtime_comment').focus()
@@ -775,13 +788,14 @@
         // When somebody clicks the notification button, lets load contact email addresses
         $('#mail_modal').on('shown', function () {
             var url = '{% url rest/status %}json/emails?fields=email';
+            document.getElementById('id_mail_to').focus();
             $.getJSON(url, function(data) {
                 $("#id_mail_to").select2({
                     tags:data,
                     tokenSeparators: [","],
                     placeholder:"Comma seperated list of email addresses to send to"
                 });
-            })
+            });
         });
 
 
@@ -905,6 +919,7 @@
             my_data = {
                 "to":document.getElementById("id_mail_to").value,
                 "csrfmiddlewaretoken": window.csrftoken,
+                "add_myself_to_cc": document.getElementById("id_add_myself_to_cc").value,
                 "message":document.getElementById("id_mail_message").value,
                 "service": []
             }
