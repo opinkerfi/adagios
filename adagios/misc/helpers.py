@@ -224,3 +224,26 @@ def contactgroup_hierarchy(**kwargs):
         return result
     except Exception,e :
         return { 'error': str(e) }
+
+
+def add_object(object_type, filename=None, **kwargs):
+    """ Create one specific object definition and store it in nagios.
+
+    Arguments:
+        object_type  -- What kind of object to create (host, service,contactgroup, etc)
+        filename     -- Which configuration file to store the object in. If filename=None pynag will decide
+                     -- where to store the file
+        **kwargs     -- Any other arguments will be treated as an attribute for the new object definition
+
+    Returns:
+        {'filename':XXX, 'raw_definition':XXX}
+    Examples:
+        add_object(object_type=host, host_name="localhost.example", address="127.0.0.1", use="generic-host"
+    """
+    my_object = Model.string_to_class.get(object_type)()
+    if filename is not None:
+        my_object.set_filename(filename)
+    for k,v in kwargs.items():
+        my_object[k] = v
+    my_object.save()
+    return {"filename":my_object.get_filename(), "raw_definition":str(my_object)}
