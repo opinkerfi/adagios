@@ -2,11 +2,15 @@ About
 =====
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios.
 
+Live Demo
+=========
+http://adagios.opensource.is/
+
 Design principals
 ==================
-  - No database backend (work with current configuration files and extremely gentle when modifying them)
-  - Make common tasks as simple as possible (monitoring a new windows or oracle host should be as easy as 1,2,3)
-  - Be a value-add for both novices and nagios experts
+  - Useful for both novices and nagios experts
+  - No database backend
+  - Make common operational tasks as easy as possible
   - Assist Nagios admins in keeping configuration files clean and simple
 
 Features
@@ -15,22 +19,21 @@ Features
   - Tons of pre-bundled plugins and configuration templates
   - Network scan
   - Remote installation of linux/windows agents
+  - Rest interface for status of hosts/services
+  - Rest interface for viewing and modifying configuration
   - Full audit of any changes made
 
 Components
 ==========
-  - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
   - Pynag - Nagios Configuration Parser
-  - Django - Python web framework
-  - Bootstrap - For user interface
+  - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
+  - PNP4Nagios - For Graphing Performance data
+  - MK Livestatus - Broker module for nagios for high performance status information
 
-Live Demo
-=========
-http://adagios.opensource.is/
 
 Project website
 =========
-http://opensource.is/adagios
+http://adagios.org
 
 Source Code
 ===========
