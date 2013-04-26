@@ -6,13 +6,6 @@ Live Demo
 =========
 http://adagios.opensource.is/
 
-Design principals
-==================
-  - Useful for both novices and nagios experts
-  - No database backend
-  - Make common operational tasks as easy as possible
-  - Assist Nagios admins in keeping configuration files clean and simple
-
 Features
 ========
   - Full view/edit of hosts,services, etc
@@ -23,13 +16,19 @@ Features
   - Rest interface for viewing and modifying configuration
   - Full audit of any changes made
 
+Design principals
+==================
+  - Useful for both novices and nagios experts
+  - No database backend
+  - Make common operational tasks as easy as possible
+  - Assist Nagios admins in keeping configuration files clean and simple
+
 Components
 ==========
   - Pynag - Nagios Configuration Parser
   - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
   - PNP4Nagios - For Graphing Performance data
   - MK Livestatus - Broker module for nagios for high performance status information
-
 
 Project website
 =========
@@ -118,9 +117,9 @@ Adagios has an experimental status view intended to partially replace the classi
 	service npcd restart
 	chkconfig npcd on
 
-Communicate with us
+Contact us us
 ===================
+If you need any help with getting adagios to work, feel free to open up an issue on github issue tracker. If you want to chat you can contact us on:
 
-Mailing list: http://groups.google.com/group/adagios
-
-IRC: #adagios on irc.freenode.net
+  - Mailing list: http://groups.google.com/group/adagios
+  - IRC: #adagios on irc.freenode.net
