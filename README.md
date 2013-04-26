@@ -1,6 +1,8 @@
 About
 =====
-Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios.
+Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. Additionally adagios has a rest interface for both status and configuration data as well a feature complete status interface that can be used as an alternative to nagios web interface.
+
+Project website is at http://adagios.org
 
 Live Demo
 =========
@@ -30,10 +32,6 @@ Components
   - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
   - PNP4Nagios - For Graphing Performance data
   - MK Livestatus - Broker module for nagios for high performance status information
-
-Project website
-=========
-http://adagios.org
 
 Source Code
 ===========
