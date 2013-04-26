@@ -4,64 +4,177 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Adagios by opinkerfi</title>
-
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
   <body>
-    <div class="wrapper">
+
       <header>
-        <h1 class="header">Adagios</h1>
-        <p class="header">Adagios - Web Based Nagios Configuration</p>
-
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/opinkerfi/adagios/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/opinkerfi/adagios/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/opinkerfi/adagios">View On GitHub</a></li>
-        </ul>
-
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/opinkerfi">opinkerfi</a></p>
-
-
+        <h1>Adagios</h1>
+        <p>Adagios - Web Based Nagios Configuration</p>
       </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/opinkerfi/adagios" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/opinkerfi/adagios/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/opinkerfi/adagios/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
       <section>
-        <h3>Welcome to GitHub Pages.</h3>
+        <h1>About</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<h1>Design principals</h1>
+
+<ul>
+<li>No database backend (work with current configuration files and extremely gentle when modifying them)</li>
+<li>Make common tasks as simple as possible (monitoring a new windows or oracle host should be as easy as 1,2,3)</li>
+<li>Be a value-add for both novices and nagios experts</li>
+<li>Assist Nagios admins in keeping configuration files clean and simple</li>
+</ul><h1>Features</h1>
+
+<ul>
+<li>Full view/edit of hosts,services, etc</li>
+<li>Tons of pre-bundled plugins and configuration templates</li>
+<li>Network scan</li>
+<li>Remote installation of linux/windows agents</li>
+<li>Full audit of any changes made</li>
+</ul><h1>Components</h1>
+
+<ul>
+<li>OKconfig - A robust plugin collection with preconfigured nagios template configuration files</li>
+<li>Pynag - Nagios Configuration Parser</li>
+<li>Django - Python web framework</li>
+<li>Bootstrap - For user interface</li>
+</ul><h1>Live Demo</h1>
+
+<p><a href="http://adagios.opensource.is/">http://adagios.opensource.is/</a></p>
+
+<h1>Project website</h1>
+
+<p><a href="http://opensource.is/adagios">http://opensource.is/adagios</a></p>
+
+<h1>Source Code</h1>
+
+<pre><code>git clone http://github.com/opinkerfi/adagios.git
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h1>Install Instructions</h1>
 
-<h3>Designer Templates</h3>
+<p>These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.</p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):</p>
 
-<h3>Rather Drive Stick?</h3>
+<pre><code>rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-8.noarch.rpm
+</code></pre>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>Next step is to install OK yum repository:</p>
 
-<h3>Authors and Contributors</h3>
+<pre><code>rpm -Uhv http://opensource.is/repo/ok-release-10-1.el6.noarch.rpm
+</code></pre>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>Install needed packages:</p>
 
-<h3>Support or Contact</h3>
+<pre><code>yum --enablerepo=ok-testing install -y nagios git adagios
+</code></pre>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Install okconfig (optional). Okconfig is a collection of plugins and templates for monitoring enterprise equipment. If installed Adagios will have options such as network scan and remote installation of clients.</p>
+
+<pre><code>yum --enablerepo=ok-testing install -y okconfig
+</code></pre>
+
+<p>Adagios will not work unless you turn off selinux:</p>
+
+<pre><code>sed -i "s/SELINUX=enforcing/SELINUX=permissive/" /etc/sysconfig/selinux
+setenforce 0
+</code></pre>
+
+<p>If you plan to access adagios through apache, make sure it is started:</p>
+
+<pre><code>service httpd restart
+chkconfig httpd on
+</code></pre>
+
+<p>Same goes for nagios, start it if it is ready</p>
+
+<pre><code>service nagios restart
+chkconfig nagios on
+</code></pre>
+
+<p>It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
+everything in /etc/nagios to the nagios user.</p>
+
+<pre><code>cd /etc/nagios/
+git init
+git add .
+git commit -a -m "Initial commit"
+# Make sure nagios group will always have write access to the configuration files:
+chown -R nagios /etc/nagios/* /etc/nagios/.git
+setfacl -R -m group:nagios:rwx /etc/nagios/
+setfacl -R -m d:group:nagios:rwx /etc/nagios/
+</code></pre>
+
+<p>By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and 
+nagios.cfg contains a reference to this directory.</p>
+
+<pre><code>mkdir -p /etc/nagios/adagios
+pynag config --append cfg_dir=/etc/nagios/adagios
+</code></pre>
+
+<p>Congratulations! You are now ready to browse through adagios through http://$servername/adagios/. By default it
+will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
+changed in /etc/nagios/passwd)</p>
+
+<h1>Using the Status view</h1>
+
+<p>Adagios has an experimental status view intended to partially replace the classical nagios web interface. If you want to try it out hen you need mk_livestatus and pnp4nagios broker modules installed:</p>
+
+<pre><code>yum install -y pnp4nagios mk-livestatus
+pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
+pynag config --set "process_performance_data=1"
+
+# Add nagios to apache group so it has permissions to pnp4nagios's session files
+usermod -G apache nagios
+
+# We need to restart both apache and nagios so new changes take effect
+service nagios restart
+service httpd restart
+service npcd restart
+chkconfig npcd on
+</code></pre>
+
+<h1>Communicate with us</h1>
+
+<p>Mailing list: <a href="http://groups.google.com/group/adagios">http://groups.google.com/group/adagios</a></p>
+
+<p>IRC: #adagios on irc.freenode.net</p>
       </section>
       <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+        <p>Project maintained by <a href="https://github.com/opinkerfi">opinkerfi</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+    
   </body>
 </html>
