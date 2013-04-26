@@ -158,18 +158,18 @@
             });
             map.markers.push(marker);
             // When user clicks on this host marker, lets open up a infowindow
-            var url = "{% url status.views.status_host  %}" + "/" + host.name;
+            var host_url = "{% url status.views.status_detail  %}"  + "?host_name=" + host.name;
             html = '<div class="circle state_' + host.state +'"> </div>';
-            html = html + ' <a href="' + url + '">'+ host.name +'</a>';
+            html = html + ' <a href="' + host_url + '">'+ host.name +'</a>';
             html = html + " (" + host.address +")";
             html = html + "<hr>";
             // Do the services on this host
             var x = 0
             for (x = 0; x < host.services_with_state.length; x++) {
                 service = host.services_with_state[x];
-                url = "{% url status.views.status_host  %}" + "/" + host.name + "/" + service[0];
+                service_url = host_url + "&service_description=" +  service[0];
                 html = html + '<br> <div class="circle state_' + service[1] +'"> </div> ';
-                html = html + '<a href="' + url + '">' + service[0] + '</a>';
+                html = html + '<a href="' + service_url + '">' + service[0] + '</a>';
             }
             var infowindow = new google.maps.InfoWindow();
             infowindow.setContent(html);
@@ -281,7 +281,7 @@
             var polyline = new google.maps.Polyline({
                 path: points,
                 strokeColor: colour,
-                strokeOpacity: 0.2,
+                strokeOpacity: 0.3,
                 strokeWeight: 5
             });
 
@@ -291,6 +291,7 @@
         function showmodal() {
             $("#addhost_modal").modal("show");
         }
+
         // Create a new google map and hook events
         function initilize_map() {
             // Create map
@@ -313,8 +314,6 @@
         }
         $(document).ready(function() {
             initilize_map();
-
-
         });
     </script>
 
