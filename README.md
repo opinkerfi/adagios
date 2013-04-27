@@ -6,7 +6,7 @@ Project website is at http://adagios.org
 
 Live Demo
 =========
-http://adagios.opensource.is/
+http://demo.adagios.org/
 
 Features
 ========
