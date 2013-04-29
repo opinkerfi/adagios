@@ -182,8 +182,9 @@ def get_okconfig(request):
     """ Returns {"okconfig":True} if okconfig module is installed.
     """
     try:
-        import okconfig
-        return {"okconfig":True}
+        if "okconfig" in settings.plugins:
+            return {"okconfig":True}
+        return {}
     except Exception:
         return {}
 
