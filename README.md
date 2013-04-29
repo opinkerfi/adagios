@@ -1,13 +1,12 @@
 About
 =====
-Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios.
+Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. Additionally adagios has a rest interface for both status and configuration data as well a feature complete status interface that can be used as an alternative to nagios web interface.
 
-Design principals
-==================
-  - No database backend (work with current configuration files and extremely gentle when modifying them)
-  - Make common tasks as simple as possible (monitoring a new windows or oracle host should be as easy as 1,2,3)
-  - Be a value-add for both novices and nagios experts
-  - Assist Nagios admins in keeping configuration files clean and simple
+Project website is at http://adagios.org
+
+Live Demo
+=========
+http://demo.adagios.org/
 
 Features
 ========
@@ -15,22 +14,24 @@ Features
   - Tons of pre-bundled plugins and configuration templates
   - Network scan
   - Remote installation of linux/windows agents
+  - Modern Status view as an alternative to default nagios web interface
+  - Rest interface for status of hosts/services
+  - Rest interface for viewing and modifying configuration
   - Full audit of any changes made
+
+Design principals
+==================
+  - Useful for both novices and nagios experts
+  - No database backend
+  - Make common operational tasks as easy as possible
+  - Assist Nagios admins in keeping configuration files clean and simple
 
 Components
 ==========
-  - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
   - Pynag - Nagios Configuration Parser
-  - Django - Python web framework
-  - Bootstrap - For user interface
-
-Live Demo
-=========
-http://adagios.opensource.is/
-
-Project website
-=========
-http://opensource.is/adagios
+  - OKconfig - A robust plugin collection with preconfigured nagios template configuration files
+  - PNP4Nagios - For Graphing Performance data
+  - MK Livestatus - Broker module for nagios for high performance status information
 
 Source Code
 ===========
@@ -115,9 +116,9 @@ Adagios has an experimental status view intended to partially replace the classi
 	service npcd restart
 	chkconfig npcd on
 
-Communicate with us
+Contact us
 ===================
+If you need any help with getting adagios to work, feel free to open up an issue on github issue tracker. If you want to chat you can contact us on:
 
-Mailing list: http://groups.google.com/group/adagios
-
-IRC: #adagios on irc.freenode.net
+  - Mailing list: http://groups.google.com/group/adagios
+  - IRC: #adagios on irc.freenode.net

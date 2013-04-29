@@ -951,7 +951,7 @@ def _status_log(request):
     for k,v in request.GET.items():
         if k == 'search':
             k = 'search'
-        elif k in ('start_time', 'end_time', 'start_time_picker', 'end_time_picker'):
+        elif k in ('start_time', 'end_time', 'start_time_picker', 'end_time_picker', 'limit'):
             continue
         elif v is None or len(v) == 0:
             continue

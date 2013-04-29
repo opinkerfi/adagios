@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Adagios by opinkerfi</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Adagios</h1>
+        <p>Adagios - Web Based Nagios Configuration</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/opinkerfi/adagios" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/opinkerfi/adagios/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/opinkerfi/adagios/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>About</h1>
+
+<p>Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. Additionally adagios has a rest interface for both status and configuration data as well a feature complete status interface that can be used as an alternative to nagios web interface.</p>
+
+<p>Project website is at <a href="http://adagios.org">http://adagios.org</a></p>
+
+<h1>Live Demo</h1>
+
+<p><a href="http://adagios.opensource.is/">http://adagios.opensource.is/</a></p>
+
+<h1>Features</h1>
+
+<ul>
+<li>Full view/edit of hosts,services, etc</li>
+<li>Tons of pre-bundled plugins and configuration templates</li>
+<li>Network scan</li>
+<li>Remote installation of linux/windows agents</li>
+<li>Modern Status view as an alternative to default nagios web interface</li>
+<li>Rest interface for status of hosts/services</li>
+<li>Rest interface for viewing and modifying configuration</li>
+<li>Full audit of any changes made</li>
+</ul><h1>Design principals</h1>
+
+<ul>
+<li>Useful for both novices and nagios experts</li>
+<li>No database backend</li>
+<li>Make common operational tasks as easy as possible</li>
+<li>Assist Nagios admins in keeping configuration files clean and simple</li>
+</ul><h1>Components</h1>
+
+<ul>
+<li>Pynag - Nagios Configuration Parser</li>
+<li>OKconfig - A robust plugin collection with preconfigured nagios template configuration files</li>
+<li>PNP4Nagios - For Graphing Performance data</li>
+<li>MK Livestatus - Broker module for nagios for high performance status information</li>
+</ul><h1>Source Code</h1>
+
+<pre><code>git clone http://github.com/opinkerfi/adagios.git
+</code></pre>
+
+<h1>Install Instructions</h1>
+
+<p>These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.</p>
+
+<p>For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):</p>
+
+<pre><code>rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-8.noarch.rpm
+</code></pre>
+
+<p>Next step is to install OK yum repository:</p>
+
+<pre><code>rpm -Uhv http://opensource.is/repo/ok-release-10-1.el6.noarch.rpm
+</code></pre>
+
+<p>Install needed packages:</p>
+
+<pre><code>yum --enablerepo=ok-testing install -y nagios git adagios
+</code></pre>
+
+<p>Install okconfig (optional). Okconfig is a collection of plugins and templates for monitoring enterprise equipment. If installed Adagios will have options such as network scan and remote installation of clients.</p>
+
+<pre><code>yum --enablerepo=ok-testing install -y okconfig
+</code></pre>
+
+<p>Adagios will not work unless you turn off selinux:</p>
+
+<pre><code>sed -i "s/SELINUX=enforcing/SELINUX=permissive/" /etc/sysconfig/selinux
+setenforce 0
+</code></pre>
+
+<p>If you plan to access adagios through apache, make sure it is started:</p>
+
+<pre><code>service httpd restart
+chkconfig httpd on
+</code></pre>
+
+<p>Same goes for nagios, start it if it is ready</p>
+
+<pre><code>service nagios restart
+chkconfig nagios on
+</code></pre>
+
+<p>It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
+everything in /etc/nagios to the nagios user.</p>
+
+<pre><code>cd /etc/nagios/
+git init
+git add .
+git commit -a -m "Initial commit"
+# Make sure nagios group will always have write access to the configuration files:
+chown -R nagios /etc/nagios/* /etc/nagios/.git
+setfacl -R -m group:nagios:rwx /etc/nagios/
+setfacl -R -m d:group:nagios:rwx /etc/nagios/
+</code></pre>
+
+<p>By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and 
+nagios.cfg contains a reference to this directory.</p>
+
+<pre><code>mkdir -p /etc/nagios/adagios
+pynag config --append cfg_dir=/etc/nagios/adagios
+</code></pre>
+
+<p>Congratulations! You are now ready to browse through adagios through http://$servername/adagios/. By default it
+will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
+changed in /etc/nagios/passwd)</p>
+
+<h1>Using the Status view</h1>
+
+<p>Adagios has an experimental status view intended to partially replace the classical nagios web interface. If you want to try it out hen you need mk_livestatus and pnp4nagios broker modules installed:</p>
+
+<pre><code>yum install -y pnp4nagios mk-livestatus
+pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
+pynag config --set "process_performance_data=1"
+
+# Add nagios to apache group so it has permissions to pnp4nagios's session files
+usermod -G apache nagios
+
+# We need to restart both apache and nagios so new changes take effect
+service nagios restart
+service httpd restart
+service npcd restart
+chkconfig npcd on
+</code></pre>
+
+<h1>Contact us</h1>
+
+<p>If you need any help with getting adagios to work, feel free to open up an issue on github issue tracker. If you want to chat you can contact us on:</p>
+
+<ul>
+<li>Mailing list: <a href="http://groups.google.com/group/adagios">http://groups.google.com/group/adagios</a>
+</li>
+<li>IRC: #adagios on irc.freenode.net</li>
+</ul>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/opinkerfi">opinkerfi</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
