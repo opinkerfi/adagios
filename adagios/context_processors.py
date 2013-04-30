@@ -42,6 +42,8 @@ def on_page_load(request):
         results[k] = v
     for k,v in get_okconfig(request).items():
         results[k] = v
+    for k,v in get_nagios_url(request).items():
+        results[k] = v
     return results
 
 def get_current_time(request):
@@ -76,6 +78,9 @@ def get_httpuser(request):
         i.modified_by = remote_user
     return {'remote_user': remote_user }
 
+def get_nagios_url(request):
+    """ Get url to legasy nagios interface """
+    return { 'nagios_url': settings.nagios_url }
 
 def get_tagged_comments(request):
     """ (for status view) returns number of comments that mention the remote_user"""
