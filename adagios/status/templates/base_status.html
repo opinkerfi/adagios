@@ -632,7 +632,7 @@
 
     <!-- downtime modal -->
     <div class="modal hide fade" id="downtime_modal">
-        <form class="form-horizontal" onsubmit='$("#downtime_modal").modal("hide"); downtime(); return false;' >
+        <form name="downtime" class="form-horizontal">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Schedule Downtime</h3>
@@ -652,8 +652,12 @@
                         Start Time
                     </label>
                     <div class="controls" id="downtime_start_time_field">
-                        <input id="id_downtime_start_time" type="text" class="required" placeholder="now" value="" name="start_time" />
-                        <label class="help-block">start_time</label>
+                        <div class="control-group pull-left">
+                            <input name="start_hours" style="width: 40px" type="text">&nbsp;
+                        </div>
+                        <div id="datepicker_start_time" class="date pull-left">
+                            <input name="start_time_picker" style="width: 70px" type="text">
+                        </div>
                     </div>
                 </div>
                 <div class="control-group">
@@ -661,8 +665,12 @@
                         End Time
                     </label>
                     <div class="controls" id="id_downtime_end_time_field">
-                        <input id="id_downtime_end_time" type="text" class="required" placeholder="two hours from now" name="end_time" />
-                        <label class="help-block">End Time</label>
+                        <div class="control-group pull-left">
+                            <input name="end_hours" style="width: 40px" type="text">&nbsp;
+                        </div>
+                        <div id="datepicker_end_time" class="date pull-left">
+                            <input name="end_time_picker" style="width: 70px" type="text">
+                        </div>
                     </div>
                 </div>
                 <div class="control-group">
@@ -772,8 +780,19 @@
             $('.dataTables_length').hide();
 
         });
-    </script>
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        $(document).ready(function() {
+            var start_time = (new Date).valueOf() / 1000;
+            var end_time = (new Date);
+            end_time.setHours(end_time.getHours() + 2);
+            end_time = end_time.valueOf() / 1000;
+            $("form[name='downtime']").adagios_datetimepicker(start_time, end_time);
+            $("form[name='downtime']").submit(function() {
+                $("#downtime_modal").modal("hide");
+                downtime();
+                return false;
+            });
+        });
+
         // When somebody clicks the acknowledge button, lets focus on the comment field
         $('#acknowledge_modal').on('shown', function () {
             document.getElementById('id_comment').focus()
@@ -873,13 +892,14 @@
 
         // This function responsible for downtime on all selected rows
         function downtime() {
+            var $form_downtime = $("form[name='downtime']");
             $('#downtime_modal').modal('hide');
             var comment = document.getElementById("id_downtime_comment").value;
             if (comment == '') {
                 comment = "No comment was entered...";
             }
-            var start_time = document.getElementById("id_downtime_start_time").value;
-            var end_time = document.getElementById("id_downtime_end_time").value;
+            var start_time = $form_downtime.find("input[name='start_time']").val();
+            var end_time = $form_downtime.find("input[name='end_time']").val();
             $("#downtime_button").button('loading');
             var my_services = get_selected_services();
             var services_done = 0;

@@ -9,26 +9,24 @@
 
 {% block content %}
     <form method="GET" action="#tab_all" name="datetimepicker">
-        <div id="datetimepicker" class="pull-left">
-            <div id="datepicker_start_time" class="input-prepend date pull-left">
-                <span class="add-on"><i class="icon-th"></i>
-                </span><input name="start_time_picker" style="width: 70px" type="text">
+        <div class="pull-left">
+            <div class="date pull-left">
+                <input name="start_time_picker" style="width: 70px" type="text">
             </div>
             <div class="control-group pull-left">
                 &nbsp;<input name="start_hours" style="width: 40px" type="text">
             </div>
             <div class="pull-left">
-                &nbsp;To
+                &nbsp;To&nbsp;
             </div>
 
-            <div id="datepicker_end_time" class="input-prepend date pull-left">
-                &nbsp;
-                <span class="add-on"><i class="icon-th"></i>
-                </span><input style="width: 70px" name="end_time_picker" type="text">
-                <input name="end_hours" style="width: 40px" type="text">
+            <div class="date pull-left">
+                <input style="width: 70px" name="end_time_picker" type="text">
             </div>
-            <input name="start_time" type="hidden" value="{{ start_time }}">
-            <input name="end_time" type="hidden" value="{{ end_time }}">
+            <div class="control-group pull-left">
+                &nbsp;<input name="end_hours" style="width: 40px" type="text">
+            </div>
+
         </div>
         <div class="pull-left" style="padding-left: 8px">
             <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search logs">
@@ -254,130 +252,26 @@
 {% block footer %} {{ block.super }}
     <script type="text/javascript">
 
-        function epochToDate(epoch) {
-            return new Date(epoch * 1000);
-        }
-        function dateToEpoch(date) {
-            return date.getTime() / 1000;
-        }
-        function dateStr(date) {
-            return date.getFullYear() + "-" + zeropad(date.getMonth()+1, 2) + "-" + zeropad(date.getDate(), 2);
-        }
-        function zeropad(number, length) {
-            result = number + "";
-            while (result.length < length) {
-                result = "0" + result;
-            }
-            return result;
-        }
 
         $(document).ready(function() {
-            /*
-            Temporarily disabled until we made a slider decision, not production ready
-
-            var timeperiod = $('.slider').slider({
-                value: [0, 96],
-                min: 0,
-                max: 96,
-                tooltip: "hide"
-            }).on('slide', function (ev) {
-                    //console.log(ev);
-                    var time_range = [];
-                    for (var x = 0;x < 2;x++) {
-                        value = ev.value[x];
-                        var hour = parseInt(value / 4);
-                        var time = (value % 4) * 15;
-                        if (time < 10) {
-                            time = "0" + time;
-                        }
-                        if (value == 96) {
-                            hour = 23;
-                            time = 59;
-                        }
-                        time_range[x] = hour + ":" + time;
-                    }
-                    $("input[name='start_hours']").val(time_range[0]);
-                    $("input[name='end_hours']").val(time_range[1]);
-            });
-             */
-            // Get the hidden inputs
-            var end_time = $("input[name='end_time']");
-            var start_time = $("input[name='start_time']");
-
-            // end_time set to end of today if not specified
-            if (end_time.val() == "None") {
-                today = new Date;
-                end_time.val(dateToEpoch(new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)) + 86399);
+            var start_time = new Date();
+            if ("{{ start_time }}" != "None") {
+                start_time = {{ start_time }};
+            } else {
+                start_time.setDate(start_time.getDate() - 1);
+                start_time = start_time.valueOf() / 1000;
             }
 
-            // Parse start and end time epohcs to date objects
-            end_time.data("dateobj", epochToDate(end_time.val()));
-            start_time.data("dateobj", epochToDate(start_time.val()));
-
-            // Set the hours on load
-            $("input[name='start_hours']").val(
-                    start_time.data("dateobj").getHours() + ":" +
-                    zeropad(start_time.data("dateobj").getMinutes(), 2));
-            $("input[name='end_hours']").val(
-                    end_time.data("dateobj").getHours() + ":" +
-                    zeropad(end_time.data("dateobj").getMinutes(), 2));
-
-            // Set current values
-            $("input[name='start_time_picker']").val(dateStr(start_time.data('dateobj')))
-                    .datepicker({ format: "yyyy-mm-dd" })
-                    .on('changeDate', function(ev) {
-                        dateobj = start_time.data("dateobj");
-                        dateobj.setYear(ev.date.getFullYear());
-                        dateobj.setMonth(ev.date.getMonth());
-                        dateobj.setDate(ev.date.getDate());
-                        console.log("changedate");
-                    });
-            $("input[name='end_time_picker']").val(dateStr(end_time.data('dateobj')))
-                    .datepicker({ format: "yyyy-mm-dd" })
-                    .on('changeDate', function(ev) {
-                        dateobj = end_time.data("dateobj");
-                        dateobj.setYear(ev.date.getFullYear());
-                        dateobj.setMonth(ev.date.getMonth());
-                        dateobj.setDate(ev.date.getDate());
-                        console.log("changedate");
-                    });
-
-            // Assign click to sibling calendar icon
-            $("input[name='end_time_picker']").siblings().on('click', function() {
-                $("input[name='end_time_picker']").datepicker('show');
-            });
-            $("input[name='start_time_picker']").siblings().on('click', function() {
-                $("input[name='start_time_picker']").datepicker('show');
-            });
-
-            // Handle hour changes
-            $("input[name$='_hours']").on('change', function() {
-                hour = $(this).val();
-                var numregex = /^\d{1,2}:\d{1,2}$/;
-                if (!numregex.test(hour)) {
-                    $(this).focus();
-                    $(this).parent().addClass('error');
-                    return false;
-                }
-                var time = hour.split(':');
-                time[0] = (time[0] % 24)
-                time[1] = (time[1] % 60)
-                $(this).parent().removeClass('error');
-                $(this).val(time[0] + ":" + zeropad(time[1],2));
-
-                var which = $(this).attr("name").split("_")[0];
-                var input = $("input[name='" + which + "_time']");
-                input.data('dateobj').setHours(time[0]);
-                input.data('dateobj').setMinutes(time[1]);
-                return true;
-            });
-            // Apply dateobj to start and end _time
-            $("form[name='datetimepicker']").submit(function() {
-                start_time.val(dateToEpoch(start_time.data('dateobj')));
-                end_time.val(dateToEpoch(end_time.data('dateobj')));
-                console.log(start_time.val());
-                console.log(end_time.val());
-            });
+            var end_time = new Date();
+            if ("{{ end_time }}" != "None") {
+                end_time = {{ end_time }};
+            } else {
+                end_time.setHours(23);
+                end_time.setMinutes(59);
+                end_time.setSeconds(59);
+                end_time = end_time.valueOf() / 1000;
+            }
+            $("form[name='datetimepicker']").adagios_datetimepicker(start_time, end_time);
         });
     </script>
 
