@@ -652,11 +652,11 @@
                         Start Time
                     </label>
                     <div class="controls" id="downtime_start_time_field">
-                        <div class="control-group pull-left">
-                            <input name="start_hours" style="width: 40px" type="text">&nbsp;
-                        </div>
                         <div id="datepicker_start_time" class="date pull-left">
                             <input name="start_time_picker" style="width: 70px" type="text">
+                        </div>
+                        <div class="control-group pull-left">
+                            <input name="start_hours" style="width: 40px" type="text">&nbsp;
                         </div>
                     </div>
                 </div>
@@ -665,11 +665,11 @@
                         End Time
                     </label>
                     <div class="controls" id="id_downtime_end_time_field">
-                        <div class="control-group pull-left">
-                            <input name="end_hours" style="width: 40px" type="text">&nbsp;
-                        </div>
                         <div id="datepicker_end_time" class="date pull-left">
                             <input name="end_time_picker" style="width: 70px" type="text">
+                        </div>
+                        <div class="control-group pull-left">
+                            <input name="end_hours" style="width: 40px" type="text">&nbsp;
                         </div>
                     </div>
                 </div>
@@ -786,9 +786,10 @@
             end_time.setHours(end_time.getHours() + 2);
             end_time = end_time.valueOf() / 1000;
             $("form[name='downtime']").adagios_datetimepicker(start_time, end_time);
-            $("form[name='downtime']").submit(function() {
+            $("form[name='downtime']").submit(function(e) {
                 $("#downtime_modal").modal("hide");
                 downtime();
+                e.preventDefault();
                 return false;
             });
         });
