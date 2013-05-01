@@ -17,7 +17,6 @@ def add_plugin(name="myplugin", modulepath=None):
         modulepath=name
 
     plugin_module = __import__(modulepath, fromlist=modulepath.split()).__file__
-    #print "modulepath", modulepath, amodule.__file__
     template_dir = os.path.dirname(plugin_module) + "/templates/"
 
 
