@@ -99,7 +99,7 @@ def duration(value, arg = ''):
         if days > 0:
 
             # Add multiple days to duration string
-            durationString += ' ' + str(days) + dayUnitName + (days > 1 and '' or '')
+            durationString += ' ' + str(days) + dayUnitName + (days > 1 and 's' or '')
 
         # Determine if next string is to be shown
         if hours > 0:
