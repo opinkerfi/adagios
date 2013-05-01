@@ -38,11 +38,6 @@ def _get_function_information(module_name, function_name,):
         defaults = []
     else:
         defaults = list(defaults)
-    print args
-    print varargs
-    print varkw
-    print defaults
-    return
     for k,v in function_paramaters.items():
         self.fields[k] = forms.CharField( label=k, initial=v)
 
@@ -155,7 +150,6 @@ def javascript(request, module_name):
     current_url =  request.get_full_path()
     baseurl = current_url.replace('.js','')
     # Find every function, prepare what is needed so template can
-    # print arguments with their default values.
     for i in functions:
         argspec = inspect.getargspec( members[i] )
         args,varargs,varkw,defaults = argspec
@@ -183,8 +177,7 @@ def javascript(request, module_name):
         members[i]['url'] = baseurl + "/json/" + i
         args,varargs,varkw,defaults = argspec
     c['functions'] = members
-    #return c
-    #_get_function_information('os','curdir')
+
     return render_to_response('javascript.html', c, mimetype="text/javascript", context_instance = RequestContext(request))
 
 
