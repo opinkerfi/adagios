@@ -60,7 +60,7 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1,persiste
 
     """
     if not service_description:
-        pynag.Control.Command.acknowledge_host_problem(host_name=self.host_name,
+        pynag.Control.Command.acknowledge_host_problem(host_name=host_name,
             sticky=sticky,
             notify=notify,
             persistent=persistent,
