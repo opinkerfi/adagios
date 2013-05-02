@@ -270,7 +270,8 @@ class AdvancedEditForm(AdagiosForm):
     __prefix = "advanced" # This prefix will go on every field
     def save(self):
         for k in self.changed_data:
-            value = self.cleaned_data[k]
+            # change from unicode to str
+            value = smart_str( self.cleaned_data[k] )
             # same as original, lets ignore that
             if self.pynag_object[k] == value:
                 continue
@@ -280,6 +281,12 @@ class AdvancedEditForm(AdagiosForm):
             # If we reach here, it is save to modify our pynag object.
             self.pynag_object[k] = value
         self.pynag_object.save()
+    def clean(self):
+        cleaned_data = super(self.__class__, self).clean()
+        for k,v in cleaned_data.items():
+            # change from unicode to str
+            v = cleaned_data[k] = smart_str(v)
+        return cleaned_data
     def __init__(self, pynag_object ,*args, **kwargs):
         self.pynag_object = pynag_object
         super(self.__class__,self).__init__(*args, prefix=self.__prefix, **kwargs)
@@ -301,7 +308,7 @@ class GeekEditObjectForm(AdagiosForm):
         self.pynag_object = pynag_object
         super(GeekEditObjectForm, self).__init__(*args,**kwargs)
     def clean_definition(self, value=None):
-        definition = self.cleaned_data['definition']
+        definition = smart_str( self.cleaned_data['definition'] )
         definition = definition.replace('\r\n', '\n')
         definition = definition.replace('\r', '\n')
         if not definition.endswith('\n'):
@@ -373,7 +380,7 @@ class CopyObjectForm(AdagiosForm):
         """
         object_type = self.pynag_object.object_type
         field_name = "%s_name" % object_type
-        value = self.cleaned_data[field_name]
+        value = smart_str(self.cleaned_data[field_name])
         try:
             self.pynag_object.objects.get_by_shortname(value)
             raise forms.ValidationError("A %s with %s='%s' already exists." % (object_type, field_name, value))
@@ -381,7 +388,7 @@ class CopyObjectForm(AdagiosForm):
             return value
     def clean_host_name(self):
         if self.pynag_object.object_type == 'service':
-            return self.cleaned_data['host_name']
+            return smart_Str(self.cleaned_data['host_name'])
         return self._clean_shortname()
     def clean_timeperiod_name(self):
         return self._clean_shortname()
@@ -395,6 +402,12 @@ class CopyObjectForm(AdagiosForm):
         return self._clean_shortname()
     def clean_contact_name(self):
         return self._clean_shortname()
+    def clean(self):
+        cleaned_data = super(self.__class__, self).clean()
+        for k,v in cleaned_data.items():
+            # change from unicode to str
+            v = cleaned_data[k] = smart_str(v)
+        return cleaned_data
 
 
 class BaseBulkForm(AdagiosForm):
@@ -436,6 +449,8 @@ class BaseBulkForm(AdagiosForm):
                 obj = Model.ObjectDefinition.objects.get_by_id(object_id)
                 if obj not in self.changed_objects:
                     self.changed_objects.append( obj )
+        for k,v in self.cleaned_data.items():
+            self.cleaned_data[k] = smart_str(self.cleaned_data[k])
         return self.cleaned_data
 
 class BulkEditForm(BaseBulkForm):
@@ -462,6 +477,7 @@ class BulkCopyForm(BaseBulkForm):
             value = self.cleaned_data['new_value']
             kwargs = { key:value }
             i.copy(**kwargs)
+
 
 class BulkDeleteForm(BaseBulkForm):
     """ Form used to delete multiple objects at once """
