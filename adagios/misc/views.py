@@ -316,7 +316,6 @@ def mail(request):
     c.update(csrf(request))
     c['http_referer'] = request.META.get("HTTP_REFERER")
     c['http_origin'] = request.META.get("HTTP_ORIGIN")
-
     remote_user = request.META.get('REMOTE_USER', 'anonymous adagios user')
     if request.method == 'GET':
         c['form'] = forms.SendEmailForm(remote_user, initial=request.GET)
@@ -340,8 +339,8 @@ def mail(request):
             for x in service:
                 c['form'].services.append( x )
                 #c['messages'].append( x )
-        except AttributeError:
-            pass
+        except AttributeError, e:
+            c['errors'].append("AttributeError for '%s': %s"% (i,e))
         except KeyError, e:
             c['errors'].append("Error adding service '%s': %s"% (i,e))
 

@@ -26,7 +26,7 @@ from adagios import settings
 from pynag import Model, Control
 from django.core.mail import EmailMultiAlternatives
 import pynag.Parsers
-
+import pynag.Control.Command
 
 
 TOPIC_CHOICES = (
@@ -359,6 +359,10 @@ class SendEmailForm(forms.Form):
         required=False,
         help_text="If checked, you will be added automatically to CC"
     )
+    acknowledge_all_problems = forms.BooleanField(
+        required=False,
+        help_text="If checked, also acknowledge all problems as they are sent"
+    )
     def __init__(self, remote_user, *args, **kwargs):
         """ Create a new instance of SendEmailForm, contact name and email is used as from address.
         """
@@ -381,11 +385,34 @@ class SendEmailForm(forms.Form):
         html_content = text_content + "<p></p>" + self.html_content
         if self.cleaned_data['add_myself_to_cc']:
             cc_address.append(from_address)
-
+        if self.cleaned_data['acknowledge_all_problems']:
+            comment = "Sent mail to %s" % self.cleaned_data['to']
+            self.acknowledge_all_services(comment)
         # Here we actually send some email:
         msg = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_address, cc=cc_address, to=to_address)
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+    def acknowledge_all_services(self, comment):
+        """ Acknowledge all problems in self.services()
+        """
+        for i in self.services:
+            print "ack for %s" % i.get('description')
+            host_name = i.get('host_name')
+            service_description = i.get('description')
+            sticky = "1"
+            persistent = "0"
+            notify = "0"
+            author = self.remote_user
+
+            pynag.Control.Command.acknowledge_svc_problem(host_name=host_name,
+                                                          service_description=service_description,
+                                                          sticky=sticky,
+                                                          persistent=persistent,
+                                                          notify=notify,
+                                                          author=author,
+                                                          comment=comment)
+
+
     def _resolve_remote_user(self, username):
         """ Returns a valid "Full Name <email@example.com>" for remote http authenticated user.
          If Remote user is a nagios contact, then return: Contact_Alias <contact_email>"

@@ -728,6 +728,17 @@
                     </div>
                 </div>
 
+
+                <div class="control-group">
+                    <label class="control-label" for="id_acknowledge_all_problems">
+                    </label>
+                    <div class="controls" id="id_acknowledge_all_problems_field">
+                        <input type="checkbox" checked="checked" name="add_myself_to_cc" value="on" id="id_acknowledge_all_problems" />
+                        Acknowledge Unhandled Problems
+                    </div>
+                </div>
+
+
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>Cancel</a>
@@ -941,6 +952,7 @@
                 "to":document.getElementById("id_mail_to").value,
                 "csrfmiddlewaretoken": window.csrftoken,
                 "add_myself_to_cc": document.getElementById("id_add_myself_to_cc").value,
+                "acknowledge_all_problems": document.getElementById("id_acknowledge_all_problems").value,
                 "message":document.getElementById("id_mail_message").value,
                 "service": []
             }
