@@ -353,6 +353,7 @@ class SendEmailForm(forms.Form):
         )
     message = forms.CharField(
         widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
+        required = False,
         help_text="Message that is to be sent to recipients",
         )
     add_myself_to_cc = forms.BooleanField(
