@@ -55,7 +55,7 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         arguments.append('Filter: name ~~ %s' % i)
         arguments.append('Filter: address ~~ %s' % i)
         arguments.append('Filter: plugin_output ~~ %s' % i)
-        arguments.append('Or: 3' % i)
+        arguments.append('Or: 3' )
 
     if not fields is None:
     # fields should be a list, lets create a Column: query for livestatus
