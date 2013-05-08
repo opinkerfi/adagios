@@ -1,0 +1,11 @@
+# Make sure the following python packages are installed
+pynag>=0.4.9
+Django>=1.3.0
+python-simplejson
+
+
+# nagios (or icinga)
+# okconfig (optional)
+# mk-livestatus (if you intent to use adagios as your status interface)
+# apache
+# mod_wsgi
