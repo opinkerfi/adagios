@@ -249,7 +249,7 @@ def status_detail(request, host_name=None, service_description=None):
     primary_object['long_plugin_output'] = primary_object['long_plugin_output'].replace('\\n','\n')
 
     # Service list on the sidebar should be sorted
-    my_host['services_with_info'] = sorted(my_host['services_with_info'])
+    my_host['services_with_info'] = sorted(my_host.get('services_with_info', []))
     c['host_name'] = host_name
 
     perfdata = primary_object['perf_data']
