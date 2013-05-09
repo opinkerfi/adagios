@@ -433,7 +433,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     id = modal.attr("data-object-id")
     object_type = modal.attr("data-object-type")
     unless id
-      alert "Error, no data-object-id for run command"
+      console.log "Error, no data-object-id for run command"
       click_event.preventDefault()
       return false
     
@@ -586,8 +586,7 @@ $(document).ready ->
           $this.data 'dismissed', 1
           $this.alert 'close'
         else
-          alert "Unable to dismiss notification for #{id}"
-          console.log "Unable to do stuff for #{id}"
+          console.log "Unable to dismiss notification for #{id}"
       return e.preventDefault()
     true
 

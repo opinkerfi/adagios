@@ -99,7 +99,8 @@
                                 status_div.addClass('label-important')
                             }
                         }).error(function (jqXHR) {
-                            alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
+                            status_div.text('Error saving: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText);
+                            status_div.addClass('label-important');
                         });
             }
             var orig = $(e.target).data('orig-value');
