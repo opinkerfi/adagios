@@ -433,7 +433,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     id = modal.attr("data-object-id")
     object_type = modal.attr("data-object-type")
     unless id
-      alert "Error, no data-object-id for run command"
+      console.log "Error, no data-object-id for run command"
       click_event.preventDefault()
       return false
     
@@ -466,7 +466,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
     # Put the plugin output in the correct div
     
     # Show the refresh button
-    
+    run_check_plugin_div = $("div#run_check_plugin")
+
     # Assign this command to the newly shown refresh button
     $.getJSON(BASE_URL + "rest/pynag/json/run_check_command",
       object_id: id
@@ -490,27 +491,34 @@ $.extend $.fn.dataTableExt.oStdClasses,
         if data[0] is 0
           statusLabel = "label-success"
           statusString = "OK"
-      $("#run_check_plugin #state").addClass statusLabel
-      $("#run_check_plugin #state").html statusString
+      run_check_plugin_div.find("#state").addClass statusLabel
+      run_check_plugin_div.find("#state").html statusString
       if data[1]
-        $("#run_check_plugin div#output pre").text data[1]
+        run_check_plugin_div.find("div#output pre").text data[1]
       else
-        $("#run_check_plugin #output pre").html "No data received on stdout"
+        run_check_plugin_div.find("#output pre").html "No data received on stdout"
       if data[2]
-        $("#run_check_plugin #error pre").text data[2]
-        $("#run_check_plugin div#error").show()
+        run_check_plugin_div.find("#error #error_content").text data[2]
+        run_check_plugin_div.find("#error #error_title").text "Plugin output (standard error)"
+        run_check_plugin_div.find("div#error").show()
       else
-        $("#run_check_plugin #error pre").text = ""
-        $("#run_check_plugin div#error").hide()
+        run_check_plugin_div.find("#error pre").text = ""
+        run_check_plugin_div.find("div#error").hide()
+      run_check_plugin_div.find("div#plugin_output").show()
+      run_check_plugin_div.find("dl").show()
+
       $("#run_check_plugin_refresh").show()
-      $("#run_check_plugin div.progress").hide()
+      run_check_plugin_div.find("div.progress").hide()
       $("#run_check_plugin_refresh").unbind('click').click  (click_event) ->
         $(this).adagios_ob_run_check_command(click_event)
 
     ).error (jqXHR) ->
-
-      # TODO - fix this to a this style
-      alert "Failed to fetch data: URL: \"" + @url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.statusText + "\""
+      run_check_plugin_div = $("div#run_check_plugin")
+      run_check_plugin_div.find("#error_title").text "Error fetching JSON"
+      run_check_plugin_div.find("#error_content").text "Failed to fetch data: URL: \"" + @url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.statusText + "\""
+      run_check_plugin_div.find("#error").show()
+      run_check_plugin_div.find("div#plugin_output").hide()
+      run_check_plugin_div.find("dl").hide()
 
 
     # Stop the button from POST'ing
@@ -578,8 +586,7 @@ $(document).ready ->
           $this.data 'dismissed', 1
           $this.alert 'close'
         else
-          alert "Unable to dismiss notification for #{id}"
-          console.log "Unable to do stuff for #{id}"
+          console.log "Unable to dismiss notification for #{id}"
       return e.preventDefault()
     true
 
