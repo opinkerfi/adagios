@@ -29,7 +29,7 @@ data_files = map(lambda x: x.replace('adagios/','', 1), template_files)
 
 setup(name=app_name,
     version=version,
-    description='Adagios web-configuration front-end to NAgios',
+    description='Web Based Nagios Configuration',
     author='Pall Sigurdsson, Tomas Edwardsson',
     author_email='palli@opensource.is',
     url='https://adagios.opensource.is/',

@@ -9,7 +9,7 @@
 Name: adagios
 Version: 1.2.0
 Release: %{release}%{?dist}
-Summary: Adagios web-configuration front-end to nagios 
+Summary: Web Based Nagios Configuration
 Group: Applications/Internet
 License: GPLv2+
 URL: https://adagios.opensource.is/
