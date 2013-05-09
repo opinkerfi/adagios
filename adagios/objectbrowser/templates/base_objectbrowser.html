@@ -152,17 +152,19 @@
             </dl>
         </div>
         <div class="modal-body">
-            <h4>Plugin Output</h4>
-            <div id="output">
-                <pre>Executing check plugin</pre>
-            </div>
-            <div class="progress progress-success progress-striped active hide" data-timer="{{ status.check_execution_time }}">
-                <div class="bar" style="width: 0"></div>
+            <div id="plugin_output">
+              <h4>Plugin Output</h4>
+              <div id="output">
+                  <pre>Executing check plugin</pre>
+              </div>
+              <div class="progress progress-success progress-striped active hide" data-timer="{{ status.check_execution_time }}">
+                  <div class="bar" style="width: 0"></div>
+              </div>
             </div>
             <div id="error" class="hide">
                 <div class="alert alert-error">
-                    Plugin output (standard error)
-                    <pre></pre>
+                    <span id="error_title">Plugin output (standard error)</span>
+                    <pre id="error_content"></pre>
                 </div>
             </div>
         </div>
