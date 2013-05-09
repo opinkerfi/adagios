@@ -102,7 +102,7 @@ Using the Status view
 =====================
 Adagios has an experimental status view intended to partially replace the classical nagios web interface. If you want to try it out hen you need mk_livestatus and pnp4nagios broker modules installed:
 	
-	yum install -y pnp4nagios mk-livestatus
+	yum install -y pnp4nagios mk-livestatus --enablerepo=ok-testing
 	pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
 	pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
 	pynag config --set "process_performance_data=1"
