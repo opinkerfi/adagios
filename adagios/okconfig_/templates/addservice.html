@@ -52,7 +52,7 @@
                     with_fields: '*'
                 },
                 function (data) {
-                    var num_macros = 0;
+                    var num_fields = 0;
                     if (data[0]) {
                         var myservice = data[0];
                     } else {
@@ -60,22 +60,20 @@
                     }
                     var myobj = data[0];
                     var service_macro_html = '';
-
+                    console.log(myobj);
 
                     $.each(myobj, function(i, k) {
-                        if (i.substring(0, 2) != "__") {
-                            return false;
+                        if (i.substring(0, 1) == "_" || i == 'service_description') {
+                            num_fields += 1;
+                            service_macro_html += '' +
+                                    '<label class="control-label" for="' + i + '">' + i + '</label>' +
+                                    '<div class="controls">' +
+                                    '  <input type="text" class="span11" name="' + i + '" value="' + myobj[i] + '">' +
+                                    '</div>';
                         }
-                        num_macros += 1;
-                        service_macro_html += '' +
-                                '<label class="control-label" for="' + i + '">' + i + '</label>' +
-                                '<div class="controls">' +
-                                '  <input type="text" class="span11" name="' + i + '" value="' + myobj[i] + '">' +
-                                '</div>';
-
                     });
 
-                    if (num_macros) {
+                    if (num_fields) {
                         $('#service_macros .service_name').text($this.val());
                         $('#service_macros .control-group').html(service_macro_html);
                         $('#service_macros').show();

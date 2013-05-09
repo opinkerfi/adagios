@@ -140,7 +140,7 @@ def addservice(request):
 
             # Add custom macros if any were specified
             for k,v in form.data.items():
-                if k.startswith("_"):
+                if k.startswith("_") or k.startswith('service_description'):
                     new_service[k] = v
             try:
                 new_service.save()
