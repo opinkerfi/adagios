@@ -16,10 +16,11 @@ state[2] = "critical"
 def livestatus(request):
     """ Returns a new pynag.Parsers.mk_livestatus() object with authauser automatically set from request.META['remoteuser']
     """
-    # TODO: enable authuser, so users can only see what they are contacts for.
-    # We need an option in adagios.conf to give specific users "see everything" permissions
-    #authuser = request.META.get('REMOTE_USER', None)
-    authuser = None
+
+    if adagios.settings.enable_authorization == True:
+        authuser = request.META.get('REMOTE_USER', None)
+    else:
+        authuser = None
     livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
     return livestatus
 

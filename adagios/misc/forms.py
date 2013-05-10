@@ -72,6 +72,7 @@ class AdagiosSettingsForm(forms.Form):
     nagios_binary = forms.CharField(help_text="Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'")
     enable_githandler = forms.BooleanField(required=False, initial=settings.enable_githandler, help_text="If set. Adagios will commit any changes it makes to git repository.")
     enable_loghandler = forms.BooleanField(required=False, initial=settings.enable_loghandler, help_text="If set. Adagios will log any changes it makes to a file.")
+    enable_authorization = forms.BooleanField(required=False, initial=settings.enable_authorization, help_text="If set. Users in Status view will only see hosts/services they are a contact for. Unset means everyone will see everything.")
     warn_if_selinux_is_active = forms.BooleanField(required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
     include = forms.CharField(required=False, help_text="Include configuration options from files matching this pattern")
     def save(self):
