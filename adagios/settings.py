@@ -28,7 +28,6 @@ DATABASES = {
     }
 }
 
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -81,10 +80,10 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    #'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    #'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'adagios.urls'
@@ -132,6 +131,7 @@ nagios_init_script = "/etc/init.d/nagios"
 nagios_binary = "/usr/bin/nagios"
 enable_githandler=False
 enable_loghandler = False
+enable_authorization = False
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
 administrators="nagiosadmin,@users"
