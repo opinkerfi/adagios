@@ -74,11 +74,11 @@
         $('input[type=text]').focus(function(e) {
             $('div.doc').hide();
             $('div#' + $(e.target).attr('name')).show();
-            $(e.target).data('orig-value', $(e.target).attr('value'));
+            $(e.target).data('orig-value', $(e.target).val());
             return true;
-        });
-        $('input[type=text]').blur(function(e) {
-            if ($(e.target).data('orig-value') != $(e.target).attr('value')) {
+        })
+        .blur(function(e) {
+            if ($(e.target).data('orig-value') != $(e.target).val()) {
                 var status_div = $('#' + $(e.target).attr('name') + " .save_status");
                 status_div.show();
                 status_div.text("Saving");
@@ -86,17 +86,17 @@
                 $.getJSON(BASE_URL + "rest/pynag/json/set_maincfg_attribute",
                         {
                             attribute:$(e.target).attr('name'),
-                            new_value:$(e.target).attr('value'),
+                            new_value:$(e.target).val(),
                             old_value:$(e.target).data('orig-value'),
                             append:"False"
                         },
                         function (data) {
                             if (data == true) {
                                 status_div.text('Saved');
-                                status_div.addClass('label-success')
+                                status_div.addClass('label-success');
                             } else {
                                 status_div.text('Error saving');
-                                status_div.addClass('label-important')
+                                status_div.addClass('label-important');
                             }
                         }).error(function (jqXHR) {
                             status_div.text('Error saving: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText);
@@ -104,7 +104,6 @@
                         });
             }
             var orig = $(e.target).data('orig-value');
-            //alert("Change " + $(e.target).attr('name') + " old " + orig + " to " + $(e.target).attr('value'));
             return true;
         });
     });
