@@ -73,10 +73,10 @@ cd /opt
 git clone http://github.com/opinkerfi/misc
 
 # Copy nsclient to where okconfig expects it to live:
-cp -r misc/nsclient/src /usr/share/okconfig/client/windows/nsclient
+cp -r misc/nsclient/src {{ nsclient_installfiles }}/
 
 # Put the ip address of the nagios server in here:
-vim /usr/share/okconfig/client/windows/nsclient/datafiles/allowed_hosts.ini
+vim {{ nsclient_installfiles }}/datafiles/allowed_hosts.ini
                 </pre>
                 See more about this issue <a href="https://github.com/opinkerfi/okconfig/wiki/Deploying-nsclient-on-windows-servers">here</a>.
         </div>

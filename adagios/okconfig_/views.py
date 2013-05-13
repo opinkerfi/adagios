@@ -167,6 +167,7 @@ def install_agent(request):
     c['errors'] = []
     c['messages'] = []
     c['form'] = forms.InstallAgentForm(initial=request.GET )
+    c['nsclient_installfiles'] = okconfig.config.nsclient_installfiles
     if request.method == 'POST':
         c['form'] = f = forms.InstallAgentForm(request.POST)
         if f.is_valid():
@@ -198,7 +199,6 @@ def install_agent(request):
                         c['hint'] = "No nsclient copy found "
                     c['stdout'].append(i)
                 c['stdout'] = '\n'.join(c['stdout'])
-
             except Exception,e:
                 c['errors'].append(  e )
         else:
