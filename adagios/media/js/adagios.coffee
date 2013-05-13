@@ -80,8 +80,6 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $.getJSON("http://adagios.opensource.is/cgi-bin/version.cgi?version=#{current_version}&callback=?", (data) ->
       this
     ).success( (data) ->
-      if $('span#current_version').text() != data['version']
-        $('div#updates_avail').show()
       $this.text data['version']
       $('a#version_info').attr 'href', data['link']
     )
