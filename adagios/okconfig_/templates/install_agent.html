@@ -21,6 +21,16 @@
                 $('#id_username').val("root");
             }
         });
+
+        // Some error handling code. We look through value of stdout and depending on what output it gives,
+        // we will display a user friendly error message.
+        var stdout = $("#stdout").text();
+        var stderr = $("#stderr").text();
+        if (stdout.search("NT_STATUS_LOGON_FAILURE") >= 0) { $("#NT_STATUS_LOGON_FAILURE").show(); }
+        if (stdout.search("NT_STATUS_DUPLICATE_NAME") >= 0) { $("#NT_STATUS_DUPLICATE_NAME").show(); }
+        if (stdout.search("NT_STATUS_ACCESS_DENIED") >= 0) { $("#NT_STATUS_ACCESS_DENIED").show(); }
+        if (stderr.search("Error: Directory") >= 0 && stderr.search("not found") >= 0 ) { $("#nsclient_missing").show(); }
+
     });
     </script>
 {% endblock %}
@@ -28,27 +38,68 @@
 
 {% block content %}
 
-{% if stdout %}
-* exit status: <pre>{{ exit_status }} </pre>
-<br>
-Errors:
-<pre>
-{{ stderr }}
-</pre>
-<br>
-Script output:
-<pre>
-{{ stdout }}
-</pre>
-{% endif %}
-<!-- Ugly hack till we can pass css to boostrap_fields -->
-<div id="install_agent" class="hide">
-    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-        {% include "bootstrap_fields.html" with fields=form %}
-        <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Submit</button>
+    {% if exit_status %}
+        {% if exit_status == "0" %}
+            <div class="alert alert-success">Install Success. (exit status=0)</div>
+        {% else %}
+            <div class="alert alert-danger">Install failed. (exit status={{ exit_status }})</div>
+        {% endif %}
+    {% endif %}
+
+    <!-- Friendly error messages -->
+    <div id="friendly_error_messages">
+        <div id="NT_STATUS_LOGON_FAILURE" class=hide>
+            <pre>Could not log in to server. Make sure you are using correct username and password.</pre>
         </div>
-    </form>
-</div>
+
+        <div id="NT_STATUS_DUPLICATE_NAME" class=hide>
+            <pre>
+The security settings on the remote windows host might forbid logins
+if the host name specified does not match the computername on the server.
+
+Try again with either correct hostname or the ip address of the server.</pre>
+        </div>
+
+        <div id="NT_STATUS_ACCESS_DENIED" class=hide>
+            <pre>Make sure that the user is a local administrator on the windows host.</pre>
+        </div>
+
+        <div id="nsclient_missing" class=hide>
+                Seems like there is no copy of nsclient installed on the remote server. Have you tried the following:
+
+                <pre>
+# Get nsclient 32-bit and 64-bit copies from opinkerfi github repo:
+cd /opt
+git clone http://github.com/opinkerfi/misc
+
+# Copy nsclient to where okconfig expects it to live:
+cp -r misc/nsclient/src /usr/share/okconfig/client/windows/nsclient
+
+# Put the ip address of the nagios server in here:
+vim /usr/share/okconfig/client/windows/nsclient/datafiles/allowed_hosts.ini
+                </pre>
+                See more about this issue <a href="https://github.com/opinkerfi/okconfig/wiki/Deploying-nsclient-on-windows-servers">here</a>.
+        </div>
+    </div>
+
+
+    {% if stdout %}
+        Script output: <pre id="stdout">{{ stdout }}</pre>
+    {% endif %}
+
+    {% if stderr %}
+        Errors: <pre id="stderr">{{ stderr }}</pre>
+    {% endif %}
+
+
+    <!-- Ugly hack till we can pass css to bootstrap_fields -->
+    <div id="install_agent" class="hide">
+        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+            {% include "bootstrap_fields.html" with fields=form %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
 
 {% endblock %}

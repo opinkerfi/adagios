@@ -179,12 +179,31 @@ def install_agent(request):
             try:
                 status,out,err = okconfig.install_okagent(remote_host=host, domain=domain, username=user, password=passw, install_method=method)
                 c['exit_status'] =  status
-                c['stdout'] =  out 
                 c['stderr']=  err
+                # Do a little cleanup in winexe stdout, it is irrelevant
+                out = out.split('\n')
+                c['stdout'] = []
+                for i in out:
+                    if i.startswith('Unknown parameter encountered:'):
+                        continue
+                    elif i.startswith('Ignoring unknown parameter'):
+                        continue
+                    elif 'NT_STATUS_LOGON_FAILURE' in i:
+                        c['hint'] = "NT_STATUS_LOGON_FAILURE usually means there is a problem with username or password. Are you using correct domain ?"
+                    elif 'NT_STATUS_DUPLICATE_NAME' in i:
+                        c['hint'] = "The security settings on the remote windows host might forbid logins if the host name specified does not match the computername on the server. Try again with either correct hostname or the ip address of the server."
+                    elif 'NT_STATUS_ACCESS_DENIED' in i:
+                        c['hint'] = "Please make sure that %s is a local administrator on host %s" % (user, host)
+                    elif i.startswith('Error: Directory') and i.endswith('not found'):
+                        c['hint'] = "No nsclient copy found "
+                    c['stdout'].append(i)
+                c['stdout'] = '\n'.join(c['stdout'])
+
             except Exception,e:
-                c['errors'].append( e )
+                c['errors'].append(  e )
         else:
             c['errors'].append('invalid input')
+
     return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
 
 def edit(request, host_name):
