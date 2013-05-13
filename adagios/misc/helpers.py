@@ -77,11 +77,10 @@ def object_to_dict(object, attributes="id,shortname,object_type"):
     for k in attributes:
         result[k] = object[k]
     return result
-def get_object(id):
+def get_object(id,with_fields="id,shortname,object_type"):
     '''Returns one specific ObjectDefinition'''
     o = Model.ObjectDefinition.objects.get_by_id(id)
-    del o.objects
-    return o
+    return object_to_dict(o,attributes=with_fields)
 def delete_object(object_id, cascade=False):
     '''Delete one specific ObjectDefinition'''
     try:
