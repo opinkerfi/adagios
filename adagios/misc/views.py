@@ -257,6 +257,22 @@ def pnp4nagios(request):
 
     return render_to_response('pnp4nagios.html', c, context_instance = RequestContext(request))
 
+def edit_file(request, filename):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    try:
+        c['form'] = forms.EditFileForm(filename=filename,initial=request.GET)
+        c['filename'] = filename
+        if request.method == 'POST':
+            c['form'] = forms.EditFileForm(filename=filename,data=request.POST)
+            if c['form'].is_valid():
+                c['form'].save()
+    except Exception, e:
+        c['errors'].append(e)
+    return render_to_response('editfile.html', c, context_instance = RequestContext(request))
+
+
 def icons(request, image_name=None):
     """ Use this view to see nagios icons/logos
     """
