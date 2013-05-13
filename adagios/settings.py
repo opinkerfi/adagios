@@ -125,7 +125,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
 
 # Adagios specific configuration options. These are just the defaults,
 # Anything put in /etc/adagios.d/adagios.conf will overwrite this.
-nagios_config="/etc/nagios/nagios.cfg"
+nagios_config=None # Sensible default is "/etc/nagios/nagios.cfg"
 nagios_url="/nagios"
 nagios_init_script = "/etc/init.d/nagios"
 nagios_binary = "/usr/bin/nagios"
