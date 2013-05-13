@@ -1032,7 +1032,10 @@
 
         $(document).ready(function() {
             // Set keyboard focus on the search box
-            document.getElementById('search_field').focus();
+            search_field = document.getElementById('search_field');
+            if (search_field != null) {
+                search_field.focus();
+            }
 
             // When searchbox button is pressed, filter table
             var $rows = $('.searchtable tbody .mainrow');
