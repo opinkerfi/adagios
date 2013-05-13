@@ -920,7 +920,6 @@ def _status_log(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     start_time = request.GET.get('start_time', '')
     end_time = request.GET.get('end_time', '')
     host_name = request.GET.get('host_name', '')
@@ -1130,5 +1129,6 @@ def contactgroup_detail(request, contactgroup_name):
 
 
     return render_to_response('status_contactgroup.html', c, context_instance = RequestContext(request))
+
 
 
