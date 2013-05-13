@@ -39,7 +39,7 @@ def run_pnp(pnp_command, **kwargs):
 def find_pnp_path():
     """ Look through common locations of pnp4nagios, tries to locate it automatically """
     possible_paths = [settings.pnp_filepath]
-    possible_paths = [
+    possible_paths += [
         "/usr/share/pnp4nagios/html/index.php",
         "/usr/share/nagios/html/pnp4nagios/index.php"
     ]

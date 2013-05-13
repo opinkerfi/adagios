@@ -59,7 +59,7 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1,persiste
     """ Acknowledge one single host or service check
 
     """
-    if not service_description:
+    if service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.acknowledge_host_problem(host_name=host_name,
             sticky=sticky,
             notify=notify,
@@ -93,7 +93,7 @@ def downtime(host_name,service_description=None,start_time=None,end_time=None,fi
             author=author,
             comment=comment,
         )
-    elif not service_description:
+    elif service_description in (None, '', u'', '_HOST_'):
         return pynag.Control.Command.schedule_host_downtime(host_name=host_name,
             start_time=start_time,
             end_time=end_time,
@@ -126,7 +126,7 @@ def reschedule(host_name,service_description, check_time=time.time(), wait=0):
     """
     if check_time is None or check_time is '':
         check_time = time.time()
-    if not service_description:
+    if service_description in (None,'',u'','_HOST_'):
         service_description = ""
         pynag.Control.Command.schedule_forced_host_check(host_name=host_name,check_time=check_time)
     else:
@@ -147,7 +147,7 @@ def comment(author,comment,host_name,service_description=None,persistent=1):
     If the "persistent" field is set to zero (0), the comment will be deleted the next time Nagios is restarted.
     Otherwise, the comment will persist across program restarts until it is deleted manually. """
 
-    if not service_description:
+    if service_description in (None,'',u'','_HOST_'):
         pynag.Control.Command.add_host_comment(host_name=host_name,persistent=persistent,author=author,comment=comment)
     else:
         pynag.Control.Command.add_svc_comment(host_name=host_name,service_description=service_description,persistent=persistent,author=author,comment=comment)
@@ -159,7 +159,7 @@ def delete_comment(comment_id, host_name, service_description=None):
     if not host_name:
         # TODO host_name is not used here, why do we need it ?
         pass
-    if not service_description:
+    if service_description in (None,'',u'','_HOST_'):
         pynag.Control.Command.del_host_comment(comment_id=comment_id)
     else:
         pynag.Control.Command.del_svc_comment(comment_id=comment_id)
