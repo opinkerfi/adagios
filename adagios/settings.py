@@ -136,6 +136,7 @@ warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
 administrators="nagiosadmin,@users"
 pnp_url = "/pnp4nagios"
+pnp_filepath = "/usr/share/nagios/html/pnp4nagios/index.php"
 include=""
 
 plugins = {}

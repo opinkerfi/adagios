@@ -74,6 +74,8 @@ class AdagiosSettingsForm(forms.Form):
     enable_loghandler = forms.BooleanField(required=False, initial=settings.enable_loghandler, help_text="If set. Adagios will log any changes it makes to a file.")
     enable_authorization = forms.BooleanField(required=False, initial=settings.enable_authorization, help_text="If set. Users in Status view will only see hosts/services they are a contact for. Unset means everyone will see everything.")
     warn_if_selinux_is_active = forms.BooleanField(required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
+    pnp_filepath = forms.CharField(help_text="Full path to your pnp4nagios/index.php file. Adagios will use this to generate graphs")
+    pnp_url = forms.CharField(help_text="Full or relative url to pnp4nagios web interface, adagios can use this to link directly to pnp")
     include = forms.CharField(required=False, help_text="Include configuration options from files matching this pattern")
     def save(self):
         # First of all, if configfile does not exist, lets try to create it:
@@ -90,6 +92,9 @@ class AdagiosSettingsForm(forms.Form):
         super(self.__class__,self).__init__(*args,**kwargs)
     def clean_nagios_config(self):
         filename = self.cleaned_data['nagios_config']
+        return self.check_file_exists(filename)
+    def clean_pnp_filepath(self):
+        filename = self.cleaned_data['pnp_filepath']
         return self.check_file_exists(filename)
     def clean_destination_directory(self):
         filename = self.cleaned_data['destination_directory']
