@@ -481,6 +481,7 @@ def edit_nagios_cfg(request):
 
     for conf in sorted(main_config):
         values = []
+        Model.config.parse_maincfg()
         for k, v in Model.config.maincfg_values:
             if conf == k:
                 values.append(v)
