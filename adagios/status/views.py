@@ -190,7 +190,7 @@ def services(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    fields = ['host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state', 'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes']
+    fields = ['host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state', 'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
     c['services'] = utils.get_services(request,fields=fields,**request.GET)
     return render_to_response('status_services.html', c, context_instance = RequestContext(request))
 

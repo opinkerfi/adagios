@@ -55,7 +55,7 @@
 
                 </td>
                 <td>
-                    {% if service.comments  %}
+                    {% if service.comments_with_info  %}
                         <i class="glyph-chat glyph-grey" data-placement=left rel=tooltip title="Comments" data-content="{% for i in service.comments_with_info %}<div class='alert alert-info'><b>{{ i.1 }}:</b> {{ i.2 }}</div>{% endfor %}"></i>
                     {% endif %}
                 </td>
