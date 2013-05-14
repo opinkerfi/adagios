@@ -18,7 +18,7 @@
                     <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                         {% include "bootstrap_fields.html" with fields=advanced_form %}
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Submit</button>
+                            <button class="btn btn-primary" type="submit">Save changes</button>
                         </div>
                     </form>
                 </div> <!-- End of advanced tab -->
