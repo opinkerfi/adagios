@@ -164,7 +164,8 @@ def advanced_edit(request, object_id):
                 m.append("Object Saved to %s" % o['filename'])
             except Exception, e:
                 c['errors'].append(e)
-        else:
+                return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
+    else:
             c['errors'].append( "Problem reading form input")
             return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
 
