@@ -10,7 +10,9 @@ from adagios.forms import AdagiosForm
 def get_all_hosts():
     return [('','Select a host')] + map(lambda x: (x, x), helpers.get_host_names())
 def get_all_templates():
-    return map(lambda x: (x, "Standard "+x+" checks"), okconfig.get_templates())
+    all_templates = okconfig.get_templates()
+    service_templates = filter(lambda x: 'host' not in x, all_templates)
+    return map(lambda x: (x, "Standard "+x+" checks"), service_templates)
 def get_all_groups():
     return map( lambda x: (x,x), okconfig.get_groups() )
 def get_inactive_services():
