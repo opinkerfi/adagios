@@ -429,7 +429,7 @@
             </li>
             <li>
                 {% block nav1 %}
-                    <a href="{% url status.views.status %}">Status</a>
+                    <a href="{% url status.views.services %}">Status</a>
                 {% endblock %}
                 <span class="divider">/</span>
             </li>
@@ -490,10 +490,10 @@
             <ul class="nav nav-list">
                 <li><a href="{% url status.views.status_index %}">Overview </a></li>
                 <li >
-                    <a {% if num_problems %}style="color: red"{% endif %} href="{% url status.views.status %}?acknowledged=0&state__isnot=0&scheduled_downtime_depth=0">Problems {% if num_problems %}({{ num_problems }}){% endif %}</a>
+                    <a {% if num_problems %}style="color: red"{% endif %} href="{% url status.views.services %}?unhandled">Problems {% if num_problems %}({{ num_problems }}){% endif %}</a>
                 </li>
                 <li><a href="{% url status.views.status_host %}">Hosts</a></li>
-                <li><a href="{% url status.views.status %}">Services </a></li>
+                <li><a href="{% url status.views.services %}">Services </a></li>
                 <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
                 <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
             </ul>
@@ -526,7 +526,7 @@
                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="?q={{ request.GET.q }}&acknowledged=0&state__isnot=0&scheduled_downtime_depth=0"> Open Problems</a></li>
+                        <li><a href="?q={{ request.GET.q }}&unhandled"> Open Problems</a></li>
                         <li><a href="?q={{ request.GET.q }}&state__isnot=0"> All Problems</a></li>
                         <li><a href="?q={{ request.GET.q }}&state=0"> All OK</a></li>
                         <li><a href="?q={{ request.GET.q }}"> Everything</a></li>
@@ -567,16 +567,16 @@
 
 
                 <div class=" pull-right" id="search_box">
-                    <form action="{% url status.views.status %}" method="get" >
+                    <form action="{% url status.views.services %}" method="get" >
                         <div class="pull-left">
                             <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" value="{{ request.GET.q }}" class="search-query" placeholder="hosts, services, etc..." />
                         </div>
-                        <div class="btn-group pull-left"><button class="btn btn-small"  type="submit" href="{% url status.views.status %}"><i class="icon-search"></i> Search</button><a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+                        <div class="btn-group pull-left"><button class="btn btn-small"  type="submit" href="{% url status.views.services %}"><i class="icon-search"></i> Search</button><a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url status.views.status %}?acknowledged=0&state__isnot=0&scheduled_downtime_depth=0"> Open Problems</a></li>
-                                <li><a href="{% url status.views.status %}?state__isnot=0"> All Problems</a></li>
-                                <li><a href="{% url status.views.status %}?state=0"> All OK</a></li>
-                                <li><a href="{% url status.views.status %}"> Everything</a></li>
+                                <li><a href="{% url status.views.services %}?unhandled"> Open Problems</a></li>
+                                <li><a href="{% url status.views.services %}?state__isnot=0"> All Problems</a></li>
+                                <li><a href="{% url status.views.services %}?state=0"> All OK</a></li>
+                                <li><a href="{% url status.views.services %}"> Everything</a></li>
                             </ul>
                         </div>
                     </form>

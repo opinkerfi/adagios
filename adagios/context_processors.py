@@ -101,7 +101,14 @@ def get_unhandled_problems(request):
     results = {}
     try:
         livestatus = adagios.status.utils.livestatus(request)
-        num_problems = livestatus.query('GET services','Filter: state != 0', 'Filter: acknowledged = 0', 'Filter: scheduled_downtime_depth = 0', 'Stats: state != 0', columns=False)
+        num_problems = livestatus.query('GET services',
+                                        'Filter: state != 0',
+                                        'Filter: acknowledged = 0',
+                                        'Filter: host_acknowledged = 0',
+                                        'Filter: scheduled_downtime_depth = 0',
+                                        'Filter: host_scheduled_downtime_depth = 0',
+                                        'Stats: state != 0',
+                                        columns=False)
         results['num_problems'] = num_problems[0]
     except Exception:
         pass

@@ -12,7 +12,7 @@
     <span class="state_{{ my_object.state }}">{{ my_object.status }}</span>
     -->
 {% endblock %}
-{% block nav1 %}<a href="{% url status.views.status %}">status</a>{% endblock %}
+{% block nav1 %}<a href="{% url status.views.services %}">status</a>{% endblock %}
 {% block nav2 %}{{ host_name }} {% if primary_object.object_type == 'service' %}- {{ service_description }}{% endif %}{% endblock %}
 
 

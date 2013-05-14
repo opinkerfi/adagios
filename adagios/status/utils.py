@@ -134,6 +134,15 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
         q = []
     if not isinstance(q, list):
         q = [q]
+
+    # If keyword "unhandled" is in kwargs, then we will fetch unhandled services only
+    if 'unhandled' in kwargs:
+        del kwargs['unhandled']
+        kwargs['state__isnot'] = 0
+        kwargs['acknowledged'] = 0
+        kwargs['scheduled_downtime_depth'] = 0
+        kwargs['host_scheduled_downtime_depth'] = 0
+        kwargs['host_acknowledged'] = 0
     arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
 
     # If q was added, it is a fuzzy filter on services

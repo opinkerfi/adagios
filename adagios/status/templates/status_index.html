@@ -28,7 +28,7 @@
                         {% if  total_unhandled_network_problems == 0 %}
                         {% else %}
 
-                                <a href="{%  url status.views.status %}?state__isnot=0&acknowledged__isnot=1">
+                                <a href="{%  url status.views.services %}?state__isnot=0&acknowledged__isnot=1">
                                     {{ total_unhandled_network_problems }}
                                 </a>
 
@@ -49,11 +49,11 @@
                 </tr>
                 <tr>
                     <td>Services</td>
-                    <td><a href="{% url status.views.status %}"> {{ total_services }}</a></td>
+                    <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
                     <td>
                         {% if  unhandled_services == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status %}?state__isnot=0&acknowledged=0&">
+                            <a href="{%  url status.views.services %}?state__isnot=0&acknowledged=0&">
                                 {{ unhandled_services }}
                             </a>
                         {% endif %}
