@@ -388,7 +388,7 @@ class CopyObjectForm(AdagiosForm):
             return value
     def clean_host_name(self):
         if self.pynag_object.object_type == 'service':
-            return smart_Str(self.cleaned_data['host_name'])
+            return smart_str(self.cleaned_data['host_name'])
         return self._clean_shortname()
     def clean_timeperiod_name(self):
         return self._clean_shortname()
