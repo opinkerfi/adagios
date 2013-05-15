@@ -158,7 +158,7 @@ def gitlog(request):
 
         commit = request.GET.get('show', False)
         if commit != False:
-            c['diff'] = git.diff(commit)
+            c['diff'] = git.show(commit)
             difflines = []
             for i in c['diff'].splitlines():
                 if i.startswith('---'):
