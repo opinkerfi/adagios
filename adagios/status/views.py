@@ -290,7 +290,7 @@ def status_detail(request, host_name=None, service_description=None):
         tmp = json.loads(tmp)
     except Exception, e:
         tmp = []
-        c['errors'].append(e)
+        c['pnp4nagios_error'] = e
     c['graph_urls'] = tmp
 
     return render_to_response('status_detail.html', c, context_instance = RequestContext(request))

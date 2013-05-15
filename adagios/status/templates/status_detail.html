@@ -371,32 +371,43 @@
                         <li><a href="#year" data-toggle="tab">One Year</a></li>
                     </ul>
 
-                <div class="tab-content" id="graphs_content">
+                    <div class="tab-content" id="graphs_content">
 
-                    <div class="tab-pane graph-pane" id="hours">
-                        <!-- Javascript will put images here if applicable -->
+                        <div class="tab-pane graph-pane" id="hours">
+                            <!-- Javascript will put images here if applicable -->
+                        </div>
+
+                        <div class="tab-pane active" id="day">
+                            <!-- Javascript will put images here if applicable -->
+                        </div>
+
+                        <div class="tab-pane" id="week">
+                            <!-- Javascript will put images here if applicable -->
+                        </div>
+
+                        <div class="tab-pane" id="month">
+                            <!-- Javascript will put images here if applicable -->
+                        </div>
+
+                        <div class="tab-pane" id="year">
+                            <!-- Javascript will put images here if applicable -->
+                        </div>
+
                     </div>
-
-                    <div class="tab-pane active" id="day">
-                        <!-- Javascript will put images here if applicable -->
-                    </div>
-
-                    <div class="tab-pane" id="week">
-                        <!-- Javascript will put images here if applicable -->
-                    </div>
-
-                    <div class="tab-pane" id="month">
-                        <!-- Javascript will put images here if applicable -->
-                    </div>
-
-                    <div class="tab-pane" id="year">
-                        <!-- Javascript will put images here if applicable -->
-                    </div>
-
-
-            </div>
-        </div>
+                </div>
             {% else %}
+                {% if pnp4nagios_error %}
+                    <div class="alert alert-warning">
+                        We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}
+                    </div>
+                    Please check that:
+                    <ul>
+                    <li><a href="{{ pnp_url }}">pnp4nagios</a> is installed and working</li>
+                    <li><i>PNP Filepath</i> is correctly configured under <a href="{% url misc.views.settings %}">settings</a></li>
+                    <li>User running nagios is a member of the unix groups apache or www-data</li>
+                    <li>Click <a href="{% url pnp.views.pnp "json" %}">here</a> to see pnp4nagios output</li>
+                    </ul>
+                {% endif %}
                 No Performance data is available for this {{ my_object.object_type }}.
             {% endif %}
     </div>
