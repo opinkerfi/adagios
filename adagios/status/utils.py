@@ -235,18 +235,18 @@ def get_statistics(request):
                                          'Stats: state > 0',
                                          columns=False,
                                          )[0]
-    c['total_network_problems'] = l.query('GET hosts',
+    c['total_unhandled_network_problems'] = l.query('GET hosts',
+                                          'Filter: acknowledged = 0',
+                                          'Filter: scheduled_downtime_depth = 0',
                                           'Filter: childs != ',
-                                          'Stats: state >= 0',
+                                          'Stats: state > 0',
                                           columns=False
                                           )[0]
     tmp = l.query('GET hosts',
-                     'Filter: acknowledged = 0',
-                     'Filter: scheduled_downtime_depth = 0',
                      'Filter: childs != ',
                      'Stats: state >= 0',
                      'Stats: state > 0',
                      columns=False
                      )
-    c['total_network_parents'], c['total_unhandled_network_problems'] = tmp
+    c['total_network_parents'], c['total_network_problems'] = tmp
     return c

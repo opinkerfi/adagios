@@ -41,10 +41,10 @@
                         <div class="alert alert-warning">{{ total_network_problems }}</div>
                     </td>
                     <td>
-                        {% if network_problems|length == 0 %}
-                            <div class="alert alert-success">{{ network_problems|length }}</div>
+                        {% if total_unhandled_network_problems == 0 %}
+                            <div class="alert alert-success">{{ total_unhandled_network_problems }}</div>
                         {% else %}
-                            <div class="alert alert-danger">{{ network_problems|length }}</div>
+                            <div class="alert alert-danger">{{ total_unhandled_network_problems }}</div>
                         {% endif %}
                     </td>
                 </tr>

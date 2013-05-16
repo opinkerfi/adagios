@@ -803,15 +803,15 @@ def dashboard(request):
     c['network_problems'] = [] # Network outages
     for i in all_down_hosts:
         if i.get('acknowledged') != 0:
-            break
+            continue
         if i.get('scheduled_downtime_depth') != 0:
-            break
+            continue
 
         # Do nothing if parent of this host is also down
         for parent in i.get('parents'):
             if parent in hostnames_that_are_down:
                 parent_is_down = True
-                break
+                continue
         else:
             parent_is_down = False
 
@@ -830,7 +830,7 @@ def dashboard(request):
     # Sort problems by state and last_check as secondary sort field
     c['service_problems'].sort(reverse=True,cmp=lambda a,b: cmp(a['last_check'], b['last_check']))
     c['service_problems'].sort(reverse=True,cmp=lambda a,b: cmp(a['state'], b['state']))
-    return render_to_response('status_problems.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_dashboard.html', c, context_instance = RequestContext(request))
 
 @error_handler
 def state_history(request):
