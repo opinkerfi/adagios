@@ -258,6 +258,11 @@ def pnp4nagios(request):
     return render_to_response('pnp4nagios.html', c, context_instance = RequestContext(request))
 
 def edit_file(request, filename):
+    """ This view gives raw read/write access to a given filename.
+
+     Please be so kind as not to give direct url access to this function, because it will allow
+     Editing of any file the webserver has access to.
+    """
     c = {}
     c['messages'] = []
     c['errors'] = []
@@ -272,6 +277,22 @@ def edit_file(request, filename):
         c['errors'].append(e)
     return render_to_response('editfile.html', c, context_instance = RequestContext(request))
 
+def edit_nagios_cfg(request):
+    """ Allows raw editing of nagios.cfg configfile
+    """
+    return edit_file(request, filename=adagios.settings.nagios_config)
+
+def pnp4nagios_edit_template(request, filename):
+    """ Allows raw editing of a pnp4nagios template.
+
+     Will throw security exception if filename is not a pnp4nagios template
+    """
+
+    form = forms.PNPTemplatesForm(initial=request.GET)
+    if filename in form.templates:
+        return edit_file(request, filename=filename)
+    else:
+        raise Exception("Security violation. You are not allowed to edit %s" % filename)
 
 def icons(request, image_name=None):
     """ Use this view to see nagios icons/logos

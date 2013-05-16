@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     (r'/confighealth/?$', 'objectbrowser.views.config_health'),
     (r'/plugins/?$', 'objectbrowser.views.show_plugins'),
     (r'/nagios.cfg/?$', 'objectbrowser.views.edit_nagios_cfg'),
+    (r'/nagios.cfg/edit/?$', 'misc.views.edit_nagios_cfg'),
     (r'/geek_edit/id=(?P<object_id>.+)$', 'objectbrowser.views.geek_edit'),
     (r'/advanced_edit/id=(?P<object_id>.+)$', 'objectbrowser.views.advanced_edit'),
 

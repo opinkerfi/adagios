@@ -75,7 +75,7 @@
                     {% for file in pnp_templates.templates %}
 
                         <tr>
-                            <td><a title="Edit {{ file }}" href="{%  url misc.views.edit_file file  %}" >{{ file }}</a></td>
+                            <td><a title="Edit {{ file }}" href="{%  url misc.views.pnp4nagios_edit_template file  %}" >{{ file }}</a></td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -89,8 +89,6 @@
 {% block sidebar %}
     <h5>Actions</h5>
     <ul class="nav nav-list">
-    <li><a href="{%  url misc.views.edit_file "/etc/pnp4nagios/config.php"  %}" >Edit config.php</a></li>
-    <li><a href="{%  url misc.views.edit_file "/etc/pnp4nagios/npcd.cfg"  %}" >Edit npcd.cfg</a></li>
-    <li><a href="{%  url misc.views.edit_file nagios_cfg  %}" >Edit nagios.cfg</a></li>
+    <li><a href="{%  url misc.views.edit_nagios_cfg  %}" >Edit nagios.cfg</a></li>
     </ul>
 {% endblock %}
