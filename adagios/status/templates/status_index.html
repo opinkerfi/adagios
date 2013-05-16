@@ -236,9 +236,9 @@
         var table=document.getElementById("top_alert_producers");
         var top_alert_producers = $.getJSON(url)
         .done( function(data) {
+            // Hide the loading message
+            $('#top_alert_producers_loading').hide();
             for (i=0;i<data.length;i++){
-                // Hide the loading message
-                $('#top_alert_producers_loading').hide();
                 row = data[i];
                 host_name = row[0];
                 number_of_alerts = row[1];
