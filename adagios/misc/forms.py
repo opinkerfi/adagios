@@ -342,12 +342,13 @@ class NagiosServiceForm(forms.Form):
         self.command = command
         nagios_init = settings.nagios_init_script
         #command = self.cleaned_data['command']
-        from subprocess import Popen, PIPE
+        #from subprocess import Popen, PIPE
         command = "%s %s" % (nagios_init, command)
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-        self.stdout = p.stdout.read()
-        self.stderr = p.stdout.read()
-
+        #p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+        code,stdout,stderr = pynag.Utils.runCommand(command)
+        self.stdout = stdout or None
+        self.stderr = stderr or None
+        self.exit_code = code
 
 
 class SendEmailForm(forms.Form):

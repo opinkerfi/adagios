@@ -8,28 +8,49 @@
 {% block adagios_hausinn %}{{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="alert alert-info">
-<b>Nagios Service is:</b>
-    {% if status  == 0 %}
-        <b>Started</b>
-    {% endif %}
-    {% if status  == 1 %}
-        <b>Stopped</b>
-    {% endif %}
-    {% if status  > 1 %}
-        <b>unknown</b> ("service nagios status" returned {{ status }})
-    {% endif %}
-</div>
-    {% if command %}
-    <div class="alert alert-info">Executing <b>service nagios {{ command }}</b>
-        {% if stderr %}
-            <h4>Errors</h4>
-            <pre>{{ stderr }}</pre>
-        {% endif %}
-        {% if stdout %}
-            <pre>{{ stdout }}</pre>
-        {% endif %}
+    <div class="alert alert-info">
+        <b>Nagios Service is:</b>
+            {% if status  == 0 %}
+                <b>Started</b>
+            {% endif %}
+            {% if status  == 1 %}
+                <b>Stopped</b>
+            {% endif %}
+            {% if status  > 1 %}
+                <b>unknown</b> ("service nagios status" returned {{ status }})
+            {% endif %}
     </div>
+
+
+    {% if command %}
+        <div class="alert alert-info">Executing <b>service nagios {{ command }}</b>
+            {% if stderr %}
+                <h4>Errors</h4>
+                <pre>{{ stderr }}</pre>
+            {% endif %}
+
+            {% if stdout %}
+                <pre>{{ stdout }}</pre>
+            {% endif %}
+        </div>
+
+        {% if not stdout and not stderr %}
+            <div class="alert alert-danger">
+                <p>
+                    Something does not smell right. We ran {{ command }} and got no output.
+                    Usually when this happens there is a problem with sudoers configuration.
+                </p>
+                <p>
+                    Inspect webserver apache log and check if there are any sudo errors.
+                    Your <a>/etc/sudoers.d/adagios</a> should have something like this:
+                </p>
+            <pre>
+                Defaults:{{ local_user }}    !requiretty
+                {{ local_user }} ALL = (root) NOPASSWD: /etc/init.d/nagios3
+            </pre>
+            </div>
+        {% endif %}
+
     {% endif %}
 
 {% endblock %}

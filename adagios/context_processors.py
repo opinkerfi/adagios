@@ -1,5 +1,6 @@
 import pynag.Model
 import os
+import getpass
 
 from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
@@ -44,6 +45,11 @@ def on_page_load(request):
         results[k] = v
     for k,v in get_nagios_url(request).items():
         results[k] = v
+    for k,v in get_local_user(request).items():
+        results[k] = v
+    for k,v in get_current_settings(request).items():
+        results[k] = v
+
     return results
 
 def get_current_time(request):
@@ -59,6 +65,15 @@ def activate_plugins(request):
         add_plugin(name=k,modulepath=v)
     return {'misc_menubar_items':adagios.misc_menubar_items, 'menubar_items':adagios.menubar_items}
 
+def get_local_user(request):
+    """ Return user that is running the adagios process under apache
+    """
+    user = getpass.getuser()
+    return {'local_user':user}
+def get_current_settings(request):
+    """ Return a copy of adagios.settings
+    """
+    return {'settings': adagios.settings}
 def resolve_urlname(request):
     """Allows us to see what the matched urlname for this
     request is within the template"""
