@@ -6,7 +6,6 @@
     <title>Adagios by opinkerfi</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <link rel="shortcut icon" href="favicon.ico" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
@@ -150,7 +149,7 @@ changed in /etc/nagios/passwd)</p>
 
 <p>Adagios has an experimental status view intended to partially replace the classical nagios web interface. If you want to try it out hen you need mk_livestatus and pnp4nagios broker modules installed:</p>
 
-<pre><code>yum install -y pnp4nagios mk-livestatus
+<pre><code>yum install -y pnp4nagios mk-livestatus --enablerepo=ok-testing
 pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
 pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
 pynag config --set "process_performance_data=1"
