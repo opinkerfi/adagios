@@ -398,12 +398,12 @@ def _edit_host( request, c):
         s.parse()
         c['status'] = s.get_hoststatus(host['host_name'])
         current_state = c['status']['current_state']
-        if int(current_state) < 2:
+        if int(current_state) == 0:
             c['status']['text'] = 'UP'
             c['status']['css_label'] = 'label-success'
         else:
             c['status']['text'] = 'DOWN'
-            c['status']['css_label'] = 'label-warning'
+            c['status']['css_label'] = 'label-important'
     except Exception:
         pass
 
