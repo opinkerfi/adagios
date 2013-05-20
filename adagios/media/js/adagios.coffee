@@ -371,16 +371,14 @@ $.extend $.fn.dataTableExt.oStdClasses,
       <li class="capitalize"><a href="#{BASE_URL}objectbrowser/add/#{ ot }">#{ ot }</a></li>
       """
 
-    console.log "Assignin click on #" + object_type + "-tab.tab-pane label#selectall"
-    $("#" + object_type + "-tab.tab-pane label#selectall").on "click", () ->
+    $("#" + object_type + "-tab.tab-pane label#selectall").on "click", (e) ->
       $checkbox = $("#" + object_type + "-tab.tab-pane #selectall input")
-      console.log "#" + object_type + "-tab.tab-pane #selectall input"
-      unless $checkbox.attr("checked") is `undefined`
-        $(".tab-pane.active .dataTable input").each ->
-          $(this).attr "checked", "checked"
+      if $checkbox.prop "checked"
+        $(".tab-pane.active .dataTable input#ob_mass_select").each ->
+          $(this).prop "checked", true
       else
-        $(".tab-pane.active .dataTable input").each ->
-          $(this).removeAttr "checked"
+        $(".tab-pane.active .dataTable input#ob_mass_select").each ->
+          $(this).prop "checked", false
 
       checked = $("input#ob_mass_select:checked").length
       $("#bulkselected").html checked
