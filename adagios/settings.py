@@ -96,11 +96,11 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    #'django.contrib.auth',
+    #'django.contrib.contenttypes',
+    #'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.messages',
+    #'django.contrib.messages',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -113,7 +113,7 @@ INSTALLED_APPS = [
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
-    "django.contrib.auth.context_processors.auth",
+    #"django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
