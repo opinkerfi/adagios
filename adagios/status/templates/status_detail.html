@@ -63,12 +63,18 @@
             <tr >
                 <td>Host Name</td>
                 <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
-                    <div class="circle state_{{ host.state }}"></div> {{ host.display_name }}
-                </a></td>
+                    <div class="circle state_{{ host.state }}"></div>
+                    {{ host.display_name }}
+                </a>
+                </td>
             </tr>
             <tr >
                 <td>Host Address</td>
                 <td>{{ host.address }}</td>
+            </tr>
+            <tr>
+                <td>Host Alias</td>
+                <td>{{ host.alias }}</td>
             </tr>
             {% if service %}
             <tr >
