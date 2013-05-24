@@ -14,37 +14,12 @@ from django import forms
 import os
 my_module = None
 
-
+1
 def _load(module_name):
     #global my_module
     #if not my_module:
     my_module = __import__(module_name, None, None, [''])
     return my_module
-
-
-def _get_function_information(module_name, function_name,):
-    m = _load(module_name)
-    # Get every member of this module (be it variable, function, whatever)
-    members = {}
-    for k,v in inspect.getmembers(m):
-        members[k] = v
-    my_function = members[function_name]
-    docstring = inspect.getdoc(my_function)
-
-    # Generate fields which resemble our functions default arguments
-    argspec = inspect.getargspec( os.chdir )
-    args,varargs,varkw,defaults = argspec
-    if defaults is None:
-        defaults = []
-    else:
-        defaults = list(defaults)
-    for k,v in function_paramaters.items():
-        self.fields[k] = forms.CharField( label=k, initial=v)
-
-    while len(defaults) > 0:
-        value = defaults.pop()
-        field = args.pop()
-        self.fields[field].initial = value
 
 
 

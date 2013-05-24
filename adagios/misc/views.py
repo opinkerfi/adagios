@@ -371,3 +371,23 @@ def mail(request):
         c['form'].save()
     return render_to_response('misc_mail.html', c, context_instance = RequestContext(request))
 
+
+def test(request):
+    """ Generic test view, use this as a sandbox if you like
+    """
+    c = {}
+    c['messages'] = []
+    c = {'object_types': []}
+    import pynag.Model
+    for name,Class in pynag.Model.string_to_class.items():
+        if name is not None:
+            active = inactive = 0
+            all_instances = Class.objects.all
+            for i in all_instances:
+                if i['register'] == "0":
+                    inactive += 1
+                else:
+                    active += 1
+            c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
+
+    return render_to_response('test.html', c, context_instance = RequestContext(request))

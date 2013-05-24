@@ -81,10 +81,6 @@ def list_object_types(request):
                 else:
                     active += 1
             c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
-    try:
-        c['gitlog'] = gitlog(dirname(Model.cfg_file or Model.config.cfg_file))
-    except Exception:
-        c['gitlog'] = None
     return render_to_response('list_object_types.html', c, context_instance = RequestContext(request))
 
 def geek_edit( request, object_id ):
@@ -359,6 +355,9 @@ def _edit_command( request, c):
 def _edit_hostdependency( request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_hostdepedency.html', c, context_instance = RequestContext(request))
+def _edit_servicedependency( request, c):
+    """ This is a helper function to edit_object """
+    return render_to_response('_edit_servicedependency.html', c, context_instance = RequestContext(request))
 def _edit_timeperiod( request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_timeperiod.html', c, context_instance = RequestContext(request))
