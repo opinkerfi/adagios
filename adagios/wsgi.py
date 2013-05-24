@@ -13,4 +13,3 @@ os.environ['DJANGO_SETTINGS_MODULE'] = '%s.settings' % app_name
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
-
