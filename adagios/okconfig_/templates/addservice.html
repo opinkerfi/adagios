@@ -56,7 +56,7 @@
                     if (data[0]) {
                         var myservice = data[0];
                     } else {
-                        alert("No data received for name");
+                        console.log("Called get_objects but got empty results for " + $(this).val());
                     }
                     var myobj = data[0];
                     var service_macro_html = '';
@@ -79,7 +79,7 @@
                         $('#service_macros').show();
                     }
                 }).error(function(jqXHR) {
-                    alert('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
+                    console.log('Failed to fetch data: URL: "' + this.url + '" Server Status: "' + jqXHR.status + '" Status: "' + jqXHR.statusText + '"');
                 });
     });
     </script>

@@ -182,7 +182,6 @@
             $('table.objecttable.dataTable').ob_check_datatable_column_visibility();
         });
         $('a[data-toggle="tab"]').on('show', function (e) {
-            //alert($(e.target).attr('href'));
             var id = $(e.target).attr('href').split("-")[0];
             if ( ! $.fn.DataTable.fnIsDataTable($('table' + id + "-table")[0])) {
                 console.log('Rendering datatable table' + id + "-table");
