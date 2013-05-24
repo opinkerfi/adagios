@@ -108,7 +108,7 @@ class PynagForm(AdagiosForm):
             if k in MULTICHOICE_FIELDS:
                 # Put the + back in there if needed
                 if self.pynag_object.get(k,'').startswith('+'):
-                    v = cleaned_data[k] = "+%s"%(v)
+                    cleaned_data[k] = "+%s"%(v)
         return cleaned_data
     def save(self):
         for k in self.changed_data:
@@ -193,16 +193,16 @@ class PynagForm(AdagiosForm):
             choices = map(lambda x: (x.host_name, x.host_name), all_groups)
             field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
         elif field_name in ('contacts','members'):
-            all = Model.Contact.objects.filter(contact_name__contains='')
-            choices = map(lambda x: (x.contact_name, x.contact_name), all)
+            all_objects = Model.Contact.objects.filter(contact_name__contains='')
+            choices = map(lambda x: (x.contact_name, x.contact_name), all_objects)
             field = PynagChoiceField(choices=sorted(choices),inline_help_text="No %s selected" % (field_name))
         elif field_name.endswith('_period'):
-            all = Model.Timeperiod.objects.filter(timeperiod_name__contains='')
-            choices = [('','')] + map(lambda x: (x.timeperiod_name, x.timeperiod_name), all)
+            all_objects = Model.Timeperiod.objects.filter(timeperiod_name__contains='')
+            choices = [('','')] + map(lambda x: (x.timeperiod_name, x.timeperiod_name), all_objects)
             field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_commands'):
-            all = Model.Command.objects.filter(command_name__contains='')
-            choices = [('','')] + map(lambda x: (x.command_name, x.command_name), all)
+            all_objects = Model.Command.objects.filter(command_name__contains='')
+            choices = [('','')] + map(lambda x: (x.command_name, x.command_name), all_objects)
             field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_options') and self.pynag_object.object_type =='host':
             field = PynagChoiceField(choices=HOST_NOTIFICATION_OPTIONS,inline_help_text="No %s selected" % (field_name))
@@ -285,7 +285,7 @@ class AdvancedEditForm(AdagiosForm):
         cleaned_data = super(self.__class__, self).clean()
         for k,v in cleaned_data.items():
             # change from unicode to str
-            v = cleaned_data[k] = smart_str(v)
+            cleaned_data[k] = smart_str(v)
         return cleaned_data
     def __init__(self, pynag_object ,*args, **kwargs):
         self.pynag_object = pynag_object
@@ -406,7 +406,7 @@ class CopyObjectForm(AdagiosForm):
         cleaned_data = super(self.__class__, self).clean()
         for k,v in cleaned_data.items():
             # change from unicode to str
-            v = cleaned_data[k] = smart_str(v)
+            cleaned_data[k] = smart_str(v)
         return cleaned_data
 
 

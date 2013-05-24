@@ -256,12 +256,6 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
     else:
         return render_to_response('edit_object.html', c, context_instance = RequestContext(request))
 
-def _edit_contactgroup( request, c):
-    """ This is a helper function to edit_object """
-    try: c['effective_members'] = c['my_object'].get_effective_members()
-    except KeyError, e: c['errors'].append( "Could not find contact: %s" % str(e))
-
-    return render_to_response('edit_contactgroup.html', c, context_instance = RequestContext(request))
 
 def _edit_contact( request, c):
     """ This is a helper function to edit_object """

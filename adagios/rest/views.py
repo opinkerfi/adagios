@@ -158,7 +158,7 @@ def javascript(request, module_name):
 
 class CallFunctionForm(forms.Form):
     def __init__(self, function, *args, **kwargs):
-        super(forms.Form,self).__init__( *args, **kwargs)
+        super(CallFunctionForm,self).__init__( *args, **kwargs)
         function_paramaters = {} # We will create a field for every function_paramater
         # If any paramaters were past via querystring, lets generate fields for them
         if kwargs.has_key('initial'):

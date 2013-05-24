@@ -20,7 +20,7 @@ def run_pnp(pnp_command, **kwargs):
 
     """
     try:
-        pnp_path = adagios.settings.pnp_path
+        pnp_path = settings.pnp_path
     except Exception, e:
         pnp_path = find_pnp_path()
     # Cleanup kwargs

@@ -90,9 +90,6 @@ class AdagiosSettingsForm(forms.Form):
         if 'data' not in kwargs or kwargs['data'] == '':
             kwargs['data'] = settings.__dict__
         super(self.__class__,self).__init__(*args,**kwargs)
-    def clean_nagios_config(self):
-        filename = self.cleaned_data['nagios_config']
-        return self.check_file_exists(filename)
     def clean_pnp_filepath(self):
         filename = self.cleaned_data['pnp_filepath']
         return self.check_file_exists(filename)

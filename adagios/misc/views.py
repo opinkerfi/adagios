@@ -113,7 +113,7 @@ def gitlog(request):
     # Get information about the committer
     author_name = request.META.get('REMOTE_USER', 'anonymous')
     try:
-        contact = pynag.Model.Contact.get_by_shortname(author_name)
+        contact = pynag.Model.Contact.objects.get_by_shortname(author_name)
         author_email = contact.email or None
     except Exception:
         author_email = None
