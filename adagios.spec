@@ -7,7 +7,7 @@
 %define release 2
 
 Name: adagios
-Version: 1.2.0
+Version: 1.2.1
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
@@ -69,6 +69,93 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
+* Fri May 24 2013 Your Name <you@example.com> 1.2.1-2
+- Remove remaining javascript alerts alert() (palli@opensource.is)
+- Host aliases displayed in status detail (palli@opensource.is)
+- clean up settings.py so unittests work again (palli@opensource.is)
+- Fix select all functionality, using obsolete attr for clicked
+  (tommi@tommi.org)
+- objectbrowser->status view, assume return code 1 is DOWN
+  (palli@opensource.is)
+- DEPENDENCIES file deprecated by requirements.txt (palli@opensource.is)
+- status/overview: top_alert_producers spinner refactored (palli@opensource.is)
+- Remove direct access to /misc/edit_file (palli@opensource.is)
+- Dashboard, fix incorrect counting of network parents (palli@opensource.is)
+- nagios->Service better error handling (palli@opensource.is)
+- Friendlier error message for pnp4nagios errors (palli@opensource.is)
+- hostgroup_name changed from choicefield to textfield (palli@opensource.is)
+- status/error cosmetic changes (palli@opensource.is)
+- gitlog: run git.show internally instead of git.diff (palli@opensource.is)
+- apache config: Change apache auth name (palli@opensource.is)
+- Objectbrowser: Unused cancel button removed (palli@opensource.is)
+- Fix objectbrowser/advanced errors being lost (palli@opensource.is)
+- status/services: new querystring parameter: unhandled (palli@opensource.is)
+- edit nagios.cfg: Fix cache not being invalidated (palli@opensource.is)
+- okconfig->addtemplate Hide host templates from list of templates
+  (palli@opensource.is)
+- Fix typo in smart_str (palli@opensource.is)
+- status/services -> include chat icon for comments (palli@opensource.is)
+- status/error -> update name of check-mk-livestatus deb package
+  (palli@opensource.is)
+- status/detail - Reintroduce image preview on pnp4nagios graphs
+  (palli@opensource.is)
+- status/error - minor cosmetic patch (palli@opensource.is)
+- nagios.cfg default location set to None (palli@opensource.is)
+- status/error/ friendlier error messages if livestatus is not running
+  (palli@opensource.is)
+- /status/log/ mk-livestatus not needed in this view (palli@opensource.is)
+- Fix javascript errors on pages that don't have searchbox
+  (palli@opensource.is)
+- okconfig install_agent error now has dynamic path to nsclient
+  (palli@opensource.is)
+- okconfig/install - Friendlier error messages (palli@opensource.is)
+- update outdated rest function get_object() (palli@opensource.is)
+- bugfix in status/detail. Custom variable editing fixed (palli@opensource.is)
+- Changed version information on frontpage (palli@opensource.is)
+- Revert "Removed editfile functionality, was not used anywhere."
+  (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- Fix bug where host commands where treated as service commands in
+  status_detail (palli@opensource.is)
+- Removed editfile functionality, was not used anywhere. (tommi@tommi.org)
+- Fix unhandled exception in git eventhandler integration (palli@opensource.is)
+- Make PNP path configurable (palli@opensource.is)
+- New config option: enable_authorization (palli@opensource.is)
+- Meta refresh removed from base_status (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- clean extra middleware (palli@opensource.is)
+- Issue #119 - json based updating of variables after jquery update broken
+  (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- send email.. properly check all checkboxes (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
+- Issue #90 - Removed alert from a couple more places (tommi@tommi.org)
+- Update README.md (palli-github@minor.is)
+- Issue #90 - Removed alert from run check command (tommi@tommi.org)
+- Updated descriptions (tommi@tommi.org)
+- okconfig->addservice display service_description (palli@opensource.is)
+- objectbrowser->edit host fix typos (palli@opensource.is)
+- Updated links to project site and bug reports (palli@opensource.is)
+- Temporarily disable access control (palli@opensource.is)
+- README.md - drop link to github issue tracker (palli@opensource.is)
+- status.utils.get_hosts() (palli@opensource.is)
+- adding requirements.txt (palli@opensource.is)
+- README.md - Fix typo (thanks lebean) (palli@opensource.is)
+- send email -> message is now optional (palli@opensource.is)
+- okconfig -> fix broken link in breadcrumbs (palli@opensource.is)
+- Fix unhandled traceback when services_with_info does not exist in livestatus.
+  (palli@opensource.is)
+- /misc/mail/ add option to acknowledge problems when emails are sent out
+  (palli@opensource.is)
+- /rest/: switch to non-greedy regex to avoid trailing-slash errors
+  (palli@opensource.is)
+- Fix unicode error handling in object browser (palli@opensource.is)
+- Javascript template update (palli@opensource.is)
+- adagios/init: code cleanup (palli@opensource.is)
+- rest/views: cleanup extra print statements (palli@opensource.is)
+- REST: fix unhandled exception in host acknowledgements (palli@opensource.is)
+- adagiostags - duration should say days when in plural (palli@opensource.is)
+
 * Tue Apr 30 2013 Pall Sigurdsson <palli@opensource.is> 1.2.0-2
 - Moved time selection in downtime to back (tommi@tommi.org)
 - Merge branch 'master' of github.com:opinkerfi/adagios (tommi@tommi.org)
