@@ -1,0 +1,22 @@
+{% extends "adagios_standard.html" %}
+{% block title %}Add new Object{% endblock %}
+{% block smallheader %}Add{% endblock %}
+{% block largeheader %}{{ object_type }}{% endblock %}
+{% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
+
+
+
+{% block content %}
+    <p>
+    Alright, before adding a new {{  object_type }} we need some basic info:
+    </p>
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Save {{ object_type }} and let me edit it further</button>
+        </div>
+    </form>
+    <div id="template_services">
+    </div>
+
+{% endblock %}

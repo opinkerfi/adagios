@@ -101,7 +101,7 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
 
 class PynagForm(AdagiosForm):
     def clean(self):
-        cleaned_data = super(self.__class__, self).clean()
+        cleaned_data = super(AdagiosForm, self).clean()
         for k,v in cleaned_data.items():
             # change from unicode to str
             v = cleaned_data[k] = smart_str(v)
@@ -159,8 +159,14 @@ class PynagForm(AdagiosForm):
         for field_name in self.undefined_attributes:
             self.fields[field_name] = self.get_pynagField(field_name, css_tag='undefined')
         return
-    def get_pynagField(self, field_name, css_tag=""):
-        """ Takes a given field_name and returns a forms.Field that is appropriate for this field """
+    def get_pynagField(self, field_name, css_tag="", required=None):
+        """ Takes a given field_name and returns a forms.Field that is appropriate for this field
+
+          Arguments:
+            field_name  --  Name of the field to add, example "host_name"
+            css_tag     --  String will make its way as a css attribute in the resulting html
+            required    --  If True, make field required. If None, let pynag decide
+        """
         # Lets figure out what type of field this is, default to charfield
         object_type = self.pynag_object['object_type']
         definitions = object_definitions.get( object_type ) or {}
@@ -189,6 +195,10 @@ class PynagForm(AdagiosForm):
             choices = map(lambda x: (x.hostgroup_name, x.hostgroup_name), all_groups)
             field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
         elif field_name == 'members' and object_type == 'hostgroup':
+            all_groups = Model.Host.objects.filter(host_name__contains='')
+            choices = map(lambda x: (x.host_name, x.host_name), all_groups)
+            field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
+        elif field_name == 'host_name' and object_type == 'service':
             all_groups = Model.Host.objects.filter(host_name__contains='')
             choices = map(lambda x: (x.host_name, x.host_name), all_groups)
             field = PynagChoiceField(choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
@@ -229,8 +239,10 @@ class PynagForm(AdagiosForm):
             field.required = options['required'] == 'required'
         else:
             field.required = False
+
         # At the moment, our database of required objects is incorrect
-        field.required = False
+        if required is not None:
+            field.required = required
 
         # Put inherited value in the placeholder
         inherited_value = self.pynag_object._inherited_attributes.get(field_name)
@@ -487,3 +499,62 @@ class BulkDeleteForm(BaseBulkForm):
         for i in self.changed_objects:
             i.delete()
 
+
+class AddObjectForm(PynagForm):
+    def __init__(self, object_type, *args, **kwargs):
+        self.pynag_object = Model.string_to_class.get(object_type)()
+        super(AdagiosForm,self).__init__(*args, **kwargs)
+
+        # Some object types we will suggest a template:
+        if object_type in ('host','contact','service'):
+            self.fields['use'] = self.get_pynagField('use')
+            self.fields['use'].initial = str('generic-%s' % object_type)
+            self.fields['use'].help_text = "Inherit attributes from this template"
+        if object_type == 'host':
+            self.fields['host_name'] = self.get_pynagField('host_name', required=True)
+            self.fields['address'] = self.get_pynagField('address')
+            self.fields['alias'] = self.get_pynagField('alias', required=False)
+        elif object_type == 'service':
+            self.fields['host_name'] = self.get_pynagField('host_name')
+            self.fields['service_description'] = self.get_pynagField('service_description')
+        else:
+            field_name = "%s_name" % object_type
+            self.fields[field_name] = self.get_pynagField(field_name, required=True)
+
+
+
+
+
+    def clean_timeperiod_name(self):
+        return self._clean_shortname()
+    def clean_command_name(self):
+        return self._clean_shortname()
+    def clean_contactgroup_name(self):
+        return self._clean_shortname()
+    def clean_hostgroup_name(self):
+        return self._clean_shortname()
+    def clean_servicegroup_name(self):
+        return self._clean_shortname()
+    def clean_contact_name(self):
+        return self._clean_shortname()
+    def clean_host_name(self):
+        if self.pynag_object.object_type == 'service':
+            value = self.cleaned_data['host_name']
+            hosts = Model.Host.objects.filter(host_name=value)
+            if not hosts:
+                raise forms.ValidationError("Could not find host called '%s'" % (value))
+            return smart_str(self.cleaned_data['host_name'])
+        return self._clean_shortname()
+    def _clean_shortname(self):
+        """ Make sure shortname of a particular object does not exist.
+
+        Raise validation error if shortname is found
+        """
+        object_type = self.pynag_object.object_type
+        field_name = "%s_name" % object_type
+        value = smart_str(self.cleaned_data[field_name])
+        try:
+            self.pynag_object.objects.get_by_shortname(value)
+            raise forms.ValidationError("A %s with %s='%s' already exists." % (object_type, field_name, value))
+        except KeyError:
+            return value

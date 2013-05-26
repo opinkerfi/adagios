@@ -637,3 +637,27 @@ def copy_object(request, object_id):
             except IndexError, e:
                 c['errors'].append( e )
     return render_to_response('copy_object.html', c, context_instance = RequestContext(request))
+
+def add_object(request, object_type):
+    """ Friendly wizard on adding a new object of any particular type
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    c['object_type'] = object_type
+
+
+    if request.method == 'POST':
+        c['form'] = AddObjectForm(object_type, data=request.POST)
+        # If form is valid, save object and take user to edit_object form.
+        if c['form'].is_valid():
+            c['form'].save()
+            object_id = c['form'].pynag_object.get_id()
+            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':object_id} ), )
+        else:
+            c['errors'].append('Could not validate form input')
+    elif request.method == 'GET':
+        c['form'] = AddObjectForm(object_type,initial=request.GET)
+
+
+    return render_to_response('add_object.html', c, context_instance = RequestContext(request))

@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     url(r'/delete/id=(?P<object_id>.+)$', 'objectbrowser.views.delete_object', name="delete_object"),
     url(r'/delete/(?P<object_type>.+?)/(?P<shortname>.+)/?$', 'objectbrowser.views.delete_object_by_shortname', name="delete_by_shortname"),
 
-    url(r'^/add/(?P<object_type>.+)$', 'objectbrowser.views.edit_object', name="addobject"),
+    url(r'^/add/(?P<object_type>.+)$', 'objectbrowser.views.add_object', name="addobject"),
     url(r'/bulk_edit/?$', 'objectbrowser.views.bulk_edit', name='bulk_edit'),
     url(r'/bulk_delete/?$', 'objectbrowser.views.bulk_delete', name='bulk_delete'),
     url(r'/bulk_copy/?$', 'objectbrowser.views.bulk_copy', name='bulk_copy'),
