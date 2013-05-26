@@ -377,17 +377,11 @@ def test(request):
     """
     c = {}
     c['messages'] = []
-    c = {'object_types': []}
-    import pynag.Model
-    for name,Class in pynag.Model.string_to_class.items():
-        if name is not None:
-            active = inactive = 0
-            all_instances = Class.objects.all
-            for i in all_instances:
-                if i['register'] == "0":
-                    inactive += 1
-                else:
-                    active += 1
-            c['object_types'].append( { "name": name, "active": active, "inactive": inactive } )
+    # Get some test data
+    services = pynag.Model.Service.objects.filter(__PORT__contains='', host_name__exists=True)
+    service = services[0]
+    c['host_name'] = service.host_name
+    c['service_description'] = service.service_description
+    c['check_command'] = service.check_command.split('!')[0]
 
     return render_to_response('test.html', c, context_instance = RequestContext(request))

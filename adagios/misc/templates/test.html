@@ -1,4 +1,4 @@
-{% extends "base_misc.html" %}
+{% extends "base_status.html" %}
 
 {% block title %}Audit Log{% endblock %}
 {% block smallheader %}audit{% endblock %}
@@ -6,123 +6,83 @@
 {% block nav1 %}misc{% endblock %}
 
 {% block content %}
-    Origin null is not allowed by Access-Control-Allow-Origin.
-    <script src="/rest/status.js"></script>
-    <script src="/rest/pynag.js"></script>
-    <script src="/rest/adagios.js"></script>
-
-    <!--
-    <div id='chart_div'></div>
-
-    <h1>Object Count</h1>
-    <div id="chartdiv" style="height:300px;width:98%; "></div>
--->
-
+    <div >
+        <pre id="command_line_preview">Loading...</pre>
+    </div>
+        <div id="check_command_parameters"></div>
 {% endblock %}
 
 {% block footer %}
     {{ block.super }}
-    <script type='text/javascript'>
-        var datarows = [["mike","",""]];
-    </script>
-    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
-    <script type='text/javascript'>
-
-    var datarows = $.parseJSON(
-            $.ajax(
-                    {
-                        url: "{% url rest/pynag %}json/contactgroup_hierarchy?limit=100",
-                        async: false,
-                        dataType: 'json'
-                    }
-            ).responseText
-    );
-
-        google.load('visualization', '1', {packages:['orgchart']});
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
-            var data = new google.visualization.DataTable();1
-            data.addColumn('string', 'Name');
-            data.addColumn('string', 'Manager');
-            data.addColumn('string', 'ToolTip');
-            data.addRows( datarows );
-            var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
-            chart.draw(data, {allowHtml:true, allowCollapse:true});
-        }
-    </script>
-
-
-    <script type="text/javascript" src="{% url media path="/jqplot/" %}jquery.jqplot.min.js"></script>
-    <script type="text/javascript" src="{% url media path="/jqplot/" %}plugins/jqplot.barRenderer.min.js"></script>
-    <script type="text/javascript" src="{% url media path="/jqplot/" %}plugins/jqplot.categoryAxisRenderer.min.js"></script>
-    <script type="text/javascript" src="{% url media path="/jqplot/" %}plugins/jqplot.pointLabels.min.js"></script>
-    <script type="text/javascript" src="{% url media path="/jqplot/" %}plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-    <script type="text/javascript" src="{% url media path="/jqplot/" %}plugins/jqplot.canvasTextRenderer.min.js"></script>
-    <!-- <script type="text/javascript" src="{% url media path="/jqplot/" %}"></script>
-    <script type="text/javascript" src="{% url media path="/jqplot/" %}"></script> -->
-
-
+    <script src="/rest/status.js"></script>
+    <script src="/rest/pynag.js"></script>
+    <script src="/rest/adagios.js"></script>
 
         <script>
         $(document).ready(function() {
-            var object_types = [];
-            var graph_data_active = [];
-            var graph_data_inactive = [];
-            {% for i in object_types %}
-                object_types.push( "{{ i.name }}" );
-                graph_data_active.push({{ i.active }});
-                graph_data_inactive.push({{ i.inactive }});
-            {% endfor %}
-
-            var plot1 = $.jqplot('chartdiv', [graph_data_active, graph_data_inactive], {
-               // The "seriesDefaults" option is an options object that will
-               // be applied to all series in the chart.
-               seriesDefaults:{
-                   renderer:$.jqplot.BarRenderer,
-                   rendererOptions: {fillToZero: true},
-                   shadow: true
-               },
-               animate: true,
-                stackSeries: true,
-               // Custom labels for the series are specified with the "label"
-               // option on the series option.  Here a series option object
-               // is specified for each series.
-               series:[
-                   {label:'Active'},
-                   {label:'Inactive'},
-               ],
-
-               // Show the legend and put it outside the grid, but inside the
-               // plot container, shrinking the grid to accomodate the legend.
-               // A value of "outside" would not shrink the grid and allow
-               // the legend to overflow the container.
-               legend: {
-                   show: true,
-                   placement: 'outsideGrid'
-               },
-               axesDefaults: {
-                    tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-                    tickOptions: {
-                      angle: -30,
-                      fontSize: '10pt'
-                    }
-               },
-               axes: {
-                   // Use a category axis on the x axis and use our custom ticks.
-                   xaxis: {
-                       renderer: $.jqplot.CategoryAxisRenderer,
-                       ticks: object_types
-                   },
-                   // Pad the y axis just a little so bars can get close to, but
-                   // not touch, the grid boundaries.  1.2 is the default padding.
-                   yaxis: {
-
-
-                   }
-               }
-
-            });
+            populate_parameters();
         });
+
+        function populate_parameters() {
+            my_data = {
+                "host_name": "{{ host_name }}",
+                "service_description": "{{ service_description }}",
+                "check_command": "{{ check_command }}"
+            };
+            // Update check_command_parameters div with result from this rest call:
+            check_command(my_data)
+                    .done( function(data) {
+                        // Iterate check_command_parameters and populate it with
+                        // Some input fields
+                        $('#command_line_preview').html( data["command_line"] );
+                        input_html = '';
+                        for (var i in data) {
+                            if (i == 'command_line') {}
+                            else {
+                                input_html += '' +
+                                        '<label class="control-label" for="' + i + '">' + i + '</label>' +
+                                        '<div class="controls">' +
+                                        '  <input class="check_command_parameter" onkeyup="preview_command_line();" type="text" class="span11" name="' + i + '" value="' + data[i] + '">' +
+                                        '</div>';
+                            }
+                        }
+                        $('#check_command_parameters').html(input_html);
+                    })
+                    .fail( function(data) {
+                        var result = data;
+                        alert("fail" + data);
+                    });
+
+
+
+
+        }
+
+        function preview_command_line() {
+            // whenever check_command_parameters is changed, lets update the check_command preview
+            my_data = {
+                "host_name": "{{ host_name }}",
+                "service_description": "{{ service_description }}",
+                "check_command": "{{ check_command }}"
+            };
+            $(".check_command_parameter").each( function() {
+                var item = $(this)[0];
+                my_data[item.name] = item.value;
+            });
+            // Update check_command_parameters div with result from this rest call:
+            check_command(my_data)
+                    .done( function(data) {
+                        command_line = data['command_line'];
+                        $('#command_line_preview').html( command_line );
+                    })
+                    .fail( function(data) {
+                        var result = data;
+                        alert("fail" + data);
+                    });
+
+
+        }
+
         </script>
 
 

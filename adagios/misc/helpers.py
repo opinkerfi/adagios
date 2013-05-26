@@ -9,6 +9,7 @@ Convenient stateless functions for pynag. This module is used by the /rest/ inte
 
 
 import platform
+import re
 from pynag import Model
 from pynag import Parsers
 from pynag import Control
@@ -246,3 +247,52 @@ def add_object(object_type, filename=None, **kwargs):
         my_object[k] = v
     my_object.save()
     return {"filename":my_object.get_filename(), "raw_definition":str(my_object)}
+
+def check_command(host_name, service_description, check_command=None,**kwargs):
+    """ Get al
+        Arguments:
+            host_name           -- Name of host
+            service_description -- Service description
+            check_command       -- Name of check command
+
+            Any **kwargs will be treated as arguments or custom macros that will be changed on-the-fly before returning
+        Returns:
+            dict similar to the following:
+            { 'host_name': ...,
+              'service_description': ...,
+              'check_command': ...,
+              '$ARG1$': ...,
+              '$SERVICE_MACROx$': ...,
+            }
+    """
+    if service_description in (None,'',u''):
+        my_object = Model.Host.objects.get_by_shortname(host_name)
+    else:
+        short_name = "%s/%s" % (host_name, service_description)
+        my_object = Model.Service.objects.get_by_shortname(short_name)
+    if check_command is None:
+        command = my_object.get_effective_check_command()
+    else:
+        command = Model.Command.objects.get_by_shortname(check_command)
+    regex = re.compile("(\$\w+\$)")
+    macronames = regex.findall( command.command_line )
+
+    # macros is the variable we will be returning.
+    # First populate it with all macros from the check_command
+    macros = {}
+    for i in macronames:
+        macros[i] = my_object.get_macro(i)
+        if macros[i] is None:
+            macros[i] = ''
+    # If any kwargs are specified, lets overwrite macros here:
+    for k,v in kwargs.items():
+        if k in macros:
+            macros[k] = v
+
+    command_line = command.command_line
+    for k,v in macros.items():
+        if v is None:
+            v = ''
+        command_line = command_line.replace(k, v)
+    macros['command_line'] = command_line
+    return macros

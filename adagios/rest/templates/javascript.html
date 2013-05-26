@@ -19,17 +19,12 @@
 {{ v.docstring }}
 */
 
-function {{ i }}({{ v.argstring }}) {
-    my_data = {
-    {% for arg in v.args %}
-        "{{ arg }}": {{ arg }},
-    {% endfor %}
-    }
+function {{ i }}(parameters) {
     // Return jquery promise object for ajax:
     return $.ajax({
         type: 'POST',
         url: '{{ v.url }}',
-        data: my_data,
+        data: parameters,
         async: true,
         contentType: "application/json",
         dataType: 'json'
