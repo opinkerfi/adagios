@@ -1,13 +1,16 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+# -*- coding: utf-8 -*-
 
-Replace these with more appropriate tests for your application.
-"""
+from django.utils import unittest
+from django.test.client import Client
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-import forms
 
-from django.test import TestCase
-
+class MiscTestCase(unittest.TestCase):
+    def setUp(self):
+        from adagios.settings import nagios_config
+        self.nagios_config = nagios_config
+    def _testPageLoad(self, url):
+        c = Client()
+        response = c.get(url)
+        self.assertEqual(response.status_code, 200)
+    def TestSettings(self):
+        self._testPageLoad('/misc/settings')

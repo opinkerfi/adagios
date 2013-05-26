@@ -108,7 +108,6 @@ INSTALLED_APPS = [
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
-    'adagios.status',
     'adagios.pnp',
 ]
 
@@ -132,6 +131,7 @@ nagios_binary = "/usr/bin/nagios"
 enable_githandler=False
 enable_loghandler = False
 enable_authorization = False
+enable_status_view = True
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
 administrators="nagiosadmin,@users"
@@ -157,6 +157,9 @@ except IOError, e:
     else:
         # TODO: Should this go someplace?
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
+
+if enable_status_view:
+  plugins['status'] = 'adagios.status'
 
 for k,v in plugins.items():
     INSTALLED_APPS.append( v )

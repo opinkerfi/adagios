@@ -49,6 +49,8 @@ def on_page_load(request):
         results[k] = v
     for k,v in get_current_settings(request).items():
         results[k] = v
+    for k,v in get_plugins(request).items():
+        results[k] = v
 
     return results
 
@@ -215,6 +217,10 @@ def get_okconfig(request):
     except Exception:
         return {}
 
+def get_plugins(request):
+    """
+    """
+    return {'plugins': settings.plugins}
 
 def reload_configfile(request):
     """ Load the configfile from settings.adagios_configfile and put its content in adagios.settings. """

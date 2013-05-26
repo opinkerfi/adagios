@@ -73,6 +73,7 @@ class AdagiosSettingsForm(forms.Form):
     enable_githandler = forms.BooleanField(required=False, initial=settings.enable_githandler, help_text="If set. Adagios will commit any changes it makes to git repository.")
     enable_loghandler = forms.BooleanField(required=False, initial=settings.enable_loghandler, help_text="If set. Adagios will log any changes it makes to a file.")
     enable_authorization = forms.BooleanField(required=False, initial=settings.enable_authorization, help_text="If set. Users in Status view will only see hosts/services they are a contact for. Unset means everyone will see everything.")
+    enable_status_view = forms.BooleanField(required=False, initial=settings.enable_status_view, help_text="If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect")
     warn_if_selinux_is_active = forms.BooleanField(required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
     pnp_filepath = forms.CharField(help_text="Full path to your pnp4nagios/index.php file. Adagios will use this to generate graphs")
     pnp_url = forms.CharField(help_text="Full or relative url to pnp4nagios web interface, adagios can use this to link directly to pnp")

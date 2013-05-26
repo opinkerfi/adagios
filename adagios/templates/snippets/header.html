@@ -17,10 +17,6 @@
 
 
                     <!-- Object Browser -->
-                    <li class="{% if urlname == "status"%}active{% endif %}">
-                        <a href="{% url status.views.status_index %}"><i class="glyph-grey glyph-table"></i> Status</a>
-                    </li>
-
                     <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
                         <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-grey glyph-edit"></i> Configure</a>
                     </li>
@@ -62,7 +58,7 @@
 		    </form>
                         </li>
                     {% endif %}
-                    {% if num_problems %}
+                    {% if num_problems and plugins.status  %}
                         <li style="color: red";><a style="color: red"; href="{% url status.views.services %}?unhandled"><i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
                     {% endif %}
                     <!--
@@ -83,7 +79,7 @@
                             {% if tagged_comments %}({{ tagged_comments }}){% endif %}
                         </a>
                         <ul class="dropdown-menu">
-                            {% if tagged_comments %}
+                            {% if tagged_comments and plugins.status %}
                                 <li>
 
                                 <a href="{% url status.views.contact_detail remote_user %}">
@@ -91,7 +87,9 @@
                                 </a>
                                 </li>
                             {% endif %}
-                            <li><a href="{% url status.views.contact_detail remote_user %}">My Profile</a></li>
+                            {% if plugins.status %}
+                                <li><a href="{% url status.views.contact_detail remote_user %}">My Profile</a></li>
+                            {% endif %}
                             <li><a href="{% url misc.views.sign_out %}">Sign Out</a></li>
                         </ul>
                     </li>
