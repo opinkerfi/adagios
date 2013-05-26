@@ -241,7 +241,11 @@ class PynagForm(AdagiosForm):
             field.required = False
 
         # At the moment, our database of required objects is incorrect
-        if required is not None:
+        # So if caller did not specify if field is required, we will not
+        # make it required
+        if required is None:
+            field.required = False
+        else:
             field.required = required
 
         # Put inherited value in the placeholder
