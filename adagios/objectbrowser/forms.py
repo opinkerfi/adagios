@@ -544,10 +544,12 @@ class AddObjectForm(PynagForm):
     def clean_host_name(self):
         if self.pynag_object.object_type == 'service':
             value = self.cleaned_data['host_name']
-            hosts = Model.Host.objects.filter(host_name=value)
-            if not hosts:
-                raise forms.ValidationError("Could not find host called '%s'" % (value))
-            return smart_str(self.cleaned_data['host_name'])
+            hosts = value.split(',')
+            for i in hosts:
+                existing_hosts = Model.Host.objects.filter(host_name=i)
+                if not existing_hosts:
+                    raise forms.ValidationError("Could not find host called '%s'" % (i))
+                return smart_str(self.cleaned_data['host_name'])
         return self._clean_shortname()
     def _clean_shortname(self):
         """ Make sure shortname of a particular object does not exist.
