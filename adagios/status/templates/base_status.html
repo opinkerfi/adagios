@@ -547,16 +547,6 @@
                                 <i class="glyph-clock" > </i> Downtime
                             </button>
 
-                           <a class="btn btn-small" title="Open in Nagios" {% if my_object %}href="{{  nagios_url }}/cgi-bin/extinfo.cgi?type=2&host={{ host.name }}&service={{ service_description }}"{% endif %}>
-                                <i class="glyph-fire"> </i>
-                            </a>
-                            <a class="btn btn-small" title="Configure {{ my_object.object_type }}" id="configure_button" {% if my_object %}href="{% url edit_by_shortname my_object.object_type my_object.short_name %}"{% endif %}>
-                                <i class="glyph-edit" > </i>
-                            </a>
-                            <a class="btn btn-small" title="Delete {{ my_object.object_type }}" id="delete_button" {% if my_object %}href="{% url delete_by_shortname my_object.object_type my_object.short_name %}"{% endif %}>
-                                <i class="glyph-bin" > </i>
-                            </a>
-
                             <a class="btn btn-small" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
                                 <i class="glyph-envelope" > </i>
                             </a>
