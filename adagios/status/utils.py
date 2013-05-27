@@ -101,8 +101,9 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
             host['num_problems'] = 'n/a'
             pass
 
-    # Sort by service status
+    # Sort by host and service status
     result.sort(reverse=True, cmp=lambda a,b: cmp(a['num_problems'], b['num_problems']))
+    result.sort(reverse=True, cmp=lambda a,b: cmp(a['state'], b['state']))
     return result
 
 
