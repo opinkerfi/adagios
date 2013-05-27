@@ -646,7 +646,6 @@ def add_object(request, object_type):
     c['errors'] = []
     c['object_type'] = object_type
 
-
     if request.method == 'POST':
         c['form'] = AddObjectForm(object_type, data=request.POST)
         # If form is valid, save object and take user to edit_object form.
