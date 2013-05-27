@@ -24,8 +24,8 @@
 {% block footer %}
 
     {{ block.super }}
+    <!-- DNS lookup for the address field -->
     <script>
-        <!-- DNS lookup for the address field -->
         $('#id_host_name').focusout(function() {
             if ($('#id_address').val() == "") {
                 $.getJSON('/rest/pynag/json/dnslookup',
