@@ -7,9 +7,20 @@
 
 {% block content %}
     <div >
+        <pre  id="original_command_line"></pre>
         <pre id="command_line_preview">Loading...</pre>
     </div>
         <div id="check_command_parameters"></div>
+    <style>
+    .macro_in_a_text {
+        color: lightblue;
+        font-size:  80%;
+        font-weight: bold;
+    }
+    #original_command_line {
+        //white-space: nowrap;
+    }
+    </style>
 {% endblock %}
 
 {% block footer %}
@@ -19,7 +30,11 @@
     <script src="/rest/adagios.js"></script>
 
         <script>
-        $(document).ready(function() {
+        $(document).ready(function(){
+            // What happens when we hover over a macrotext
+            $(".macro_in_a_text").hover( function() { alert("hello"); });
+
+            // Get all parameters
             populate_parameters();
         });
 
@@ -32,21 +47,26 @@
             // Update check_command_parameters div with result from this rest call:
             check_command(my_data)
                     .done( function(data) {
-                        // Iterate check_command_parameters and populate it with
-                        // Some input fields
-                        $('#command_line_preview').html( data["command_line"] );
-                        input_html = '';
+                        // Generate a table, where each row has an input field with
+                        // a macroname for us
+                        input_html = '<table>';
                         for (var i in data) {
-                            if (i == 'command_line') {}
+                            // Skip command line data
+                            if (i == 'original_command_line' || i == 'effective_command_line') {}
                             else {
                                 input_html += '' +
-                                        '<label class="control-label" for="' + i + '">' + i + '</label>' +
-                                        '<div class="controls">' +
-                                        '  <input class="check_command_parameter" onkeyup="preview_command_line();" type="text" class="span11" name="' + i + '" value="' + data[i] + '">' +
-                                        '</div>';
+                                        '<tr><td>' + i + '</td>' +
+
+                                        '<td><input class="check_command_parameter" onkeyup="preview_command_line();" type="text" class="span11" name="' + i + '" value="' + data[i] + '">' +
+                                        '</td></tr>'
+                                        ;
                             }
                         }
+                        input_html += "</table>"
                         $('#check_command_parameters').html(input_html);
+
+                        // Preview the command line
+                        preview_command_line();
                     })
                     .fail( function(data) {
                         var result = data;
@@ -69,15 +89,34 @@
                 var item = $(this)[0];
                 my_data[item.name] = item.value;
             });
+
             // Update check_command_parameters div with result from this rest call:
             check_command(my_data)
                     .done( function(data) {
-                        command_line = data['command_line'];
-                        $('#command_line_preview').html( command_line );
+                        original_command_line = data['original_command_line'];
+                        $('#original_command_line').html( original_command_line );
+
+                        macronames = original_command_line.match(/\$.*?\$/g);
+                        for (var i in macronames) {
+                            macroname = macronames[i];
+                            macrovalue = data[macroname];
+                            new_str = "<span "
+                                    + "class='macro_in_a_text' title='value="
+                                    + macrovalue
+                                    + "'>"
+                                    + macroname
+                                    + "</span>";
+                            original_command_line = original_command_line.replace(macroname,new_str);
+                        }
+
+                        $('#original_command_line').html( original_command_line );
+
+                        effective_command_line = data['effective_command_line'];
+                        $('#command_line_preview').html( effective_command_line );
                     })
                     .fail( function(data) {
                         var result = data;
-                        alert("fail" + data);
+                        $('#command_line_preview').html("Something went wrong. Our awesome webservice returned an error")
                     });
 
 

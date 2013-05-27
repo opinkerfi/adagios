@@ -294,5 +294,6 @@ def check_command(host_name, service_description, check_command=None,**kwargs):
         if v is None:
             v = ''
         command_line = command_line.replace(k, v)
-    macros['command_line'] = command_line
+    macros['effective_command_line'] = command_line
+    macros['original_command_line'] = command.command_line
     return macros
