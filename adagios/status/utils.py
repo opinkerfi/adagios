@@ -53,6 +53,15 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     else:
         q = []
 
+    # If keyword "unhandled" is in kwargs, then we will fetch unhandled services only
+    if 'unhandled' in kwargs:
+        del kwargs['unhandled']
+        kwargs['state__isnot'] = 0
+        kwargs['acknowledged'] = 0
+        kwargs['scheduled_downtime_depth'] = 0
+        #kwargs['host_scheduled_downtime_depth'] = 0
+        #kwargs['host_acknowledged'] = 0
+
     arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
     # if "q" came in from the querystring, lets filter on host_name
     for i in q:
