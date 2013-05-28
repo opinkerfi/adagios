@@ -7,7 +7,6 @@
     <script>
         $('table#many').dataTable( {
                     "sPaginationType": "bootstrap",
-                    "sScrollY": "260px",
                     "bAutoWidth": false,
                     "bScrollCollapse": true,
                     "bPaginate": false,
@@ -42,6 +41,7 @@
                         <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
                         <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
                     </td>
+
                     <td>{{ obj.object_type }}</td>
                     <td>{{ obj.description }}</td>
                     <td>{{ obj.filename }}</td>
