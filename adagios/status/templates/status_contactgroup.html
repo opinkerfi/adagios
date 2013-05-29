@@ -5,7 +5,7 @@
 {% block largeheader %}{{ contactgroup_name }} ({{ contactgroup.alias }}){% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.contact_list %}#tab_contactgroups">Contactgroups</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.status.views.contact_list %}#tab_contactgroups">Contactgroups</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}

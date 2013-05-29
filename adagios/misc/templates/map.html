@@ -158,7 +158,7 @@
             });
             map.markers.push(marker);
             // When user clicks on this host marker, lets open up a infowindow
-            var host_url = "{% url status.views.status_detail  %}"  + "?host_name=" + host.name;
+            var host_url = "{% url adagios.status.views.status_detail  %}"  + "?host_name=" + host.name;
             html = '<div class="circle state_' + host.state +'"> </div>';
             html = html + ' <a href="' + host_url + '">'+ host.name +'</a>';
             html = html + " (" + host.address +")";

@@ -17,7 +17,7 @@
 
     </div>
     <hr>
-    Last {{ log|length }} state changes (<a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">see all log entries for this host</a>):
+    Last {{ log|length }} state changes (<a href="{% url adagios.status.views.status_log %}?search={{ host.name }}#tab_all">see all log entries for this host</a>):
     <table style="font-size: 80%;" class="table well table-condensed">
         <thead>
             <tr>
@@ -42,11 +42,11 @@
             <tr>
                 <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
                 {% if object_type == 'hostgroup' %}
-                    <td><a href="{% url status.views.status_detail %}?host_name={{ line.host_name  }}">{{ line.host_name }}</a></td>
-                    <td><a href="{% url status.views.status_detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
+                    <td><a href="{% url adagios.status.views.status_detail %}?host_name={{ line.host_name  }}">{{ line.host_name }}</a></td>
+                    <td><a href="{% url adagios.status.views.status_detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
                 {% endif %}
                 {% if object_type == 'host' %}
-                    <td><a href="{% url status.views.status_detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
+                    <td><a href="{% url adagios.status.views.status_detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
                 {% endif %}
                 <td><div>{{ line.duration|duration}}</div></td>
                 <td class="small"><div class="circle state_{{ line.state }}"></div></td>

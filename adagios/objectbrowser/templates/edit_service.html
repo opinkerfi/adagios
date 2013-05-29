@@ -94,7 +94,7 @@
                 </div>
         </form>
             <div class="tab-pane" id="advanced">
-                <form action="{%  url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
+                <form action="{%  url adagios.objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
 
                     {% include "bootstrap_fields.html" with fields=advanced_form %}
                     <div class="form-actions">

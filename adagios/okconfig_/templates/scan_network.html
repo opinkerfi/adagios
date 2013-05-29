@@ -43,7 +43,7 @@
   {% for host in scan_results %}
 	<tr>
 	 {% if not host.ismonitored %}
-	 <td><a href="{% url okconfig_.views.addhost %}?host_name={{ host.hostname }}&address={{ host.ipaddress }}">Add</a></td>
+	 <td><a href="{% url adagios.okconfig_.views.addhost %}?host_name={{ host.hostname }}&address={{ host.ipaddress }}">Add</a></td>
 	 {% else %}
 	 <td></td>
 	 {% endif %}

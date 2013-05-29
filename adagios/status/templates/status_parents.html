@@ -1,7 +1,7 @@
 {% extends "base_status.html" %}
 
 {% block title %}Network Parents{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_parents %}">Network Parents</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.status.views.status_parents %}">Network Parents</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}
 Network Parents
@@ -42,7 +42,7 @@ Network Parents
                 </a>
             </td>
 
-            <td><a style="color: black" href="{% url status.views.status_detail %}?host_name={{ row.name }}">{{ row.name }}</a></td>
+            <td><a style="color: black" href="{% url adagios.status.views.status_detail %}?host_name={{ row.name }}">{{ row.name }}</a></td>
 
             <td>{{ row.address }}</td>
             {% if row.state  == 0 %}
@@ -66,7 +66,7 @@ Network Parents
 
         {% for i in row.child_hosts %}
             <tr style="background-color: #fafaff; font-size: 90%;" class="{{ row.name }} host_{{ forloop.parentloop.counter }} hide">
-                <td colspan=7><div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div> <a href="{% url status.views.status_detail  %}?host_name={{ i.name }}">{{ i.name }}</a></td>
+                <td colspan=7><div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div> <a href="{% url adagios.status.views.status_detail  %}?host_name={{ i.name }}">{{ i.name }}</a></td>
             </tr>
         {% endfor %}
 

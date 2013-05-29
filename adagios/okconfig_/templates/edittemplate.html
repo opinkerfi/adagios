@@ -22,8 +22,8 @@
 
     <!-- <button class="btn btn-success">Run all Service checks</button> -->
     <div style="margin: 16px">
-        <a href="{% url okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">Install Agent</a>
-        <a href="{% url okconfig_.views.addtemplate %}/?host_name={{ myhost.host_name }}" class="btn btn-success">Add templates</a>
+        <a href="{% url adagios.okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">Install Agent</a>
+        <a href="{% url adagios.okconfig_.views.addtemplate %}/?host_name={{ myhost.host_name }}" class="btn btn-success">Add templates</a>
     </div>
 
     <h3>Services of this host:</h3>

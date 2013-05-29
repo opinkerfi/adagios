@@ -23,7 +23,7 @@
                         <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
                             </a>
                     </td>
-                    <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
+                    <td><a href="{% url adagios.status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
                     <td>
                         <div title="{{ row.child_hostgroups }}">
                             {{ row.child_hostgroups|length }}
@@ -61,7 +61,7 @@
                 {%  for i in row.child_hostgroups %}
                     <tr  class="subrow subrow_{{ forloop.parentloop.counter }} hide">
                         <td></td>
-                        <td colspan=7><a href="{% url status.views.status_hostgroup i %}">{{ i }}</a></td>
+                        <td colspan=7><a href="{% url adagios.status.views.status_hostgroup i %}">{{ i }}</a></td>
                     </tr>
                 {% endfor %}
 
@@ -71,7 +71,7 @@
                         <td colspan=7>
                             <div class="circle state_{{ i.1 }}"></div>
                             <span>
-                                <a href="{% url status.views.status_detail %}?host_name={{ i.0 }}">{{ i.0 }}</a>
+                                <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.0 }}">{{ i.0 }}</a>
                             </span>
                         </td>
                     </tr>

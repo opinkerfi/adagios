@@ -92,16 +92,16 @@
                             <td style="white-space: nowrap;">
                                 {% ifchanged host.name %}
                                     <div title="{{ host.plugin_output }}" class="circle circle_{{ host.unhandled }} state_{{ host.state }}"></div>
-                                    <a href="{% url status.views.status_detail%}?host_name={{ host.name }}" title='Details for host {{ host.name }}'>{{ host.name }}</a>
+                                    <a href="{% url adagios.status.views.status_detail%}?host_name={{ host.name }}" title='Details for host {{ host.name }}'>{{ host.name }}</a>
                                 {% else %}
                                     <div class="repeated_content hide">
                                     <div title="{{ host.plugin_output }}" class="circle circle_{{ host.unhandled }} state_{{ host.state }}"></div>
-                                    <a href="{% url status.views.status_detail%}?host_name={{ host.name }}" title='Details for host {{ host.name }}'>{{ host.name }}</a>
+                                    <a href="{% url adagios.status.views.status_detail%}?host_name={{ host.name }}" title='Details for host {{ host.name }}'>{{ host.name }}</a>
                                     </div>
                                 {% endifchanged %}
                             </td>
                             <td  colspan=1 style="word-wrap: break-word;">
-                                 <a href="{% url status.views.status_detail %}?host_name={{ host.name }}&service_description={{ service.description }}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
+                                 <a href="{% url adagios.status.views.status_detail %}?host_name={{ host.name }}&service_description={{ service.description }}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
                                      <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}</a>
                                 <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
                                 <span title="{{ service.plugin_output }}" style="font-size: 80%; color: #808080; font-weight: normal;">
@@ -150,9 +150,9 @@
 {% block sidebar %}
     <h5>Go to</h5>
     <ul class="nav nav-list">
-        <li><a href="{% url status.views.status_hostgroups %}">Hostgroup View</a></li>
-        <li><a href="{% url status.views.services %}">Service View</a></li>
-        <li><a href="{% url status.views.test_livestatus %}">Test Livestatus</a></li>
+        <li><a href="{% url adagios.status.views.status_hostgroups %}">Hostgroup View</a></li>
+        <li><a href="{% url adagios.status.views.services %}">Service View</a></li>
+        <li><a href="{% url adagios.status.views.test_livestatus %}">Test Livestatus</a></li>
     </ul>
 
 {% endblock %}

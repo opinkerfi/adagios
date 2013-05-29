@@ -5,7 +5,7 @@
 {% block largeheader %}Contacts{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.contact_list %}">Contacts</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.status.views.contact_list %}">Contacts</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
@@ -32,7 +32,7 @@
                     <td>{{ i.alias }}</td>
                     <td>
                         {% for x in i.members %}
-                        <a href="{% url status.views.contact_detail x %}">{{ x }}</a>,
+                        <a href="{% url adagios.status.views.contact_detail x %}">{{ x }}</a>,
                         {% endfor %}
                     </td>
                 </tr>
