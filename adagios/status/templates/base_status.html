@@ -612,7 +612,7 @@
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>Cancel</a>
-                <button type="submit" class="btn btn-primary">Acknowledge Problem</button>
+                <button type="submit" id="acknowledge_submit_button" class="btn btn-primary">Acknowledge Problem</button>
             </div>
         </form>
     </div>
@@ -1108,7 +1108,7 @@
         // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
         function get_selected_services() {
             var result = []
-            checked_boxes = $( "td :checked" );
+            checked_boxes = $( "td :checked:visible" );
             checked_boxes.each(function() {
                var host_name = $(this).next('.input_hostname').val();
                var service_description = $(this).next().next('.input_service_description').val();
