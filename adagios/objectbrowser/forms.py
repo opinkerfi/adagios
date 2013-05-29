@@ -214,6 +214,10 @@ class PynagForm(AdagiosForm):
             all_objects = Model.Command.objects.filter(command_name__contains='')
             choices = [('','')] + map(lambda x: (x.command_name, x.command_name), all_objects)
             field = forms.ChoiceField(choices=sorted(choices))
+        #elif field_name == 'check_command':
+        #    all_objects = Model.Command.objects.all
+        #    choices = [('','')] + map(lambda x: (x.command_name, x.command_name), all_objects)
+        #    field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_options') and self.pynag_object.object_type =='host':
             field = PynagChoiceField(choices=HOST_NOTIFICATION_OPTIONS,inline_help_text="No %s selected" % (field_name))
         elif field_name.endswith('notification_options') and self.pynag_object.object_type =='service':
@@ -502,6 +506,14 @@ class BulkDeleteForm(BaseBulkForm):
         """ Deletes every object in the form """
         for i in self.changed_objects:
             i.delete()
+
+class CheckCommandForm(PynagForm):
+    def __init__(self, *args, **kwargs):
+        super(AdagiosForm,self).__init__(*args, **kwargs)
+        self.pynag_object = Model.Service()
+        self.fields['host_name'] = self.get_pynagField('host_name')
+        self.fields['service_description'] = self.get_pynagField('service_description')
+        self.fields['check_command'] = self.get_pynagField('check_command')
 
 
 class AddObjectForm(PynagForm):

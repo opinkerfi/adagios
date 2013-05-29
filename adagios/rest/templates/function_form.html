@@ -2,14 +2,22 @@
 
 
 {% block content %}
-<h1>{{ function_name }}()</h1>
-<form action="{{function_name}}" method="post">
-<table>
-{{ form }}
-</table>
-<INPUT id="zesubmit" type="submit" value="Call {{ function_name }}()">
-</form>
 
------ docstring ------
-<pre>{{ docstring }}</pre>
+    <h1>{{ function_name }}()</h1>
+    <pre>{{ docstring }}</pre>
+
+    <div class="row" style="padding-left: 40px">
+    <div id="function_form" class="span6">
+        <form action="{{function_name}}" method="post">
+        <table>
+        {{ form }}
+        </table>
+        <INPUT id="zesubmit" type="submit" value="Call {{ function_name }}()">
+        </form>
+    </div>
+    <div class="span6">
+    Example usage:
+        <pre>javascript</pre>
+    </div>
+    </div>
 {% endblock %}

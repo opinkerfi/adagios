@@ -6,11 +6,18 @@
 {% block nav1 %}misc{% endblock %}
 
 {% block content %}
+    Host: {{ host_name }}<br>
+    Service: {{ service_description }}<br>
+    Command: {{ check_command }}
+
+
     <div >
         <pre  id="original_command_line"></pre>
         <pre id="command_line_preview">Loading...</pre>
     </div>
-        <div id="check_command_parameters"></div>
+
+    <div id="check_command_parameters"></div>
+
     <style>
     .macro_in_a_text {
         color: lightblue;
@@ -33,7 +40,7 @@
         <script>
         $(document).ready(function(){
             // What happens when we hover over a macrotext
-            $(".macro_in_a_text").hover( function() { alert("hello"); });
+            //$("#original_command_line").onmouseover( function() { alert("hello"); });
 
             // Get all parameters
             populate_parameters();
@@ -81,11 +88,7 @@
 
         function preview_command_line() {
             // whenever check_command_parameters is changed, lets update the check_command preview
-            my_data = {
-                "host_name": "{{ host_name }}",
-                "service_description": "{{ service_description }}",
-                "check_command": "{{ check_command }}"
-            };
+
             $(".check_command_parameter").each( function() {
                 var item = $(this)[0];
                 my_data[item.name] = item.value;
