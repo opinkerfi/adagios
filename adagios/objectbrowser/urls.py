@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns('adagios',
 
     # By default, lets just display a list of object_types available
     url(r'^/$', 'objectbrowser.views.list_object_types', name="objectbrowser"),

@@ -7,7 +7,7 @@ from django.test.client import Client
 
 import pynag.Parsers
 from adagios.settings import nagios_config
-import functions
+from adagios.pnp import functions
 
 class PNP4NagiosTestCase(unittest.TestCase):
     def testPnpIsConfigured(self):

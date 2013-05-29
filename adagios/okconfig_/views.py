@@ -24,7 +24,7 @@ from django.template import RequestContext
 
 from django.core.urlresolvers import reverse
 
-import forms
+from adagios.okconfig_ import forms
 
 import okconfig
 import okconfig.network_scan

@@ -28,7 +28,7 @@ from pynag import Model
 from pynag.Parsers import status
 
 from adagios import settings
-from forms import *
+from adagios.objectbrowser.forms import *
 
 def home(request):
     return redirect('adagios')
