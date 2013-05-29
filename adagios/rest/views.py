@@ -14,7 +14,7 @@ from django import forms
 import os
 my_module = None
 
-1
+
 def _load(module_name):
     #global my_module
     #if not my_module:
@@ -128,7 +128,7 @@ def javascript(request, module_name):
     for i in functions:
         argspec = inspect.getargspec( members[i] )
         args,varargs,varkw,defaults = argspec
-        docstring = inspect.getdoc(i)
+        docstring = inspect.getdoc(members[i])
         if defaults is None:
             defaults = []
         else:
@@ -140,8 +140,6 @@ def javascript(request, module_name):
             argstring.append('%s=%s' % (tmp.pop(), default) )
         argstring.reverse()
         argstring = tmp + argstring
-        argstring = ','.join(argstring)
-
         members[i] = {}
         members[i]['args'] = args
         members[i]['argstring'] = ','.join(args)
