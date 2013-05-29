@@ -22,7 +22,7 @@ from django.shortcuts import render
 
 from django.shortcuts import HttpResponse
 from django.template import RequestContext
-import forms
+from adagios.misc import forms
 import os
 import mimetypes
 

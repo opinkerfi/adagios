@@ -19,7 +19,7 @@
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.shortcuts import HttpResponse
-from functions import run_pnp
+from adagios.pnp.functions import run_pnp
 import json
 
 

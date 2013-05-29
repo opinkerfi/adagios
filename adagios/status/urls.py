@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-urlpatterns = patterns('',
+urlpatterns = patterns('adagios',
     (r'^/?$', 'status.views.status_index'),
     (r'^/test/?$', 'status.views.test_livestatus'),
     (r'^/boxview/?$', 'status.views.status_boxview'),

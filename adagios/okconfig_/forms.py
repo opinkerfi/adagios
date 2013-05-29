@@ -1,6 +1,6 @@
 from django import forms
 import okconfig
-from misc import helpers
+from adagios.misc import helpers
 import re
 from django.core.exceptions import ValidationError
 import socket
