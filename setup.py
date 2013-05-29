@@ -3,10 +3,8 @@
 import os
 
 from distutils.core import setup
-from distutils.sysconfig import get_python_lib
 from adagios import __version__
 
-pkgs_path = get_python_lib()
 app_name = 'adagios'
 version = __version__
 
