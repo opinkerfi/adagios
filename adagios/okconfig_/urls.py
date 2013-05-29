@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-urlpatterns = patterns('',
+urlpatterns = patterns('adagios',
 
     #(r'^/?$', 'okconfig_.views.index'),
     (r'^/scan_network/?', 'okconfig_.views.scan_network'),
