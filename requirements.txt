@@ -1,6 +1,6 @@
 # Make sure the following python packages are installed
 pynag>=0.4.9
-Django>=1.3.0
+Django<1.4
 simplejson
 
 
