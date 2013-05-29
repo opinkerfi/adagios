@@ -20,7 +20,7 @@ from django.utils.encoding import smart_str
 
 from pynag import Model
 from pynag.Utils import AttributeList
-from help_text import object_definitions
+from adagios.objectbrowser.help_text import object_definitions
 from pynag.Model import ObjectDefinition
 from adagios.forms import AdagiosForm
 

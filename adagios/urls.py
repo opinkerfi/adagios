@@ -10,13 +10,13 @@ from django.views.static import serve
 
 urlpatterns = patterns('',
     # Example:
-    url(r'^$', 'misc.views.index', name="home"),
+    url(r'^$', 'adagios.misc.views.index', name="home"),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name="media"),
-    (r'^objectbrowser', include('objectbrowser.urls')),
-    (r'^misc', include('misc.urls')),
-    (r'^pnp', include('pnp.urls')),
+    (r'^objectbrowser', include('adagios.objectbrowser.urls')),
+    (r'^misc', include('adagios.misc.urls')),
+    (r'^pnp', include('adagios.pnp.urls')),
     (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
-    (r'^rest', include('rest.urls')),
+    (r'^rest', include('adagios.rest.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

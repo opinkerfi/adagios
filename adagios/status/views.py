@@ -32,8 +32,8 @@ import pynag.Model.EventHandlers
 from pynag.Parsers import ParserError
 
 import adagios.settings
-import pnp.functions
-import utils
+from adagios.pnp.functions import run_pnp
+from adagios.status import utils
 import adagios.status.rest
 
 
@@ -289,7 +289,7 @@ def status_detail(request, host_name=None, service_description=None):
 
     # Lets get some graphs
     try:
-        tmp = pnp.functions.run_pnp("json", host=host_name)
+        tmp = run_pnp("json", host=host_name)
         tmp = json.loads(tmp)
     except Exception, e:
         tmp = []
