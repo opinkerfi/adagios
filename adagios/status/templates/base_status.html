@@ -490,7 +490,7 @@
             <ul class="nav nav-list">
                 <li><a href="{% url status.views.status_index %}">Overview </a></li>
                 <li >
-                    <a {% if num_problems %}style="color: red"{% endif %} href="{% url status.views.services %}?unhandled">Problems {% if num_problems %}({{ num_problems }}){% endif %}</a>
+                    <a {% if num_problems %}{% endif %} href="{% url status.views.services %}?unhandled">Problems {% if num_problems %}<span style="//color: red">({{ num_problems }})</span>{% endif %}</a>
                 </li>
                 <li><a href="{% url status.views.status_host %}">Hosts</a></li>
                 <li><a href="{% url status.views.services %}">Services </a></li>
