@@ -879,7 +879,7 @@
                     async: false,
                     success: function(data) {
                         services_done++;
-                        $("#acknowledge_text").html(services_done + "/" + my_services.length + " done")
+                        $("#acknowledge_text").html(services_done + "/" + my_services.length + " done");
                         if (services_done >= my_services.length) {
                             $("#acknowledge_text").html('All Done. Reloading page.');
                             location.reload();
