@@ -256,7 +256,10 @@ def status_detail(request, host_name=None, service_description=None):
     perfdata = pynag.Utils.PerfData(perfdata)
     for i,datum in enumerate(perfdata.metrics):
         datum.i = i
-        datum.status = state[datum.get_status()]
+        try:
+            datum.status = state[datum.get_status()]
+        except Exception, e:
+            datum.status = state[3]
     c['perfdata'] = perfdata.metrics
 
     # Get a complete list of network parents
