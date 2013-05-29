@@ -1,7 +1,8 @@
 
 """
 
-Convenient stateless functions for pynag. This module is used by the /rest/ interface of adagios.
+Convenient stateless functions for the status module. These are meant for programs to interact
+with status of Nagios.
 
 """
 
