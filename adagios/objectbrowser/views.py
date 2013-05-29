@@ -125,7 +125,7 @@ def geek_edit( request, object_id ):
 
     c['geek_edit'] = form
     # Lets return the user to the general edit_object form
-    return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
+    return HttpResponseRedirect( reverse('edit_object', kwargs={'object_id':o.get_id()} ) )
 
 def advanced_edit(request, object_id):
     ''' Handles POST only requests for the "advanced" object edit form. '''
@@ -210,7 +210,7 @@ def edit_object( request, object_id=None, object_type=None, shortname=None):
             try:
                 c['form'].save()
                 m.append("Object Saved to %s" % o['filename'])
-                return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':o.get_id()} ) )
+                return HttpResponseRedirect( reverse('edit_object', kwargs={'object_id':o.get_id()} ) )
             except Exception, e:
                 c['errors'].append(e)
         else:
@@ -612,7 +612,7 @@ def delete_object(request, object_id):
             c['form'] = f = DeleteObjectForm(pynag_object=my_obj, data=request.POST)
             if f.is_valid():
                 f.delete()
-            return HttpResponseRedirect( reverse('objectbrowser.views.list_object_types' ) + "#" + my_obj.object_type )
+            return HttpResponseRedirect( reverse('objectbrowser' ) + "#" + my_obj.object_type )
         except Exception, e:
             c['errors'].append( e )
     return render_to_response('delete_object.html', c, context_instance = RequestContext(request))
@@ -652,7 +652,7 @@ def add_object(request, object_type):
         if c['form'].is_valid():
             c['form'].save()
             object_id = c['form'].pynag_object.get_id()
-            return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':object_id} ), )
+            return HttpResponseRedirect( reverse('edit_object', kwargs={'object_id':object_id} ), )
         else:
             c['errors'].append('Could not validate form input')
     elif request.method == 'GET':

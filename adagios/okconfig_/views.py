@@ -85,7 +85,7 @@ def addhost(request):
             try:
                 c['filelist'] = okconfig.addhost(host_name=host_name,group_name=group_name,address=address,force=force,templates=templates)
                 c['host_name'] = host_name
-                return HttpResponseRedirect( reverse('okconfig_.views.edit', args=[host_name] ) )
+                return HttpResponseRedirect( reverse('adagios.okconfig_.views.edit', args=[host_name] ) )
             except Exception, e:
                 c['errors'].append( "error adding host: %s" % e ) 
         else:
@@ -111,7 +111,7 @@ def addtemplate(request, host_name=None):
                 c['host_name'] = host_name = f.cleaned_data['host_name']
                 c['filelist'] = f.filelist
                 c['messages'].append("Template was successfully added to host.")
-                return HttpResponseRedirect( reverse('okconfig_.views.edit', args=[host_name] ) )
+                return HttpResponseRedirect( reverse('adagios.okconfig_.views.edit', args=[host_name] ) )
             except Exception, e:
                 c['errors'].append(e)
         else:
@@ -144,7 +144,7 @@ def addservice(request):
                     new_service[k] = v
             try:
                 new_service.save()
-                return HttpResponseRedirect( reverse('objectbrowser.views.edit_object', kwargs={'object_id':new_service.get_id() } ) )
+                return HttpResponseRedirect( reverse('edit_object', kwargs={'object_id':new_service.get_id() } ) )
             except IOError, e:
                 c['errors'].append(e)
         else:
@@ -255,7 +255,7 @@ def choose_host(request):
         c['form'] = forms.ChooseHostForm(data=request.POST)
         if c['form'].is_valid():
             host_name = c['form'].cleaned_data['host_name']
-            return HttpResponseRedirect( reverse("okconfig_.views.edit", args=[host_name] ) )
+            return HttpResponseRedirect( reverse("adagios.okconfig_.views.edit", args=[host_name] ) )
     return render_to_response('choosehost.html', c, context_instance=RequestContext(request))
 
 
