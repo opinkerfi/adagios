@@ -1,9 +1,11 @@
 /* Javascript wrapper around {{ module_name }} */
 
 {% if module_documenation %}
-/* Module documentation: */
+//Module documentation:
 /*
-    {{ module_documenation }}
+
+{{ module_documenation }}
+
 */
 {% else %}
 /* This module has no documentation. */
@@ -13,10 +15,12 @@
 {% for i,v in functions.items %}
 
 /*
-===============================================================
-    Function {{ i }}
-===============================================================
-{{ v.docstring }}
+
+Function {{ i }}()
+###############################################################################
+{% autoescape off %}{{ v.docstring }}{% endautoescape %}
+
+Valid parameters: {{ v.argstring }}
 */
 
 function {{ i }}(parameters) {
@@ -30,6 +34,6 @@ function {{ i }}(parameters) {
         dataType: 'json'
     });
 
-}; /* end of function {{ i }} */
+}; /* end of function {{ i }}() */
 
 {% endfor %}
