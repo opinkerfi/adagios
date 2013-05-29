@@ -129,14 +129,14 @@ def gitlog(request):
 
         try:
             if 'git_init' in request.POST:
-                git._git_init()
+                git.init()
             elif 'git_commit' in request.POST:
                 filelist = []
                 commit_message = request.POST.get('git_commit_message', "bulk commit by adagios")
                 for i in request.POST:
                     if i.startswith('commit_'):
                         filename=i[len('commit_'):]
-                        git._git_add(filename)
+                        git.add(filename)
                         filelist.append( filename )
                 if len(filelist) == 0:
                     raise Exception("No files selected.")
@@ -380,6 +380,8 @@ def test(request):
     # Get some test data
     services = pynag.Model.Service.objects.filter(__PORT__contains='', host_name__exists=True)
     service = services[0]
+    import adagios.objectbrowser.forms
+    c['form'] = adagios.objectbrowser.forms.CheckCommandForm()
     c['host_name'] = service.host_name
     c['service_description'] = service.service_description
     c['check_command'] = service.check_command.split('!')[0]
