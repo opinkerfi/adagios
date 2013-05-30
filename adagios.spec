@@ -5,6 +5,11 @@
 
 %define name adagios
 %define release 2
+%define use_apache
+%define use_okconf
+#%define use_nginx 
+# if above is set, disable use_apache
+# no nginx config is included right now
 
 Name: adagios
 Version: 1.2.1
@@ -22,10 +27,18 @@ BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
 Requires: pynag >= 0.4.5
-Requires: httpd
-Requires: mod_wsgi
 Requires: Django
 Requires: sudo
+
+%if 0%{?use_apache:1}
+Requires: httpd
+Requires: mod_wsgi
+%endif
+
+%if 0%{?use_nginx:1}
+Requires: nginx
+Requires: uwsgi
+%endif
 
 %description
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. 
@@ -43,14 +56,18 @@ sed "s/python2.7/python%{python_version}/" -i adagios/apache/adagios.conf
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 #chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
+%if 0%{?use_apache:1}
 sed -i 's|/usr/lib/python2.7/site-packages|%{python_sitelib}|g' %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
 install %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
-
+%else
+#### INSTALL NGINX CONF FILES HERE ####
+%endif
 mkdir -p %{buildroot}%{_sysconfdir}/adagios/conf.d/
 install %{buildroot}%{python_sitelib}/adagios/etc/adagios/adagios.conf %{buildroot}%{_sysconfdir}/adagios/
+%if %{?use_okconfig}%{!?use_okconfig:0}
 install %{buildroot}%{python_sitelib}/adagios/etc/adagios/conf.d/okconfig.conf %{buildroot}%{_sysconfdir}/adagios/conf.d/
-
+%endif
 mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d/
 install %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
 
@@ -61,15 +78,29 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc README.md 
 %{python_sitelib}/*
+
+%if 0%{?use_apache:1}
+
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
+%else
+#### INSTALL PERMS FOR NGIX HERE ####
+%endif
+
 %attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios
 %attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios/conf.d
 %attr(0664, nagios, nagios) %config(noreplace) %{_sysconfdir}/adagios/adagios.conf
+
+%if %{?use_okconfig}%{!?use_okconfig:0}
 %attr(0664, nagios, nagios) %config(noreplace) %{_sysconfdir}/adagios/conf.d/*
+%endif
+
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
-* Fri May 24 2013 Your Name <you@example.com> 1.2.1-2
+ * Wed May 29 2013 - Sean McAvoy  (sean.mcavoy@spilgames.com)
+- Added options to disable okconfig and apache specific
+- Added things stuff for Nginx
+
 - Remove remaining javascript alerts alert() (palli@opensource.is)
 - Host aliases displayed in status detail (palli@opensource.is)
 - clean up settings.py so unittests work again (palli@opensource.is)
