@@ -8,7 +8,7 @@ USE_TZ = True
 import os
 from glob import glob
 from warnings import warn
-from django.utils.crypto import get_random_string
+import string
 
 djangopath = os.path.dirname(__file__)
 
@@ -161,6 +161,17 @@ except IOError, e:
     else:
         # TODO: Should this go someplace?
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
+
+try:
+    from django.utils.crypto import get_random_string
+except ImportError:
+    def get_random_string(length, stringset=string.ascii_letters+string.digits+string.punctuation):
+        '''
+        Returns a string with `length` characters chosen from `stringset`
+        >>> len(get_random_string(20)) == 20
+        '''
+        return ''.join([stringset[i%len(stringset)] \
+            for i in [ord(x) for x in os.urandom(length)]])
 
 if not django_secret_key:
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
