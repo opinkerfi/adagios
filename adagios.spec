@@ -5,9 +5,9 @@
 
 %define name adagios
 %define release 2
-%define use_apache
-%define use_okconf
-#%define use_nginx 
+#%define use_apache
+#%define use_okconf
+%define use_nginx 
 # if above is set, disable use_apache
 # no nginx config is included right now
 
@@ -99,7 +99,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
  * Wed May 29 2013 - Sean McAvoy  (sean.mcavoy@spilgames.com)
 - Added options to disable okconfig and apache specific
-- Added things stuff for Nginx
+- Added option to define nginx
 
 - Remove remaining javascript alerts alert() (palli@opensource.is)
 - Host aliases displayed in status detail (palli@opensource.is)
