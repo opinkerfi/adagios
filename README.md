@@ -116,6 +116,16 @@ Adagios has an experimental status view intended to partially replace the classi
 	service npcd restart
 	chkconfig npcd on
 
+Support us
+===================
+
+So you think the project is helping you or your company and you want to help us back?
+
+Great! There are many ways you can support the project by contributing your time, talent and money.
+
+See http://adagios.org/support.html for more information.
+
+
 Contact us
 ===================
 If you need any help with getting adagios to work, feel free to open up an issue on github issue tracker. If you want to chat you can contact us on:
