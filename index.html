@@ -39,17 +39,20 @@
         <ul></ul>
       </nav>
       <section>
-        <h1>About</h1>
+        <h1>
+<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h1>
 
 <p>Adagios is a web based Nagios configuration interface built to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. Additionally adagios has a rest interface for both status and configuration data as well a feature complete status interface that can be used as an alternative to nagios web interface.</p>
 
 <p>Project website is at <a href="http://adagios.org">http://adagios.org</a></p>
 
-<h1>Live Demo</h1>
+<h1>
+<a name="live-demo" class="anchor" href="#live-demo"><span class="octicon octicon-link"></span></a>Live Demo</h1>
 
 <p><a href="http://demo.adagios.org/">http://demo.adagios.org/</a></p>
 
-<h1>Features</h1>
+<h1>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h1>
 
 <ul>
 <li>Full view/edit of hosts,services, etc</li>
@@ -60,26 +63,30 @@
 <li>Rest interface for status of hosts/services</li>
 <li>Rest interface for viewing and modifying configuration</li>
 <li>Full audit of any changes made</li>
-</ul><h1>Design principals</h1>
+</ul><h1>
+<a name="design-principals" class="anchor" href="#design-principals"><span class="octicon octicon-link"></span></a>Design principals</h1>
 
 <ul>
 <li>Useful for both novices and nagios experts</li>
 <li>No database backend</li>
 <li>Make common operational tasks as easy as possible</li>
 <li>Assist Nagios admins in keeping configuration files clean and simple</li>
-</ul><h1>Components</h1>
+</ul><h1>
+<a name="components" class="anchor" href="#components"><span class="octicon octicon-link"></span></a>Components</h1>
 
 <ul>
 <li>Pynag - Nagios Configuration Parser</li>
 <li>OKconfig - A robust plugin collection with preconfigured nagios template configuration files</li>
 <li>PNP4Nagios - For Graphing Performance data</li>
 <li>MK Livestatus - Broker module for nagios for high performance status information</li>
-</ul><h1>Source Code</h1>
+</ul><h1>
+<a name="source-code" class="anchor" href="#source-code"><span class="octicon octicon-link"></span></a>Source Code</h1>
 
 <pre><code>git clone http://github.com/opinkerfi/adagios.git
 </code></pre>
 
-<h1>Install Instructions</h1>
+<h1>
+<a name="install-instructions" class="anchor" href="#install-instructions"><span class="octicon octicon-link"></span></a>Install Instructions</h1>
 
 <p>These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.</p>
 
@@ -145,7 +152,8 @@ pynag config --append cfg_dir=/etc/nagios/adagios
 will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
 changed in /etc/nagios/passwd)</p>
 
-<h1>Using the Status view</h1>
+<h1>
+<a name="using-the-status-view" class="anchor" href="#using-the-status-view"><span class="octicon octicon-link"></span></a>Using the Status view</h1>
 
 <p>Adagios has an experimental status view intended to partially replace the classical nagios web interface. If you want to try it out hen you need mk_livestatus and pnp4nagios broker modules installed:</p>
 
@@ -164,7 +172,17 @@ service npcd restart
 chkconfig npcd on
 </code></pre>
 
-<h1>Contact us</h1>
+<h1>
+<a name="support-us" class="anchor" href="#support-us"><span class="octicon octicon-link"></span></a>Support us</h1>
+
+<p>So you think the project is helping you or your company and you want to help us back?</p>
+
+<p>Great! There are many ways you can support the project by contributing your time, talent and money.</p>
+
+<p>See <a href="http://adagios.org/support.html">http://adagios.org/support.html</a> for more information.</p>
+
+<h1>
+<a name="contact-us" class="anchor" href="#contact-us"><span class="octicon octicon-link"></span></a>Contact us</h1>
 
 <p>If you need any help with getting adagios to work, feel free to open up an issue on github issue tracker. If you want to chat you can contact us on:</p>
 
