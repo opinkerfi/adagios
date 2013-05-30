@@ -8,6 +8,7 @@ USE_TZ = True
 import os
 from glob import glob
 from warnings import warn
+from django.utils.crypto import get_random_string
 
 djangopath = os.path.dirname(__file__)
 
@@ -67,9 +68,6 @@ MEDIA_URL = 'media/'
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 #ADMIN_MEDIA_PREFIX = '/media/'
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'kq_4#kcvpb3oen80nsu&xb1+4)ep33u1l37x37y9_k-^aic5s6'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -138,11 +136,17 @@ administrators="nagiosadmin,@users"
 pnp_url = "/pnp4nagios"
 pnp_filepath = "/usr/share/nagios/html/pnp4nagios/index.php"
 include=""
+django_secret_key = ""
 
 plugins = {}
 
 # Load config files from /etc/adagios/
 adagios_configfile = "/etc/adagios/adagios.conf"
+# Try to save a configuration file into the project djangopath
+if not os.path.exists(adagios_configfile):
+    adagios_configfile = "%s/adagios.conf" % djangopath
+    open(adagios_configfile, "a").close()
+
 try:
     execfile(adagios_configfile)
     # if config has any default include, lets include that as well
@@ -157,6 +161,19 @@ except IOError, e:
     else:
         # TODO: Should this go someplace?
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
+
+if not django_secret_key:
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+    SECRET_KEY = get_random_string(50, chars)
+    try:
+        fh = open(adagios_configfile, "a")
+        fh.write("\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n"
+            % SECRET_KEY)
+        fh.close()
+    except Exception, e:
+        raise Exception("Unable to save generated django_secret_key: " % e)
+else:
+    SECRET_KEY = django_secret_key
 
 if enable_status_view:
   plugins['status'] = 'adagios.status'
