@@ -110,7 +110,7 @@
                     var host_status_output = $('span#host_status_output');
                     host_status_output.text(data[1]);
                     host_status.addClass('label-success');
-                    if (parseInt(data[0]) < 2) {
+                    if (parseInt(data[0]) < 1) {
                         host_status.text('UP');
                         host_status.addClass('label-success');
                     } else {
