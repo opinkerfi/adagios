@@ -258,7 +258,7 @@ def status_detail(request, host_name=None, service_description=None):
         datum.i = i
         try:
             datum.status = state[datum.get_status()]
-        except Exception, e:
+        except pynag.Utils.PynagError:
             datum.status = state[3]
     c['perfdata'] = perfdata.metrics
 
