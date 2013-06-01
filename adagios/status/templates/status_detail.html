@@ -120,7 +120,7 @@
                                     <td>{{ i.min }}   </td>
                                     <td>{{ i.max }}   </td>
                                     <td>
-                                        <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="pnp4nagios graph"><i class="glyph glyph-charts"></i></a>
+                                        <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}
