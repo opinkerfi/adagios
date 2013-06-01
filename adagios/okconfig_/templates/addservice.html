@@ -24,14 +24,18 @@
                         </fieldset>
                         <div id="service_macros" class="hide">
                             <fieldset>
-                                <legend>Service macros for <span class="service_name"></span></legend>
-                                The following are settings, eg thresholds or access passwords.
-                                <div class="control-group">
-                                </div>
+                                <legend> <span id="service_name"></span></legend>
+                                <span id="notes"><! -- notes will go in here --></span>
+                                <span id="notes_url"><!-- notes_url will go here --></span>
+                                <p></p>
+                                <table class="table table-condensed">
+                                    <tbody id="macros_for_this_service"><!-- Macros will go in here --></tbody>
+                                </table>
+
                             </fieldset>
                         </div>
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Submit</button>
+                            <button class="btn btn-primary" type="submit">Add service</button>
                         </div>
                     </form>
                 {% endif %}
@@ -44,6 +48,9 @@
     <script>
     $('select#id_service').change(function() {
         var $this = $(this);
+        $('#macros_for_this_service').html('');
+        $("#notes_url").html('');
+        $("#notes").html('');
         $('#service_macros').hide();
         $.getJSON(BASE_URL + "rest/pynag/json/get_objects",
                 {
@@ -61,21 +68,32 @@
                     var myobj = data[0];
                     var service_macro_html = '';
                     console.log(myobj);
-
+                    var friendly_name = null;
                     $.each(myobj, function(i, k) {
                         if (i.substring(0, 1) == "_" || i == 'service_description') {
                             num_fields += 1;
-                            service_macro_html += '' +
-                                    '<label class="control-label" for="' + i + '">' + i + '</label>' +
-                                    '<div class="controls">' +
+                            friendly_name = i.replace('$_SERVICE', '').replace('$','');
+
+                            // replace all underscores with space:
+                            friendly_name = friendly_name.split('_').join(' ');
+
+                            service_macro_html += '<tr><td>' +
+                                    friendly_name +
+                                    '</td><td>' +
                                     '  <input type="text" class="span11" name="' + i + '" value="' + myobj[i] + '">' +
-                                    '</div>';
+                                    '</td>';
+                        }
+                        if (i == 'notes') {
+                            $("#notes").html(myobj[i]);
+                        }
+                        if (i == 'notes_url') {
+                            $("#notes_url").html("See documentation <a href='" + myobj[i] + "'>here</a>." );
                         }
                     });
-
+                    service_macro_html += ""
                     if (num_fields) {
-                        $('#service_macros .service_name').text($this.val());
-                        $('#service_macros .control-group').html(service_macro_html);
+                        $('#service_name').text($this.val());
+                        $('#macros_for_this_service').html(service_macro_html);
                         $('#service_macros').show();
                     }
                 }).error(function(jqXHR) {
