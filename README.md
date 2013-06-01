@@ -33,13 +33,11 @@ Components
   - PNP4Nagios - For Graphing Performance data
   - MK Livestatus - Broker module for nagios for high performance status information
 
-Source Code
-===========
-
-	git clone http://github.com/opinkerfi/adagios.git
 
 Install Instructions
 ====================
+
+### RPM Installation
 These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.
 
 For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):
@@ -73,22 +71,42 @@ Same goes for nagios, start it if it is ready
 
 	service nagios restart
 	chkconfig nagios on
-	
 
+
+### Source Installation
+
+
+    git clone https://github.com/opinkerfi/adagios.git
+    cd adagios
+    python setup.py
+    sudo mkdir /etc/adagios
+    sudo cp adagios/etc/adagios.conf /etc/adagios/
+
+#### Requirements
+If you have pip installed
+
+    pip install -r requirements.txt
+
+Otherwise please read [requirements.txt](https://github.com/opinkerfi/adagios/blob/master/requirements.txt) for the list of python prerequisites.
+
+
+### Nagios Configuration
+
+#### Git Repo
 It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
 everything in /etc/nagios to the nagios user.
 
-	cd /etc/nagios/
-	git init
-	git add .
-	git commit -a -m "Initial commit"
-	# Make sure nagios group will always have write access to the configuration files:
-	chown -R nagios /etc/nagios/* /etc/nagios/.git
-	setfacl -R -m group:nagios:rwx /etc/nagios/
-	setfacl -R -m d:group:nagios:rwx /etc/nagios/
-	
+    cd /etc/nagios/
+    git init
+    git add .
+    git commit -a -m "Initial commit"
+    # Make sure nagios group will always have write access to the configuration files:
+    chown -R nagios /etc/nagios/* /etc/nagios/.git
+    setfacl -R -m group:nagios:rwx /etc/nagios/
+    setfacl -R -m d:group:nagios:rwx /etc/nagios/
 
-By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and 
+#### Adagios destination
+By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and
 nagios.cfg contains a reference to this directory.
 
 	mkdir -p /etc/nagios/adagios
