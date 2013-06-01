@@ -21,21 +21,6 @@
 {% block content %}
     <div class="span9" id="maincontent_left_side">
 
-    <div class="hide" id="servicestatus">
-        <table>
-            <tbody>
-            <tr>
-                <td>
-                    <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked">
-                    <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
-                    <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
-
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
     <ul class="nav nav-tabs" id="objecttab">
         <li><a href="#general" data-toggle="tab">General</a></li>
         <li><a href="#information" data-toggle="tab">Information</a></li>
@@ -150,6 +135,23 @@
             </tr>
             {% endfor %}
         </table>
+
+        <!-- servicestatus has to be here for the action buttons to work -->
+        <div  id="servicestatus">
+            <table>
+                <tbody>
+                <tr>
+                    <td>
+                        <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked">
+                        <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
+                        <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 
     <div class="tab-pane" id="information">
