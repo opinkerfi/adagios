@@ -140,8 +140,12 @@ django_secret_key = ""
 
 plugins = {}
 
-# Load config files from /etc/adagios/
+# Load config files from /etc/adagios
+# Adagios uses the configuration file in /etc/adagios/adagios.conf by default.
+# If it doesn't exist you should create it. Otherwise a adagios.conf will be
+# created in the django project root which should be avoided.
 adagios_configfile = "/etc/adagios/adagios.conf"
+
 # Try to save a configuration file into the project djangopath
 if not os.path.exists(adagios_configfile):
     adagios_configfile = "%s/adagios.conf" % djangopath
