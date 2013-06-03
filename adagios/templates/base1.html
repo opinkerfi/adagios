@@ -166,7 +166,7 @@
             </li>
             <li>
                 {% block nav1 %}
-                    <a href="{% url status.views.services %}">Status</a>
+                    <a href="{% url adagios.status.views.services %}">Status</a>
                 {% endblock %}
                 <span class="divider">/</span>
             </li>
@@ -186,13 +186,13 @@
         </div>
         <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" id="right_of_title">
             <div class="pull-right btn-group">
-                <a class="btn btn-success" href="{% url okconfig_.views.addhost %}">
+                <a class="btn btn-success" href="{% url adagios.okconfig_.views.addhost %}">
                     Add Host
                 </a>
                 <a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Add Check to host</a></li>
-                    <li><a href="{% url okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Install Agent on host</a></li>
+                    <li><a href="{% url adagios.okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Add Check to host</a></li>
+                    <li><a href="{% url adagios.okconfig_.views.addtemplate %}{% if host_name %}?host_name={{ host_name }}{% endif %}"> Install Agent on host</a></li>
                 </ul>
             </div>
             <br>
@@ -228,12 +228,12 @@
     <div class="row-fluid ">
         <div class="span2"   id="left_sidebar">
             <ul class="nav nav-list">
-                <li><a href="{% url status.views.services %}?acknowledged=0&state__isnot=0">Problems </a></li>
-                <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
-                <li><a href="{% url status.views.services %}">Services </a></li>
-                <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
-                <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
-                <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
+                <li><a href="{% url adagios.status.views.services %}?acknowledged=0&state__isnot=0">Problems </a></li>
+                <li><a href="{% url adagios.status.views.status_hostgroups %}">Hostgroups</a></li>
+                <li><a href="{% url adagios.status.views.services %}">Services </a></li>
+                <li><a href="{% url adagios.status.views.status_parents %}">Network Parents </a></li>
+                <li><a href="{% url adagios.status.views.status_boxview %}">Box View </a></li>
+                <li><a href="{% url adagios.status.views.status_paneview %}">Pane View </a></li>
             </ul>
         </div>
 
@@ -282,20 +282,20 @@
 
 
                 <div class=" pull-right" id="search_box">
-                    <form action="{% url status.views.services %}" method="get" >
+                    <form action="{% url adagios.status.views.services %}" method="get" >
                         <div class="pull-left">
                             <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" value="{{ request.GET.q }}" class="search-query" placeholder="Filter..." />
                         </div>
                         <div class="btn-group pull-left">
-                            <button class="btn btn-small"  type="submit" href="{% url status.views.services %}">
+                            <button class="btn btn-small"  type="submit" href="{% url adagios.status.views.services %}">
                                 <i class="icon-search"></i> Search
                             </button>
                             <a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url status.views.services %}?acknowledged=0&state__isnot=0"> Open Problems</a></li>
-                                <li><a href="{% url status.views.services %}?state__isnot=0"> All Problems</a></li>
-                                <li><a href="{% url status.views.services %}?state=0"> All OK</a></li>
-                                <li><a href="{% url status.views.services %}"> Everything</a></li>
+                                <li><a href="{% url adagios.status.views.services %}?acknowledged=0&state__isnot=0"> Open Problems</a></li>
+                                <li><a href="{% url adagios.status.views.services %}?state__isnot=0"> All Problems</a></li>
+                                <li><a href="{% url adagios.status.views.services %}?state=0"> All OK</a></li>
+                                <li><a href="{% url adagios.status.views.services %}"> Everything</a></li>
                             </ul>
                         </div>
                     </form>

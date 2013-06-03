@@ -7,7 +7,7 @@
 {% block largeheader %}Service Overview
 {% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_boxview %}">Box view</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.status.views.status_boxview %}">Box view</a>{% endblock %}
 {% load adagiostags %}
 
 {% block sidebar_outer %}
@@ -44,7 +44,7 @@
                 <hr style="margin-top: 0px; margin-bottom: 2px;">
                     <div>
                         {% for service in host.services %}
-                            <a href="{% url status.views.status_detail %}?host_name={{ host.name }}&service_description={{ service.description }}">
+                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ host.name }}&service_description={{ service.description }}">
                             <div style="border-color: #808080; {% if service.state == 0 %} background-color: green;{% endif %}{% if service.state == 1 %} background-color: yellow;{% endif %}{% if service.state == 2 %} background-color: red;{% endif %}" title="{{ service.description }} - {{ service.plugin_output }}" class="circle state_{{ service.state }}"></div>
                             </a>
                         {% endfor %}

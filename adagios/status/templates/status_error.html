@@ -14,10 +14,10 @@
             We can't find a running nagios instance. Make sure nagios is running and adagios can connect to it.
             <ul>
                 <li>
-                    check that nagios is in fact running, if sudoers.d is correctly configured, you can start it <a href="{% url misc.views.nagios_service %}">here</a>
+                    check that nagios is in fact running, if sudoers.d is correctly configured, you can start it <a href="{% url adagios.misc.views.nagios_service %}">here</a>
                 </li>
                 <li>
-                    Please verify your <a href="{% url misc.views.settings %}">settings</a> and check all paths are valid.
+                    Please verify your <a href="{% url adagios.misc.views.settings %}">settings</a> and check all paths are valid.
                 </li>
 
             </ul>
@@ -27,8 +27,8 @@
             but to get the status part to work check the following:
             <ul>
                 <li>Is <a href="http://mathias-kettner.de/checkmk_livestatus.html">mk-livestatus</a> installed ?</li>
-                <li>Does <a href="{% url objectbrowser.views.edit_nagios_cfg %}">nagios.cfg</a> have a broker_module= line that loads mk-livestatus ?</li>
-                <li>Are there any errors related to livestatus in  <a href="{% url status.views.status_log %}?search=livestatus">nagios logfiles</a> ?</li>
+                <li>Does <a href="{% url adagios.objectbrowser.views.edit_nagios_cfg %}">nagios.cfg</a> have a broker_module= line that loads mk-livestatus ?</li>
+                <li>Are there any errors related to livestatus in  <a href="{% url adagios.status.views.status_log %}?search=livestatus">nagios logfiles</a> ?</li>
             </ul>
 
             Install instructions for rpm-based systems:

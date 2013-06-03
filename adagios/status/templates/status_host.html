@@ -2,7 +2,7 @@
 
 {% block title %}Hosts{% endblock %}
 {% block nav2 %}
-    <a href="{% url status.views.status_host %}">Hosts</a>
+    <a href="{% url adagios.status.views.status_host %}">Hosts</a>
     {% if host_name %}
     / {{ host_name }}
     {% else %}
@@ -22,7 +22,7 @@
 {% block content %}
     <ul class="nav nav-tabs" id="objecttabs">
         <li class=active><a href="#hosts" data-toggle="tab">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
-        <li><a href="{% url status.views.status_hostgroups %}" data-toggle="tabs">Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
+        <li><a href="{% url adagios.status.views.status_hostgroups %}" data-toggle="tabs">Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
     </ul>
     <div class="tab-content">
 

@@ -24,8 +24,8 @@
 
         {% if my_object %}
             <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> Geek Edit</a></li>
-            <li><a href="{%  url objectbrowser.views.copy_object my_object.id %}"><i class="icon-copy"></i> Copy this {{  my_object.object_type }}</a></li>
-            <li><a href="{%  url objectbrowser.views.delete_object my_object.id %}"><i class="icon-trash"></i> Delete this {{  my_object.object_type }}</a></li>
+            <li><a href="{%  url copy_object my_object.id %}"><i class="icon-copy"></i> Copy this {{  my_object.object_type }}</a></li>
+            <li><a href="{%  url delete_object my_object.id %}"><i class="icon-trash"></i> Delete this {{  my_object.object_type }}</a></li>
         {% endif %}
 
         {% if my_object.object_type == 'service' and my_object.register == '1' %}
@@ -149,7 +149,7 @@
     </div>
     {% if my_object %}
     <div class="modal hide fade" id="geek_edit">
-        <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
+        <form action="{% url geek_edit my_object.id %}" method="post">{% csrf_token %}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h3>Geek Edit</h3>

@@ -36,16 +36,16 @@
                 <td style="white-space: nowrap;">
                     {% ifchanged service.host_name %}
                         <div title="{{ service.host_plugin_output }}" class="circle  state_{{ service.host_state }}"></div>
-                        <a href="{% url status.views.status_detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
+                        <a href="{% url adagios.status.views.status_detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
                     {% else %}
                         <div class="repeated_content hide">
                             <div title="{{ service.host_plugin_output }}" class="circle state_{{ service.host_state }}"></div>
-                            <a href="{% url status.views.status_detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
+                            <a href="{% url adagios.status.views.status_detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
                         </div>
                     {% endifchanged %}
                 </td>
                 <td  colspan=1 style="word-wrap: break-word;">
-                    <a href="{% url status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
+                    <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
                         <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}</a>
                     <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
                                 <span title="{{ service.plugin_output }}" style="font-size: 80%; color: #808080; font-weight: normal;">

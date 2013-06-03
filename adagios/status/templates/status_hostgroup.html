@@ -1,7 +1,7 @@
 {% extends "base_status.html" %}
 
 {% block title %}Hostgroup {{ hostgroup_name }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_hostgroups %}">Hostgroups</a> / {{ hostgroup_name }}{% endblock %}
+{% block nav2 %}<a href="{% url adagios.status.views.status_hostgroups %}">Hostgroups</a> / {{ hostgroup_name }}{% endblock %}
 {% block smallheader %}hostgroup{% endblock %}
 {% block largeheader %}{{ hostgroup_name }}{% endblock %}
 
@@ -51,7 +51,7 @@
                         <td>Parent Hostgroups</td>
                         <td>
                             {% for i in my_hostgroup.parent_hostgroups %}
-                                <a href="{% url status.views.status_hostgroup i %}">{{ i }}</a>,
+                                <a href="{% url adagios.status.views.status_hostgroup i %}">{{ i }}</a>,
                             {% endfor %}
                         </td>
                     </tr>
@@ -141,7 +141,7 @@
             {% if log %}
             {% include "snippets/status_statehistory_snippet.html" %}
             {% else %}
-                No recent state history changes in this hostgroup. Try <a href="{% url status.views.status_log %}#tab_all">Log view</a> to search in older logs.
+                No recent state history changes in this hostgroup. Try <a href="{% url adagios.status.views.status_log %}#tab_all">Log view</a> to search in older logs.
             {% endif %}
         </div>
         <div class="tab-pane" id="debug">

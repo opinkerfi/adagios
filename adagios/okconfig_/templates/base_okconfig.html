@@ -23,12 +23,12 @@
 {% block sidebar %}
     <h5>Actions</h5>
     <ul class="nav nav-list">
-        <li><a href="{% url okconfig_.views.addhost %}?host_name={{ host_name }}"><i class="icon-pencil"></i>Add Host</a></li>
-        <li><a href="{% url okconfig_.views.addtemplate %}?host_name={{ host_name }}"><i class="icon-pencil"></i>Add Template</a></li>
-        <li><a href="{% url okconfig_.views.addgroup %}"><i class="icon-pencil"></i>Add Group</a></li>
-        <li><a href="{% url okconfig_.views.choose_host %}/{{ host_name }}?host_name={{ host_name }}"><i class="icon-pencil"></i>Edit Templates</a></li>
-        <li><a href="{% url okconfig_.views.install_agent %}?remote_host={{ host_name }}"><i class="icon-pencil"></i>Install Agent</a></li>
-        <li><a href="{% url okconfig_.views.scan_network %}"><i class="icon-search"></i>Scan Network</a></li>
+        <li><a href="{% url adagios.okconfig_.views.addhost %}?host_name={{ host_name }}"><i class="icon-pencil"></i>Add Host</a></li>
+        <li><a href="{% url adagios.okconfig_.views.addtemplate %}?host_name={{ host_name }}"><i class="icon-pencil"></i>Add Template</a></li>
+        <li><a href="{% url adagios.okconfig_.views.addgroup %}"><i class="icon-pencil"></i>Add Group</a></li>
+        <li><a href="{% url adagios.okconfig_.views.choose_host %}/{{ host_name }}?host_name={{ host_name }}"><i class="icon-pencil"></i>Edit Templates</a></li>
+        <li><a href="{% url adagios.okconfig_.views.install_agent %}?remote_host={{ host_name }}"><i class="icon-pencil"></i>Install Agent</a></li>
+        <li><a href="{% url adagios.okconfig_.views.scan_network %}"><i class="icon-search"></i>Scan Network</a></li>
     </ul>
 {% endblock %}
 

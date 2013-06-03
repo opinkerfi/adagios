@@ -11,17 +11,17 @@ Next Steps:
 
 <ul>
 {% if host_name %}
-	 <li><a href="{% url okconfig_.views.edit host_name=host_name %}">Edit {{host_name}} templates</a></li>
+	 <li><a href="{% url adagios.okconfig_.views.edit host_name=host_name %}">Edit {{host_name}} templates</a></li>
  <li><a href="{% url edit_by_shortname object_type='host' shortname=host_name %}">Edit {{host_name}}</a></li>
- <li><a href="{% url okconfig_.views.addtemplate %}host_name={{host_name}}">Add Templates to {{host_name}}</a></li>
+ <li><a href="{% url adagios.okconfig_.views.addtemplate %}host_name={{host_name}}">Add Templates to {{host_name}}</a></li>
 {% endif %}
 {% if group_name %}
- <li><a href="{% url okconfig_.views.addhost %}?group_name={{group_name}}">Add Hosts to {{group_name}}</a></li>
+ <li><a href="{% url adagios.okconfig_.views.addhost %}?group_name={{group_name}}">Add Hosts to {{group_name}}</a></li>
 {% endif %}
 
 {% if filelist %}
   {% for file in filelist %}
-   <li>See what was written to <a href="{% url objectbrowser.views.list_objects %}?filename={{file}}">{{file}}</a></li>
+   <li>See what was written to <a href="{% url search %}?filename={{file}}">{{file}}</a></li>
   {% endfor %}
 {% endif %}
 </ul>

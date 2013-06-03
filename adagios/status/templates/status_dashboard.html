@@ -36,7 +36,7 @@
                 <tbody>
                 <tr>
                     <td>Network Parents</td>
-                    <td><a href="{% url status.views.status_parents %}">{{ total_network_parents }}</a></td>
+                    <td><a href="{% url adagios.status.views.status_parents %}">{{ total_network_parents }}</a></td>
                     <td>
                         <div class="alert alert-warning">{{ total_network_problems }}</div>
                     </td>
@@ -50,7 +50,7 @@
                 </tr>
                 <tr>
                     <td>Hosts</td>
-                    <td><a href="{% url status.views.status_host %}">{{ total_hosts }}</a></td>
+                    <td><a href="{% url adagios.status.views.status_host %}">{{ total_hosts }}</a></td>
                     <td>
                         <div class="alert alert-warning">{{  total_host_problems }}</div>
                     </td>
@@ -65,7 +65,7 @@
                 </tr>
                 <tr>
                     <td>Services</td>
-                    <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
+                    <td><a href="{% url adagios.status.views.services %}"> {{ total_services }}</a></td>
                     <td>
                         <div class="alert alert-warning">{{ total_service_problems }}</div>
                     </td>

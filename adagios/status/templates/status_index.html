@@ -1,7 +1,7 @@
 {% extends "base_status.html" %}
 
 {% block title %}Status Overview{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_index %}">Overview</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.status.views.status_index %}">Overview</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Status Overview{% endblock %}
 
@@ -23,12 +23,12 @@
                 <tbody>
                 <tr>
                     <td>Network Parents</td>
-                    <td><a href="{% url status.views.status_parents %}">{{ total_network_parents }}</a></td>
+                    <td><a href="{% url adagios.status.views.status_parents %}">{{ total_network_parents }}</a></td>
                     <td>
                         {% if  total_unhandled_network_problems == 0 %}
                         {% else %}
 
-                                <a href="{%  url status.views.services %}?state__isnot=0&acknowledged__isnot=1">
+                                <a href="{%  url adagios.status.views.services %}?state__isnot=0&acknowledged__isnot=1">
                                     {{ total_unhandled_network_problems }}
                                 </a>
 
@@ -37,11 +37,11 @@
                 </tr>
                 <tr>
                     <td>Hosts</td>
-                    <td><a href="{% url status.views.status_host %}">{{ total_hosts }}</a></td>
+                    <td><a href="{% url adagios.status.views.status_host %}">{{ total_hosts }}</a></td>
                     <td>
                         {% if  unhandled_hosts == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status_host %}?state__isnot=0&acknowledged=0&">
+                            <a href="{%  url adagios.status.views.status_host %}?state__isnot=0&acknowledged=0&">
                                 {{ unhandled_hosts }}
                             </a>
                         {% endif %}
@@ -49,11 +49,11 @@
                 </tr>
                 <tr>
                     <td>Services</td>
-                    <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
+                    <td><a href="{% url adagios.status.views.services %}"> {{ total_services }}</a></td>
                     <td>
                         {% if  unhandled_services == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.services %}?state__isnot=0&acknowledged=0&">
+                            <a href="{%  url adagios.status.views.services %}?state__isnot=0&acknowledged=0&">
                                 {{ unhandled_services }}
                             </a>
                         {% endif %}
@@ -247,8 +247,8 @@
                 var row=table.insertRow(i+1);
                 var cell1=row.insertCell(0);
                 var cell2=row.insertCell(1);
-                cell1_html = '<a href="{% url status.views.status_detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
-                cell2_html = '<a href="{% url status.views.status_detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
+                cell1_html = '<a href="{% url adagios.status.views.status_detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
+                cell2_html = '<a href="{% url adagios.status.views.status_detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
                 cell1.innerHTML=cell1_html;
                 cell2.innerHTML=cell2_html;
                 console.log(host_name);
