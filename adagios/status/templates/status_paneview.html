@@ -7,6 +7,7 @@
 {% block largeheader %}Paneview
 {% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.status_paneview %}">Pane View</a>{% endblock %}
 {% load adagiostags %}
 
 {% block sidebar_outer %}
