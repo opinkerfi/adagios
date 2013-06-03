@@ -1135,3 +1135,44 @@ def contactgroup_detail(request, contactgroup_name):
 
 
 
+@error_handler
+def dashboard2(request, servicegroup_name):
+
+    # Get statistics
+    c = adagios.status.utils.get_statistics(request)
+
+    c['messages'] = []
+    c['errors'] = []
+    css_hint = {}
+    css_hint[0] = 'success'
+    css_hint[1] = 'warning'
+    css_hint[2] = 'danger'
+    css_hint[3] = 'unknown'
+
+
+    livestatus = utils.livestatus(request)
+    servicegroup_status = livestatus.get_servicegroup(servicegroup_name)
+    status = servicegroup_status.get('worst_service_state')
+
+    c['css_hint']  = css_hint.get(status, 'unknown')
+    status = state.get(status, 'unknown')
+
+
+    # Subgroups
+    my_servicegroup = pynag.Model.Servicegroup.objects.get_by_shortname(servicegroup_name)
+
+    # Get information about child servicegroups
+    subgroups = my_servicegroup.servicegroup_members or ''
+    subgroups = subgroups.split(',')
+    if subgroups == ['']: subgroups = []
+    c['servicegroups'] = map(lambda x: livestatus.get_servicegroups('Filter: name = %s' % x)[0], subgroups)
+    for i in c['servicegroups']:
+        i_status = i.get('worst_service_state')
+        i['status'] = state.get(i_status, 'unknown')
+    c['subitems'] = c['servicegroups']
+
+    c['servicegroup'] = servicegroup_status
+    c['status'] = status
+    c['title'] = servicegroup_name
+    c['notes'] = servicegroup_status.get('notes')
+    return render_to_response('status_dashboard2.html', c, context_instance = RequestContext(request))

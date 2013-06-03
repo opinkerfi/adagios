@@ -342,3 +342,20 @@ def command_line(host_name,service_description=None):
         return obj.get_effective_command_line()
     except KeyError:
         return "Could not resolve commandline. Object not found"
+
+
+def dashboard_status(dashboard_type, name):
+    """ Return dashboard-style data for one specific dashboard
+    """
+    result = {}
+    status = -1
+    livestatus = pynag.Parsers.mk_livestatus()
+    if dashboard_type == 'hostgroup':
+        my_object = livestatus.get_hostgroup(name)
+
+    status = max(status, my_object.get('worst_service_state'))
+
+    result['status'] = status
+    return result
+
+

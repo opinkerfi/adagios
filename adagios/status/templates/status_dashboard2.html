@@ -1,0 +1,154 @@
+{% extends "base_status.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Status{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.comment_list %}">Dashboard</a>{% endblock %}
+
+{% load adagiostags %}
+
+{% block content %}
+    <style>
+    .centralized_dashboard {
+        width:  600px;
+        margin-left: auto;
+        margin-right: auto;
+
+    }
+    .bold {
+        font-weight: bold;
+    }
+    .status_ok, .status_0 {
+        color: #339966;
+    }
+    .status_warning, .status_1 {
+        color: #f29d50;
+    }
+
+        /* line 297, /data/octostatus/app/assets/styles/basics.scss */
+    .status_critical, .status_2 {
+        color: #cc3300;
+    }
+    </style>
+
+    <div id="content_div" class="centralized_dashboard">
+        <h3>{{ title }} <span class="status_{{ status }}">Status</span></h3>
+            <div class="alert alert-{{ css_hint }}">
+                {% if css_hint == 'success' %}
+                    All Systems are operational
+                {% endif %}
+                {% if css_hint == 'warning' %}
+                    There are some minor problems
+                {% endif %}
+                {% if css_hint == 'danger' %}
+                    We are currently dealing with problems
+                {% endif %}
+                {% if css_hint == 'unknown' %}
+                    Some probes are returning status "unknown"
+                {% endif %}
+            </div>
+
+        <h4>More information</h4>
+            {% if notes %}
+                <hr>
+                <p>{{ notes }}</p>
+            {% endif %}
+            {% if subitems %}
+                <table class="table">
+                    {% for i in subitems %}
+                        <tr>
+                            <td>
+                                {{ i.name }}
+                                <span class="bold pull-right status_{{ i.status }}">{{ i.status }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                No subgroups in {{ title }}
+            {% endif %}
+        <h4>Graphs</h4>
+            <hr>
+            <div id="objecttab" class="tabbable"> <!-- Only required for left/right tabs -->
+                <ul class="nav nav-tabs" id="graphs_ul">
+                    <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
+                    <li><a href="#day" class="active" data-toggle="tab" id="25hours">25 Hours</a></li>
+                    <li><a href="#week" data-toggle="tab">One Week</a></li>
+                    <li><a href="#month" data-toggle="tab">One Month</a></li>
+                    <li><a href="#year" data-toggle="tab">One Year</a></li>
+                </ul>
+
+                <div class="tab-content" id="graphs_content">
+                    <div class="tab-pane" id="hours">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+                    <div class="tab-pane active" id="day">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+                    <div class="tab-pane" id="week">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+                    <div class="tab-pane" id="month">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+                    <div class="tab-pane" id="year">
+                        <!-- Javascript will put images here if applicable -->
+                    </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+{% block toolbar %}{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <script>
+        // When graphs link is clicked, simulate a click on 25hours tab as well
+        $(document).ready(function() {
+        $('#25hours').click();
+
+        });
+        // Load graphs when you click a new timeperiod under graphs tab
+        $('#graphs_ul').click(function(event){
+        var anchor = event.target.href.split('#')[1];
+        var title = event.target.text;
+        my_element = document.getElementById(anchor);
+
+
+        if (my_element.childElementCount == 0) {
+        spinner = document.createElement( 'img');
+        spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
+        my_element.appendChild( spinner );
+        var url = '{% url pnp.views.pnp 'json' %}?host=localhost&srv=_HOST_';
+        $.getJSON(url)
+        .done( function(data) {
+        $.each(data, function(i, item) {
+        if (item['title'] == title) {
+        new_img = document.createElement( 'img');
+        new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url']);
+        my_element.appendChild( new_img );
+        }
+        }
+        )
+
+        })
+        .fail( function() {
+        console.log('failed to fetch info from pnp4nagios');
+        })
+        .always( function() {
+        spinner.setAttribute('class', 'hide');
+        });
+        }
+
+        });
+    </script>
+{% endblock %}
