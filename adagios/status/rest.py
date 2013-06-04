@@ -14,6 +14,8 @@ import pynag.Utils
 import adagios.status.utils
 import pynag.Parsers
 import collections
+from pynag.Utils import PynagError
+
 
 def hosts(fields=None, *args, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
@@ -344,18 +346,18 @@ def command_line(host_name,service_description=None):
         return "Could not resolve commandline. Object not found"
 
 
-def dashboard_status(dashboard_type, name):
+def business_process(process_type, name):
     """ Return dashboard-style data for one specific dashboard
     """
-    result = {}
-    status = -1
-    livestatus = pynag.Parsers.mk_livestatus()
-    if dashboard_type == 'hostgroup':
-        my_object = livestatus.get_hostgroup(name)
 
-    status = max(status, my_object.get('worst_service_state'))
+    if process_type == 'hostgroup':
+        bp = adagios.status.utils.HostgroupBP(name)
+    elif process_type == 'servicegroup':
+        bp = adagios.status.utils.HostgroupBP(name)
+    elif process_type == 'custom':
+        bp = adagios.status.utils.CustomBP(name)
+    else:
+        raise PynagError("Business process of type %s not found" % process_type)
 
-    result['status'] = status
-    return result
-
+    return bp.toJSON()
 

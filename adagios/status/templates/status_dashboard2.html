@@ -31,46 +31,53 @@
     .status_critical, .status_2 {
         color: #cc3300;
     }
+    h4.dashboard_header {
+        margin-top: 40px;
+
+        margin-bottom: 10px;
+    }
+    .top-margin {
+        margin-top: 20px;
+    }
     </style>
 
     <div id="content_div" class="centralized_dashboard">
-        <h3>{{ title }} <span class="status_{{ status }}">Status</span></h3>
-            <div class="alert alert-{{ css_hint }}">
-                {% if css_hint == 'success' %}
+        <h3 class="dashboard_header">{{ bp.display_name }} <span class="status_{{ status }}">Status</span></h3>
+            <div class="top-margin alert alert-{{ bp.css_hint }}">
+                {% if bp.css_hint == 'success' %}
                     All Systems are operational
                 {% endif %}
-                {% if css_hint == 'warning' %}
+                {% if bp.css_hint == 'warning' %}
                     There are some minor problems
                 {% endif %}
-                {% if css_hint == 'danger' %}
+                {% if bp.css_hint == 'danger' %}
                     We are currently dealing with problems
                 {% endif %}
-                {% if css_hint == 'unknown' %}
+                {% if bp.css_hint == 'unknown' %}
                     Some probes are returning status "unknown"
                 {% endif %}
             </div>
 
-        <h4>More information</h4>
-            {% if notes %}
-                <hr>
-                <p>{{ notes }}</p>
+        <h4 class="dashboard_header">More information</h4>
+            {% if bp.description %}
+                {{ bp.description }}
             {% endif %}
-            {% if subitems %}
-                <table class="table">
-                    {% for i in subitems %}
+
+            {% if bp.processes %}
+                <table class="table top-margin">
+                    {% for i in bp.processes %}
                         <tr>
                             <td>
-                                {{ i.name }}
-                                <span class="bold pull-right status_{{ i.status }}">{{ i.status }}</span>
+                                {{ i.display_name }}
+                                <span class="bold pull-right status_{{ i.get_human_friendly_status }}">{{ i.get_human_friendly_status }}</span>
                             </td>
                         </tr>
                     {% endfor %}
                 </table>
             {% else %}
-                No subgroups in {{ title }}
+                No subgroups in {{ bp.display_name }}
             {% endif %}
-        <h4>Graphs</h4>
-            <hr>
+        <h4 class="dashboard_header">Graphs</h4>
             <div id="objecttab" class="tabbable"> <!-- Only required for left/right tabs -->
                 <ul class="nav nav-tabs" id="graphs_ul">
                     <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
@@ -111,12 +118,13 @@
 
 {% block footer %}
     {{ block.super }}
+    <script src="{% url home %}rest/status.js"></script>
     <script>
         // When graphs link is clicked, simulate a click on 25hours tab as well
         $(document).ready(function() {
-        $('#25hours').click();
-
+            $('#25hours').click();
         });
+
         // Load graphs when you click a new timeperiod under graphs tab
         $('#graphs_ul').click(function(event){
         var anchor = event.target.href.split('#')[1];

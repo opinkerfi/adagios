@@ -5,6 +5,8 @@
 import pynag.Utils
 import pynag.Parsers
 import adagios.settings
+import simplejson as json
+
 from collections import defaultdict
 
 state = defaultdict(lambda: "unknown")
@@ -260,3 +262,221 @@ def get_statistics(request):
                      )
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
+
+
+class BusinessProcess:
+    """ Business Process Object
+    """
+    process_type = 'base'
+    processes = [] # List of Subprocesses
+    description = None
+    display_name = None
+    def get_status(self):
+        """ Returns nagios-style exit code that represent the state of this whole group """
+        status = -1
+        for i in self.processes:
+            status = max(status, i.get_status())
+        return status
+    def __repr__(self):
+        return "Business Process %s" % (self.display_name)
+    def toJSON(self):
+        result = {}
+        processes = self.processes
+        result['status'] = self.get_status()
+        result['processes'] = map(lambda x: x.toJSON(), self.processes)
+        result['description'] = self.description
+        result['display_name'] = self.display_name
+        return result
+    def add_process(self, business_process):
+        if not self.processes:
+            self.processes = [business_process]
+        else:
+            self.processes.append(business_process)
+    def css_hint(self):
+        """ Return a bootstrap friendly hint on what css class is applicate for this object """
+        css_hint = {}
+        css_hint[0] = 'success'
+        css_hint[1] = 'warning'
+        css_hint[2] = 'danger'
+        css_hint[3] = 'unknown'
+        return css_hint.get(self.get_status(), "unknown")
+    def get_human_friendly_status(self):
+        state = {}
+        state[0] = "ok"
+        state[1] = "warning"
+        state[2] = "critical"
+        return state.get( self.get_status(), "unknown")
+
+class HostgroupBP(BusinessProcess):
+    """ Business Process object that represents the state of one hostgroup """
+    process_type = 'hostgroup'
+    def __init__(self, name, display_name=None):
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._hostgroup = self._livestatus.get_hostgroup(name)
+        self.hostgroup_name = name
+        if not display_name:
+            display_name  = self._hostgroup.get('alias')
+        self.display_name = display_name
+        self.description = self._hostgroup.get('notes')
+        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
+
+        # Get information about child hostgroups
+        subgroups = self._pynag_object.hostgroup_members or ''
+        subgroups = subgroups.split(',')
+
+        for i in subgroups:
+            if not i or i == self._hostgroup:
+                continue
+            subprocess = HostgroupBP(i)
+            self.add_process( subprocess )
+    def get_status(self):
+        """ Same as BusinessProcess.get_status()
+
+        status for hostgroup is defined in the following way:
+         Critical if any host is down
+         Critical if any service has state unknown
+         Otherwise worst service state
+         OK if there are no service or host problems
+        """
+        hostgroup = self._livestatus.get_hostgroup(self.hostgroup_name)
+        host_status = hostgroup.get('worst_host_state')
+        if host_status > 0:
+            return 2
+
+        service_status = hostgroup.get('worst_service_state')
+        if service_status == 3:
+            return 2
+        return service_status
+
+
+class ServicegroupBP(BusinessProcess):
+    """ Business Process object that represents the state of one hostgroup """
+    process_type = 'servicegroup'
+    def __init__(self, name):
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._servicegroup = self._livestatus.get_servicegroup(name)
+        self.servicegroup_name = name
+        self.description = self.servicegroup.get('notes')
+        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
+        if not display_name:
+            display_name  = self._servicegroup.get('alias')
+        self.display_name = display_name
+        # Get information about child servicegroups
+        subgroups = self._pynag_object.servicegroup_members or ''
+        subgroups = subgroups.split(',')
+
+        for i in subgroups:
+            if not i:
+                continue
+            subprocess = ServicegroupBP(i)
+            self.add_process( subprocess )
+    def get_status(self):
+        """ Same as BusinessProcess.get_status()
+
+        status for servicegroup is defined in the following way:
+         Critical if any service has state unknown
+         Otherwise worst service state
+         OK if there are no service or host problems
+        """
+        servicegroup = self._livestatus.get_servicegroup(self.servicegroup_name)
+
+
+        service_status = servicegroup.get('worst_service_state')
+        if service_status == 3:
+            return 2
+        return service_status
+
+
+class ServiceBP(BusinessProcess):
+    """ BusinessProcess around one single service
+    """
+    process_type = 'service'
+    def __init__(self,host_name, service_description):
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._service = self._livestatus.get_service(host_name, service_description)
+    def get_status(self):
+        return self._service.get('state', 3)
+
+
+class CustomBP(BusinessProcess):
+    """ Custom Business Process. Usually a wrapper around other types of Business Processes """
+    critical_processes = []
+    noncritical_processes = []
+    critical_threshold = 0
+    noncritical_threshold = 0
+
+    process_type = 'custom'
+    def load_from_file(self, filename):
+        try:
+            raw_data = open(filename).read()
+        except IOError:
+            return
+        try:
+            all_json_data = json.loads(raw_data)
+        except Exception:
+            return
+        my_data = all_json_data.get(self.display_name)
+        if my_data is None:
+            return
+
+        self.description = my_data.get('description')
+        for i in my_data.get('processes', []):
+            process = get_business_process(i[0], i[1])
+            self.add_process(process)
+    def save_to_file(self, filename=None):
+        if filename is None:
+            filename = "/etc/adagios/bpi.json"
+        result = {}
+        i = {}
+        result[self.display_name] = i
+        i['display_name'] = self.display_name
+        i['description'] = self.description
+        i['processes'] = []
+        for proc in self.processes:
+            bp_type = proc.process_type
+            bp_name = proc.display_name
+            i['processes'].append( (bp_type, bp_name) )
+        json_string = json.dumps(result)
+        open(filename, 'w').write(json_string)
+
+    def __init__(self, name):
+        self.display_name = name
+        self.load_from_file('/etc/adagios/bpi.json')
+    def add_process(self, business_process, critical=True):
+        """ Add another business process into this group """
+        if not self.processes:
+            self.processes = []
+        self.processes.append( business_process )
+        if critical == True:
+            self.critical_processes.append( business_process )
+        else:
+            self.noncritical_processes.append( business_process )
+    def get_status(self):
+        worst_status = 0
+        criticals = 0
+        noncriticals = 0
+        for i in self.processes:
+            i_status = i.get_status()
+            worst_status = max(worst_status, i_status)
+            if i_status > 0:
+                if i in self.critical_processes:
+                    criticals += 1
+                elif i in self.noncritical_processes:
+                    noncriticals += 1
+        if criticals > self.critical_threshold:
+            return 2
+        if noncriticals > self.noncritical_threshold:
+            return 2
+        return worst_status
+
+def get_business_process(process_type, name):
+    """ Returns a BusinessProcess instance """
+    if process_type == 'hostgroup':
+        return HostgroupBP(name)
+    elif process_type == 'servicegroup':
+        return HostgroupBP(name)
+    elif process_type == 'custom':
+
+        return CustomBP(name)
+    else:
+        raise PynagError("Business process of type %s not found" % process_type)

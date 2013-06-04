@@ -1,0 +1,55 @@
+{% extends "base_status.html" %}
+
+{% block title %}Business Process{% endblock %}
+{% block smallheader %}edit{% endblock %}
+{% block largeheader %}Business Process{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.comment_list %}">Business Process</a>{% endblock %}
+
+{% load adagiostags %}
+
+{% block content %}
+    {% if bp %}
+        <table class="table">
+        <tr>
+            <th>Type</th>
+            <th>Name</th>
+        </tr>
+        {% for i in bp.processes %}
+            <tr>
+                <td>{{ i.process_type  }}</td>
+                <td>{{ i.display_name }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <h1>Add new...</h1>
+        <form method="post">
+            {% csrf_token %}
+        <div>
+            Hostgroup: <input id="add_hostgroup" name="hostgroup_name" placeholder="enter the name of a hostgroup"> <button name="add_hostgroup" class=button>add</button>
+        </div>
+        <div>
+            Servicegroup: <input id="add_servicegroup" name="servicegroup_name" placeholder="enter the name of a servicegroup"> <button name="add_servicegroup" class=button>add</button>
+        </div>
+        <div>
+            Service: <input id="add_service" name="service_name" placeholder="enter the name of a service"> <button name="add_service" class=button>add</button>
+        </div>
+        <div>
+            Custom: <input id="add_custom" name="custom_name" placeholder="enter the name of a custom"> <button name="add_custom" class=button>add</button>
+        </div>
+        </form>
+
+    {% else %}
+        Business Process not found
+    {% endif %}
+
+
+{% endblock %}
+
+
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+{% block toolbar %}{% endblock %}
+
