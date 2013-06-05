@@ -345,6 +345,22 @@ def command_line(host_name,service_description=None):
     except KeyError:
         return "Could not resolve commandline. Object not found"
 
+def update_check_command(host_name,service_description=None,**kwargs):
+    """ Saves all custom variables of a given service
+    """
+    try:
+        for k,v in kwargs.items():
+            if service_description is None or service_description=='':
+                obj = pynag.Model.Host.objects.get_by_shortname(host_name)
+            else:
+                obj = pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
+            if k.startswith("$_SERVICE") or k.startswith('$ARG'):
+                obj.set_macro(k, v)
+                obj.save()
+        return "Object saved"
+    except KeyError:
+        raise Exception("Object not found")
+
 
 def business_process(process_type, name):
     """ Return dashboard-style data for one specific dashboard

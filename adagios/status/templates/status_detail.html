@@ -309,7 +309,8 @@
     <div class="tab-pane" id="custom_variables">
         Some checks have custom variables defined. These can be defined for example to define warning/critical thresholds
         for custom plugins.
-        <p></p>
+        <p>
+        </p>
         {% if my_object.custom_variables %}
         <table class="table table-condensed">
             <tr>
@@ -357,6 +358,8 @@
             </table>
         {% else %}
         {% endif %}
+        See also <a href="{% url adagios.misc.views.edit_check_command %}?host_name={{ host_name }}&service_description={{ service_description }}&check_command={{ my_object.check_command }}">Configure check command</a>
+
 
     </div>
     <div class="tab-pane" id="events">

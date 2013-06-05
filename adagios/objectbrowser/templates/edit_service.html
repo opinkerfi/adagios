@@ -47,7 +47,17 @@
                         <pre>{{ command_line }}</pre>
                     {% endif %}
                     <fieldset>
-                        {% include "bootstrap_field.html" with field=form.check_command %}
+                        <div class="control-group">
+                            <label class="control-label" for="check_command">
+                                Check command
+                            </label>
+                            <div class="controls" id="check_command_field">
+                                <a href="{% url adagios.misc.views.edit_check_command %}?host_name={{ form.host_name.value.0 }}&service_description={{ form.service_description.value }}&check_command={{ form.check_command.value }}">{{ form.check_command.value }}</a>
+                                <label class="help-block">Click the link above to open the check command configuration page</label>
+
+
+                            </div>
+                        </div>
                         {% include "bootstrap_field.html" with field=form.max_check_attempts %}
                         {% include "bootstrap_field.html" with field=form.check_interval %}
                         {% include "bootstrap_field.html" with field=form.active_checks_enabled %}
