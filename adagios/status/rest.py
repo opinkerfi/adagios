@@ -14,6 +14,8 @@ import pynag.Utils
 import adagios.status.utils
 import pynag.Parsers
 import collections
+from pynag.Utils import PynagError
+
 
 def hosts(fields=None, *args, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
@@ -342,3 +344,36 @@ def command_line(host_name,service_description=None):
         return obj.get_effective_command_line()
     except KeyError:
         return "Could not resolve commandline. Object not found"
+
+def update_check_command(host_name,service_description=None,**kwargs):
+    """ Saves all custom variables of a given service
+    """
+    try:
+        for k,v in kwargs.items():
+            if service_description is None or service_description=='':
+                obj = pynag.Model.Host.objects.get_by_shortname(host_name)
+            else:
+                obj = pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
+            if k.startswith("$_SERVICE") or k.startswith('$ARG'):
+                obj.set_macro(k, v)
+                obj.save()
+        return "Object saved"
+    except KeyError:
+        raise Exception("Object not found")
+
+
+def business_process(process_type, name):
+    """ Return dashboard-style data for one specific dashboard
+    """
+
+    if process_type == 'hostgroup':
+        bp = adagios.status.utils.HostgroupBP(name)
+    elif process_type == 'servicegroup':
+        bp = adagios.status.utils.HostgroupBP(name)
+    elif process_type == 'custom':
+        bp = adagios.status.utils.CustomBP(name)
+    else:
+        raise PynagError("Business process of type %s not found" % process_type)
+
+    return bp.toJSON()
+

@@ -5,6 +5,7 @@
 {% block largeheader %}State History
 {% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.state_history %}">State History</a>{% endblock %}
 {% load adagiostags %}
 {% block toolbar %}{% endblock %}
 {% block content %}

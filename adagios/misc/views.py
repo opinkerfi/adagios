@@ -377,13 +377,51 @@ def test(request):
     """
     c = {}
     c['messages'] = []
+    c.update(csrf(request))
     # Get some test data
     services = pynag.Model.Service.objects.filter(__PORT__contains='', host_name__exists=True)
+    if len(services) == 0:
+        services = pynag.Model.Service.objects.filter(host_name__exists=True,check_command__exists=True,service_description__exists=True)
     service = services[0]
-    import adagios.objectbrowser.forms
-    c['form'] = adagios.objectbrowser.forms.CheckCommandForm()
+
     c['host_name'] = service.host_name
     c['service_description'] = service.service_description
     c['check_command'] = service.check_command.split('!')[0]
 
+    # Overwrites from the browser
+    for i in 'host_name', 'service_description', 'check_command':
+        if i in request.GET:
+            c[i] = request.GET.get(i)
     return render_to_response('test.html', c, context_instance = RequestContext(request))
+
+
+def edit_check_command(request):
+    """ Generic view for editing check command of a service
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    c.update(csrf(request))
+
+
+    for i in 'host_name', 'service_description', 'check_command':
+        if i in request.GET:
+            c[i] = request.GET.get(i).split('!')[0]
+        else:
+            c['errors'].append( "%s is required" % i)
+            return render_to_response('edit_check_command.html', c, context_instance = RequestContext(request))
+
+    hosts = pynag.Model.Host.objects.filter(host_name=c['host_name'])
+    if len(hosts) == 0:
+        c['errors'].append( "Host %s was not found " % (host_name))
+    services = pynag.Model.Service.objects.filter(host_name=c['host_name'], service_description=c['service_description'])
+    if len(services) == 0:
+        c['errors'].append( "Service %s/%s was not found " % (host_name, service_description))
+    command_names = map(lambda x: x.get("command_name",''), pynag.Model.Command.objects.all)
+    if c['check_command'] not in command_names:
+        c['errors'].append( "Check Command %s was not found " % (c['check_command']))
+    c['command_names'] = command_names
+
+
+    # Overwrites from the browser
+    return render_to_response('edit_check_command.html', c, context_instance = RequestContext(request))

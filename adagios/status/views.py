@@ -24,6 +24,8 @@ import traceback
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.encoding import smart_str
+from django.core.context_processors import csrf
+
 import pynag.Model
 import pynag.Utils
 import pynag.Control
@@ -1135,3 +1137,46 @@ def contactgroup_detail(request, contactgroup_name):
 
 
 
+@error_handler
+def dashboard2(request, process_type, name):
+
+    # Get statistics
+    c = adagios.status.utils.get_statistics(request)
+
+    c['messages'] = []
+    c['errors'] = []
+
+
+    bp = utils.get_business_process(process_type, name)
+
+    c['bp'] = bp
+    c['status'] = bp.get_human_friendly_status()
+    return render_to_response('status_dashboard2.html', c, context_instance = RequestContext(request))
+
+@error_handler
+def edit_business_process(request, name):
+    c = {}
+    c.update(csrf(request))
+    bp = utils.get_business_process('custom', name)
+
+    c['bp'] = bp
+    if request.method == 'POST':
+        method = None
+        name = None
+        if 'add_custom' in request.POST:
+            method = "custom"
+            name = request.POST.get('custom_name')
+        elif 'add_service' in request.POST:
+            method = "service"
+            name = request.POST.get('service_name')
+        elif 'add_servicegroup' in request.POST:
+            method = "servicegroup"
+            name = request.POST.get('servicegroup_name')
+        elif 'add_hostgroup' in request.POST:
+            method = "hostgroup"
+            name = request.POST.get('hostgroup_name')
+        if method is not None:
+            subprocess = utils.get_business_process(method, name)
+            bp.add_process( subprocess)
+            bp.save_to_file()
+    return render_to_response('bp_edit.html', c, context_instance = RequestContext(request))

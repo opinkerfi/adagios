@@ -5,6 +5,8 @@
 {% block largeheader %}Contacts{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.comment_list %}">Comments</a>{% endblock %}
+
 {% load adagiostags %}
 
 {% block content %}
