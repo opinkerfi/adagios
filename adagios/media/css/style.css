@@ -230,3 +230,9 @@ textarea#id_filecontent {
     width: 100%;
     height: 100px;
 }
+
+
+/* Used in gitlog.html for diff files and history */
+table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
+    background-color: transparent;
+}

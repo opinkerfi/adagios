@@ -18,7 +18,7 @@
     {% if uncommited_files %}
         <h2>There are uncommited files in your git repo</h2>
         <form method="post" class="form-horizontal">{% csrf_token %}
-            <table class="table table-condensed">
+            <table class="gitlog table table-condensed">
             <tr>
                 <th><input id="check_all" name="check_all" type="checkbox"/></th>
                 <th>status</th>
@@ -43,7 +43,7 @@
     {% if commits %}
         <!-- List of recent commits -->
         <h2>Previous changes (via git log)</h2>
-        <table class="table table-condensed" >
+        <table class="gitlog table table-condensed" >
         <tr>
             <th>Date</th>
             <th>Summary</th>
@@ -97,14 +97,6 @@
     {% else %}
         <h2>No git commits found in {{ nagiosdir }}</h2>
     {% endif %}
-
-    <style>
-        .table tbody tr:hover td, .table tbody tr:hover th {
-        background-color: transparent;
-        }
-        .filename {
-        }
-    </style>
  {% endblock %}
 
 {% block sidebar %} {{ block.super }} {% endblock %}
