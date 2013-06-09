@@ -418,7 +418,9 @@ def edit_check_command(request):
     if len(services) == 0:
         c['errors'].append( "Service %s/%s was not found " % (host_name, service_description))
     command_names = map(lambda x: x.get("command_name",''), pynag.Model.Command.objects.all)
-    if c['check_command'] not in command_names:
+    if c['check_command'] in (None,'','None'):
+        c['check_command'] = ''
+    elif c['check_command'] not in command_names:
         c['errors'].append( "Check Command %s was not found " % (c['check_command']))
     c['command_names'] = command_names
 
