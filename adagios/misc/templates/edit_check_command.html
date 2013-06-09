@@ -25,18 +25,11 @@
         <div class="argument_div">
             <table class="" >
                 <tbody >
-                    <tr class="hide">
-                        <td>Host name</td>
-                        <td><input type="text" name="host_name" value="{{ host_name }}"></td>
-                    </tr>
-                    <tr class="hide">
-                        <td>Service Description</td>
-                        <td><input type="text" name="service_description" value="{{ service_description }}"></td>
-                    </tr>
                     <tr >
                         <td>Check Command</td>
                         <td style="background-color: white; margin-bottom: 10px">
-                            <select style="width: 400px;" id="check_command_select">
+                            <select style="width: 400px;" data-placeholder="Please select a check command" id="check_command_select">
+                                <option value=""></option>
                                 {% for i in command_names %}
                                     <option value="{{ i }}" {% if i == check_command %}selected="selected"{% endif %}>{{ i }}</option>
                                 {% endfor %}
@@ -47,7 +40,7 @@
 
                 <tbody id="check_command_argument_table"></tbody>
 
-                <tbody id="service_macros_table"><tr><td colspan=2></td></tr></tbody>
+                <tbody id="service_macros_table"></tbody>
 
                 <tbody id="other_attributes_table"></tbody>
             </table>
@@ -55,12 +48,8 @@
 
 
         </div>
-        <br>
 
-        <div id="input_fields">
-        </div>
-    <br>
-        <table class="">
+        <table id="check_command_editor_tables">
             <tr>
                 <td>Actual command_line</td>
                 <td>
@@ -81,7 +70,7 @@
             </tr>
 
         </table>
-        <button id="check_command_save_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="check_command_saving_text"> Saving...</span>' class="btn btn-primary" onclick="save_check_command(); ">Save changes</button>
+        <button id="check_command_save_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="check_command_saving_text"> Saving...</span>' class="btn btn-primary">Save changes</button>
         <style>
         .macro_in_a_text {
             color: #b70000;;
@@ -101,168 +90,33 @@
 {% block footer %}
     {{ block.super }}
 
-    <script src="{% url home %}rest/status.js"></script>
-    <script src="{% url home %}rest/pynag.js"></script>
-    <script src="{% url home %}rest/adagios.js"></script>
 
         <script>
-        $(document).ready(function(){
 
-            // Get all parameters
-            populate_parameters();
+            $(document).ready(function(){
 
-            $("#check_command_select").change( function() {
-                populate_parameters();
+                editor = adagios.objectbrowser.CheckCommandEditor( {
+                    host_name: "{{ host_name }}",
+                    check_command: "{{ check_command }}",
+                    service_description : "{{ service_description }}"
+                });
+                editor.generate_input_fields();
+
+                // When check_command is changed, lets recreate the input fields:
+                $("#check_command_select").change( function() {
+                    editor.check_command = $('#check_command_select').find(":selected").text();
+                    editor.generate_input_fields();
+                });
+
+                // When the special save button is called, we call save
+                $("#check_command_save_button").click( function() {
+                    editor.save_check_command();
+                });
+
             });
 
-        });
-
-        // Get values like check_command and contents of all the input boxes
-        function get_check_command_values() {
-            my_data = {
-                "host_name": "{{ host_name }}",
-                "service_description": "{{ service_description }}",
-                "check_command": $('#check_command_select').find(":selected").text()
-            };
-
-            $(".check_command_parameter").each( function() {
-                var item = $(this)[0];
-                my_data[item.name] = item.value;
-            });
-            return my_data;
-
-        }
-
-        // Populate parameters fetches all possible variables for a given check_command
-        // And populates the #input_fields div.
-        function populate_parameters() {
-            my_data = get_check_command_values();
-            // Update check_command_parameters div with result from this rest call:
-            check_command(my_data)
-                    .done( function(data) {
-                        // Generate a table, where each row has an input field with
-                        // a macroname for us
-                        service_macros_input_fields = '';
-                        check_command_arguments_input_fields = '';
-                        other_input_fields = '';
-                        for (var i in data) {
-                            // Create a human friendly label for our attribute
-                            friendly_name = i.replace('$_SERVICE','');
-                            friendly_name = friendly_name.split('_').join(' ').split('$').join('');
-
-                            // Create an edit field for this attribute
-                            edit_field = '' +
-                                '<tr><td>' + friendly_name + '</td>' +
-
-                                '<td><input class="check_command_parameter" onkeyup="preview_command_line();" type="text" class="span11" name="' + i + '" value="' + data[i] + '">' +
-                                '</td></tr>'
-                            ;
-                            if (i.substring(0,9) == '$_SERVICE') {
-                                service_macros_input_fields += edit_field;
-                            }
-                            else if (i.substring(0,4) == '$ARG') {
-                                check_command_arguments_input_fields += edit_field ;
-                            }
-                            else if (i[0] == '$') {
-                                other_input_fields += edit_field;
-                            }
-                            else if (i == "original_command_line") {
-                                $('#original_command_line').html( data[i] );
-                            }
-                        }
 
 
-
-                        $('#service_macros_table').html(service_macros_input_fields);
-                        $('#other_attributes_table').html(other_input_fields);
-                        $('#check_command_argument_table').html(check_command_arguments_input_fields);
-
-
-                        // The other input fields are not related to our specific service, and no need
-                        // To make them editable
-                        $('#other_attributes_table input').prop('disabled', true);
-
-                        // Preview the command line
-                        preview_command_line();
-                    })
-                    .fail( function(data) {
-                        var result = data;
-                        $("#error_messages").html('<div class="alert alert-danger"> could not retrieve attributes. Make sure the services and check commands you specify actually exist</div>')
-                    });
-
-
-
-
-        }
-
-        // Read through all inputs in #input_fields and then save the current service
-        // This function reloads the current page on success
-        function save_check_command() {
-            my_data = get_check_command_values();
-
-            update_check_command(my_data)
-                    .done( function(data) {
-                        console.log(data);
-                        location.reload();
-                    })
-                    .fail( function(data) {
-                        console.error(data);
-                    });
-            $('#check_command_save_button').button('loading');
-
-
-        }
-
-        // Read all input values in #input_fields div and use them to preview a complete check_command
-        // The results are saved in the #command_line_preview div
-        function preview_command_line() {
-            // whenever check_command_parameters is changed, lets update the check_command preview
-            my_data = get_check_command_values();
-
-            $(".check_command_parameter").each( function() {
-                var item = $(this)[0];
-                my_data[item.name] = item.value;
-            });
-
-            // Update check_command_parameters div with result from this rest call:
-            check_command(my_data)
-                    .done( function(data) {
-                        original_command_line = data['original_command_line'];
-                        $('#original_command_line').html( original_command_line );
-
-                        macronames = original_command_line.match(/\$.*?\$/g);
-                        for (var i in macronames) {
-                            macroname = macronames[i];
-                            macrovalue = data[macroname];
-                            new_str = "<span "
-                                    + "class='macro_in_a_text' title='value="
-                                    + macrovalue
-                                    + "'>"
-                                    + macroname
-                                    + "</span>";
-                            original_command_line = original_command_line.replace(macroname,new_str);
-                        }
-
-                        $('#original_command_line').html( original_command_line );
-
-                        effective_command_line = data['effective_command_line'];
-                        $('#command_line_preview').html( effective_command_line );
-                    })
-                    .fail( function(data) {
-                        var result = data;
-                        $('#command_line_preview').html("Something went wrong. Our awesome webservice returned an error")
-                    });
-
-
-        }
-
-
-        function run_this_check_command() {
-            my_data = get_check_command_values();
-            alert("This function is not implemented yet")
-
-
-        }
         </script>
 
 
