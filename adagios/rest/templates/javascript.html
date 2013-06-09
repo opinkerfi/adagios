@@ -11,10 +11,37 @@
 /* This module has no documentation. */
 {% endif %}
 
+window.adagios = window.adagios || {};
 
+
+// a convenience function for parsing string namespaces and
+// automatically generating nested namespaces
+function extend( ns, ns_string ) {
+    var parts = ns_string.split('.'),
+    parent = ns,
+    pl, i;
+    if (parts[0] == "myApp") {
+        parts = parts.slice(1);
+    }
+    pl = parts.length;
+    for (i = 0; i < pl; i++) {
+        //create a property if it doesnt exist
+        if (typeof parent[parts[i]] == 'undefined') {
+        parent[parts[i]] = {};
+        }
+        parent = parent[parts[i]];
+        }
+    return parent;
+}
+var mod = extend(window, 'adagios.rest.{{ module_name }}');
+
+<!-- Start of function declerations -->
 {% for i,v in functions.items %}
 
 /*
+
+
+
 
 Function {{ i }}()
 ###############################################################################
@@ -23,7 +50,7 @@ Function {{ i }}()
 Valid parameters: {{ v.argstring }}
 */
 
-function {{ i }}(parameters) {
+adagios.rest.{{ module_name }}.{{ i }} = function(parameters) {
     // Return jquery promise object for ajax:
     return $.ajax({
         type: 'POST',
