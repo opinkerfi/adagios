@@ -6,6 +6,7 @@ from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
 
 import pynag.Model.EventHandlers
+import pynag.Parsers
 import adagios
 import adagios.status.utils
 from pynag import Model
@@ -92,9 +93,12 @@ def resolve_urlname(request):
 
 def get_httpuser(request):
     """ Get the current user that is authenticating to us and update event handlers"""
-    remote_user = request.META.get('REMOTE_USER', 'anonymous')
-    for i in pynag.Model.eventhandlers:
-        i.modified_by = remote_user
+    try:
+        remote_user = request.META.get('REMOTE_USER', 'anonymous')
+        for i in pynag.Model.eventhandlers:
+            i.modified_by = remote_user
+    except Exception:
+        remote_user = None
     return {'remote_user': remote_user }
 
 def get_nagios_url(request):
@@ -184,7 +188,7 @@ def check_nagios_running(request):
     """ Notify user if nagios is not running """
     try:
         if pynag.Model.config is None:
-            pynag.Model.Timeperiod.objects.get_all() # force a config reload
+            pynag.Model.config = pynag.Parsers.config(adagios.settings.nagios_config)
         nagios_pid = pynag.Model.config._get_pid()
         return { "nagios_running":(nagios_pid is not None)}
     except Exception:
@@ -235,3 +239,7 @@ def reload_configfile(request):
     except Exception, e:
         add_notification(level="warning", message=str(e), notification_id="configfile")
     return {}
+
+
+if __name__ == '__main__':
+  on_page_load(request=None) 
