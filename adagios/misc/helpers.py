@@ -18,10 +18,11 @@ from socket import gethostbyname_ex
 import adagios.settings
 
 
-_config = Parsers.config(adagios.settings.nagios_config)
-_config.parse()
-maincfg_values = _config.maincfg_values
-cfg_file = _config.cfg_file
+#_config = Parsers.config(adagios.settings.nagios_config)
+#_config.parse()
+Model.Timeperiod.objects.all
+maincfg_values = Model.config.maincfg_values
+cfg_file = Model.config.cfg_file
 version = __version__
 
 def _get_dict(x):
@@ -183,14 +184,14 @@ def set_maincfg_attribute(attribute,new_value, old_value='None', append=False):
 		True	-- If any changes were made
 		False	-- If no changes were made
 	"""
-    filename = _config.cfg_file
+    filename = Model.config.cfg_file
     if old_value.lower() == 'none': old_value=None
     if new_value.lower() == 'none': new_value=None
     if filename.lower() == 'none': filename=None
     if append.lower() == 'false': append=False
     elif append.lower() == 'true': append=True
     elif append.lower() == 'none': append=None
-    return _config._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
+    return Model._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
 
 def reload_nagios():
     """ Reloads nagios. Returns "Success" on Success """
