@@ -4,6 +4,8 @@ import getpass
 
 from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
+
+import pynag.Model.EventHandlers
 import adagios
 import adagios.status.utils
 from pynag import Model
@@ -157,7 +159,7 @@ def check_git(request):
     nagiosdir = os.path.dirname(pynag.Model.config.cfg_file)
     if settings.enable_githandler == True:
         try:
-            git = Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
+            git = pynag.Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
             uncommited_files = git.get_uncommited_files()
             if len(uncommited_files) > 0:
                 add_notification(level="warning", notification_id="uncommited", message="There are %s uncommited files in %s" % (len(uncommited_files), nagiosdir))
@@ -165,7 +167,7 @@ def check_git(request):
                 clear_notification(notification_id="uncommited")
             clear_notification(notification_id="git_missing")
 
-        except Model.EventHandlers.EventHandlerError, e:
+        except pynag.Model.EventHandlers.EventHandlerError, e:
             if e.errorcode == 128:
                 add_notification(level="warning", notification_id="git_missing", message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
         # if okconfig is installed, make sure okconfig is notified of git settings
