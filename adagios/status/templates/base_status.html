@@ -447,7 +447,7 @@
                 {% block largeheader %}block=largeheader {% endblock %}
             </h2>
         </div>
-        <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" id="right_of_title">
+        <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" class="hide" id="right_of_title">
             {% if okconfig %}
                 <div class="pull-right btn-group"><a class="btn btn-success" href="{% url okconfig_.views.addhost %}">Add Host
                 </a><a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a><ul class="dropdown-menu">
@@ -457,7 +457,6 @@
                 </div>
                 <br>
             {% endif %}
-
         </div>
         <div id="error_messages" style="margin-left: 30px;" class="pull-left">
             {% if errors|length %}
