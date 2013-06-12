@@ -1156,6 +1156,7 @@ def dashboard2(request, process_type, name):
 @error_handler
 def edit_business_process(request, name):
     c = {}
+    c['errors'] = []
     c.update(csrf(request))
     bp = utils.get_business_process('custom', name)
 
@@ -1176,7 +1177,10 @@ def edit_business_process(request, name):
             method = "hostgroup"
             name = request.POST.get('hostgroup_name')
         if method is not None:
-            subprocess = utils.get_business_process(method, name)
-            bp.add_process( subprocess)
-            bp.save_to_file()
+            try:
+                subprocess = utils.get_business_process(method, name)
+                bp.add_process( subprocess)
+                bp.save_to_file()
+            except Exception:
+                c['errors'].append("Could not find %s named %s" % (method, name))
     return render_to_response('bp_edit.html', c, context_instance = RequestContext(request))
