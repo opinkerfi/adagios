@@ -2,12 +2,12 @@
 {% block title %}REST Interface{% endblock %}
 {% block nav1 %}rest{% endblock %}
 {% block smallheader %}rest{% endblock %}
-{% block largeheader %}{{ module_name }}{% endblock %}
+{% block largeheader %}{{ module_path }}{% endblock %}
 {% block sidebar %}{% endblock %}
 {% block content %}
         {% if module_documenation %}
             <p>
-                The following is the documentation for the {{ module_name }} module:
+                The following is the documentation for the {{ module_path }} module:
             </p>
             <pre>{{ module_documenation }}</pre>
         {% else %}

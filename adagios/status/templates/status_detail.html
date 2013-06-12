@@ -179,7 +179,10 @@
                 <label for="id_notes">Notes</label>
                 </td>
                 <td>
-                    <textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
+                    <textarea id="id_notes" class="editable_field" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea>
+                    <div id="notes_status">status</div>
+                </td>
+
             </tr>
             <tr>
                 <td>

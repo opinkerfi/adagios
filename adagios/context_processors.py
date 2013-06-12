@@ -4,6 +4,9 @@ import getpass
 
 from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification,clear_notification
+
+import pynag.Model.EventHandlers
+import pynag.Parsers
 import adagios
 import adagios.status.utils
 from pynag import Model
@@ -90,9 +93,12 @@ def resolve_urlname(request):
 
 def get_httpuser(request):
     """ Get the current user that is authenticating to us and update event handlers"""
-    remote_user = request.META.get('REMOTE_USER', 'anonymous')
-    for i in pynag.Model.eventhandlers:
-        i.modified_by = remote_user
+    try:
+        remote_user = request.META.get('REMOTE_USER', 'anonymous')
+        for i in pynag.Model.eventhandlers:
+            i.modified_by = remote_user
+    except Exception:
+        remote_user = None
     return {'remote_user': remote_user }
 
 def get_nagios_url(request):
@@ -157,7 +163,7 @@ def check_git(request):
     nagiosdir = os.path.dirname(pynag.Model.config.cfg_file)
     if settings.enable_githandler == True:
         try:
-            git = Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
+            git = pynag.Model.EventHandlers.GitEventHandler(nagiosdir, 'adagios', 'adagios')
             uncommited_files = git.get_uncommited_files()
             if len(uncommited_files) > 0:
                 add_notification(level="warning", notification_id="uncommited", message="There are %s uncommited files in %s" % (len(uncommited_files), nagiosdir))
@@ -165,7 +171,7 @@ def check_git(request):
                 clear_notification(notification_id="uncommited")
             clear_notification(notification_id="git_missing")
 
-        except Model.EventHandlers.EventHandlerError, e:
+        except pynag.Model.EventHandlers.EventHandlerError, e:
             if e.errorcode == 128:
                 add_notification(level="warning", notification_id="git_missing", message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
         # if okconfig is installed, make sure okconfig is notified of git settings
@@ -182,7 +188,7 @@ def check_nagios_running(request):
     """ Notify user if nagios is not running """
     try:
         if pynag.Model.config is None:
-            pynag.Model.Timeperiod.objects.get_all() # force a config reload
+            pynag.Model.config = pynag.Parsers.config(adagios.settings.nagios_config)
         nagios_pid = pynag.Model.config._get_pid()
         return { "nagios_running":(nagios_pid is not None)}
     except Exception:
@@ -233,3 +239,7 @@ def reload_configfile(request):
     except Exception, e:
         add_notification(level="warning", message=str(e), notification_id="configfile")
     return {}
+
+
+if __name__ == '__main__':
+  on_page_load(request=None) 

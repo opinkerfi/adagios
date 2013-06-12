@@ -145,6 +145,21 @@ class PynagForm(AdagiosForm):
         inherited_attributes = sorted( self.pynag_object._inherited_attributes.keys() )
         all_attributes = sorted( object_definitions.get(object_type).keys() )
         all_attributes += ['name','use','register']
+
+        # Special hack for macros
+        # If this is a post and any post data looks like a nagios macro
+        # We will generate a field for it on the fly
+        macros = filter(lambda x: x.startswith('$') and x.endswith('$'), self.data.keys())
+        for field_name in macros:
+            #if field_name.startswith('$ARG'):
+            #    self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
+            if object_type == 'service' and field_name.startswith('$_SERVICE'):
+                self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
+            elif object_type == 'host' and field_name.startswith('$_HOST'):
+                self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
+
+
+
         # Calculate what attributes are "undefined"
         self.undefined_attributes = []
         for i in all_attributes:
@@ -528,11 +543,11 @@ class AddObjectForm(PynagForm):
             self.fields['use'].help_text = "Inherit attributes from this template"
         if object_type == 'host':
             self.fields['host_name'] = self.get_pynagField('host_name', required=True)
-            self.fields['address'] = self.get_pynagField('address')
+            self.fields['address'] = self.get_pynagField('address', required=True)
             self.fields['alias'] = self.get_pynagField('alias', required=False)
         elif object_type == 'service':
-            self.fields['host_name'] = self.get_pynagField('host_name')
-            self.fields['service_description'] = self.get_pynagField('service_description')
+            self.fields['host_name'] = self.get_pynagField('host_name', required=True)
+            self.fields['service_description'] = self.get_pynagField('service_description', required=True)
         else:
             field_name = "%s_name" % object_type
             self.fields[field_name] = self.get_pynagField(field_name, required=True)

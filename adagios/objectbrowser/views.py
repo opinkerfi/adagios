@@ -311,6 +311,12 @@ def _edit_service( request, c):
     try: c['effective_command'] = service.get_effective_check_command()
     except KeyError, e: c['errors'].append( "Could not find check_command: %s" % str(e))
 
+    # For the check_command editor, we inject current check_command and a list of all check_commands
+    c['check_command'] = (service.check_command or '').split("!")[0]
+    c['command_names'] = map(lambda x: x.get("command_name",''), Model.Command.objects.all)
+    if c['check_command'] in (None,'','None'):
+        c['check_command'] = ''
+
     return render_to_response('edit_service.html', c, context_instance = RequestContext(request))
 
 def _edit_contactgroup( request, c):

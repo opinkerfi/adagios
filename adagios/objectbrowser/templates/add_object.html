@@ -26,6 +26,7 @@
     {{ block.super }}
     <!-- DNS lookup for the address field -->
     <script>
+        // When host_name has been entered, automatically look up the ip address
         $('#id_host_name').focusout(function() {
             if ($('#id_address').val() == "") {
                 $.getJSON('/rest/pynag/json/dnslookup',
@@ -38,5 +39,28 @@
                 );
             }
         });
+
+        // When use field is updated, automatically fill out service description
+        $('#id_use').change(function() {
+            selected_parents = '';
+            $('#id_use :selected').each( function(i) {
+                var query = {
+                    'name': this.text,
+                    'object_type': 'service',
+                    'with_fields': 'service_description,check_command'
+                };
+                adagios.rest.pynag.get_objects(query)
+                        .done( function(data) {
+                            data = data[0];
+                            if (data.service_description  == null) {
+                                return;
+                            }
+                            $('#id_service_description').val(data.service_description);
+
+                        })
+                        .fail( function() { alert('fail');});
+            });
+        });
+
     </script>
 {% endblock %}

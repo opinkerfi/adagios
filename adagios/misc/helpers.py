@@ -18,10 +18,11 @@ from socket import gethostbyname_ex
 import adagios.settings
 
 
-_config = Parsers.config(adagios.settings.nagios_config)
-_config.parse()
-maincfg_values = _config.maincfg_values
-cfg_file = _config.cfg_file
+#_config = Parsers.config(adagios.settings.nagios_config)
+#_config.parse()
+Model.Timeperiod.objects.all
+maincfg_values = Model.config.maincfg_values
+cfg_file = Model.config.cfg_file
 version = __version__
 
 def _get_dict(x):
@@ -183,14 +184,14 @@ def set_maincfg_attribute(attribute,new_value, old_value='None', append=False):
 		True	-- If any changes were made
 		False	-- If no changes were made
 	"""
-    filename = _config.cfg_file
+    filename = Model.config.cfg_file
     if old_value.lower() == 'none': old_value=None
     if new_value.lower() == 'none': new_value=None
     if filename.lower() == 'none': filename=None
     if append.lower() == 'false': append=False
     elif append.lower() == 'true': append=True
     elif append.lower() == 'none': append=None
-    return _config._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
+    return Model._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
 
 def reload_nagios():
     """ Reloads nagios. Returns "Success" on Success """
@@ -270,30 +271,21 @@ def check_command(host_name, service_description, check_command=None,**kwargs):
     else:
         short_name = "%s/%s" % (host_name, service_description)
         my_object = Model.Service.objects.get_by_shortname(short_name)
-    if check_command is None:
+    if check_command in (None,'','None'):
         command = my_object.get_effective_check_command()
     else:
         command = Model.Command.objects.get_by_shortname(check_command)
+
+    # Lets put all our results in a nice little dict
+    macros = {}
+    macros['check_command'] = command.command_name
+    macros['original_command_line'] = command.command_line
+    macros['effective_command_line'] = my_object.get_effective_command_line()
+
+    # Lets get all macros that this check command defines:
     regex = re.compile("(\$\w+\$)")
     macronames = regex.findall( command.command_line )
-
-    # macros is the variable we will be returning.
-    # First populate it with all macros from the check_command
-    macros = {}
     for i in macronames:
-        macros[i] = my_object.get_macro(i)
-        if macros[i] is None:
-            macros[i] = ''
-    # If any kwargs are specified, lets overwrite macros here:
-    for k,v in kwargs.items():
-        if k in macros:
-            macros[k] = v
+        macros[i] = my_object.get_macro(i) or ''
 
-    command_line = command.command_line
-    for k,v in macros.items():
-        if v is None:
-            v = ''
-        command_line = command_line.replace(k, v)
-    macros['effective_command_line'] = command_line
-    macros['original_command_line'] = command.command_line
     return macros
