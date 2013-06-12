@@ -1,0 +1,155 @@
+{% extends "base_status.html" %}
+
+{% block title %}Edit Check Command{% endblock %}
+{% block smallheader %}edit{% endblock %}
+{% block largeheader %}Check Command{% endblock %}
+{% block nav1 %}misc{% endblock %}
+
+{% block toolbar %}
+{% endblock %}
+{% block content %}
+
+    {% if form %}
+        <div class=row>
+            <div class=span11>
+            {% if form.objects %}
+                <table class="table table-condensed">
+                    <tr>
+                        <th>Object Type</th>
+                        <th>Short Name</th>
+                    </tr>
+                    {% for i in form.objects %}
+                        <tr>
+                        <td>
+                            {{ i.object_type }}
+                        </td>
+                        <td>
+                            {{ i.shortname }}
+                        </td>
+                        <td>
+                        </td>
+
+                        </tr>
+
+                        {% for attribute,value in i.items %}
+                            <tr>
+                                <td>{{ attribute }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h4>Errors</h4>
+                <table class="table table-condensed">
+                <tr>
+                    <th>Item</th>
+                    <th>Line number</th>
+                    <th>Detail</th>
+                </tr>
+                    {% for i in form.config.errors %}
+                        <tr>
+                            <td></td>
+                            <td>
+                                {{ i.line_start }}
+                            </td>
+                            <td>
+
+                                {{ i.message }}
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+
+            {% else %}
+            {% endif %}
+            </div>
+
+        </div>
+        <hr>
+        <h4>Pasted string</h4>
+        <div class=row>
+            <table>
+                {% for line in form.pasted_string %}
+                    <tr id="line_{{ forloop.counter }}" class="line line_{{ forloop.counter }}">
+                        <td class="linenumber">{{ forloop.counter }}</td>
+                        <td class="linecontent">{{ line }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <hr>
+
+        <div class="row">
+            <div class="span11">
+
+            <!-- On get requests, let display a paste form -->
+            <form action="" method="post" class="form-horizontal">{% csrf_token %}
+                    <h4>Paste the output of a nagios plugin below</h4>
+                    <hr>
+                    <textarea wrap="off" id="id_plugin_output" rows="10" class=span11 cols="80" name="paste">
+                        {{ form.paste.value }}
+                    </textarea>
+                    <hr>
+                    <button class="pull-right btn btn-success" type="submit">Save</button>
+            </form>
+            </div>
+
+        </div>
+
+
+
+
+        <style>
+            textarea{
+                display: block;
+                margin: 0px;
+                padding: 0px;
+                width: 500px;
+                height: 300px;
+            }
+            .line {
+
+            }
+            .linenumber {
+                color: grey;
+                padding-right: 10px;
+
+            }
+            .linecontent {
+                padding-left: 10px;
+                border-left: 1px solid grey;
+            }
+        </style>
+
+
+
+    {% endif %}
+
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+
+
+        <script>
+        $(document).ready(function(){
+
+            editor = adagios.objectbrowser.CheckCommandEditor;
+            editor.host_name = "{{ host_name }}";
+            editor.check_command = "{{ check_command }}";
+            editor.service_description = "{{ service_description }}";
+            editor.generate_input_fields();
+
+
+        });
+
+        </script>
+
+
+{% endblock %}

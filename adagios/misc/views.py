@@ -379,19 +379,14 @@ def test(request):
     c['messages'] = []
     c.update(csrf(request))
     # Get some test data
-    services = pynag.Model.Service.objects.filter(__PORT__contains='', host_name__exists=True)
-    if len(services) == 0:
-        services = pynag.Model.Service.objects.filter(host_name__exists=True,check_command__exists=True,service_description__exists=True)
-    service = services[0]
 
-    c['host_name'] = service.host_name
-    c['service_description'] = service.service_description
-    c['check_command'] = service.check_command.split('!')[0]
+    if request.method == 'POST':
+        c['form'] = forms.PluginOutputForm(data=request.POST)
+        if c['form'].is_valid():
+            c['form'].parse()
+    else:
+        c['form'] = forms.PluginOutputForm(initial=request.GET)
 
-    # Overwrites from the browser
-    for i in 'host_name', 'service_description', 'check_command':
-        if i in request.GET:
-            c[i] = request.GET.get(i)
     return render_to_response('test.html', c, context_instance = RequestContext(request))
 
 
@@ -427,3 +422,21 @@ def edit_check_command(request):
 
     # Overwrites from the browser
     return render_to_response('edit_check_command.html', c, context_instance = RequestContext(request))
+
+
+def paste(request):
+    """ Generic test view, use this as a sandbox if you like
+    """
+    c = {}
+    c['messages'] = []
+    c.update(csrf(request))
+    # Get some test data
+
+    if request.method == 'POST':
+        c['form'] = forms.PasteForm(data=request.POST)
+        if c['form'].is_valid():
+            c['form'].parse()
+    else:
+        c['form'] = forms.PasteForm(initial=request.GET)
+
+    return render_to_response('test2.html', c, context_instance = RequestContext(request))

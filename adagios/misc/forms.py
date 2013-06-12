@@ -310,13 +310,13 @@ class PNPBrokerModuleForm(forms.Form):
             Model.config._edit_static_file(attribute=name, new_value=self.cleaned_data[name])
 
 
-class PerfDataForm(forms.Form):
-    perfdata = forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
-    def save(self):
-        from pynag import Model
-        perfdata = self.cleaned_data['perfdata']
-        perfdata = Model.PerfData(perfdata)
-        self.results = perfdata.metrics
+class PluginOutputForm(forms.Form):
+    plugin_output = forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
+    def parse(self):
+        from pynag import Utils
+        plugin_output = self.cleaned_data['plugin_output']
+        output = Utils.PluginOutput(plugin_output)
+        self.results = output
 
 COMMAND_CHOICES = [('reload','reload'), ('status','status'),('restart','restart'),('stop','stop'),('start','start')]
 
@@ -432,3 +432,44 @@ class SendEmailForm(forms.Form):
         except IndexError:
             # If we get here, then remote_user does not exist as a contact.
             return username
+
+
+
+initial_paste = """
+define service {
+    host_name  host01.example.com
+    service_description http://host01.example.com
+    use     template-http
+}
+
+define service {
+    name        template-http
+    check_command   okc-check_http
+}
+"""
+class PasteForm(forms.Form):
+    paste = forms.CharField( initial=initial_paste, widget=forms.Textarea() )
+    def parse(self):
+        c = pynag.Parsers.config()
+        self.config = c
+        c.reset()
+        paste = self.cleaned_data['paste']
+        # Also convert raw paste into a string so we can display errors at the right place:
+        self.pasted_string = paste.splitlines()
+        items = c.parse_string(paste)
+        c.pre_object_list = items
+        c._post_parse()
+        all_objects = []
+        for object_type, objects in c.data.items():
+            model = pynag.Model.string_to_class.get(object_type, pynag.Model.ObjectDefinition)
+            for i in objects:
+                Class = pynag.Model.string_to_class.get( i['meta']['object_type'] )
+                my_object = Class(item=i)
+                all_objects.append(my_object)
+                print my_object._inherited_attributes
+        self.objects = all_objects
+
+
+
+
+

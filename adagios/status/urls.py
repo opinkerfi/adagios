@@ -10,6 +10,7 @@ urlpatterns = patterns('adagios',
     (r'^/paneview/?$', 'status.views.status_paneview'),
     (r'^/state_history/?$', 'status.views.state_history'),
     (r'^/problems/?$', 'status.views.dashboard'),
+
     (r'^/dashboard/(?P<name>.+)/edit/?$', 'status.views.edit_business_process'),
     (r'^/dashboard/(?P<process_type>.+)/(?P<name>.+)/?$', 'status.views.dashboard2'),
 

@@ -28,14 +28,6 @@ version = __version__
 def _get_dict(x):
     x.__delattr__('objects')
     return x._original_attributes
-#__dict__
-#_get_dict = lambda x: del (x.objects)
-#timeperiods = map(_get_dict, Model.Timeperiod.objects.all) 
-#hosts = map(_get_dict, Model.Host.objects.all )
-#contacts = map(_get_dict, Model.Contact.objects.all )
-#services = map(_get_dict, Model.Service.objects.all )
-#contactgroups = map(_get_dict, Model.Contactgroup.objects.all )
-#hostgroups = map(_get_dict, Model.Hostgroup.objects.all )
 
 def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwargs):
     ''' Get any type of object definition in a dict-compatible fashion
@@ -53,6 +45,7 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
             List of ObjectDefinition
     '''
     tmp = Model.ObjectDefinition.objects.filter(object_type=object_type, **kwargs)
+    #return map(lambda x: _get_dict(x), tmp)
     return map( lambda x: object_to_dict(x, attributes=with_fields), tmp)
 
 def servicestatus(with_fields="host_name,service_description,current_state,plugin_output"):
@@ -73,7 +66,7 @@ def object_to_dict(object, attributes="id,shortname,object_type"):
     """ Takes in a specific object definition, returns a hash maps with "attributes" as keys"""
     result = {}
     if not attributes or attributes == '*':
-        attributes=object.keys()
+        return object._original_attributes
     else:
         attributes=attributes.split(',')
     for k in attributes:

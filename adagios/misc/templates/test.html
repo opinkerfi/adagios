@@ -6,82 +6,104 @@
 {% block nav1 %}misc{% endblock %}
 
 {% block toolbar %}
-        <button class="btn btn-primary" onclick="save_check_command(); ">Save changes</button>
-        <button class="hide btn btn-primary" onclick="run_this_check_command();">Run this check plugin</button>
 {% endblock %}
 {% block content %}
-    <div class="argument_div">
-        <table class="" >
-            <tbody >
-            <tr class="hide">
-                <td>Host name</td>
-                <td><input type="text" name="host_name" value="{{ host_name }}"></td>
-            </tr>
-            <tr class="hide">
-                <td>Service Description</td>
-                <td><input type="text" name="service_description" value="{{ service_description }}"></td>
-            </tr>
-            <tr >
-                <td>Check Command</td>
-                <td style="background-color: white; margin-bottom: 10px">
-                    <select style="width: 400px;" data-placeholder="Please select a check command" id="check_command_select">
-                        <option value=""></option>
-                        {% for i in command_names %}
-                            <option value="{{ i }}" {% if i == check_command %}selected="selected"{% endif %}>{{ i }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
-            </tbody>
 
-            <tbody id="check_command_argument_table"></tbody>
+    {% if form %}
+        <div class=row>
+            <div class=span11>
+            {% if form.results %}
+                <h4>Parsed Plugin Output</h4> <a href="{% url misc.views.test  %}">Click here for a new paste</a>
+                <table class="table table-condensed" border=1>
+                    <tr>
+                        <td>Plugin Summary</td>
+                        <td>{{ form.results.summary }}</td>
+                    </tr>
+                    <tr>
+                        <td>Long Output</td>
+                        <td>{{ form.results.long_output }}</td>
+                    </tr>
+                    <tr>
+                        <td>Parsed Performance Data</td>
+                        <td>
+                            {% if form.results.parsed_perfdata.metrics %}
+                                <table border=1 class=table style="border-color: #ffffff;" >
+                                    <tr>
+                                        <th></th>
+                                        <th>label</th>
+                                        <th>value</th>
+                                        <th>warn</th>
+                                        <th>crit</th>
+                                        <th>unit</th>
+                                        <th>min</th>
+                                        <th>max</th>
+                                        <th>pnp</th>
+                                    </tr>
+                                    {% for i in form.results.parsed_perfdata.metrics %}
+                                        <tr>
+                                            <td class="nowrap"><div class="circle state_{{ i.get_status }}"> </div></td>
+                                            <td>{{ i.label }}</td>
+                                            <td>{{ i.value }} </td>
+                                            <td>{{ i.warn }}  </td>
+                                            <td>{{ i.crit }}  </td>
+                                            <td> {{ i.uom }}</td>
+                                            <td>{{ i.min }}   </td>
+                                            <td>{{ i.max }}   </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            {% else %}
+                                No valid performance data found in this plugin.
+                            {% endif %}
 
-            <tbody id="service_macros_table"></tbody>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Raw Performance Data</td>
+                        <td>{{ form.results.perfdata }}</td>
+                    </tr>
 
-            <tbody id="other_attributes_table"></tbody>
-        </table>
-    </div>
+                </table>
+            {% else %}
+            {% endif %}
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="span11">
+
+            <!-- On get requests, let display a paste form -->
+            <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                    <h4>Paste the output of a nagios plugin below</h4>
+                    <hr>
+                    <textarea wrap="off" id="id_plugin_output" rows="10" class=span11 cols="80" name="plugin_output">test | load1=5</textarea>
+                    <hr>
+                    <button class="pull-right btn btn-success" type="submit">Save</button>
+            </form>
+            </div>
+
+        </div>
 
 
-    </div>
-    <br>
 
-    <br>
-    <table class="">
-        <tr>
-            <td>Actual command_line</td>
-            <td>
-                <pre id="command_line_preview">Loading...</pre>
-            </td>
-        </tr>
-        <tr>
-            <td>Original Command Line</td>
-            <td>
-                <pre  id="original_command_line"></pre>
-            </td>
-        </tr>
-        <tr class="hide">
-            <td>Output from plugin</td>
-            <td>
-                <pre id="plugin_output">Command has not been run yet</pre>
-            </td>
-        </tr>
 
-    </table>
-    <button id="check_command_save_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="check_command_saving_text"> Saving...</span>' class="btn btn-primary" onclick="save_check_command(); ">Save changes</button>
-    <style>
-        .macro_in_a_text {
-            color: #b70000;;
-            font-size:  80%;
-            font-weight: bold;
-        }
+        <style>
+            textarea{
+                display: block;
+                margin: 0px;
+                padding: 0px;
+                width: 500px;
+                height: 300px;
+            }
+        </style>
 
-        .argument_div {
-            border: 1px solid #eee;
-            margin: 20px;
-            padding: 10px;
-        }
-    </style>
+
+
+    {% endif %}
+
 {% endblock %}
 
 {% block footer %}

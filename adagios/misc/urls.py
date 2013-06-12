@@ -3,6 +3,9 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     (r'^/test/?', 'adagios.misc.views.test'),
+    (r'^/paste/?', 'adagios.misc.views.paste'),
+
+
     (r'^/edit_check_command/?', 'adagios.misc.views.edit_check_command'),
     (r'^/settings/?', 'adagios.misc.views.settings'),
     (r'^/nagios/?', 'adagios.misc.views.nagios'),
