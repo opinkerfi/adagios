@@ -269,7 +269,7 @@ class BusinessProcess:
     """
     process_type = 'base'
     processes = [] # List of Subprocesses
-    description = None
+    notes = None
     display_name = None
     def get_status(self):
         """ Returns nagios-style exit code that represent the state of this whole group """
@@ -284,7 +284,7 @@ class BusinessProcess:
         processes = self.processes
         result['status'] = self.get_status()
         result['processes'] = map(lambda x: x.toJSON(), self.processes)
-        result['description'] = self.description
+        result['notes'] = self.notes
         result['display_name'] = self.display_name
         return result
     def add_process(self, business_process):
@@ -317,7 +317,7 @@ class HostgroupBP(BusinessProcess):
         if not display_name:
             display_name  = self._hostgroup.get('alias')
         self.display_name = display_name
-        self.description = self._hostgroup.get('notes')
+        self.notes = self._hostgroup.get('notes')
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
 
         # Get information about child hostgroups
@@ -356,7 +356,7 @@ class ServicegroupBP(BusinessProcess):
         self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
         self._servicegroup = self._livestatus.get_servicegroup(name)
         self.servicegroup_name = name
-        self.description = self.servicegroup.get('notes')
+        self.notes = self.servicegroup.get('notes')
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
         if not display_name:
             display_name  = self._servicegroup.get('alias')
@@ -419,7 +419,7 @@ class CustomBP(BusinessProcess):
         if my_data is None:
             return
 
-        self.description = my_data.get('description')
+        self.notes = my_data.get('notes')
         for i in my_data.get('processes', []):
             process = get_business_process(i[0], i[1])
             self.add_process(process)
@@ -430,13 +430,13 @@ class CustomBP(BusinessProcess):
         i = {}
         result[self.display_name] = i
         i['display_name'] = self.display_name
-        i['description'] = self.description
+        i['notes'] = self.notes
         i['processes'] = []
         for proc in self.processes:
             bp_type = proc.process_type
             bp_name = proc.display_name
             i['processes'].append( (bp_type, bp_name) )
-        json_string = json.dumps(result)
+        json_string = json.dumps(result, indent=4)
         open(filename, 'w').write(json_string)
 
     def __init__(self, name):
