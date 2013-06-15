@@ -81,7 +81,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
 class PynagRadioWidget(forms.widgets.HiddenInput):
     """ Special Widget designed to make Nagios attributes with 0/1 values look like on/off buttons """
     def render(self, name, value, attrs=None):
-        output = super(self.__class__, self).render(name, value, attrs)
+        output = super(PynagRadioWidget, self).render(name, value, attrs)
         one,zero,unset = "","",""
         if value == "1":
             one = "active"
@@ -101,7 +101,7 @@ class PynagRadioWidget(forms.widgets.HiddenInput):
 
 class PynagForm(AdagiosForm):
     def clean(self):
-        cleaned_data = super(AdagiosForm, self).clean()
+        cleaned_data = super(PynagForm, self).clean()
         for k,v in cleaned_data.items():
             # change from unicode to str
             v = cleaned_data[k] = smart_str(v)
@@ -111,7 +111,8 @@ class PynagForm(AdagiosForm):
                     cleaned_data[k] = "+%s"%(v)
         return cleaned_data
     def save(self):
-        for k in self.changed_data:
+        changed_keys = map(lambda x: smart_str(x), self.changed_data)
+        for k in changed_keys:
             # Ignore fields that did not appear in the POST at all
             if k not in self.data and k not in MULTICHOICE_FIELDS:
                 continue
@@ -138,7 +139,7 @@ class PynagForm(AdagiosForm):
         self.pynag_object.save()
     def __init__(self, pynag_object ,*args, **kwargs):
         self.pynag_object = pynag_object
-        super(self.__class__,self).__init__(*args, **kwargs)
+        super(PynagForm,self).__init__(*args, **kwargs)
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
         defined_attributes = sorted( self.pynag_object._defined_attributes.keys() )
@@ -317,14 +318,14 @@ class AdvancedEditForm(AdagiosForm):
             self.pynag_object[k] = value
         self.pynag_object.save()
     def clean(self):
-        cleaned_data = super(self.__class__, self).clean()
+        cleaned_data = super(AdvancedEditForm, self).clean()
         for k,v in cleaned_data.items():
             # change from unicode to str
             cleaned_data[k] = smart_str(v)
         return cleaned_data
     def __init__(self, pynag_object ,*args, **kwargs):
         self.pynag_object = pynag_object
-        super(self.__class__,self).__init__(*args, prefix=self.__prefix, **kwargs)
+        super(AdvancedEditForm,self).__init__(*args, prefix=self.__prefix, **kwargs)
 
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
@@ -357,7 +358,7 @@ class DeleteObjectForm(AdagiosForm):
     """ Form used to handle deletion of one single object """
     def __init__(self, pynag_object, *args, **kwargs):
         self.pynag_object = pynag_object
-        super(self.__class__, self).__init__(*args,**kwargs)
+        super(DeleteObjectForm, self).__init__(*args,**kwargs)
         if self.pynag_object.object_type == 'host':
             recursive = forms.BooleanField(required=False, initial=True, label="Delete Services",
                 help_text="Check this box if you also want to delete all services of this host")
@@ -375,7 +376,7 @@ class CopyObjectForm(AdagiosForm):
     """
     def __init__(self, pynag_object, *args, **kwargs):
         self.pynag_object = pynag_object
-        super(self.__class__, self).__init__(*args,**kwargs)
+        super(CopyObjectForm, self).__init__(*args,**kwargs)
         object_type = pynag_object['object_type']
 
         # For templates we assume the new copy will have its generic name changed
@@ -437,12 +438,6 @@ class CopyObjectForm(AdagiosForm):
         return self._clean_shortname()
     def clean_contact_name(self):
         return self._clean_shortname()
-    def clean(self):
-        cleaned_data = super(self.__class__, self).clean()
-        for k,v in cleaned_data.items():
-            # change from unicode to str
-            cleaned_data[k] = smart_str(v)
-        return cleaned_data
 
 
 class BaseBulkForm(AdagiosForm):
@@ -551,11 +546,6 @@ class AddObjectForm(PynagForm):
         else:
             field_name = "%s_name" % object_type
             self.fields[field_name] = self.get_pynagField(field_name, required=True)
-
-
-
-
-
     def clean_timeperiod_name(self):
         return self._clean_shortname()
     def clean_command_name(self):
