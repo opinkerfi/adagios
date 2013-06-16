@@ -1,0 +1,24 @@
+{% extends "base_status.html" %}
+
+{% block title %}Business Process{% endblock %}
+{% block smallheader %}view{% endblock %}
+{% block largeheader %}Business Process{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.business_process_list %}">Business Process</a>{% endblock %}
+
+{% load adagiostags %}
+
+{% block content %}
+    Are you sure you want to delete {{ bp }} ?
+    <form action="" method="post">{% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes i am sure</button>
+    </form>
+{% endblock %}
+
+
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+{% block toolbar %}{% endblock %}
+

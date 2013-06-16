@@ -10,6 +10,16 @@
 {% load adagiostags %}
 
 {% block content %}
+    {% if form %}
+        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+            {% include "bootstrap_fields.html" with fields=form %}
+            <div class="form-actions">
+                <button class="btn btn-success" type="submit">Save</button>
+            </div>
+        </form>
+    {% endif %}
+
+    <h4>Sub Processes</h4>
     {% if bp %}
         <table class="table">
         <tr>
@@ -19,7 +29,7 @@
         {% for i in bp.processes %}
             <tr>
                 <td>{{ i.process_type  }}</td>
-                <td>{{ i.display_name }}</td>
+                <td>{{ i.process_name }}</td>
             </tr>
         {% endfor %}
         </table>

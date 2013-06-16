@@ -16,7 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 from django import forms
-
+import adagios.status.utils
+import adagios.businessprocess
 
 class LiveStatusForm(forms.Form):
     """ This form is used to generate a mk_livestatus query """
@@ -24,3 +25,59 @@ class LiveStatusForm(forms.Form):
     columns = forms.MultipleChoiceField()
     filter1 = forms.ChoiceField(required=False)
     filter2 = forms.ChoiceField(required=False)
+
+
+class BusinessProcessForm(forms.Form):
+    """ Use this form to edit a BusinessProcess """
+    name = forms.CharField(max_length=100, required=False)
+    #processes = forms.CharField(max_length=100, required=False)
+    display_name = forms.CharField(max_length=100, required=False)
+    notes = forms.CharField(max_length=1000, required=False)
+    #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
+    #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
+    def __init__(self, instance, *args,**kwargs):
+        self.bp = instance
+        return super(BusinessProcessForm, self).__init__(*args,**kwargs)
+
+    def save(self):
+        c = self.cleaned_data
+        self.bp.data.update(c)
+        self.bp.save()
+    def remove(self):
+        c = self.data
+        process_name = c.get('process_name')
+        process_type = c.get('process_type')
+        if process_type == 'None':
+            process_type = None
+        self.bp.remove_process(process_name, process_type)
+        self.bp.save()
+    def clean(self):
+        cleaned_data = super(BusinessProcessForm, self).clean()
+
+        # If name has changed, look if there is another business process with same name.
+        new_name = cleaned_data.get('name')
+        if new_name and new_name != self.bp.name:
+            if new_name in adagios.businessprocess.get_all_process_names():
+                raise forms.ValidationError("Cannot rename process to %s. Another process with that name already exists" % (new_name))
+        return cleaned_data
+    def delete(self):
+        """ Delete this business process """
+        self.bp.delete()
+    def add_process(self):
+        c = self.cleaned_data
+
+        process_name = self.data.get('process_name')
+        hostgroup_name = self.data.get('hostgroup_name')
+        servicegroup_name = self.data.get('servicegroup_name')
+        service_name = self.data.get('service_name')
+
+        if process_name:
+            self.bp.add_process(process_name, None)
+        if hostgroup_name:
+            self.bp.add_process(hostgroup_name, None)
+        if servicegroup_name:
+            self.bp.add_process(servicegroup_name, None)
+        if service_name:
+            self.bp.add_process(service_name, None)
+        self.bp.save()
+

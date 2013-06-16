@@ -264,13 +264,41 @@ def get_statistics(request):
     return c
 
 
-class BusinessProcess:
+class BusinessProcess(object):
     """ Business Process Object
     """
-    process_type = 'base'
-    processes = [] # List of Subprocesses
-    notes = None
-    display_name = None
+    _default_filename = "/etc/adagios/bpi.json"
+    def __init__(self):
+        self.data = {}
+        attributes = ('process_type','notes','display_name','name')
+        for i in attributes:
+            self._add_property(i)
+
+        self.process_type = None
+        self.processes = []
+        self.notes = None
+        self.name = None
+        self.display_name = None
+
+    def _add_property(self, name):
+        """ Create a dynamic property specific BusinessProcess
+
+        in short:
+          self.name = x -> self.data['name'] = x
+
+        Returns: None
+        """
+
+        fget = lambda self: self.data.get(name)
+        fset = lambda self, value: self.set(name, value)
+        fdel = lambda self: self.set(name, None)
+        fdoc = "This is the %s attribute for object definition"
+        setattr( self.__class__, name, property(fget,fset,fdel,fdoc))
+
+
+    def set(self, key, value):
+        """ Same as self[name] = value """
+        self[key] = value
     def get_status(self):
         """ Returns nagios-style exit code that represent the state of this whole group """
         status = -1
@@ -278,15 +306,7 @@ class BusinessProcess:
             status = max(status, i.get_status())
         return status
     def __repr__(self):
-        return "Business Process %s" % (self.display_name)
-    def toJSON(self):
-        result = {}
-        processes = self.processes
-        result['status'] = self.get_status()
-        result['processes'] = map(lambda x: x.toJSON(), self.processes)
-        result['notes'] = self.notes
-        result['display_name'] = self.display_name
-        return result
+        return "Business Process %s" % (self.display_name or self.name)
     def add_process(self, business_process):
         if not self.processes:
             self.processes = [business_process]
@@ -306,20 +326,25 @@ class BusinessProcess:
         state[1] = "warning"
         state[2] = "critical"
         return state.get( self.get_status(), "unknown")
+    def __getitem__(self, key):
+        return self.data.get(key, None)
+    def __setitem__(self,key,value):
+        return self.data.__setitem__(key, value)
 
 class HostgroupBP(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup """
-    process_type = 'hostgroup'
+
     def __init__(self, name, display_name=None):
+        super(self.__class__, self).__init__()
         self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
         self._hostgroup = self._livestatus.get_hostgroup(name)
-        self.hostgroup_name = name
+        self.name = name
         if not display_name:
             display_name  = self._hostgroup.get('alias')
         self.display_name = display_name
         self.notes = self._hostgroup.get('notes')
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
-
+        self.process_type = 'hostgroup'
         # Get information about child hostgroups
         subgroups = self._pynag_object.hostgroup_members or ''
         subgroups = subgroups.split(',')
@@ -348,10 +373,8 @@ class HostgroupBP(BusinessProcess):
             return 2
         return service_status
 
-
 class ServicegroupBP(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup """
-    process_type = 'servicegroup'
     def __init__(self, name):
         self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
         self._servicegroup = self._livestatus.get_servicegroup(name)
@@ -364,6 +387,7 @@ class ServicegroupBP(BusinessProcess):
         # Get information about child servicegroups
         subgroups = self._pynag_object.servicegroup_members or ''
         subgroups = subgroups.split(',')
+        self.process_type = 'servicegroup'
 
         for i in subgroups:
             if not i:
@@ -386,7 +410,6 @@ class ServicegroupBP(BusinessProcess):
             return 2
         return service_status
 
-
 class ServiceBP(BusinessProcess):
     """ BusinessProcess around one single service
     """
@@ -397,7 +420,6 @@ class ServiceBP(BusinessProcess):
     def get_status(self):
         return self._service.get('state', 3)
 
-
 class CustomBP(BusinessProcess):
     """ Custom Business Process. Usually a wrapper around other types of Business Processes """
     critical_processes = []
@@ -406,47 +428,85 @@ class CustomBP(BusinessProcess):
     noncritical_threshold = 0
 
     process_type = 'custom'
-    def load_from_file(self, filename):
+    def _get_all_json(self, filename=None):
+        """ Get all business processes from a specific file
+        """
+        result = []
+        if filename is None:
+            filename = self._default_filename
         try:
             raw_data = open(filename).read()
         except IOError:
-            return
+            return result
         try:
-            all_json_data = json.loads(raw_data)
+            all_json_data = json.loads(raw_data) or []
         except Exception:
-            return
-        my_data = all_json_data.get(self.display_name)
-        if my_data is None:
-            return
+            return result
+        result = all_json_data
+        return result
+    def all(self):
+        """ Returns a list of All custom Business Processes """
+        all_json = self._get_all_json()
+        result = []
+        for i in all_json:
+            name = i.get('name', None)
+            if not name:
+                continue
+            c = CustomBP(name)
+            c.data = i
+            result.append(c)
+        return result
+    def load(self, filename=None):
+        if not filename:
+            filename = self._default_filename
+        all_json = self._get_all_json(filename=filename)
+        for i in all_json:
+            name = i.get('name', None)
+            if not name:
+                continue
+            if name == self.name:
+                self.data = i
+                self.processes = []
+                for subprocess in self.data.get('processes', []):
+                    bp = get_business_process(subprocess['process_type'], subprocess['process_name'])
+                    self.processes.append(bp)
+                return
+        raise Exception("Could not load a BusinessProcess with name: %s" % self.name)
 
-        self.notes = my_data.get('notes')
-        for i in my_data.get('processes', []):
-            process = get_business_process(i[0], i[1])
-            self.add_process(process)
-    def save_to_file(self, filename=None):
-        if filename is None:
-            filename = "/etc/adagios/bpi.json"
-        result = {}
-        i = {}
-        result[self.display_name] = i
-        i['display_name'] = self.display_name
-        i['notes'] = self.notes
-        i['processes'] = []
-        for proc in self.processes:
-            bp_type = proc.process_type
-            bp_name = proc.display_name
-            i['processes'].append( (bp_type, bp_name) )
-        json_string = json.dumps(result, indent=4)
+    def save(self, filename=None):
+        """ Saves this business process in a json format  to file
+        """
+        if not filename:
+            filename = self._default_filename
+        all_json = self._get_all_json(filename=filename)
+        index = None
+        data = self.data.copy()
+        for i, item in enumerate(all_json):
+            if item.get('name') == self.name:
+                index = i
+                break
+        if index is None:
+            all_json.append(data)
+        else:
+            all_json[index] = data
+        json_string = json.dumps(all_json, indent=4)
         open(filename, 'w').write(json_string)
 
     def __init__(self, name):
-        self.display_name = name
-        self.load_from_file('/etc/adagios/bpi.json')
+        super(CustomBP, self).__init__()
+        self.name = name
+        self.process_type = "custom"
     def add_process(self, business_process, critical=True):
         """ Add another business process into this group """
         if not self.processes:
             self.processes = []
         self.processes.append( business_process )
+        tmp = {}
+        tmp['process_name'] = business_process.name
+        tmp['process_type'] = business_process.process_type
+        if 'processes' not in self.data:
+            self.data['processes'] = []
+        self.data['processes'].append(  tmp )
         if critical == True:
             self.critical_processes.append( business_process )
         else:
@@ -476,7 +536,11 @@ def get_business_process(process_type, name):
     elif process_type == 'servicegroup':
         return HostgroupBP(name)
     elif process_type == 'custom':
-
-        return CustomBP(name)
+        c = CustomBP(name)
+        try:
+            c.load()
+        except Exception:
+            pass
+        return c
     else:
-        raise PynagError("Business process of type %s not found" % process_type)
+        raise Exception("Business process of type %s not found" % process_type)

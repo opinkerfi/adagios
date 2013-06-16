@@ -1,0 +1,47 @@
+{% extends "base_status.html" %}
+
+{% block title %}Business Process{% endblock %}
+{% block smallheader %}view{% endblock %}
+{% block largeheader %}Business Process{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.business_process_list %}">Business Process</a>{% endblock %}
+
+{% load adagiostags %}
+
+{% block content %}
+    Found {{ processes|length }} processes.
+    <table class="table table-condensed well">
+    <tr>
+        <th>Process Name</th>
+        <th>Alias</th>
+        <th>Sub Processes</th>
+        <th>Actions</th>
+    </tr>
+        {% for i in processes %}
+            <tr>
+                <td>
+                    <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
+
+                    <a href="{% url adagios.status.views.business_process_edit i.name %} ">{{ i.name }}</a>
+                </td>
+                <td>{{ i.display_name }}</td>
+                <td>{{ i.processes|length }}</td>
+
+                <td>
+                    <a class="btn btn-mini btn-primary" href="{% url adagios.status.views.business_process_edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> edit </a>
+                    <a class="btn btn-mini btn-primary" href="{% url adagios.status.views.business_process_view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> view</a>
+                    <a class="btn btn-mini btn-danger" href="{% url adagios.status.views.business_process_delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
+
+
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+{% block toolbar %}{% endblock %}
+

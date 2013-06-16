@@ -1,0 +1,126 @@
+{% extends "base_status.html" %}
+
+{% block title %}Business Process{% endblock %}
+{% block smallheader %}edit{% endblock %}
+{% block largeheader %}Business Process{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.business_process_list %}">Business Process</a>{% endblock %}
+
+{% load adagiostags %}
+
+{% block content %}
+    <ul class="nav nav-tabs" id="objecttab">
+        <li><a href="#basic" class="active" data-toggle="tab">Basic Information</a></li>
+        <li><a href="#subprocesses" data-toggle="tab">Sub Processes</a></li>
+        <li><a href="#rules" data-toggle="tab">Business Rules</a></li>
+        <li><a href="#other" data-toggle="tab">Other</a></li>
+    </ul>
+    <div class="tab-content">
+
+        <div class="tab-pane active" id="basic">
+
+            {% if form %}
+                <form action="" method="post" class="form-horizontal">{% csrf_token %}
+                    {% include "bootstrap_fields.html" with fields=form %}
+                    <div class="form-actions">
+                        <button name="save_process" class="btn btn-success" type="submit">Save</button>
+                    </div>
+                </form>
+            {% else %}
+                Could not find Business process. {{ process_name }}
+            {% endif %}
+        </div>
+
+        <div class="tab-pane " id="subprocesses">
+
+            <div id="sub_processes">
+                <table class="well table table-condensed">
+                    <tr>
+                        <th>Name</th>
+                        <th>Alias</th>
+                        <th>Sub Processes</th>
+                        <th><button name="remove_process" class="close status_ok" type="submit">×</button></th>
+                    </tr>
+                    {% for i in bp.get_processes %}
+                        <tr class="subprocess-row">
+                            <td>
+                                <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
+                                <a href="{% url adagios.status.views.business_process_edit i.name %} ">{{ i }}</a>
+                            </td>
+                            <td>{{ i.display_name }}</td>
+                            <td>{{ i.processes|length }}</td>
+                            <td>
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="process_name" value="{{ i.name }}">
+                                    <input type="hidden" name="process_type" value="{{ i.process_type }}">
+                                    <button name="remove_process" title="Remove group from this business process" class="close status_critical" >×</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div id="add_subprocess">
+                <h4>Add new...</h4>
+                <form method="post">
+                    {% csrf_token %}
+                    <table id="add_subprocess_table" class="table table-condensed">
+                        <tr>
+                            <td>Business Process</td>
+                            <td><input id="add_custom" name="process_name" placeholder="enter the name of a business process"></td>
+                            <td><button name="add_process" class="btn btn-small btn-success">Add business process</button></td>
+                        </tr>
+                        <tr>
+                            <td>Hostgroup</td>
+                            <td><input id="add_hostgroup" name="hostgroup_name" placeholder="enter the name of a hostgroup"></td>
+                            <td><button name="add_hostgroup" class="btn btn-small btn-success">Add Hostgroup</button></td>
+                        </tr>
+                        <tr>
+                            <td>Servicegroup</td>
+                            <td><input id="add_servicegroup" name="servicegroup_name" placeholder="enter the name of a servicegroup"></td>
+                            <td><button name="add_servicegroup" class="btn btn-small btn-success">Add Servicegroup</button></td>
+                        </tr>
+                        <tr>
+                            <td>Service</td>
+                            <td><input id="add_service" name="service_name" placeholder="enter the name of a service"></td>
+                            <td><button name="add_service" class="btn btn-small btn-success">Add Service</button></td>
+                        </tr>
+
+                    </table>
+                </form>
+
+            </div>
+
+    </div>
+
+    <div class="tab-pane " id="rules">
+        <table class="well table">
+            <tr>
+                <th>Trigger</th>
+                <th>Action</th>
+            </tr>
+            {% for i in bp.rules %}
+                <tr>
+                    <td>Sub Process tagged <i>{{ i.0 }}</i> has at least {{ i.1 }} problems</td>
+                    <td>Put this business group in status <span class="status state_{{ i.2 }}">{{ i.2 }}</span></td>
+
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="tab-pane " id="other">
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+{% block toolbar %}{% endblock %}
+
