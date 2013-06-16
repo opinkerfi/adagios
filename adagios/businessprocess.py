@@ -223,9 +223,51 @@ class Hostgroup(BusinessProcess):
         return service_status
 
 class Servicegroup(BusinessProcess):
-    pass
+    """ Business Process object that represents the state of one hostgroup """
+    def __init__(self, name):
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._servicegroup = self._livestatus.get_servicegroup(name)
+        self.servicegroup_name = name
+        self.notes = self.servicegroup.get('notes')
+        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
+        if not display_name:
+            display_name  = self._servicegroup.get('alias')
+        self.display_name = display_name
+        # Get information about child servicegroups
+        subgroups = self._pynag_object.servicegroup_members or ''
+        subgroups = subgroups.split(',')
+        self.process_type = 'servicegroup'
+
+        for i in subgroups:
+            if not i:
+                continue
+            subprocess = Servicegroup(i)
+            self.add_process( subprocess )
+    def get_status(self):
+        """ Same as BusinessProcess.get_status()
+
+        status for servicegroup is defined in the following way:
+         Critical if any service has state unknown
+         Otherwise worst service state
+         OK if there are no service or host problems
+        """
+        servicegroup = self._livestatus.get_servicegroup(self.servicegroup_name)
+
+
+        service_status = servicegroup.get('worst_service_state')
+        if service_status == 3:
+            return 2
+        return service_status
+
 class Service(BusinessProcess):
     pass
+    process_type = 'service'
+    def __init__(self,host_name, service_description):
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._service = self._livestatus.get_service(host_name, service_description)
+    def get_status(self):
+        return self._service.get('state', 3)
+
 
 def get_class(process_type):
     """ Looks up process_type and return apropriate BusinessProcess Class
