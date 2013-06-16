@@ -22,7 +22,7 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <!-- Le fav and touch icons -->1
+    <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="{% url media path="ico/favicon.ico" %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114"
           href="{% url media path="ico/apple-touch-icon-114-precomposed.png" %}">
@@ -75,7 +75,7 @@
                 {% block largeheader %}block=largeheader {% endblock %}
             </h2>
         </div>
-        <div style="padding-top: 10px; margin-bottom: 0px; line-height: 0px;" class="hide" id="right_of_title">
+        <div  class="hide" id="right_of_title">
             {% if okconfig %}
                 <div class="pull-right btn-group"><a class="btn btn-success" href="{% url okconfig_.views.addhost %}">Add Host
                 </a><a class="btn  btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a><ul class="dropdown-menu">
@@ -86,7 +86,7 @@
                 <br>
             {% endif %}
         </div>
-        <div id="error_messages" style="margin-left: 30px;" class="pull-left">
+        <div id="error_messages"  class="pull-left">
             {% if errors|length %}
                 {%  for error in errors %}
                     <div class="alert">
@@ -108,7 +108,7 @@
 </div>
 </div>
 
-<hr style="margin-top: 10px; margin-bottom: 10px;">
+<hr id="seperate_top_and_content">
 
 <div class="container-fluid content">
     <div class="row-fluid ">
@@ -117,7 +117,7 @@
             <ul class="nav nav-list">
                 <li><a href="{% url status.views.status_index %}">Overview </a></li>
                 <li >
-                    <a {% if num_problems %}{% endif %} href="{% url status.views.services %}?unhandled">Problems {% if num_problems %}<span style="//color: red">({{ num_problems }})</span>{% endif %}</a>
+                    <a {% if num_problems %}{% endif %} href="{% url status.views.services %}?unhandled">Problems {% if num_problems %}<span>({{ num_problems }})</span>{% endif %}</a>
                 </li>
                 <li><a href="{% url status.views.status_host %}">Hosts</a></li>
                 <li><a href="{% url status.views.services %}">Services </a></li>
@@ -146,10 +146,10 @@
 
         <div class="span10" id="main_content">
             {% block toolbar %}
-            <div class id="toolbar row-fluid" style="margin-bottom: 40px;">
+            <div id="toolbar">
 
                 {% block view_buttons %}
-                <div class="btn-group pull-left" id="view_buttons" style="margin-right: 15px;">
+                <div class="btn-group pull-left" id="view_buttons">
                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -186,7 +186,7 @@
                 <div class=" pull-right" id="search_box">
                     <form action="{% url status.views.services %}" method="get" >
                         <div class="pull-left">
-                            <input name="q"  id="search_field" style="width: 200px;  line-height: 22px; margin-left: 5px;" value="{{ request.GET.q }}" class="search-query" placeholder="hosts, services, etc..." />
+                            <input name="q"  id="search_field"  value="{{ request.GET.q }}" class="search-query" placeholder="hosts, services, etc..." />
                         </div>
                         <div class="btn-group pull-left"><button class="btn btn-small"  type="submit" href="{% url status.views.services %}"><i class="icon-search"></i> Search</button><a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
@@ -321,7 +321,7 @@
                         To:
                     </label>
                     <div class="controls" id="mail_to_field">
-                        <input id="id_mail_to" type="text" class="required" value="" name="to"   style="width: 100%" />
+                        <input id="id_mail_to" type="text" class="required" value="" name="to" style="width: 100%" />
                     </div>
                 </div>
 
