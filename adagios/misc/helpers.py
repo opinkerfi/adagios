@@ -45,6 +45,7 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
             List of ObjectDefinition
     '''
     tmp = Model.ObjectDefinition.objects.filter(object_type=object_type, **kwargs)
+    with_fields = with_fields.split(',')
     #return map(lambda x: _get_dict(x), tmp)
     return map( lambda x: object_to_dict(x, attributes=with_fields), tmp)
 
@@ -67,6 +68,8 @@ def object_to_dict(object, attributes="id,shortname,object_type"):
     result = {}
     if not attributes or attributes == '*':
         return object._original_attributes
+    elif isinstance(attributes,list):
+        pass
     else:
         attributes=attributes.split(',')
     for k in attributes:
