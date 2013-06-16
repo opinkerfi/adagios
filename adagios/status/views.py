@@ -21,7 +21,7 @@ from collections import defaultdict
 import json
 import traceback
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response,redirect
 from django.template import RequestContext
 from django.utils.encoding import smart_str
 from django.core.context_processors import csrf
@@ -37,6 +37,7 @@ import adagios.settings
 from adagios.pnp.functions import run_pnp
 from adagios.status import utils
 import adagios.status.rest
+import adagios.status.forms
 
 
 state = defaultdict(lambda: "unknown")
@@ -1006,6 +1007,21 @@ def comment_list(request):
     c['downtimes'] = grep_dict(downtimes, **args)
     return render_to_response('status_comments.html', c, context_instance = RequestContext(request))
 
+@error_handler
+def downtime_list(request):
+    """ Display a list of all comments """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    comments = l.query('GET comments')
+    downtimes = l.query('GET downtimes')
+    args = request.GET.copy()
+    c['comments'] = grep_dict(comments, **args)
+    c['acknowledgements'] = grep_dict(comments, entry_type=4)
+    c['downtimes'] = grep_dict(downtimes, **args)
+    return render_to_response('status_downtimes.html', c, context_instance = RequestContext(request))
+
 def grep_dict(array, **kwargs):
     """  Returns all the elements from array that match the keywords in **kwargs
 
@@ -1161,7 +1177,10 @@ def edit_business_process(request, name):
     bp = utils.get_business_process('custom', name)
 
     c['bp'] = bp
-    if request.method == 'POST':
+    if request.method == 'GET':
+        c['form'] = adagios.status.forms.BusinessProcessForm(initial=bp.data)
+    elif request.method == 'POST':
+        c['form'] = adagios.status.forms.BusinessProcessForm(data=request.POST)
         method = None
         name = None
         if 'add_custom' in request.POST:
@@ -1176,11 +1195,75 @@ def edit_business_process(request, name):
         elif 'add_hostgroup' in request.POST:
             method = "hostgroup"
             name = request.POST.get('hostgroup_name')
+        else:
+            if c['form'].is_valid():
+                c['form'].save()
         if method is not None:
             try:
                 subprocess = utils.get_business_process(method, name)
                 bp.add_process( subprocess)
-                bp.save_to_file()
-            except Exception:
+                bp.save()
+            except KeyError:
                 c['errors'].append("Could not find %s named %s" % (method, name))
     return render_to_response('bp_edit.html', c, context_instance = RequestContext(request))
+
+
+def business_process_edit(request, process_name):
+    """ Edit one specific business process
+    """
+
+    messages = []
+    errors = []
+    import adagios.businessprocess
+    bp = adagios.businessprocess.get_business_process(process_name)
+    if request.method == 'GET':
+        form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
+    elif request.method == 'POST':
+        form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
+        if 'save_process' in request.POST:
+            if form.is_valid():
+                form.save()
+        elif 'remove_process' in request.POST:
+            if form.is_valid():
+                form.remove()
+        elif 'add_process' in request.POST:
+            if form.is_valid():
+                form.add_process()
+        elif 'add_hostgroup' in request.POST:
+            if form.is_valid():
+                form.add_process()
+        # Load the process again, since any of the above probably made changes to it.
+        bp = adagios.businessprocess.get_business_process(process_name)
+    return render_to_response('business_process_edit.html', locals(), context_instance = RequestContext(request))
+
+def business_process_view(request, process_name):
+    """ View one specific business process
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    import adagios.businessprocess
+    bp = adagios.businessprocess.get_business_process(process_name)
+    return render_to_response('business_process_view.html', locals(), context_instance = RequestContext(request))
+
+
+def business_process_list(request):
+    """ List all configured business processes
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    import adagios.businessprocess
+    processes = adagios.businessprocess.get_all_processes()
+    return render_to_response('business_process_list.html', locals(), context_instance = RequestContext(request))
+
+def business_process_delete(request, process_name):
+    """ Delete one specific business process """
+    import adagios.businessprocess
+    bp = adagios.businessprocess.get_business_process(process_name)
+    if request.method == 'POST':
+        form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
+        form.delete()
+        return redirect('adagios.status.views.business_process_list')
+
+    return render_to_response('business_process_delete.html', locals(), context_instance = RequestContext(request))

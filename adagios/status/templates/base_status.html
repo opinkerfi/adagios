@@ -30,6 +30,19 @@
                 padding-top: 0;
             }
         }
+
+        /* .status_* are used to make a text color change according to status */
+        .status_ok, .status_0 {
+            color: #339966;
+        }
+        .status_warning, .status_1 {
+            color: #f29d50;
+        }
+
+            /* line 297, /data/octostatus/app/assets/styles/basics.scss */
+        .status_critical, .status_2 {
+            color: #cc3300;
+        }
         .state_0 {
             color: #468847;
             background-color: #468847;
@@ -503,7 +516,7 @@
                 <li><a href="{% url status.views.state_history %}">State History </a></li>
                 <li><a href="{% url status.views.status_log %}">Log</a></li>
                 <li><a href="{% url status.views.comment_list %}">Comments</a></li>
-                <li><a href="{% url status.views.comment_list %}#tab_downtimes">Downtimes</a></li>
+                <li><a href="{% url status.views.downtime_list %}">Downtimes</a></li>
             </ul>
 
             <h5>Experimental</h5>
