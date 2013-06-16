@@ -22,7 +22,7 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <!-- Le fav and touch icons -->
+    <!-- Le fav and touch icons -->1
     <link rel="shortcut icon" href="{% url media path="ico/favicon.ico" %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114"
           href="{% url media path="ico/apple-touch-icon-114-precomposed.png" %}">
@@ -41,7 +41,7 @@
 
 <!-- block top_navigation starts -->
 {% block top_navigation %}
-    {%  include "snippets/header.html" %}
+    {%  include "snippets/top_navigation_bar.html" %}
 {% endblock %}
 <!-- block top_navigation ends -->
 
@@ -400,10 +400,6 @@
                 "bPaginate": true,
                 "iDisplayLength": 100
             });
-            //$('#search_field').keypress(function(){
-            //    oTable.fnFilter( $(this).val() );
-            //});
-            //$('#datatable_filter').hide();
             $('.dataTables_length').hide();
 
         });
@@ -697,38 +693,6 @@
         });
 
 
-        /*
-        // Enable shift+clicking to select multiple elements
-        var lastChecked = null;
-        $(document).ready(function() {
-            var $chkboxes = $('.chkbox');
-            function check_range(start) {
-                //var start = $chkboxes.index(this);
-                var end = $chkboxes.index(lastChecked);
-                $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).attr('checked', lastChecked.checked);
-                //$chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).parent().siblings().css('background-color', 'lightblue');
-                lastChecked = this;
-            }
-            $chkboxes.click(function(e) {
-
-                if(!lastChecked) {
-                    lastChecked = this;
-                    return;
-                }
-
-                if(e.shiftKey) {
-                    check_range($chkboxes.index(this));
-                    //var start = $chkboxes.index(this);
-                    //var end = $chkboxes.index(lastChecked);
-
-                    //$chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).attr('checked', lastChecked.checked);
-
-                }
-
-                lastChecked = this;
-            });
-        });
-        */
         $(document).ready(function() {
             update_selected_rows();
         });
