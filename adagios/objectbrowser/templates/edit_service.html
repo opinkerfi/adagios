@@ -55,7 +55,7 @@
                                     <option value="{{ i }}" {% if i == check_command %}selected="selected"{% endif %}>{{ i }}</option>
                                 {% endfor %}
                             </select>
-                            <table margin-top="30px">
+                            <table style="margin-left: 10px; margin-top: 5px; min-width: 400px;">
                                 <tbody id="check_command_argument_table"></tbody>
                                 <tbody id="service_macros_table"></tbody>
                                 <tbody id="other_attributes_table"></tbody>
@@ -172,10 +172,10 @@
                     editor = adagios.objectbrowser.CheckCommandEditor( {
                         host_name: "{{ my_object.host_name }}",
                         check_command: "{{ check_command }}",
+                        name: "{{ my_object.name }}",
                         service_description : "{{ my_object.service_description }}"
                     });
                     editor.generate_input_fields();
-
                     // When check_command is changed, lets recreate the input fields:
                     $("#check_command_select").change( function() {
                         editor.check_command = $('#check_command_select').find(":selected").text();

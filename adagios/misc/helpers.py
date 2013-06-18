@@ -245,7 +245,7 @@ def add_object(object_type, filename=None, **kwargs):
     my_object.save()
     return {"filename":my_object.get_filename(), "raw_definition":str(my_object)}
 
-def check_command(host_name, service_description, check_command=None,**kwargs):
+def check_command(host_name, service_description, name=None,check_command=None,**kwargs):
     """ Get al
         Arguments:
             host_name           -- Name of host
@@ -262,7 +262,9 @@ def check_command(host_name, service_description, check_command=None,**kwargs):
               '$SERVICE_MACROx$': ...,
             }
     """
-    if service_description in (None,'',u''):
+    if host_name in ('None',None,''):
+        my_object = Model.Service.objects.get_by_name(name)
+    elif service_description in ('None',None,'',u''):
         my_object = Model.Host.objects.get_by_shortname(host_name)
     else:
         short_name = "%s/%s" % (host_name, service_description)

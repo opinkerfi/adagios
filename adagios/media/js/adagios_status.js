@@ -12,6 +12,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
     self = {};
     self.host_name = p.host_name || $('#check_command_editor_host_name').text();
     self.service_description = p.service_description || $('#check_command_editor_service_description').text();
+    self.name = p.name || $('#check_command_editor_service_name').text();
     self.check_command = p.check_command || $('#check_command_editor_check_command').text();
     self.working_div_id = "#check_command_editor";
 
@@ -33,6 +34,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
     self.get_all_attributes = function() {
         var my_data = {};
         my_data.host_name = self.host_name;
+        my_data.name = self.name;
         my_data.service_description = self.service_description;
         my_data.check_command = self.check_command;
         $(".check_command_parameter").each( function() {
@@ -63,7 +65,8 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         my_data = {
             'host_name': self.host_name,
             'service_description': self.service_description,
-            'check_command': self.check_command
+            'check_command': self.check_command,
+            'name': self.name
         };
         $('#check_command_editor_tables').hide();
 
