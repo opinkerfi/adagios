@@ -20,6 +20,7 @@ class BusinessProcess(object):
     _default_filename = '/etc/adagios/bpi.json'
     def __init__(self, name, **kwargs):
         self.data = kwargs
+        self.errors = []
         if not name:
             raise Exception("Name can not be empty")
         self.data['name'] = name
@@ -35,16 +36,19 @@ class BusinessProcess(object):
         for i in ('name', 'display_name', 'processes', 'rules'):
             self._add_property(i)
     def get_status(self):
-        worst_status = -1
-        processes = self.get_processes()
-        if not processes:
+        try:
+            worst_status = -1
+            processes = self.get_processes()
+            if not processes:
+                return 3
+            for i in self.get_processes():
+                if i.get('name') == self.name:
+                    continue
+                worst_status = max(worst_status, i.get_status())
+            return worst_status
+        except Exception, e:
+            self.errors.append(e)
             return 3
-        for i in self.get_processes():
-            if i.get('name') == self.name:
-                continue
-            worst_status = max(worst_status, i.get_status())
-        return worst_status
-
     def add_process(self, process_name, process_type=None, **kwargs):
         """ Add one business process to self.data """
         new_process = kwargs
@@ -177,7 +181,9 @@ class BusinessProcess(object):
         css_hint[3] = 'unknown'
         return css_hint.get(self.get_status(), "unknown")
     def __repr__(self):
-        return "%s: %s" % (self.process_type,self.get('display_name') or self.get('name'))
+        return "%s: %s" % (self.process_type,self.get('name'))
+    def __str__(self):
+        return self.get('display_name') or self.__repr__()
     def __getitem__(self, key):
         return self.get(key, None)
     def __setitem__(self,key,value):
@@ -212,15 +218,19 @@ class Hostgroup(BusinessProcess):
          Otherwise worst service state
          OK if there are no service or host problems
         """
-        hostgroup = self._livestatus.get_hostgroup(self.name)
-        host_status = hostgroup.get('worst_host_state')
-        if host_status > 0:
-            return 2
+        try:
+            hostgroup = self._livestatus.get_hostgroup(self.name)
+            host_status = hostgroup.get('worst_host_state')
+            if host_status > 0:
+                return 2
 
-        service_status = hostgroup.get('worst_service_state')
-        if service_status == 3:
-            return 2
-        return service_status
+            service_status = hostgroup.get('worst_service_state')
+            if service_status == 3:
+                return 2
+            return service_status
+        except Exception, e:
+            self.errors.append(e)
+            return 3
 
 class Servicegroup(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup """
@@ -288,7 +298,11 @@ def get_all_json(filename=None):
     """ Return contents of a particular file after json parsing them  """
     if not filename:
         filename = BusinessProcess._default_filename
-    raw_data = open(filename,'r').read()
+    try:
+        raw_data = open(filename,'r').read()
+    except IOError, e:
+        if e.errno == 2:  # File does not exist
+            return []
     if not raw_data:
         return []
     json_data = json.loads(raw_data)
@@ -298,11 +312,18 @@ def get_all_processes(filename=None):
     """ Return all saved business processes
     """
     result = []
-    json_data = get_all_json(filename=filename)
+    try:
+        json_data = get_all_json(filename=filename)
+    except IOError, e:
+        if e.errno == 2:
+            json_data = []
+        else:
+            raise e
     for i in json_data:
         bp = BusinessProcess(**i)
         result.append(bp)
     return result
+
 def get_all_process_names(filename=None):
     """ Return a list of all process names out there
     """
@@ -316,7 +337,10 @@ def get_business_process(process_name, process_type=None, **kwargs):
     """
     BPClass = get_class(process_type)
     my_business_process = BPClass(process_name)
-    my_business_process.load()
+    try:
+        my_business_process.load()
+    except Exception, e:
+        my_business_process.errors.append(e)
     my_business_process.data.update(kwargs)
     return my_business_process
 

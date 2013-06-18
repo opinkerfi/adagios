@@ -81,3 +81,21 @@ class BusinessProcessForm(forms.Form):
             self.bp.add_process(service_name, None)
         self.bp.save()
 
+
+
+choices = 'businessprocess', 'hostgroup','servicegroup','service'
+process_type_choices = map(lambda x: (x,x), choices)
+class AddSubProcess(forms.Form):
+    process_type = forms.ChoiceField(choices=process_type_choices)
+    process_name = forms.CharField(widget=forms.HiddenInput(attrs={'style': "width: 300px;"}),max_length=100)
+    display_name = forms.CharField(max_length=100, required=False)
+    tags = forms.CharField(max_length=100, required=False)
+    def __init__(self, instance, *args,**kwargs):
+        self.bp = instance
+        return super(AddSubProcess, self).__init__(*args,**kwargs)
+    def save(self):
+        self.bp.add_process(**self.cleaned_data)
+        self.bp.save()
+
+class AddHostgroupForm(forms.Form):
+    pass

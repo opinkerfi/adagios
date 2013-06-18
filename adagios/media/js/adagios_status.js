@@ -230,3 +230,38 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
 };
 
 
+/**
+ * Returns array of pynag objects that match search query
+ * @param object_type - Object type to look for
+ * @param query - part of the objects shortname
+ *
+ * This function can be used directly with select2 like this:
+ * <input type="hidden" id="add_hostgroups" style="width: 500px" />
+ * <script>
+ * $("#add_hostgroups").select2({
+ *  minimumInputLength: 0,
+ *  query: function(query) { select2_query("hostgroup", query); }
+ * });
+ * </script>
+ *
+ */
+adagios.objectbrowser.select2_objects_query = function(object_type, query) {
+    var results = {results: []};
+
+    params = {
+        object_type: object_type,
+        shortname__contains:query.term
+    };
+
+    adagios.rest.pynag.get_objects(params)
+        .done( function(data) {
+            var name, item, i;
+            for (i in data) {
+                name = data[i].shortname;
+                item  = {id: query.term + name, text: name};
+                results.results.push(item);
+            }
+            query.callback(results);
+
+        })
+};

@@ -63,36 +63,6 @@
                 </table>
             </div>
 
-            <div id="add_subprocess">
-                <h4>Add new...</h4>
-                <form method="post">
-                    {% csrf_token %}
-                    <table id="add_subprocess_table" class="table table-condensed">
-                        <tr>
-                            <td>Business Process</td>
-                            <td><input id="add_custom" name="process_name" placeholder="enter the name of a business process"></td>
-                            <td><button name="add_process" class="btn btn-small btn-success">Add business process</button></td>
-                        </tr>
-                        <tr>
-                            <td>Hostgroup</td>
-                            <td><input id="add_hostgroup" name="hostgroup_name" placeholder="enter the name of a hostgroup"></td>
-                            <td><button name="add_hostgroup" class="btn btn-small btn-success">Add Hostgroup</button></td>
-                        </tr>
-                        <tr>
-                            <td>Servicegroup</td>
-                            <td><input id="add_servicegroup" name="servicegroup_name" placeholder="enter the name of a servicegroup"></td>
-                            <td><button name="add_servicegroup" class="btn btn-small btn-success">Add Servicegroup</button></td>
-                        </tr>
-                        <tr>
-                            <td>Service</td>
-                            <td><input id="add_service" name="service_name" placeholder="enter the name of a service"></td>
-                            <td><button name="add_service" class="btn btn-small btn-success">Add Service</button></td>
-                        </tr>
-
-                    </table>
-                </form>
-
-            </div>
 
     </div>
 
@@ -116,11 +86,85 @@
 </div>
 
 
+
+
+
+
+    <!-- Add subprocess modal -->
+    <div class="modal hide fade" id="add_subprocess_modal">
+        <form class="form-horizontal" method="post" action="">{% csrf_token %}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Add sub process</h3>
+            </div>
+            <div class="modal-body">
+                <p>Ok lets add a new sub process.</p>
+                {% include "bootstrap_fields.html" with fields=add_subprocess_form %}
+            </div>
+            <div class="modal-footer">
+                <a href="" class="btn" onclick='$("#add_subprocess_modal").modal("hide");'>Cancel</a>
+                <button type="submit" id="add_subprocess_submit_button" name="add_subprocess_submit_button" class="btn btn-primary">Ok add this rocess</button>
+            </div>
+        </form>
+    </div>
+    <!-- Add subprocess modal ends -->
+
+
+
 {% endblock %}
 
 
 
-{% block view_buttons %}{% endblock %}
-{% block action_buttons %}{% endblock %}
-{% block toolbar %}{% endblock %}
+{% block view_buttons %}
 
+{% endblock %}
+{% block action_buttons %}
+<div>
+
+    <a class="btn" id="open_subprocess_modal" data-toggle="modal" data-target="#add_subprocess_modal" href="#">
+        <i class="glyph-circle-plus " title="Add new ..."> </i> Add sub item
+    </a>
+    <a class="btn" id="open_public_view" href="{% url adagios.status.views.business_process_view bp.name %}">
+        <i class="glyph-eye-open " title="Add new ..."> </i> Public view for this process
+    </a>
+
+</div>
+
+{% endblock %}
+{% block toolbar %}{{ block.super }}{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+    <script id="select2_fields">
+        $(document).ready(function() {
+
+            // When somebody clicks the add subprocess button, lets change the process type to default hostgroup
+            $('#add_subprocess_modal').on('shown', function () {
+                var default_choice = "hostgroup";
+                $("#id_process_type").select2("val", default_choice);
+                $("#id_process_name").select2({
+                    minimumInputLength: 0,
+                    query: function(query) { adagios.objectbrowser.select2_objects_query(default_choice, query); }
+                });
+            });
+
+            $("#id_process_type").change(function() {
+                var str = "";
+                $("#id_process_type option:selected").each(function () {
+                    str += $(this).text();
+                });
+                $("#id_process_name").select2({
+                    minimumInputLength: 0,
+                    query: function(query) { adagios.objectbrowser.select2_objects_query(str, query); }
+                });
+                $("#id_process_name").css('width', '700px;');
+
+
+            });
+
+            {% if add_subprocess_failed %}
+                $("#add_subprocess_modal").modal('show');
+            {% endif %}
+        });
+    </script>
+{% endblock %}

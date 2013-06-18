@@ -1165,8 +1165,10 @@ def business_process_edit(request, process_name):
     bp = adagios.businessprocess.get_business_process(process_name)
     if request.method == 'GET':
         form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
+        add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp)
     elif request.method == 'POST':
         form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
+        add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp, data=request.POST)
         if 'save_process' in request.POST:
             if form.is_valid():
                 form.save()
@@ -1176,9 +1178,17 @@ def business_process_edit(request, process_name):
         elif 'add_process' in request.POST:
             if form.is_valid():
                 form.add_process()
-        elif 'add_hostgroup' in request.POST:
-            if form.is_valid():
-                form.add_process()
+        elif 'add_subprocess_submit_button' in request.POST:
+
+            if add_subprocess_form.is_valid():
+                add_subprocess_form.save()
+
+            else:
+                errors.append("failed to add subprocess")
+                add_subprocess_failed = True
+        else:
+            errors.append("I don't know what submit button was clicked. please file a bug.")
+
         # Load the process again, since any of the above probably made changes to it.
         bp = adagios.businessprocess.get_business_process(process_name)
     return render_to_response('business_process_edit.html', locals(), context_instance = RequestContext(request))
