@@ -258,7 +258,7 @@ adagios.objectbrowser.select2_objects_query = function(object_type, query) {
             var name, item, i;
             for (i in data) {
                 name = data[i].shortname;
-                item  = {id: query.term + name, text: name};
+                item  = {id: name, text: name};
                 results.results.push(item);
             }
             query.callback(results);
