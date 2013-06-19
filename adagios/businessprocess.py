@@ -21,8 +21,6 @@ class BusinessProcess(object):
     def __init__(self, name, **kwargs):
         self.data = kwargs
         self.errors = []
-        if not name:
-            raise Exception("Name can not be empty")
         self.data['name'] = name
         self._original_name = name
         if 'processes' not in self.data:
@@ -183,7 +181,11 @@ class BusinessProcess(object):
     def __repr__(self):
         return "%s: %s" % (self.process_type,self.get('name'))
     def __str__(self):
-        return self.get('display_name') or self.__repr__()
+        display_name = self.get('display_name')
+        if not display_name:
+            return self.__repr__()
+        else:
+            return display_name.encode('utf-8')
     def __getitem__(self, key):
         return self.get(key, None)
     def __setitem__(self,key,value):
@@ -270,13 +272,38 @@ class Servicegroup(BusinessProcess):
         return service_status
 
 class Service(BusinessProcess):
-    pass
     process_type = 'service'
-    def __init__(self,host_name, service_description):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
-        self._service = self._livestatus.get_service(host_name, service_description)
+    def load(self):
+            tmp = self.name.split('/', 1)
+            if len(tmp) != 2:
+                return
+            host_name = tmp[0]
+            service_description = tmp[1]
+            self._livestatus = pynag.Parsers.mk_livestatus()
+            self._service = self._livestatus.get_service(host_name, service_description)
     def get_status(self):
-        return self._service.get('state', 3)
+        try:
+            self.load()
+            return self._service.get('state', 3)
+        except Exception, e:
+            self.errors.append(e)
+            return 3
+
+class Host(BusinessProcess):
+    process_type = 'host'
+    def load(self):
+        try:
+            self._livestatus = pynag.Parsers.mk_livestatus()
+            self._host = self._livestatus.get_host(host_name)
+        except Exception, e:
+            self.errors.append(e)
+    def get_status(self):
+        try:
+            self.load()
+        except Exception, e:
+            self.errors.append(e)
+            return 3
+        return self._host.get('state', 3)
 
 
 def get_class(process_type):
@@ -290,6 +317,7 @@ def get_class(process_type):
     dictionary['hostgroup'] = Hostgroup
     dictionary['servicegroup'] = Servicegroup
     dictionary['service'] = Service
+    dictionary['host'] = Host
     dictionary['process'] = BusinessProcess
     return dictionary.get(process_type, BusinessProcess)
 
