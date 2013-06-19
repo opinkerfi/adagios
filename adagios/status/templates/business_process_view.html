@@ -103,7 +103,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            No subgroups in {{ bp.display_name }}
+            No subgroups in {{ bp.display_name }}f
         {% endif %}
         <h4 class="dashboard_header">Graphs</h4>
         <div id="objecttab" class="tabbable"> <!-- Only required for left/right tabs -->
@@ -151,6 +151,22 @@
         // When graphs link is clicked, simulate a click on 25hours tab as well
         $(document).ready(function() {
             $('#25hours').click();
+
+
+            //
+            function querystring(key) {
+                var re=new RegExp('(?:\\?|&)'+key+'=(.*?)(?=&|$)','gi');
+                var r=[], m;
+                while ((m=re.exec(document.location.search)) != null) r.push(m[1]);
+                return r;
+            }
+            var dom_id;
+            var doms_to_hide = querystring('hide');
+            for (i in doms_to_hide) {
+                dom_id = '#' + doms_to_hide[i];
+                $(dom_id).hide();
+            }
+
         });
 
         // Load graphs when you click a new timeperiod under graphs tab

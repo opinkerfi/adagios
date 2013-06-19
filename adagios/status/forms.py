@@ -27,9 +27,23 @@ class LiveStatusForm(forms.Form):
     filter2 = forms.ChoiceField(required=False)
 
 
+class RemoveSubProcessForm(forms.Form):
+    """ Remove one specific sub process from a business process
+    """
+    process_name = forms.CharField(max_length=100, required=True)
+    process_type = forms.CharField(max_length=100, required=True)
+    def __init__(self, instance, *args,**kwargs):
+        self.bp = instance
+        super(RemoveSubProcessForm, self).__init__(*args,**kwargs)
+    def save(self):
+        process_name = self.cleaned_data.get('process_name')
+        process_type = self.cleaned_data.get('process_type')
+        self.bp.remove_process(process_name, process_type)
+        self.bp.save()
+
 class BusinessProcessForm(forms.Form):
     """ Use this form to edit a BusinessProcess """
-    name = forms.CharField(max_length=100, required=False)
+    name = forms.CharField(max_length=100, required=True)
     #processes = forms.CharField(max_length=100, required=False)
     display_name = forms.CharField(max_length=100, required=False)
     notes = forms.CharField(max_length=1000, required=False)
@@ -37,7 +51,7 @@ class BusinessProcessForm(forms.Form):
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
     def __init__(self, instance, *args,**kwargs):
         self.bp = instance
-        return super(BusinessProcessForm, self).__init__(*args,**kwargs)
+        super(BusinessProcessForm, self).__init__(*args,**kwargs)
 
     def save(self):
         c = self.cleaned_data
@@ -83,7 +97,7 @@ class BusinessProcessForm(forms.Form):
 
 
 
-choices = 'businessprocess', 'hostgroup','servicegroup','service'
+choices = 'businessprocess', 'hostgroup','servicegroup','service', 'host'
 process_type_choices = map(lambda x: (x,x), choices)
 class AddSubProcess(forms.Form):
     process_type = forms.ChoiceField(choices=process_type_choices)

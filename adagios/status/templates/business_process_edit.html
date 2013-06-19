@@ -46,7 +46,7 @@
                         <tr class="subprocess-row">
                             <td>
                                 <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
-                                <a href="{% url adagios.status.views.business_process_edit i.name %} ">{{ i }}</a>
+                                <a href="{% url adagios.status.views.business_process_edit i.name %} ">{{ i.process_type }}: {{ i.name }}</a>
                             </td>
                             <td>{{ i.display_name }}</td>
                             <td>{{ i.processes|length }}</td>
@@ -140,7 +140,7 @@
 
             // When somebody clicks the add subprocess button, lets change the process type to default hostgroup
             $('#add_subprocess_modal').on('shown', function () {
-                var default_choice = "hostgroup";
+                var default_choice = "service";
                 $("#id_process_type").select2("val", default_choice);
                 $("#id_process_name").select2({
                     minimumInputLength: 0,
@@ -158,13 +158,12 @@
                     query: function(query) { adagios.objectbrowser.select2_objects_query(str, query); }
                 });
                 $("#id_process_name").css('width', '700px;');
-
-
             });
 
             {% if add_subprocess_failed %}
                 $("#add_subprocess_modal").modal('show');
             {% endif %}
+
         });
     </script>
 {% endblock %}

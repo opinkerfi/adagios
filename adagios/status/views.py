@@ -1163,23 +1163,25 @@ def business_process_edit(request, process_name):
     errors = []
     import adagios.businessprocess
     bp = adagios.businessprocess.get_business_process(process_name)
+    add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp)
+    form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
     if request.method == 'GET':
         form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
-        add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp)
     elif request.method == 'POST':
-        form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
-        add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp, data=request.POST)
         if 'save_process' in request.POST:
+            form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
             if form.is_valid():
                 form.save()
         elif 'remove_process' in request.POST:
-            if form.is_valid():
-                form.remove()
+            removeform = adagios.status.forms.RemoveSubProcessForm(instance=bp,data=request.POST)
+            if removeform.is_valid():
+                removeform.save()
+                print "form remove"
         elif 'add_process' in request.POST:
             if form.is_valid():
                 form.add_process()
         elif 'add_subprocess_submit_button' in request.POST:
-
+            add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp, data=request.POST)
             if add_subprocess_form.is_valid():
                 add_subprocess_form.save()
 
