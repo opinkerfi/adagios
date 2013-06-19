@@ -13,5 +13,5 @@ class AdagiosForm(forms.Form):
                 k = smart_str(k)
             if isinstance(v, (unicode)):
                 v = smart_str(v)
-            cleaned_data[k] = smart_str(v)
+            cleaned_data[k] = v
         return cleaned_data
