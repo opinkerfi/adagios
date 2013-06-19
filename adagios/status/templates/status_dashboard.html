@@ -153,8 +153,16 @@
                     {% if i.state == 1 %}<tr class="alert alert-warning">{% endif %}
                     {% if i.state == 2 %}<tr class="alert alert-danger">{% endif %}
                     {% if i.state == 3 %}<tr class="alert alert-danger">{% endif %}
-                    <td>{{ i.host_name }}</td>
-                    <td>{{ i.description }}</td>
+                    <td>
+                        <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}">
+                            {{ i.host_name }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}&service_description={{ i.description }}">
+                        {{ i.description }}
+                        </a>
+                    </td>
                     <!--
                     <td>
                     {% if i.state == 0 %}<div class="alert alert-success" style='margin: 0px'>OK</div>{% endif %}
@@ -180,7 +188,11 @@
                         <tr>
                             <td width=20px style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
                             <td width=20px><div>{{ line.host_name }}</div></td>
-                            <td width=200px><div>{{ line.service_description }}</div></td>
+                            <td width=200px><div>
+                                <a href=">{% url adagios.status.views.detail %}/?host_name={{ line.host_name }}&service_description={{ line.service_description }}">
+                                    {{ line.service_description }}
+                                </a>
+                            </div></td>
                             <td width="20px"><div class="circle state_{{ line.state }}"></div></td>
                             <td>
                                 <div>{{ line.plugin_output }}</div></td>
