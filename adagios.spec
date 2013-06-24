@@ -38,12 +38,10 @@ sed -i "s/__version__=.*/__version__='$VERSION'/" adagios/__init__.py
 
 %build
 python setup.py build
-sed "s/python2.7/python%{python_version}/" -i adagios/apache/adagios.conf
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 #chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
-sed -i 's|/usr/lib/python2.7/site-packages|%{python_sitelib}|g' %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
 install %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
 
