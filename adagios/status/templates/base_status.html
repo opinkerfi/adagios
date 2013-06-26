@@ -717,12 +717,13 @@
             all_boxes.parent().parent().removeClass('row_selected');
             checked_boxes.parent().parent().addClass('row_selected');
             // Treat acknowledge button depending on if acknowledgements are needed
+
             if (checked_boxes.length > 0) {
-                $('#action_buttons > .btn').attr('disabled', null);
+                $('#action_buttons > button').attr('disabled', null);
                 $('#action_buttons').attr('title',null);
             }
             else {
-                $('#action_buttons > .btn').attr('disabled', 'disabled');
+                $('#action_buttons > button').attr('disabled', 'disabled');
                 //$('#action_buttons').attr('title','Select some items below to active toolbar buttons');
             }
         }
