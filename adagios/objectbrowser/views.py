@@ -308,8 +308,13 @@ def _edit_service( request, c):
     try: c['effective_hostgroups'] = service.get_effective_hostgroups()
     except KeyError, e: c['errors'].append( "Could not find hostgroup: %s" % str(e))
 
-    try: c['effective_command'] = service.get_effective_check_command()
-    except KeyError, e: c['errors'].append( "Could not find check_command: %s" % str(e))
+    try:
+        c['effective_command'] = service.get_effective_check_command()
+    except KeyError, e:
+        if service.check_command is not None:
+            c['errors'].append( "Could not find check_command: %s" % str(e))
+        elif service.register != '0':
+            c['errors'].append( "You need to define a check command")
 
     # For the check_command editor, we inject current check_command and a list of all check_commands
     c['check_command'] = (service.check_command or '').split("!")[0]
@@ -389,9 +394,13 @@ def _edit_host( request, c):
     try: c['effective_contactgroups'] = host.get_effective_contact_groups()
     except KeyError, e: c['errors'].append( "Could not find contact_group: %s" % str(e))
 
-    try: c['effective_command'] = host.get_effective_check_command()
-    except KeyError, e: pass
-
+    try:
+        c['effective_command'] = host.get_effective_check_command()
+    except KeyError, e:
+        if host.check_command is not None:
+            c['errors'].append( "Could not find check_command: %s" % str(e))
+        elif host.register != '0':
+            c['errors'].append( "You need to define a check command")
     try:
         s = status()
         s.parse()
@@ -422,7 +431,11 @@ def config_health( request  ):
     services_without_icon_image = []
     c['booleans']['Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
     c['booleans']['Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
-    c['errors'] = Model.config.errors
+    for i in Model.config.errors:
+        if i.item:
+            Class = Model.string_to_class[i.item['meta']['object_type']]
+            i.model = Class(item=i.item)
+    c['parser_errors'] = Model.config.errors
     try:
         import okconfig
         c['booleans']['OKConfig is installed and working'] = okconfig.is_valid()
