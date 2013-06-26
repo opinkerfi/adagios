@@ -4,9 +4,9 @@
 {% block largeheader %}Health{% endblock %}
 {% block content %}
 
-<h2>Sanity checks</h2>
+<h4>Sanity checks</h4>
 {% if booleans %}
-<table border=1>
+<table class="table table-condensed">
 	<tr>
 		<th>Check</th>
 		<th>Status</th>
@@ -22,8 +22,9 @@
 
 {% if object_health %}
 <div>
-	<h2>Object Health</h2>
-	<table border=1>
+    <hr>
+	<h4>Object Health</h4>
+	<table class="table table-condensed">
 	<tr>
 		<th>Description</th>
 		<th>Count</th>
@@ -38,21 +39,30 @@
 </div>
 {% endif %}
 
-{% if errors %}
+{% if parser_errors %}
 <!-- Display a list of config errors -->
 <div>
-    <h2>Parsing Errors</h2>
-<table border=1>
+    <hr>
+       <h4>Parser Errors</h4>
+<table class="table table-condensed">
 	<tr>
+        <th>Error</th>
+        <th>Item</th>
 		<th>Filename</th>
-		<th>Error</th>
 		<th colspan=3>Actions</th>
 
 	</tr>
-{% for i in errors %}
+{% for i in parser_errors %}
 	<tr>
+        <td>{{ i.message }}</td>
+        <td>
+            {% if i.model %}
+                <a title="{{ i.model }}" href="{% url adagios.objectbrowser.views.edit_object i.model.id %}">{{ i.item.meta.object_type }} {{ i.model.description }}</a>
+            {% else %}
+                n/a
+            {% endif %}
+        </td>
 		<td><a href="/objectbrowser/search?filename={{ i.filename }}">{{ i.filename }}</a></td>
-		<td>{{ i.message }}</td>
 		<td><a href="{{ objectbrowser }}/delete_object?id={{ i.item }}">Delete Object</a> </td>
         <td> <a href="#">Create Reference</a></td>
         <td> <a href="#">Manually Edit</a> </td>
