@@ -49,13 +49,13 @@
                         </label>
                         <div class="controls" id="check_command">
                             <input id="check_command_actual_entry" type="hidden" name="check_command" value="{{ form.check_command.value }}"/>
-                            <select style="width: 400px;" data-placeholder="Please select a check command"  id="check_command_select">
+                            <select style="width: 500px;" data-placeholder="Please select a check command"  id="check_command_select">
                                 <option value=""></option>
                                 {% for i in command_names %}
                                     <option value="{{ i }}" {% if i == check_command %}selected="selected"{% endif %}>{{ i }}</option>
                                 {% endfor %}
                             </select>
-                            <table style="margin-left: 10px; margin-top: 5px; min-width: 400px;">
+                            <table style="margin-left: 10px; margin-top: 5px; min-width: 495px;">
                                 <tbody id="check_command_argument_table"></tbody>
                                 <tbody id="service_macros_table"></tbody>
                                 <tbody id="other_attributes_table"></tbody>
@@ -89,11 +89,6 @@
                         </div>
 
                     </div>
-
-
-
-
-
                         {% include "bootstrap_field.html" with field=form.max_check_attempts %}
                         {% include "bootstrap_field.html" with field=form.check_interval %}
                         {% include "bootstrap_field.html" with field=form.active_checks_enabled %}
