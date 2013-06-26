@@ -333,15 +333,35 @@ def state_history(start_time=None, end_time=None, host_name=None, service_descri
     l = pynag.Parsers.LogFiles()
     return l.get_state_history(start_time=start_time, end_time=end_time,host_name=host_name, service_description=service_description)
 
+def _get_service_model(host_name, service_description=None):
+    """ Return one pynag.Model.Service object for one specific service as seen
+
+    from status point of view. That means it will do its best to return a service
+    that was assigned to hostgroup but the caller requested a specific host.
+
+    Returns:
+        pynag.Model.Service object
+    Raises:
+        KeyError if not found
+    """
+    try:
+        return pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
+    except KeyError,e:
+        host = pynag.Model.Host.objects.get_by_shortname(host_name)
+        for i in host.get_effective_services():
+            if i.service_description == service_description:
+                return i
+        raise e
+
 def command_line(host_name,service_description=None):
     """ Returns effective command line for a host or a service (i.e. resolves check_command)
     """
     try:
-        if service_description is None or service_description=='':
+        if service_description in (None,'','_HOST_'):
             obj = pynag.Model.Host.objects.get_by_shortname(host_name)
         else:
-            obj = pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
-        return obj.get_effective_command_line()
+            obj = _get_service_model(host_name,service_description)
+        return obj.get_effective_command_line(host_name=host_name)
     except KeyError:
         return "Could not resolve commandline. Object not found"
 
