@@ -68,16 +68,12 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             'check_command': self.check_command,
             'name': self.name
         };
+
         $('#check_command_editor_tables').hide();
 
         if (my_data.check_command == null || my_data.check_command == '')
         {
-            console.log("No check_command specified. Not generating any input fields");
             return;
-        }
-        else {
-            console.log("check_command = " + my_data.check_command);
-
         }
         if (my_data.host_name == null || my_data.host_name == '') {
             console.log("No host_name specified. Not generating any input fields");
@@ -91,20 +87,23 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             .done( function(data) {
                 // Generate a table, where each row has an input field with
                 // a macroname for us
-                service_macros_input_fields = '';
-                check_command_arguments_input_fields = '';
-                other_input_fields = '';
+                var service_macros_input_fields = '';
+                var check_command_arguments_input_fields = '';
+                var other_input_fields = '';
+                var input_field_value;
                 for (var i in data) {
                     // Create a human friendly label for our attribute
                     friendly_name = i.replace('$_SERVICE','');
                     friendly_name = friendly_name.replace('$ARG','Argument ');
                     friendly_name = friendly_name.split('_').join(' ').split('$').join('');
-                    console.log(friendly_name);
+                    // Fix double quotes in input fields
+                    input_field_value = data[i].split('"').join('&quot;');
+
                     // Create an edit field for this attribute
                     edit_field = '' +
                         '<tr><td>' + friendly_name + '</td>' +
 
-                        '<td><input class="check_command_parameter";" type="text" class="span11" name="' + i + '" value="' + data[i] + '">' +
+                        '<td><input class="check_command_parameter";" type="text" class="span11" name="' + i + '" value="' + input_field_value + '">' +
                         '</td></tr>'
                     ;
                     /* Alternative implementation
