@@ -45,5 +45,13 @@
 {% block action_buttons %}
 
 {% endblock %}
-{% block toolbar %}{% endblock %}
+{% block toolbar %}
+    <div>
+
+        <a class="btn" id="open_public_view" href="{% url adagios.status.views.business_process_add %}">
+            <i class="glyph-circle-plus " title="Add new ..."> </i> Create new Business Process
+        </a>
+
+    </div>
+{% endblock %}
 

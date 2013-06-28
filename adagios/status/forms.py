@@ -41,12 +41,17 @@ class RemoveSubProcessForm(forms.Form):
         self.bp.remove_process(process_name, process_type)
         self.bp.save()
 
+status_method_choices = map(lambda x: (x,x), adagios.businessprocess.BusinessProcess.status_calculation_methods)
+
 class BusinessProcessForm(forms.Form):
     """ Use this form to edit a BusinessProcess """
-    name = forms.CharField(max_length=100, required=True)
+    name = forms.CharField(max_length=100, required=True,
+                           help_text="Uniqe name for this business process.")
     #processes = forms.CharField(max_length=100, required=False)
-    display_name = forms.CharField(max_length=100, required=False)
-    notes = forms.CharField(max_length=1000, required=False)
+    display_name = forms.CharField(max_length=100, required=False,
+                                   help_text="This is the name that will be displayed to users on this process. Usually it is the name of the system this business group represents.")
+    notes = forms.CharField(max_length=1000, required=False, help_text="Here you can put in any description of the business process you are adding. Its a good idea to write down what the business process is about and who to contact in case of downtimes.")
+    status_method = forms.ChoiceField(choices=status_method_choices, help_text="Here you can choose which method is used to calculate the global status of this business process")
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
     def __init__(self, instance, *args,**kwargs):

@@ -1206,6 +1206,22 @@ def business_process_view(request, process_name):
     bp = adagios.businessprocess.get_business_process(process_name)
     return render_to_response('business_process_view.html', locals(), context_instance = RequestContext(request))
 
+def business_process_add(request):
+    """ View one specific business process
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    import adagios.businessprocess
+    bp = adagios.businessprocess.BusinessProcess("New Business Process")
+    if request.method == 'GET':
+        form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
+    elif request.method == 'POST':
+        form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
+        if form.is_valid():
+            form.save()
+    return render_to_response('business_process_edit.html', locals(), context_instance = RequestContext(request))
+
 
 def business_process_list(request):
     """ List all configured business processes

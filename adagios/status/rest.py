@@ -382,18 +382,10 @@ def update_check_command(host_name,service_description=None,**kwargs):
         raise Exception("Object not found")
 
 
-def business_process(process_type, name):
-    """ Return dashboard-style data for one specific dashboard
+
+
+def get_business_process_names():
+    """ Returns all configured business processes
     """
-
-    if process_type == 'hostgroup':
-        bp = adagios.status.utils.HostgroupBP(name)
-    elif process_type == 'servicegroup':
-        bp = adagios.status.utils.HostgroupBP(name)
-    elif process_type == 'custom':
-        bp = adagios.status.utils.CustomBP(name)
-    else:
-        raise PynagError("Business process of type %s not found" % process_type)
-
-    return bp.toJSON()
-
+    import adagios.businessprocess
+    return map(lambda x: x.name, adagios.businessprocess.get_all_processes())

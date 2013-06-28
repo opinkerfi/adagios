@@ -12,6 +12,7 @@ urlpatterns = patterns('adagios',
     (r'^/problems/?$', 'status.views.dashboard'),
 
     (r'^/bpi/?$', 'status.views.business_process_list'),
+    (r'^/bpi/add/?$', 'status.views.business_process_add'),
     (r'^/bpi/(?P<process_name>.+)/edit/?$', 'status.views.business_process_edit'),
     (r'^/bpi/(?P<process_name>.+)/delete/?$', 'status.views.business_process_delete'),
     (r'^/bpi/(?P<process_name>.+)/?$', 'status.views.business_process_view'),

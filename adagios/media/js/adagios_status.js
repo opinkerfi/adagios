@@ -264,3 +264,24 @@ adagios.objectbrowser.select2_objects_query = function(object_type, query) {
 
         })
 };
+
+
+
+adagios.objectbrowser.select2_business_process = function(query) {
+    var results = {results: []};
+
+    params = {
+    };
+
+    adagios.rest.status.get_business_process_names(params)
+        .done( function(data) {
+            var name, item, i;
+            for (i in data) {
+                name = data[i]
+                item  = {id: name, text: name};
+                results.results.push(item);
+            }
+            query.callback(results);
+
+        })
+};

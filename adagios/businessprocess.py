@@ -1,4 +1,4 @@
-from pynag.Utils import PynagError
+from pynag.Utils import PynagError, defaultdict
 
 __author__ = 'palli'
 import simplejson as json
@@ -17,6 +17,8 @@ class BusinessProcess(object):
      processes      - Sub Processeses of this business process
     """
     process_type = 'businessprocess'
+    status_calculation_methods = ['use_business_rules','use_worst_state','use_best_state','always_ok','always_minor','always_major']
+    _default_status_calculation_method = 'use_business_rules'
     _default_filename = '/etc/adagios/bpi.json'
     def __init__(self, name, **kwargs):
         self.data = kwargs
@@ -26,27 +28,125 @@ class BusinessProcess(object):
         if 'processes' not in self.data:
             self.data['processes'] = []
 
+        for i in ('name', 'display_name', 'processes', 'rules','tags','status_method', 'graphs'):
+            self._add_property(i)
+
         if 'rules' not in self.data:
             self.data['rules'] = []
             self.data['rules'].append( ('mission critical',1,'major') )
             self.data['rules'].append( ('not critical',1,'minor') )
+            rule1 = {'tag':'mission critical', 'return_status':'major', 'min_number_of_problems':1, }
+        if not self.status_method:
+            self.status_method = self._default_status_calculation_method
+        self.tags = self.data.get('tags','')
 
-        for i in ('name', 'display_name', 'processes', 'rules'):
-            self._add_property(i)
     def get_status(self):
+        """ Get a status for this Business Process. How status is calculated depends on
+            what self.status_method is defined as.
+        """
         try:
-            worst_status = -1
-            processes = self.get_processes()
-            if not processes:
+            if self.status_method not in self.status_calculation_methods:
+                self.errors.append("Unknown state calculation method %s" % str(self.status_method))
                 return 3
-            for i in self.get_processes():
-                if i.get('name') == self.name:
-                    continue
-                worst_status = max(worst_status, i.get_status())
-            return worst_status
+            elif self.status_method == 'always_ok':
+                return 0
+            elif self.status_method == 'always_minor':
+                return 1
+            elif self.status_method == 'always_major':
+                return 2
+            elif self.status_method == 'use_worst_state':
+                return self.get_worst_state()
+            elif self.status_method == 'use_best_state':
+                return self.get_best_state()
+            elif self.status_method == 'use_business_rules':
+                return self.run_business_rules()
+            else:
+                self.errors.append("We have not implemented how to use status method %s" % str(self.status_method))
+                return 3
         except Exception, e:
             self.errors.append(e)
             return 3
+    def get_all_states(self):
+        """ Returns a list of all subprocess states """
+        return map(lambda x: x.get_status(), self.get_processes())
+    def get_worst_state(self):
+        """ Returns the worst state of any sub items
+        """
+        try:
+            return int(max(self.get_all_states()))
+        except Exception, e:
+            self.errors.append(e)
+            return 3
+    def run_business_rules(self):
+        """ Iterate through the business rules in self.data['rules'] and returns
+         the calculated status
+        """
+        # First we create a dict tags, with all tags
+        # and a list of states. It should look something like this:
+        # tags['mission critical'] = [0,0,0,0]
+        # tags['non critical'] = [0,0]
+        #
+        # Where the keys are tags, and the values are a list of statuses
+        # untagged processes go in with the tag ''
+        # and every processes will also go in with the tag '*'
+        tags = defaultdict(list)
+        for i in self.get_processes():
+            i_status = i.get_status()
+            i_tags = i.data.get('tags','').split(',')
+            for tag in i_tags:
+                tags[tag].append(i_status)
+            tags['*'].append(i_status)
+
+        # Now we will iterate through the process rules
+        # and return the status of the worst rule
+        worst_status = 0
+        for rule in self.rules:
+            tag = rule[0]
+            num_problems = rule[1]
+            return_status = rule[2]
+
+            states = tags[tag]
+
+            # Filter out states ok
+            states = filter(lambda x: x > 0, states)
+            if not states:  # Nothing more to do
+                continue
+            if len(states) > num_problems:
+                status = self.get_computer_friendly_status(return_status)
+                worst_status = max(status, worst_status)
+        return worst_status
+
+    def get_computer_friendly_status(self, value):
+        """ Return an nagios-style exit code for value
+
+         Examples:
+            get_computer_friendly_status('major')
+            2
+            get_computer_friendly_status('critical')
+            2
+            get_computer_friendly_status('ok')
+            0
+        """
+        try:
+            value = int(value)
+            return value
+        except Exception:
+            pass
+        try:
+            value = str(value)
+            value = value.lower()
+        except Exception:
+            return 3
+
+        if value in ('major','critical','crit'):
+            return 2
+        elif value in ('minor','warning','warn'):
+            return 1
+        elif value in ('ok', 'no problems'):
+            return 0
+        else:
+            return 3
+
     def add_process(self, process_name, process_type=None, **kwargs):
         """ Add one business process to self.data """
         new_process = kwargs
@@ -79,6 +179,26 @@ class BusinessProcess(object):
             bp.data.update(i)
             result.append(bp)
         return result
+    def add_pnp_graph(self, host_name, service_description, metric_name):
+        """ Adds one graph to this business process. The graph must exist in pnp4nagios, metric_name equals pnp's ds_name
+        """
+        data = {}
+        data['graph_type'] = "pnp"
+        data['host_name'] = host_name
+        data['service_description'] = service_description
+        data['metric_name'] = metric_name
+        if not self.graphs:
+            self.graphs = []
+        self.graphs.append(data)
+    def remove_pnp_graph(self, host_name,service_description,metric_name):
+        data = {}
+        data['graph_type'] = "pnp"
+        data['host_name'] = host_name
+        data['service_description'] = service_description
+        data['metric_name'] = metric_name
+        if not self.graphs:
+            return
+        self.graphs = filter(lambda x: frozenset(x) != frozenset(data), self.graphs)
     def load(self):
         """ Load information about this businessprocess from file
         """
@@ -196,6 +316,9 @@ class Hostgroup(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup
     """
     process_type = 'hostgroup'
+    status_calculation_methods = ['worst_service_state','worst_host_state']
+    _default_status_calculation_method = 'worst_service_state'
+
     def load(self):
         self._livestatus = pynag.Parsers.mk_livestatus()
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
@@ -236,6 +359,8 @@ class Hostgroup(BusinessProcess):
 
 class Servicegroup(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup """
+    status_calculation_methods = ['worst_host_state']
+    _default_status_calculation_method = 'worst_service_state'
     def __init__(self, name):
         self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
         self._servicegroup = self._livestatus.get_servicegroup(name)
@@ -273,6 +398,8 @@ class Servicegroup(BusinessProcess):
 
 class Service(BusinessProcess):
     process_type = 'service'
+    status_calculation_methods = ['service_state']
+    _default_status_calculation_method = 'service_state'
     def load(self):
             tmp = self.name.split('/', 1)
             if len(tmp) != 2:
@@ -290,6 +417,8 @@ class Service(BusinessProcess):
             return 3
 
 class Host(BusinessProcess):
+    status_calculation_methods = ['worst_service_state','host_state']
+    _default_status_calculation_method = 'worst_service_state'
     process_type = 'host'
     def load(self):
         try:
@@ -374,10 +503,39 @@ def get_business_process(process_name, process_type=None, **kwargs):
 
 
 
+class PNP4NagiosGraph:
+    """ Represents one single PNP 4 nagios graph
+    """
+    def __init__(self,host_name, service_description, label):
+        """
+        """
+        self.host_name = host_name
+        self.service_description = service_description
+        self.label = label
+
+    def get_image_urls(self):
+        import adagios.pnp.functions
+        import adagios.settings
+        import simplejson as json
+        json_str = adagios.pnp.functions.run_pnp('json', host=self.host_name, srv=self.service_description)
+        graphs = json.loads(json_str)
+        # only use graphs with same label
+        graphs = filter(lambda x: x['ds_name'] == self.label, graphs)
+        return graphs
+
+
 
 
 
 import unittest
+
+
+class TestGraphs(unittest.TestCase):
+    def testPNP4NagiosGraph_get_image_url(self):
+
+        pnp = PNP4NagiosGraph('apc01.acme.com','Ping', 'rta')
+        pnp.get_image_url()
+
 
 
 
@@ -439,4 +597,10 @@ class TestBusinessProcess(unittest.TestCase):
         get_all_processes()
 
 
+
+if __name__ == '__main__':
+    tmp = get_all_processes()
+    for i in tmp:
+        print i.name
+        print i.run_business_rules()
 

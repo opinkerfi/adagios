@@ -10,6 +10,11 @@
 {% load adagiostags %}
 
 {% block content %}
+    <style>
+        #business_rules_table input {
+            width: 100px;
+        }
+    </style>
     <ul class="nav nav-tabs" id="objecttab">
         <li><a href="#basic" class="active" data-toggle="tab">Basic Information</a></li>
         <li><a href="#subprocesses" data-toggle="tab">Sub Processes</a></li>
@@ -39,17 +44,21 @@
                     <tr>
                         <th>Name</th>
                         <th>Alias</th>
+                        <th>Status Method</th>
                         <th>Sub Processes</th>
+                        <th>Tags</th>
                         <th><button name="remove_process" class="close status_ok" type="submit">×</button></th>
                     </tr>
                     {% for i in bp.get_processes %}
                         <tr class="subprocess-row">
                             <td>
                                 <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
-                                <a href="{% url adagios.status.views.business_process_edit i.name %} ">{{ i.process_type }}: {{ i.name }}</a>
+                                {{ i.process_type }}: {{ i.name }}
                             </td>
                             <td>{{ i.display_name }}</td>
+                            <td>{{ i.status_method }}</td>
                             <td>{{ i.processes|length }}</td>
+                            <td>{{ i.tags }}</td>
                             <td>
                                 <form action="" method="post">
                                     {% csrf_token %}
@@ -67,15 +76,26 @@
     </div>
 
     <div class="tab-pane " id="rules">
-        <table class="well table">
+        <table id="business_rules_table" class="well table table-condensed">
             <tr>
                 <th>Trigger</th>
+                <th></th>
                 <th>Action</th>
             </tr>
             {% for i in bp.rules %}
                 <tr>
-                    <td>Sub Process tagged <i>{{ i.0 }}</i> has at least {{ i.1 }} problems</td>
-                    <td>Put this business group in status <span class="status state_{{ i.2 }}">{{ i.2 }}</span></td>
+
+                    <td>When a sub process with tag <input value="{{ i.0 }}"/> has at least <input value="{{ i.1 }}"> problems</td>
+                    <td></td>
+                    <td ><span>Mark this business group as </span>
+                        <span style="background-color: transparent;">
+                            <select style="width: 120px">
+                                <option value="ok" {% if i.2 == "ok" %}selected=selected{% endif %}>ok</option>
+                                <option value="minor" {% if i.2 == "minor" %}selected=selected{% endif %}>minor problem</option>
+                                <option value="major" {% if i.2 == "major" %}selected=selected{% endif %}>major problem</option>
+                            </select>
+                        </span>
+                    </td>
 
                 </tr>
             {% endfor %}
@@ -103,7 +123,7 @@
             </div>
             <div class="modal-footer">
                 <a href="" class="btn" onclick='$("#add_subprocess_modal").modal("hide");'>Cancel</a>
-                <button type="submit" id="add_subprocess_submit_button" name="add_subprocess_submit_button" class="btn btn-primary">Ok add this rocess</button>
+                <button type="submit" id="add_subprocess_submit_button" name="add_subprocess_submit_button" class="btn btn-primary">Ok add this process</button>
             </div>
         </form>
     </div>
@@ -140,11 +160,11 @@
 
             // When somebody clicks the add subprocess button, lets change the process type to default hostgroup
             $('#add_subprocess_modal').on('shown', function () {
-                var default_choice = "service";
+                var default_choice = "businessprocess";
                 $("#id_process_type").select2("val", default_choice);
                 $("#id_process_name").select2({
                     minimumInputLength: 0,
-                    query: function(query) { adagios.objectbrowser.select2_objects_query(default_choice, query); }
+                    query: function(query) { adagios.objectbrowser.select2_business_process(query); }
                 });
             });
 
@@ -155,7 +175,7 @@
                 });
                 $("#id_process_name").select2({
                     minimumInputLength: 0,
-                    query: function(query) { adagios.objectbrowser.select2_objects_query(str, query); }
+                    query: function(query) { adagios.objectbrowser.select2_business_process(query); }
                 });
                 $("#id_process_name").css('width', '700px;');
             });
