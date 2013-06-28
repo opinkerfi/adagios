@@ -371,6 +371,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
       <li class="capitalize"><a href="#{BASE_URL}objectbrowser/add/#{ ot }">#{ ot }</a></li>
       """
 
+    $(".toolbar_#{ object_type } div.row-fluid ul.dropdown-menu").append """
+      <li class="divider"></li>
+      <li><a href="#{BASE_URL}objectbrowser/add/template" class="capitalize">Template</a></li>
+    """
     $("#" + object_type + "-tab.tab-pane label#selectall").on "click", (e) ->
       $checkbox = $("#" + object_type + "-tab.tab-pane #selectall input")
       if $checkbox.prop "checked"
