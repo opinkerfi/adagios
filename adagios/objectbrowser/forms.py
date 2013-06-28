@@ -540,12 +540,20 @@ class AddTemplateForm(PynagForm):
         if "object_type" not in cleaned_data:
             raise forms.ValidationError('Object type is required')
         object_type = cleaned_data['object_type']
+        name = cleaned_data['name']
         if object_type not in Model.string_to_class:
             raise forms.ValidationError("We dont know nothing about how to add a '%s'" % object_type)
-        self.pynag_object = Model.string_to_class.get(object_type)()
+        objectdefinition = Model.string_to_class.get(object_type)
+        # Check if name already exists
+        try:
+            objectdefinition.objects.get_by_name(name)
+            raise forms.ValidationError("A %s with name='%s' already exists." % (object_type, name))
+        except KeyError:
+            pass
+        self.pynag_object = objectdefinition()
         self.pynag_object['register'] = "0"
-        return cleaned_data
 
+        return cleaned_data
 
 class AddObjectForm(PynagForm):
     def __init__(self, object_type, *args, **kwargs):
