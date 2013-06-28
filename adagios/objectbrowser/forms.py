@@ -526,6 +526,27 @@ class CheckCommandForm(PynagForm):
         self.fields['check_command'] = self.get_pynagField('check_command')
 
 
+choices_for_all_types = sorted(map(lambda x: (x,x), Model.string_to_class.keys()))
+
+class AddTemplateForm(PynagForm):
+    """ Use this form to add one template """
+    object_type = forms.ChoiceField(choices=choices_for_all_types)
+    name = forms.CharField(max_length=100)
+    def __init__(self,*args,**kwargs):
+        super(PynagForm,self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(AddTemplateForm, self).clean()
+        if "object_type" not in cleaned_data:
+            raise forms.ValidationError('Object type is required')
+        object_type = cleaned_data['object_type']
+        if object_type not in Model.string_to_class:
+            raise forms.ValidationError("We dont know nothing about how to add a '%s'" % object_type)
+        self.pynag_object = Model.string_to_class.get(object_type)()
+        self.pynag_object['register'] = "0"
+        return cleaned_data
+
+
 class AddObjectForm(PynagForm):
     def __init__(self, object_type, *args, **kwargs):
         self.pynag_object = Model.string_to_class.get(object_type)()

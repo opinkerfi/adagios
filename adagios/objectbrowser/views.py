@@ -665,8 +665,19 @@ def add_object(request, object_type):
     c['errors'] = []
     c['object_type'] = object_type
 
-    if request.method == 'POST':
+    if request.method == 'GET' and object_type == 'template':
+        c['form'] = AddTemplateForm(initial=request.GET)
+    elif request.method == 'GET':
+        c['form'] = AddObjectForm(object_type,initial=request.GET)
+    elif request.method == 'POST' and object_type == 'template':
+        c['form'] = AddTemplateForm(data=request.POST)
+    elif request.method == 'POST':
         c['form'] = AddObjectForm(object_type, data=request.POST)
+    else:
+        c['errors'].append("Something went wrong while calling this form")
+
+    # This is what happens in post regardless of which type of form it is
+    if request.method == 'POST' and 'form' in c:
         # If form is valid, save object and take user to edit_object form.
         if c['form'].is_valid():
             c['form'].save()
@@ -674,8 +685,5 @@ def add_object(request, object_type):
             return HttpResponseRedirect( reverse('edit_object', kwargs={'object_id':object_id} ), )
         else:
             c['errors'].append('Could not validate form input')
-    elif request.method == 'GET':
-        c['form'] = AddObjectForm(object_type,initial=request.GET)
-
 
     return render_to_response('add_object.html', c, context_instance = RequestContext(request))
