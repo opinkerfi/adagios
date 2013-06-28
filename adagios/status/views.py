@@ -817,7 +817,7 @@ def dashboard(request):
         for parent in i.get('parents'):
             if parent in hostnames_that_are_down:
                 parent_is_down = True
-                continue
+                break
         else:
             parent_is_down = False
 
@@ -1160,9 +1160,10 @@ def business_process_edit(request, process_name):
     """
 
     messages = []
-    errors = []
     import adagios.businessprocess
     bp = adagios.businessprocess.get_business_process(process_name)
+    errors = bp.errors or []
+    status = bp.get_status()
     add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp)
     form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
     if request.method == 'GET':
