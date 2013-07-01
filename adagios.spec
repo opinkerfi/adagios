@@ -4,10 +4,10 @@
 %endif
 
 %define name adagios
-%define release 2
+%define release 1
 
 Name: adagios
-Version: 1.2.1
+Version: 1.2.2
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
@@ -21,7 +21,7 @@ Prefix: %{_prefix}
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: pynag >= 0.4.5
+Requires: pynag >= 0.5.0
 Requires: httpd
 Requires: mod_wsgi
 Requires: Django
