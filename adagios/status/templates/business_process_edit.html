@@ -173,9 +173,19 @@
                 $("#id_process_type option:selected").each(function () {
                     str += $(this).text();
                 });
+                // process_name select box behaves a little differently depending
+                // on if we a searching a businessproces or a nagios object
+                var query_function;
+                if (str == 'businessprocess') {
+                    query_function = function(query) { adagios.objectbrowser.select2_business_process(query); };
+
+                }
+                else {
+                    query_function = function(query) { adagios.objectbrowser.select2_objects_query(str, query); };
+                }
                 $("#id_process_name").select2({
                     minimumInputLength: 0,
-                    query: function(query) { adagios.objectbrowser.select2_business_process(query); }
+                    query: query_function
                 });
                 $("#id_process_name").css('width', '700px;');
             });
