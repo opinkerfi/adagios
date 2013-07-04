@@ -97,7 +97,12 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
                     friendly_name = friendly_name.replace('$ARG','Argument ');
                     friendly_name = friendly_name.split('_').join(' ').split('$').join('');
                     // Fix double quotes in input fields
-                    input_field_value = data[i].split('"').join('&quot;');
+                    if (data[i] == null) {
+                        input_field_value = '';
+                    }
+                    else {
+                        input_field_value = data[i].split('"').join('&quot;');
+                    }
 
                     // Create an edit field for this attribute
                     edit_field = '' +
