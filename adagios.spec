@@ -7,7 +7,7 @@
 %define release 1
 
 Name: adagios
-Version: 1.2.2
+Version: 1.2.3
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
@@ -67,6 +67,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
+* Thu Jul 04 2013 Pall Sigurdsson <palli@opensource.is> 1.2.3-1
+- Fix check_command editor when effective command line returns null
+  (palli@opensource.is)
+
 * Fri May 24 2013 Your Name <you@example.com> 1.2.1-2
 - Remove remaining javascript alerts alert() (palli@opensource.is)
 - Host aliases displayed in status detail (palli@opensource.is)
