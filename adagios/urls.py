@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^objectbrowser', include('adagios.objectbrowser.urls')),
     (r'^misc', include('adagios.misc.urls')),
     (r'^pnp', include('adagios.pnp.urls')),
+    (r'^pages', include('adagios.pages.urls')),
     (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
     (r'^rest', include('adagios.rest.urls')),
 

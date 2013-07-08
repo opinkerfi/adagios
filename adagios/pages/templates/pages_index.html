@@ -1,0 +1,28 @@
+{% extends "base_status.html" %}
+
+{% block title %}Edit Check Command{% endblock %}
+{% block smallheader %}edit{% endblock %}
+{% block largeheader %}Check Command{% endblock %}
+{% block nav1 %}misc{% endblock %}
+
+{% block toolbar %}
+{% endblock %}
+{% block content %}
+
+    {% if pagelist %}
+        Following is a list of your custom pages:
+        <table class="table">
+            <tr>
+                <th>Page name</th>
+            </tr>
+        {% for i in pagelist %}
+            <tr>
+            <td><a href="{% url adagios.pages.views.serve_page i %}">{{ i }}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        No custom pages found in your pages.d directory. Drop a file in {{ pages_directory }} and try again.
+    {% endif %}
+
+{% endblock %}

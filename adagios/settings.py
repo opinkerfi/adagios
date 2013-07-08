@@ -130,6 +130,7 @@ enable_githandler=False
 enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
+enable_pages_view = True
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
 administrators="nagiosadmin,@users"
@@ -137,6 +138,9 @@ pnp_url = "/pnp4nagios"
 pnp_filepath = "/usr/share/nagios/html/pnp4nagios/index.php"
 include=""
 django_secret_key = ""
+
+# pages module, path to extra pages the user can upload
+extra_pages = "/etc/adagios/pages.d"
 
 plugins = {}
 
@@ -192,6 +196,8 @@ else:
 
 if enable_status_view:
   plugins['status'] = 'adagios.status'
+if enable_pages_view:
+  plugins['pages'] = 'adagios.pages'
 
 for k,v in plugins.items():
     INSTALLED_APPS.append( v )
