@@ -79,14 +79,25 @@ def get_object(id,with_fields="id,shortname,object_type"):
     '''Returns one specific ObjectDefinition'''
     o = Model.ObjectDefinition.objects.get_by_id(id)
     return object_to_dict(o,attributes=with_fields)
-def delete_object(object_id, cascade=False):
-    '''Delete one specific ObjectDefinition'''
-    try:
-        o = Model.ObjectDefinition.objects.get_by_id(id)
-        o.delete(cascade=cascade)
-        return True
-    except Exception:
-        return False
+
+
+def delete_object(object_id, recursive=False, cleanup_related_items=True):
+    """ Delete one specific ObjectDefinition
+
+    Arguments:
+      object_id             -- The pynag id of the definition you want to delete
+      cleanup_related_items -- If True, clean up references to this object in other definitions
+      recursive             -- If True, also remove other objects that depend on this one.
+                               For example, when deleting a host, also delete all its services
+    Returns:
+      True on success. Raises exception on failure.
+    """
+
+    o = Model.ObjectDefinition.objects.get_by_id(object_id)
+    o.delete(recursive=recursive, cleanup_related_items=cleanup_related_items)
+    return True
+
+
 def get_host_names(invalidate_cache=False):
     """ Returns a list of all hosts """
     if invalidate_cache is True:
