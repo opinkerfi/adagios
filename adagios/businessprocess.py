@@ -179,7 +179,7 @@ class BusinessProcess(object):
             bp.data.update(i)
             result.append(bp)
         return result
-    def add_pnp_graph(self, host_name, service_description, metric_name):
+    def add_pnp_graph(self, host_name, service_description, metric_name, notes=''):
         """ Adds one graph to this business process. The graph must exist in pnp4nagios, metric_name equals pnp's ds_name
         """
         data = {}
@@ -187,6 +187,7 @@ class BusinessProcess(object):
         data['host_name'] = host_name
         data['service_description'] = service_description
         data['metric_name'] = metric_name
+        data['notes'] = notes
         if not self.graphs:
             self.graphs = []
         self.graphs.append(data)

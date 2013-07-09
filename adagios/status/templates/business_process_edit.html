@@ -19,6 +19,7 @@
         <li><a href="#basic" class="active" data-toggle="tab">Basic Information</a></li>
         <li><a href="#subprocesses" data-toggle="tab">Sub Processes</a></li>
         <li><a href="#rules" data-toggle="tab">Business Rules</a></li>
+        <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
         <li><a href="#other" data-toggle="tab">Other</a></li>
     </ul>
     <div class="tab-content">
@@ -101,6 +102,34 @@
             {% endfor %}
         </table>
     </div>
+    <div class="tab-pane " id="graphs">
+        {% if bp.graphs %}
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Host</th>
+                        <th>Service</th>
+                        <th>Metric Name</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for i in bp.graphs %}
+                    <tr>
+                        <td>{{ i.host_name }}</td>
+                        <td>{{ i.service_description }}</td>
+                        <td>{{ i.metric_name }}</td>
+                        <td>{{ i.notes }}</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+        {% else %}
+            No graphs have been added to this business process
+        {% endif %}
+    </div>
     <div class="tab-pane " id="other">
     </div>
 </div>
@@ -130,6 +159,25 @@
     <!-- Add subprocess modal ends -->
 
 
+        <!-- Add graphs modal -->
+        <div class="modal hide fade" id="add_graph_modal">
+            <form class="form-horizontal" method="post" action="">{% csrf_token %}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>Add graph to this business process</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Ok, lets add some graphs to this business process</p>
+                    {% include "bootstrap_fields.html" with fields=add_graph_form %}
+                </div>
+                <div class="modal-footer">
+                    <a href="" class="btn" onclick='$("#add_graph_modal").modal("hide");'>Cancel</a>
+                    <button type="submit" id="add_graph_submit_button" name="add_graph_submit_button" class="btn btn-primary">Add Graph</button>
+                </div>
+            </form>
+        </div>
+        <!-- Add subprocess modal ends -->
+
 
 {% endblock %}
 
@@ -146,6 +194,9 @@
     </a>
     <a class="btn" id="open_public_view" href="{% url adagios.status.views.business_process_view bp.name %}">
         <i class="glyph-eye-open " title="Add new ..."> </i> Public view for this process
+    </a>
+    <a class="btn" id="open_graphs_modal" data-toggle="modal" data-target="#add_graph_modal" href="#">
+        <i class="glyph-circle-plus " title="Add new ..."> </i> Add graphs
     </a>
 
 </div>

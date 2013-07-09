@@ -68,6 +68,18 @@
         }
 
     </style>
+    <style>
+        /* Graphs list */
+        .graphs_row {
+        }
+        .graph_notes {
+            width: 100px;
+            float: left;
+        }
+        .graph_image {
+        }
+
+    </style>
 
     <div id="content_div" class="centralized_dashboard">
         <h3 class="dashboard_header">{{ bp.display_name }} <span class="status_{{ bp.get_status }}">Status</span></h3>
@@ -96,8 +108,12 @@
         {% if bp.get_processes %}
             <div class="table top-margin" id="services">
                 {% for i in bp.get_processes %}
-                    <div class="service">
-                        {{ i }}
+                    <div class="service" title="{{ i.process_type }}">
+                        {% if i.process_type == 'businessprocess' %}
+                            <a href="{% url adagios.status.views.business_process_view i.process_name %}">{{ i }}</a>
+                        {% else %}
+                            {{ i }}
+                        {% endif %}
                         <span class="bold pull-right status_{{ i.get_human_friendly_status }}">{{ i.get_human_friendly_status }}</span>
                     </div>
                 {% endfor %}
@@ -180,14 +196,24 @@
                 spinner = document.createElement( 'img');
                 spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
                 my_element.appendChild( spinner );
-                var url = '{% url pnp.views.pnp 'json' %}?host=localhost&srv=_HOST_';
+                var url = '{% url adagios.status.views.business_process_graphs_json bp.name %}';
                 $.getJSON(url)
                         .done( function(data) {
                             $.each(data, function(i, item) {
                                         if (item['title'] == title) {
+                                            new_div = document.createElement( 'div');
+                                            new_div.setAttribute("class", "graph_div");
+
+                                            notes_div = document.createElement('div');
+                                            notes_div.setAttribute("class", "graph_notes hide");
+                                            notes_div.textContent = item['notes'];
+                                            my_element.appendChild( notes_div );
+
                                             new_img = document.createElement( 'img');
-                                            new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url']);
-                                            my_element.appendChild( new_img );
+                                            new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url'] + "&graph_width=500&graph_height=70");
+                                            new_div.appendChild( new_img );
+
+                                            my_element.appendChild( new_div );
                                         }
                                     }
                             )
