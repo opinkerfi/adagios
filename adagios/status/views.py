@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from django.http import HttpResponse
 
 import time
 from os.path import dirname
@@ -21,7 +22,7 @@ from collections import defaultdict
 import json
 import traceback
 
-from django.shortcuts import render_to_response,redirect
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.utils.encoding import smart_str
 from django.core.context_processors import csrf
@@ -45,6 +46,7 @@ state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
+
 def error_handler(fn):
     """ This is a python decorator intented for all views in the status module.
 
@@ -52,9 +54,9 @@ def error_handler(fn):
 
      Kind of what the django exception page does when debug mode is on.
     """
-    def wrapper(*args,**kwargs):
+    def wrapper(*args, **kwargs):
         try:
-            return fn(*args,**kwargs)
+            return fn(*args, **kwargs)
         except Exception, e:
             c = {}
             c['exception'] = e
@@ -62,6 +64,7 @@ def error_handler(fn):
             c['traceback'] = traceback.format_exc()
             return error_page(*args, context=c)
     return wrapper
+
 
 @error_handler
 def status_parents(request):
@@ -81,17 +84,18 @@ def status_parents(request):
             crit = 0
             i['child_hosts'] = []
             for x in i['childs']:
-                i['child_hosts'].append( host_dict[x] )
+                i['child_hosts'].append(host_dict[x])
                 if host_dict[x]['state'] == 0:
                     ok += 1
                 else:
                     crit += 1
             total = float(len(i['childs']))
             i['health'] = float(ok) / total * 100.0
-            i['percent_ok'] = ok/total*100
-            i['percent_crit'] = crit/total*100
+            i['percent_ok'] = ok / total * 100
+            i['percent_crit'] = crit / total * 100
 
-    return render_to_response('status_parents.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_parents.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def _status(request):
@@ -101,13 +105,13 @@ def _status(request):
         hash map with request context
     Examples:
         c = _status(request)
-        return render_to_response('status_parents.html', c, context_instance = RequestContext(request))
+        return render_to_response('status_parents.html', c, context_instance=RequestContext(request))
     """
     c = {}
     c['messages'] = []
     from collections import defaultdict
     authuser = request.GET.get('contact_name', None)
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config,authuser=authuser)
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
     all_hosts = livestatus.get_hosts()
     all_services = livestatus.get_services()
     all_contacts = livestatus.get_contacts()
@@ -146,25 +150,25 @@ def _status(request):
 
         service['status'] = state[service['state']]
 
-        if q is not None: # Something is in the search box:
+        if q is not None:  # Something is in the search box:
             if q not in service['host_name'] and q not in service['description'] and q not in service['tags']:
                 continue
-        services[ service['host_name'] ].append(service)
+        services[service['host_name']].append(service)
 
-    #    services[service['host_name']].append( service )
+    #    services[service['host_name']].append(service)
     for host in all_hosts:
-        host['num_problems'] = host['num_services_crit'] +  host['num_services_warn'] +  host['num_services_unknown']
+        host['num_problems'] = host['num_services_crit'] + host['num_services_warn'] + host['num_services_unknown']
         host['children'] = host['services_with_state']
         if len(services[host['name']]) > 0:
             host['status'] = state[host['state']]
             host['services'] = services[host['name']]
-            hosts.append( host )
+            hosts.append(host)
     # Sort by service status
-    hosts.sort(reverse=True, cmp=lambda a,b: cmp(a['num_problems'], b['num_problems']))
+    hosts.sort(reverse=True, cmp=lambda a, b: cmp(a['num_problems'], b['num_problems']))
     c['services'] = services
     c['hosts'] = hosts
-    seconds_in_a_day = 60*60*24
-    today = time.time() % seconds_in_a_day # midnight of today
+    seconds_in_a_day = 60 * 60 * 24
+    today = time.time() % seconds_in_a_day  # midnight of today
     c['objects'] = hosts
     if request.GET.get('view', None) == 'servicegroups':
         servicegroups = livestatus.query('GET servicegroups')
@@ -178,14 +182,16 @@ def _status(request):
         c['objects'] = groups
     return c
 
+
 @error_handler
 def status(request):
     """ Compatibility layer around status.views.services
     """
     #c = _status(request)
-    #return render_to_response('status.html', c, context_instance = RequestContext(request))
+    #return render_to_response('status.html', c, context_instance=RequestContext(request))
     # Left here for compatibility reasons:
     return services(request)
+
 
 @error_handler
 def services(request):
@@ -194,13 +200,14 @@ def services(request):
     c['messages'] = []
     c['errors'] = []
     fields = ['host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state', 'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
-    c['services'] = utils.get_services(request,fields=fields,**request.GET)
-    return render_to_response('status_services.html', c, context_instance = RequestContext(request))
+    c['services'] = utils.get_services(request, fields=fields, **request.GET)
+    return render_to_response('status_services.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """
-    c = { }
+    c = {}
     c['messages'] = []
     c['errors'] = []
 
@@ -211,17 +218,17 @@ def status_detail(request, host_name=None, service_description=None):
     c['nagios_url'] = adagios.settings.nagios_url
     c['request'] = request
     now = time.time()
-    seconds_in_a_day = 60*60*24
+    seconds_in_a_day = 60 * 60 * 24
     seconds_passed_today = now % seconds_in_a_day
-    today = now - seconds_passed_today # midnight of today
+    today = now - seconds_passed_today  # midnight of today
 
     try:
         c['host'] = my_host = livestatus.get_host(host_name)
         my_host['object_type'] = 'host'
         my_host['short_name'] = my_host['name']
     except IndexError:
-        c['errors'].append("Could not find any host named '%s'"%host_name)
-        return error_page(request,c)
+        c['errors'].append("Could not find any host named '%s'" % host_name)
+        return error_page(request, c)
 
     if service_description is None:
         tmp = request.GET.get('service_description')
@@ -229,19 +236,19 @@ def status_detail(request, host_name=None, service_description=None):
             return status_detail(request, host_name, service_description=tmp)
         primary_object = my_host
         c['service_description'] = '_HOST_'
-        c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name,service_description=None)
+        c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name, service_description=None)
 
     else:
         try:
-            c['service'] = my_service = livestatus.get_service(host_name,service_description)
+            c['service'] = my_service = livestatus.get_service(host_name, service_description)
             my_service['object_type'] = 'service'
             c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
             primary_object = my_service
-            c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name,service_description=service_description)
+            c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name, service_description=service_description)
         except IndexError:
-            c['errors'].append("Could not find any service named '%s'"%service_description)
-            return error_page(request,c)
+            c['errors'].append("Could not find any service named '%s'" % service_description)
+            return error_page(request, c)
 
     c['my_object'] = primary_object
 
@@ -249,7 +256,7 @@ def status_detail(request, host_name=None, service_description=None):
     primary_object['status'] = state[primary_object['state']]
 
     # Plugin longoutput comes to us with special characters escaped. lets undo that:
-    primary_object['long_plugin_output'] = primary_object['long_plugin_output'].replace('\\n','\n')
+    primary_object['long_plugin_output'] = primary_object['long_plugin_output'].replace('\\n', '\n')
 
     # Service list on the sidebar should be sorted
     my_host['services_with_info'] = sorted(my_host.get('services_with_info', []))
@@ -257,7 +264,7 @@ def status_detail(request, host_name=None, service_description=None):
 
     perfdata = primary_object['perf_data']
     perfdata = pynag.Utils.PerfData(perfdata)
-    for i,datum in enumerate(perfdata.metrics):
+    for i, datum in enumerate(perfdata.metrics):
         datum.i = i
         try:
             datum.status = state[datum.get_status()]
@@ -267,7 +274,7 @@ def status_detail(request, host_name=None, service_description=None):
 
     # Get a complete list of network parents
     try:
-        c['network_parents'] = reversed( _get_network_parents(host_name) )
+        c['network_parents'] = reversed(_get_network_parents(host_name))
     except Exception, e:
         c['errors'].append(e)
     # Create some state history progress bar from our logs:
@@ -287,7 +294,7 @@ def status_detail(request, host_name=None, service_description=None):
         css_hint[2] = 'danger'
         css_hint[3] = 'unknown'
         for i in log:
-            i['duration_percent'] = 100*i['duration']/total_duration
+            i['duration_percent'] = 100 * i['duration'] / total_duration
             i['bootstrap_status'] = css_hint[i['state']]
 
     # Lets get some graphs
@@ -299,7 +306,7 @@ def status_detail(request, host_name=None, service_description=None):
         c['pnp4nagios_error'] = e
     c['graph_urls'] = tmp
 
-    return render_to_response('status_detail.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_detail.html', c, context_instance=RequestContext(request))
 
 
 def _get_network_parents(host_name):
@@ -335,15 +342,16 @@ def _get_network_parents(host_name):
         # generate a list of grandparent names:
         grand_parents = set()
         for i in parents:
-            map(lambda x: grand_parents.add(x ), i.get('parents'))
-        result.append( parents )
+            map(lambda x: grand_parents.add(x), i.get('parents'))
+        result.append(parents)
         parent_names = list(grand_parents)
     return result
+
 
 @error_handler
 def status_hostgroup(request, hostgroup_name):
     """ Status detail for one specific hostgroup  """
-    c = { }
+    c = {}
     c['messages'] = []
     c['errors'] = []
     c['hostgroup_name'] = hostgroup_name
@@ -357,7 +365,8 @@ def status_hostgroup(request, hostgroup_name):
     # Get information about child hostgroups
     subgroups = my_hostgroup.hostgroup_members or ''
     subgroups = subgroups.split(',')
-    if subgroups == ['']: subgroups = []
+    if subgroups == ['']:
+        subgroups = []
     c['hostgroups'] = map(lambda x: livestatus.get_hostgroups('Filter: name = %s' % x)[0], subgroups)
     _add_statistics_to_hostgroups(c['hostgroups'])
 
@@ -365,7 +374,7 @@ def status_hostgroup(request, hostgroup_name):
     c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
     _add_statistics_to_hosts(c['hosts'])
     # Sort by service status
-    c['hosts'].sort(cmp=lambda a,b: cmp(a['percent_ok'], b['percent_ok']))
+    c['hosts'].sort(cmp=lambda a, b: cmp(a['percent_ok'], b['percent_ok']))
 
     # Get services that belong in this hostgroup
     c['services'] = livestatus.query('GET services', 'Filter: host_groups >= %s' % hostgroup_name)
@@ -392,11 +401,11 @@ def status_hostgroup(request, hostgroup_name):
         css_hint[2] = 'danger'
         css_hint[3] = 'info'
         for i in log:
-            i['duration_percent'] = 100*i['duration']/total_duration
+            i['duration_percent'] = 100 * i['duration'] / total_duration
             i['bootstrap_status'] = css_hint[i['state']]
 
+    return render_to_response('status_hostgroup.html', c, context_instance=RequestContext(request))
 
-    return render_to_response('status_hostgroup.html', c, context_instance = RequestContext(request))
 
 @error_handler
 def _add_statistics_to_hostgroups(hostgroups):
@@ -404,11 +413,11 @@ def _add_statistics_to_hostgroups(hostgroups):
     """
     # Lets establish a good list of all hostgroups and parentgroups
     all_hostgroups = pynag.Model.Hostgroup.objects.all
-    all_subgroups = set() # all hostgroups that belong in some other hostgroup
-    hostgroup_parentgroups = defaultdict(set) # "subgroup":['master1','master2']
+    all_subgroups = set()  # all hostgroups that belong in some other hostgroup
+    hostgroup_parentgroups = defaultdict(set)  # "subgroup":['master1','master2']
     hostgroup_childgroups = pynag.Model.ObjectRelations.hostgroup_hostgroups
 
-    for hostgroup,subgroups in hostgroup_childgroups.items():
+    for hostgroup, subgroups in hostgroup_childgroups.items():
         map(lambda x: hostgroup_parentgroups[x].add(hostgroup), subgroups)
 
     for i in hostgroups:
@@ -422,27 +431,28 @@ def _add_statistics_to_hostgroups(hostgroups):
         crit = hg.get('num_services_crit')
         pending = hg.get('num_services_pending')
         unknown = hg.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
+        total = ok + warn + crit + pending + unknown
         hg['total'] = total
         hg['problems'] = warn + crit + unknown
         try:
             total = float(total)
             hg['health'] = float(ok) / total * 100.0
             hg['health'] = float(ok) / total * 100.0
-            hg['percent_ok'] = ok/total*100
-            hg['percent_warn'] = warn/total*100
-            hg['percent_crit'] = crit/total*100
-            hg['percent_unknown'] = unknown/total*100
-            hg['percent_pending'] = pending/total*100
+            hg['percent_ok'] = ok / total * 100
+            hg['percent_warn'] = warn / total * 100
+            hg['percent_crit'] = crit / total * 100
+            hg['percent_unknown'] = unknown / total * 100
+            hg['percent_pending'] = pending / total * 100
         except ZeroDivisionError:
             pass
 
+
 @error_handler
 def status_hostgroups(request):
-    c = { }
+    c = {}
     c['messages'] = []
     c['errors'] = []
-    hostgroup_name=None
+    hostgroup_name = None
     livestatus = utils.livestatus(request)
     hostgroups = livestatus.get_hostgroups()
     c['hostgroup_name'] = hostgroup_name
@@ -450,11 +460,11 @@ def status_hostgroups(request):
 
     # Lets establish a good list of all hostgroups and parentgroups
     all_hostgroups = pynag.Model.Hostgroup.objects.all
-    all_subgroups = set() # all hostgroups that belong in some other hostgroup
-    hostgroup_parentgroups = defaultdict(set) # "subgroup":['master1','master2']
+    all_subgroups = set()  # all hostgroups that belong in some other hostgroup
+    hostgroup_parentgroups = defaultdict(set)  # "subgroup":['master1','master2']
     hostgroup_childgroups = pynag.Model.ObjectRelations.hostgroup_hostgroups
 
-    for hostgroup,subgroups in hostgroup_childgroups.items():
+    for hostgroup, subgroups in hostgroup_childgroups.items():
         map(lambda x: hostgroup_parentgroups[x].add(hostgroup), subgroups)
 
     for i in hostgroups:
@@ -478,7 +488,7 @@ def status_hostgroups(request):
         # Strip out any group that is not a subgroup of hostgroup_name
         right_hostgroups = []
         for group in hostgroups:
-            if group.get('name','') in subgroups:
+            if group.get('name', '') in subgroups:
                 right_hostgroups.append(group)
         c['hostgroups'] = right_hostgroups
 
@@ -490,17 +500,17 @@ def status_hostgroups(request):
         crit = host.get('num_services_crit')
         pending = host.get('num_services_pending')
         unknown = host.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
+        total = ok + warn + crit + pending + unknown
         host['total'] = total
         host['problems'] = warn + crit + unknown
         try:
             total = float(total)
             host['health'] = float(ok) / total * 100.0
-            host['percent_ok'] = ok/total*100
-            host['percent_warn'] = warn/total*100
-            host['percent_crit'] = crit/total*100
-            host['percent_unknown'] = unknown/total*100
-            host['percent_pending'] = pending/total*100
+            host['percent_ok'] = ok / total * 100
+            host['percent_warn'] = warn / total * 100
+            host['percent_crit'] = crit / total * 100
+            host['percent_unknown'] = unknown / total * 100
+            host['percent_pending'] = pending / total * 100
         except ZeroDivisionError:
             host['health'] = 'n/a'
     # Extra statistics for our hostgroups
@@ -510,43 +520,47 @@ def status_hostgroups(request):
         crit = hg.get('num_services_crit')
         pending = hg.get('num_services_pending')
         unknown = hg.get('num_services_unknown')
-        total = ok + warn + crit +pending + unknown
+        total = ok + warn + crit + pending + unknown
         hg['total'] = total
         hg['problems'] = warn + crit + unknown
         try:
             total = float(total)
             hg['health'] = float(ok) / total * 100.0
             hg['health'] = float(ok) / total * 100.0
-            hg['percent_ok'] = ok/total*100
-            hg['percent_warn'] = warn/total*100
-            hg['percent_crit'] = crit/total*100
-            hg['percent_unknown'] = unknown/total*100
-            hg['percent_pending'] = pending/total*100
+            hg['percent_ok'] = ok / total * 100
+            hg['percent_warn'] = warn / total * 100
+            hg['percent_crit'] = crit / total * 100
+            hg['percent_unknown'] = unknown / total * 100
+            hg['percent_pending'] = pending / total * 100
         except ZeroDivisionError:
             pass
-    return render_to_response('status_hostgroups.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_hostgroups.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def status_tiles(request, object_type="host"):
     """
     """
     c = _status(request)
-    return render_to_response('status_tiles.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_tiles.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def status_host(request):
-    c =  {}
+    c = {}
     c['messages'] = []
     c['errors'] = []
     c['hosts'] = utils.get_hosts(request, **request.GET)
     c['host_name'] = request.GET.get('detail', None)
-    return render_to_response('status_host.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_host.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def status_boxview(request):
     c = _status(request)
 
-    return render_to_response('status_boxview.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_boxview.html', c, context_instance=RequestContext(request))
+
 
 def get_related_objects(object_id):
     my_object = pynag.Model.ObjectDefinition.objects.get_by_id(object_id)
@@ -564,6 +578,7 @@ def get_related_objects(object_id):
         result += my_object.get_effective_network_children()
         result += my_object.get_effective_services()
     return result
+
 
 @error_handler
 def status_paneview(request):
@@ -617,7 +632,6 @@ def status_paneview(request):
     hosts = livestatus.get_hosts()
     services = livestatus.get_services()
 
-
     for i in pane1_objects + pane2_objects + pane3_objects:
         if i.object_type == 'host':
             i['tag'] = 'H'
@@ -645,7 +659,8 @@ def status_paneview(request):
     c['pane2_object'] = pane2_object
     c['pane3_object'] = pane3_object
 
-    return render_to_response('status_paneview.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_paneview.html', c, context_instance=RequestContext(request))
+
 
 def _add_statistics_to_hosts(hosts):
     """ Takes a list of dict hosts, and adds to the list statistics
@@ -682,17 +697,19 @@ def _add_statistics_to_hosts(hosts):
             host['percent_unknown'] = 0
             host['percent_pending'] = 0
 
+
 @error_handler
 def status_index(request):
     c = adagios.status.utils.get_statistics(request)
     #c['top_alert_producers'] = adagios.status.rest.top_alert_producers(limit=5)
 
-    return render_to_response('status_index.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_index.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
-    c = { }
+    c = {}
     c['messages'] = []
     c['table'] = table = request.GET.get('table')
 
@@ -704,7 +721,7 @@ def test_livestatus(request):
         columns = ""
         limit = request.GET.get('limit')
         run_query = False
-        for k,v in request.GET.items():
+        for k, v in request.GET.items():
             if k == "submit":
                 run_query = True
             if k.startswith('check_'):
@@ -714,13 +731,14 @@ def test_livestatus(request):
         if len(columns) > 0:
             query.append("Columns: %s" % columns)
         if limit != '' and limit > 0:
-            query.append( "Limit: %s" % limit )
-        if run_query == True:
+            query.append("Limit: %s" % limit)
+        if run_query is True:
             c['results'] = livestatus.query(*query)
             c['query'] = livestatus.last_query
             c['header'] = c['results'][0].keys()
 
-    return render_to_response('test_livestatus.html', c, context_instance = RequestContext(request))
+    return render_to_response('test_livestatus.html', c, context_instance=RequestContext(request))
+
 
 def _status_combined(request, optimized=False):
     """ Returns a combined status of network outages, host problems and service problems
@@ -737,8 +755,8 @@ def _status_combined(request, optimized=False):
         services = livestatus.get_services()
     hosts_that_are_down = []
     hostnames_that_are_down = []
-    service_status = [0,0,0,0]
-    host_status = [0,0,0,0]
+    service_status = [0, 0, 0, 0]
+    host_status = [0, 0, 0, 0]
     parents = []
     for host in hosts:
         host_status[host["state"]] += 1
@@ -777,18 +795,20 @@ def _status_combined(request, optimized=False):
     if service_totals == 0:
         c['service_status'] = 0
     else:
-        c['service_status'] = map(lambda x: 100*x/service_totals, service_status)
+        c['service_status'] = map(lambda x: 100 * x / service_totals, service_status)
     if host_totals == 0:
         c['host_status'] = 0
     else:
-        c['host_status'] = map(lambda x: 100*x/host_totals, host_status)
+        c['host_status'] = map(lambda x: 100 * x / host_totals, host_status)
     #l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     #c['log'] = reversed(l.get_state_history())
     return c
 
+
 @error_handler
 def status_problems(request):
     return dashboard(request)
+
 
 @error_handler
 def dashboard(request):
@@ -799,14 +819,13 @@ def dashboard(request):
     c['messages'] = []
     c['errors'] = []
 
-    all_down_hosts = utils.get_hosts(request,state__isnot='0',**request.GET)
+    all_down_hosts = utils.get_hosts(request, state__isnot='0', **request.GET)
     hostnames_that_are_down = map(lambda x: x.get('name'), all_down_hosts)
     # Discover network outages,
 
-
     # Remove acknowledgements and also all hosts where all parent hosts are down
-    c['host_problems'] = [] # Unhandled host problems
-    c['network_problems'] = [] # Network outages
+    c['host_problems'] = []  # Unhandled host problems
+    c['network_problems'] = []  # Network outages
     for i in all_down_hosts:
         if i.get('acknowledged') != 0:
             continue
@@ -832,11 +851,18 @@ def dashboard(request):
     #
     c['hosts'] = c['network_problems'] + c['host_problems']
     # Service problems
-    c['service_problems'] = utils.get_services(request, state__isnot="0", acknowledged="0",scheduled_downtime_depth="0", host_state="0",**request.GET)
+    c['service_problems'] = utils.get_services(request,
+                                               state__isnot="0",
+                                               acknowledged="0",
+                                               scheduled_downtime_depth="0",
+                                               host_state="0",
+                                               **request.GET
+    )
     # Sort problems by state and last_check as secondary sort field
-    c['service_problems'].sort(reverse=True,cmp=lambda a,b: cmp(a['last_check'], b['last_check']))
-    c['service_problems'].sort(reverse=True,cmp=lambda a,b: cmp(a['state'], b['state']))
-    return render_to_response('status_dashboard.html', c, context_instance = RequestContext(request))
+    c['service_problems'].sort(reverse=True, cmp=lambda a, b: cmp(a['last_check'], b['last_check']))
+    c['service_problems'].sort(reverse=True, cmp=lambda a, b: cmp(a['state'], b['state']))
+    return render_to_response('status_dashboard.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def state_history(request):
@@ -851,8 +877,8 @@ def state_history(request):
         end_time = time.time()
     end_time = int(end_time)
     if start_time is None:
-        seconds_in_a_day = 60*60*24
-        seconds_today = end_time % seconds_in_a_day # midnight of today
+        seconds_in_a_day = 60 * 60 * 24
+        seconds_today = end_time % seconds_in_a_day  # midnight of today
         start_time = end_time - seconds_today
     start_time = int(start_time)
     l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
@@ -868,8 +894,8 @@ def state_history(request):
 
     services = {}
     for i in log:
-        short_name = "%s/%s" % (i['host_name'],i['service_description'])
-        for k,v in request.GET.items():
+        short_name = "%s/%s" % (i['host_name'], i['service_description'])
+        for k, v in request.GET.items():
             if k in i.keys() and i[k] != v:
                 break
         else:
@@ -896,7 +922,7 @@ def state_history(request):
             if last_item is not None:
                 last_item['end_time'] = i['time']
                 #last_item['time'] = max(last_item['time'], start_time)
-                last_item['duration'] = duration = last_item['end_time']  - last_item['time']
+                last_item['duration'] = duration = last_item['end_time'] - last_item['time']
                 last_item['duration_percent'] = 100 * float(duration) / total_duration
                 service['duration'] += last_item['duration_percent']
                 if last_item['state'] == 0:
@@ -906,7 +932,7 @@ def state_history(request):
             last_item = i
         if not last_item is None:
             last_item['end_time'] = end_time
-            last_item['duration'] = duration = last_item['end_time']  - last_item['time']
+            last_item['duration'] = duration = last_item['end_time'] - last_item['time']
             last_item['duration_percent'] = 100 * duration / total_duration
             service['duration'] += last_item['duration_percent']
             if last_item['state'] == 0:
@@ -914,11 +940,10 @@ def state_history(request):
             else:
                 service['num_problems'] += 1
 
-
     c['services'] = services
     c['start_time'] = start_time
     c['end_time'] = end_time
-    return render_to_response('state_history.html', c, context_instance = RequestContext(request))
+    return render_to_response('state_history.html', c, context_instance=RequestContext(request))
 
 
 def _status_log(request):
@@ -939,8 +964,8 @@ def _status_log(request):
 
     if start_time == '':
         now = time.time()
-        seconds_in_a_day = 60*60*24
-        seconds_today = now % seconds_in_a_day # midnight of today
+        seconds_in_a_day = 60 * 60 * 24
+        seconds_today = now % seconds_in_a_day  # midnight of today
         start_time = now - seconds_today
     else:
         start_time = float(start_time)
@@ -953,7 +978,7 @@ def _status_log(request):
     # Any querystring parameters we will treat as a search string to get_log_entries, but we need to massage them
     # a little bit first
     kwargs = {}
-    for k,v in request.GET.items():
+    for k, v in request.GET.items():
         if k == 'search':
             k = 'search'
         elif k in ('start_time', 'end_time', 'start_time_picker', 'end_time_picker', 'limit',
@@ -965,9 +990,9 @@ def _status_log(request):
         v = str(v)
         kwargs[k] = v
     l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    c['log'] = l.get_log_entries(start_time=start_time,end_time=end_time, **kwargs)[-limit:]
+    c['log'] = l.get_log_entries(start_time=start_time, end_time=end_time, **kwargs)[-limit:]
     c['log'].reverse()
-    c['logs'] = {'all':[]}
+    c['logs'] = {'all': []}
     for line in c['log']:
         if line['class_name'] not in c['logs'].keys():
             c['logs'][line['class_name']] = []
@@ -977,12 +1002,13 @@ def _status_log(request):
     c['end_time'] = end_time
     return c
 
+
 @error_handler
 def status_log(request):
     c = _status_log(request)
     c['request'] = request
     c['log'].reverse()
-    return render_to_response('status_log.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_log.html', c, context_instance=RequestContext(request))
 
 
 def error_page(request, context=None):
@@ -990,7 +1016,8 @@ def error_page(request, context=None):
         context = {}
         context['errors'] = []
         context['errors'].append('Error occured, but no error messages provided, what happened?')
-    return render_to_response('status_error.html', context, context_instance = RequestContext(request))
+    return render_to_response('status_error.html', context, context_instance=RequestContext(request))
+
 
 @error_handler
 def comment_list(request):
@@ -1005,7 +1032,8 @@ def comment_list(request):
     c['comments'] = grep_dict(comments, **args)
     c['acknowledgements'] = grep_dict(comments, entry_type=4)
     c['downtimes'] = grep_dict(downtimes, **args)
-    return render_to_response('status_comments.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_comments.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def downtime_list(request):
@@ -1020,7 +1048,8 @@ def downtime_list(request):
     c['comments'] = grep_dict(comments, **args)
     c['acknowledgements'] = grep_dict(comments, entry_type=4)
     c['downtimes'] = grep_dict(downtimes, **args)
-    return render_to_response('status_downtimes.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_downtimes.html', c, context_instance=RequestContext(request))
+
 
 def grep_dict(array, **kwargs):
     """  Returns all the elements from array that match the keywords in **kwargs
@@ -1041,7 +1070,7 @@ def grep_dict(array, **kwargs):
     result = []
     for current_item in array:
         # Iterate through every keyword provided:
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             if type(v) == type([]):
                 v = v[0]
             if str(v) != str(current_item.get(k, None)):
@@ -1051,6 +1080,7 @@ def grep_dict(array, **kwargs):
             result.append(current_item)
     return result
 
+
 @error_handler
 def perfdata(request):
     """ Display a list of perfdata
@@ -1059,11 +1089,12 @@ def perfdata(request):
     c['messages'] = []
     c['errors'] = []
     l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
-    perfdata = l.query('GET services','Columns: host_name description perf_data state host_state')
+    perfdata = l.query('GET services', 'Columns: host_name description perf_data state host_state')
     for i in perfdata:
         i['metrics'] = pynag.Utils.PerfData(i['perf_data']).metrics
     c['perfdata'] = pynag.Utils.grep(perfdata, **request.GET)
-    return render_to_response('status_perfdata.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_perfdata.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def contact_list(request):
@@ -1076,13 +1107,14 @@ def contact_list(request):
     c['contacts'] = l.query('GET contacts')
     c['contacts'] = pynag.Utils.grep(c['contacts'], **request.GET)
     c['contactgroups'] = l.query('GET contactgroups')
-    return render_to_response('status_contacts.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_contacts.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def contact_detail(request, contact_name):
     """ Detailed information for one specific contact
     """
-    c= {}
+    c = {}
     c['messages'] = []
     c['errors'] = []
     c['contact_name'] = contact_name
@@ -1093,13 +1125,13 @@ def contact_detail(request, contact_name):
     if result == []:
         c['errors'].append("Contact named '%s' was not found." % contact_name)
         if contact_name != 'anonymous':
-            return render_to_response('status_error.html', c, context_instance = RequestContext(request))
+            return render_to_response('status_error.html', c, context_instance=RequestContext(request))
     else:
         contact = result[0]
         c['contact'] = contact
 
     # Active comments
-    c['comments'] = l.query('GET comments', 'Filter: comment ~ %s' % contact_name, )
+    c['comments'] = l.query('GET comments', 'Filter: comment ~ %s' % contact_name,)
     for i in c['comments']:
         if i.get('type') == 1:
             i['state'] = i['host_state']
@@ -1119,13 +1151,14 @@ def contact_detail(request, contact_name):
     nagiosdir = dirname(adagios.settings.nagios_config)
     git = pynag.Utils.GitRepo(directory=nagiosdir)
     c['gitlog'] = git.log(author_name=contact_name)
-    return render_to_response('status_contact.html', c, context_instance = RequestContext(request))
+    return render_to_response('status_contact.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def contactgroup_detail(request, contactgroup_name):
     """ Detailed information for one specific contactgroup
     """
-    c= {}
+    c = {}
     c['messages'] = []
     c['errors'] = []
     c['contactgroup_name'] = contactgroup_name
@@ -1148,13 +1181,10 @@ def contactgroup_detail(request, contactgroup_name):
     # Contact groups
     #c['contacts'] = l.query('GET contacts', 'Filter: contactgroup_ >= %s' % contact_name)
 
-
-    return render_to_response('status_contactgroup.html', c, context_instance = RequestContext(request))
-
+    return render_to_response('status_contactgroup.html', c, context_instance=RequestContext(request))
 
 
-
-
+@error_handler
 def business_process_edit(request, process_name):
     """ Edit one specific business process
     """
@@ -1166,21 +1196,26 @@ def business_process_edit(request, process_name):
     status = bp.get_status()
     add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp)
     form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
+    add_graph_form = adagios.status.forms.AddGraphForm(instance=bp)
     if request.method == 'GET':
         form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
     elif request.method == 'POST':
         if 'save_process' in request.POST:
-            form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
+            form = adagios.status.forms.BusinessProcessForm(instance=bp, data=request.POST)
             if form.is_valid():
                 form.save()
         elif 'remove_process' in request.POST:
-            removeform = adagios.status.forms.RemoveSubProcessForm(instance=bp,data=request.POST)
+            removeform = adagios.status.forms.RemoveSubProcessForm(instance=bp, data=request.POST)
             if removeform.is_valid():
                 removeform.save()
                 print "form remove"
         elif 'add_process' in request.POST:
             if form.is_valid():
                 form.add_process()
+        elif 'add_graph_submit_button' in request.POST:
+            add_graph_form = adagios.status.forms.AddGraphForm(instance=bp, data=request.POST)
+            if add_graph_form.is_valid():
+                add_graph_form.save()
         elif 'add_subprocess_submit_button' in request.POST:
             add_subprocess_form = adagios.status.forms.AddSubProcess(instance=bp, data=request.POST)
             if add_subprocess_form.is_valid():
@@ -1194,8 +1229,11 @@ def business_process_edit(request, process_name):
 
         # Load the process again, since any of the above probably made changes to it.
         bp = adagios.businessprocess.get_business_process(process_name)
-    return render_to_response('business_process_edit.html', locals(), context_instance = RequestContext(request))
 
+    return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
+
+
+@error_handler
 def business_process_view(request, process_name):
     """ View one specific business process
     """
@@ -1204,8 +1242,37 @@ def business_process_view(request, process_name):
     c['errors'] = []
     import adagios.businessprocess
     bp = adagios.businessprocess.get_business_process(process_name)
-    return render_to_response('business_process_view.html', locals(), context_instance = RequestContext(request))
 
+    return render_to_response('business_process_view.html', locals(), context_instance=RequestContext(request))
+
+
+@error_handler
+def business_process_graphs_json(request, process_name):
+    """ Get graphs for one specific business process
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    import adagios.businessprocess
+    bp = adagios.businessprocess.get_business_process(process_name)
+
+    graphs = []
+    if not bp.graphs:
+        return HttpResponse('[]')
+    a = bp.graphs
+    for graph in bp.graphs or []:
+        if graph.get('graph_type') == 'pnp':
+            pnp_result = run_pnp('json', host=graph.get('host_name'), srv=graph.get('service_description'))
+            json_data = json.loads(pnp_result)
+            for i in json_data:
+                if i.get('ds_name') == graph.get('metric_name'):
+                    i['notes'] = graph.get('notes')
+                    graphs.append(i)
+    graph_json = json.dumps(graphs)
+    return HttpResponse(graph_json)
+
+
+@error_handler
 def business_process_add(request):
     """ View one specific business process
     """
@@ -1217,12 +1284,13 @@ def business_process_add(request):
     if request.method == 'GET':
         form = adagios.status.forms.BusinessProcessForm(instance=bp, initial=bp.data)
     elif request.method == 'POST':
-        form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
+        form = adagios.status.forms.BusinessProcessForm(instance=bp, data=request.POST)
         if form.is_valid():
             form.save()
-    return render_to_response('business_process_edit.html', locals(), context_instance = RequestContext(request))
+    return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
+@error_handler
 def business_process_list(request):
     """ List all configured business processes
     """
@@ -1231,15 +1299,17 @@ def business_process_list(request):
     c['errors'] = []
     import adagios.businessprocess
     processes = adagios.businessprocess.get_all_processes()
-    return render_to_response('business_process_list.html', locals(), context_instance = RequestContext(request))
+    return render_to_response('business_process_list.html', locals(), context_instance=RequestContext(request))
 
+
+@error_handler
 def business_process_delete(request, process_name):
     """ Delete one specific business process """
     import adagios.businessprocess
     bp = adagios.businessprocess.get_business_process(process_name)
     if request.method == 'POST':
-        form = adagios.status.forms.BusinessProcessForm(instance=bp,data=request.POST)
+        form = adagios.status.forms.BusinessProcessForm(instance=bp, data=request.POST)
         form.delete()
         return redirect('adagios.status.views.business_process_list')
 
-    return render_to_response('business_process_delete.html', locals(), context_instance = RequestContext(request))
+    return render_to_response('business_process_delete.html', locals(), context_instance=RequestContext(request))
