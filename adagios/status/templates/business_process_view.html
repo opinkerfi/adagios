@@ -70,14 +70,26 @@
     </style>
     <style>
         /* Graphs list */
-        .graphs_row {
+        .graph_row {
+            margin: 0 0 2px;
+            border: 1px solid #e8e8e8;
+            border-radius: 3px;
+            padding: 8px 12px;
+            overflow: hidden;
+
         }
         .graph_notes {
-            width: 100px;
+            width: 150px;
             float: left;
+
         }
         .graph_image {
+            float: right;
         }
+        #objecttab {
+            margin-bottom: 40px;
+        }
+
 
     </style>
 
@@ -204,19 +216,21 @@
                         .done( function(data) {
                             $.each(data, function(i, item) {
                                         if (item['title'] == title) {
-                                            new_div = document.createElement( 'div');
-                                            new_div.setAttribute("class", "graph_div");
+                                            graph_row = document.createElement( 'div');
+                                            graph_row.setAttribute("class", "graph_row");
 
                                             notes_div = document.createElement('div');
-                                            notes_div.setAttribute("class", "graph_notes hide");
+                                            notes_div.setAttribute("class", "graph_notes");
                                             notes_div.textContent = item['notes'];
-                                            my_element.appendChild( notes_div );
+                                            graph_row.appendChild( notes_div );
 
                                             new_img = document.createElement( 'img');
-                                            new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url'] + "&graph_width=500&graph_height=70");
-                                            new_div.appendChild( new_img );
+                                            new_img.setAttribute("title", item['notes']);
+                                            new_img.setAttribute("class", 'graph_image');
+                                            new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url'] + "&graph_width=350&graph_height=30");
+                                            graph_row.appendChild( new_img );
 
-                                            my_element.appendChild( new_div );
+                                            my_element.appendChild( graph_row );
                                         }
                                     }
                             )
@@ -233,3 +247,4 @@
         });
     </script>
 {% endblock %}
+

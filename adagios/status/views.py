@@ -1246,7 +1246,6 @@ def business_process_view(request, process_name):
     return render_to_response('business_process_view.html', locals(), context_instance=RequestContext(request))
 
 
-@error_handler
 def business_process_graphs_json(request, process_name):
     """ Get graphs for one specific business process
     """
@@ -1262,11 +1261,18 @@ def business_process_graphs_json(request, process_name):
     a = bp.graphs
     for graph in bp.graphs or []:
         if graph.get('graph_type') == 'pnp':
+            host_name = graph.get('host_name')
+            service_description = graph.get('service_description')
+            metric_name = graph.get('metric_name')
             pnp_result = run_pnp('json', host=graph.get('host_name'), srv=graph.get('service_description'))
             json_data = json.loads(pnp_result)
             for i in json_data:
                 if i.get('ds_name') == graph.get('metric_name'):
-                    i['notes'] = graph.get('notes')
+                    notes = graph.get('notes')
+                    if '$LAST_VALUE' in notes:
+                        last_value = bp.get_pnp_last_value(host_name, service_description, metric_name)
+                        notes = notes.replace('$LAST_VALUE', last_value)
+                    i['notes'] = notes
                     graphs.append(i)
     graph_json = json.dumps(graphs)
     return HttpResponse(graph_json)

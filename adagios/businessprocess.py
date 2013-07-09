@@ -211,6 +211,17 @@ class BusinessProcess(object):
             return
         self.graphs = filter(lambda x: frozenset(x) != frozenset(data), self.graphs)
 
+    def get_pnp_last_value(self, host_name, service_description, metric_name):
+        """ Looks up current nagios perfdata via mk-livestatus and returns the last value for a specific metric (str)
+        """
+        l = pynag.Parsers.mk_livestatus()
+        service = l.get_service(host_name, service_description)
+        raw_perfdata = service.get('perf_data') or ''
+        perfdata = pynag.Utils.PerfData(raw_perfdata)
+        for i in perfdata.metrics:
+            if i.label == metric_name:
+                return "%s %s" % (i.value, i.uom or '')
+
     def load(self):
         """ Load information about this businessprocess from file
         """
