@@ -4,6 +4,8 @@ __author__ = 'palli'
 import simplejson as json
 import pynag.Model
 import pynag.Parsers
+import unittest
+
 
 class BusinessProcess(object):
     """ Wrapper class around pynag Business Processes.
@@ -17,9 +19,10 @@ class BusinessProcess(object):
      processes      - Sub Processeses of this business process
     """
     process_type = 'businessprocess'
-    status_calculation_methods = ['use_business_rules','use_worst_state','use_best_state','always_ok','always_minor','always_major']
+    status_calculation_methods = ['use_business_rules', 'use_worst_state', 'use_best_state', 'always_ok', 'always_minor', 'always_major']
     _default_status_calculation_method = 'use_business_rules'
     _default_filename = '/etc/adagios/bpi.json'
+
     def __init__(self, name, **kwargs):
         self.data = kwargs
         self.errors = []
@@ -28,17 +31,17 @@ class BusinessProcess(object):
         if 'processes' not in self.data:
             self.data['processes'] = []
 
-        for i in ('name', 'display_name', 'processes', 'rules','tags','status_method', 'graphs'):
+        for i in ('name', 'display_name', 'processes', 'rules', 'tags', 'status_method', 'graphs'):
             self._add_property(i)
 
         if 'rules' not in self.data:
             self.data['rules'] = []
-            self.data['rules'].append( ('mission critical',1,'major') )
-            self.data['rules'].append( ('not critical',1,'minor') )
-            rule1 = {'tag':'mission critical', 'return_status':'major', 'min_number_of_problems':1, }
+            self.data['rules'].append(('mission critical', 1, 'major'))
+            self.data['rules'].append(('not critical', 1, 'minor'))
+            rule1 = {'tag': 'mission critical', 'return_status': 'major', 'min_number_of_problems': 1, }
         if not self.status_method:
             self.status_method = self._default_status_calculation_method
-        self.tags = self.data.get('tags','')
+        self.tags = self.data.get('tags', '')
 
     def get_status(self):
         """ Get a status for this Business Process. How status is calculated depends on
@@ -66,9 +69,11 @@ class BusinessProcess(object):
         except Exception, e:
             self.errors.append(e)
             return 3
+
     def get_all_states(self):
         """ Returns a list of all subprocess states """
         return map(lambda x: x.get_status(), self.get_processes())
+
     def get_worst_state(self):
         """ Returns the worst state of any sub items
         """
@@ -77,6 +82,7 @@ class BusinessProcess(object):
         except Exception, e:
             self.errors.append(e)
             return 3
+
     def run_business_rules(self):
         """ Iterate through the business rules in self.data['rules'] and returns
          the calculated status
@@ -92,7 +98,7 @@ class BusinessProcess(object):
         tags = defaultdict(list)
         for i in self.get_processes():
             i_status = i.get_status()
-            i_tags = i.data.get('tags','').split(',')
+            i_tags = i.data.get('tags', '').split(',')
             for tag in i_tags:
                 tags[tag].append(i_status)
             tags['*'].append(i_status)
@@ -138,9 +144,9 @@ class BusinessProcess(object):
         except Exception:
             return 3
 
-        if value in ('major','critical','crit'):
+        if value in ('major', 'critical', 'crit'):
             return 2
-        elif value in ('minor','warning','warn'):
+        elif value in ('minor', 'warning', 'warn'):
             return 1
         elif value in ('ok', 'no problems'):
             return 0
@@ -155,6 +161,7 @@ class BusinessProcess(object):
         if 'processes' not in self.data:
             self.data['processes'] = []
         self.data['processes'].append(new_process)
+
     def remove_process(self, process_name, process_type=None):
         """ Remove one specific subprocess from this process.
 
@@ -167,6 +174,7 @@ class BusinessProcess(object):
                 continue
             self.processes.remove(i)
             return
+
     def get_processes(self):
         """ Return a list of BusinessProcess with all sub processes in this Process
         """
@@ -179,6 +187,7 @@ class BusinessProcess(object):
             bp.data.update(i)
             result.append(bp)
         return result
+
     def add_pnp_graph(self, host_name, service_description, metric_name, notes=''):
         """ Adds one graph to this business process. The graph must exist in pnp4nagios, metric_name equals pnp's ds_name
         """
@@ -191,7 +200,8 @@ class BusinessProcess(object):
         if not self.graphs:
             self.graphs = []
         self.graphs.append(data)
-    def remove_pnp_graph(self, host_name,service_description,metric_name):
+
+    def remove_pnp_graph(self, host_name, service_description, metric_name):
         data = {}
         data['graph_type'] = "pnp"
         data['host_name'] = host_name
@@ -200,6 +210,7 @@ class BusinessProcess(object):
         if not self.graphs:
             return
         self.graphs = filter(lambda x: frozenset(x) != frozenset(data), self.graphs)
+
     def load(self):
         """ Load information about this businessprocess from file
         """
@@ -219,7 +230,7 @@ class BusinessProcess(object):
         if self.name != self._original_name and self.name in get_all_process_names():
             raise PynagError("Can not rename process to %s. Another process with that name already exists" % (self.name))
         # Look for a json object that matches our name
-        for i,data in enumerate(json_data):
+        for i, data in enumerate(json_data):
             current_name = data.get('name', None)
             if not current_name:
                 continue
@@ -234,6 +245,7 @@ class BusinessProcess(object):
         # Once we get here, all we need to do is save our item
         json_string = json.dumps(json_data, indent=4)
         self._write_file(json_string)
+
     def delete(self):
         """ Delete this business process
         """
@@ -244,25 +256,23 @@ class BusinessProcess(object):
         json_string = json.dumps(json_data, indent=4)
         self._write_file(json_string)
 
-
-
     def get_human_friendly_status(self):
         state = {}
         state[0] = "ok"
         state[1] = "warning"
         state[2] = "critical"
-        return state.get( self.get_status(), "unknown")
-
-
+        return state.get(self.get_status(), "unknown")
 
     def _read_file(self, filename=None):
         if not filename:
             filename = self._default_filename
-        return open(filename,'r').read()
+        return open(filename, 'r').read()
+
     def _write_file(self, string, filename=None):
         if not filename:
             filename = self._default_filename
-        return open(filename,'w').write(string)
+        return open(filename, 'w').write(string)
+
     def _add_property(self, name):
         """ Create a dynamic property specific BusinessProcess
 
@@ -276,10 +286,12 @@ class BusinessProcess(object):
         fset = lambda self, value: self.set(name, value)
         fdel = lambda self: self.set(name, None)
         fdoc = "This is the %s attribute for object definition"
-        setattr( self.__class__, name, property(fget,fset,fdel,fdoc))
+        setattr(self.__class__, name, property(fget, fset, fdel, fdoc))
+
     def set(self, key, value):
         """ Same as self[name] = value """
         self[key] = value
+
     def get(self, key, default=None):
         """ Same as dict.get """
         if key == 'get_processes':
@@ -290,7 +302,8 @@ class BusinessProcess(object):
             return self.css_hint()
         elif key == 'get_human_friendly_status':
             return self.get_human_friendly_status()
-        return self.data.get(key,default)
+        return self.data.get(key, default)
+
     def css_hint(self):
         """ Return a bootstrap friendly hint on what css class is applicate for this object """
         css_hint = {}
@@ -299,17 +312,21 @@ class BusinessProcess(object):
         css_hint[2] = 'danger'
         css_hint[3] = 'unknown'
         return css_hint.get(self.get_status(), "unknown")
+
     def __repr__(self):
-        return "%s: %s" % (self.process_type,self.get('name'))
+        return "%s: %s" % (self.process_type, self.get('name'))
+
     def __str__(self):
         display_name = self.get('display_name')
         if not display_name:
             return self.__repr__()
         else:
             return display_name.encode('utf-8')
+
     def __getitem__(self, key):
         return self.get(key, None)
-    def __setitem__(self,key,value):
+
+    def __setitem__(self, key, value):
         return self.data.__setitem__(key, value)
 
 
@@ -317,13 +334,13 @@ class Hostgroup(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup
     """
     process_type = 'hostgroup'
-    status_calculation_methods = ['worst_service_state','worst_host_state']
+    status_calculation_methods = ['worst_service_state', 'worst_host_state']
     _default_status_calculation_method = 'worst_service_state'
 
     def load(self):
         self._livestatus = pynag.Parsers.mk_livestatus()
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
-        self.display_name  = self._hostgroup.get('alias')
+        self.display_name = self._hostgroup.get('alias')
         self.notes = self._hostgroup.get('notes')
 
         # Get information about child hostgroups
@@ -334,7 +351,8 @@ class Hostgroup(BusinessProcess):
         for i in subgroups:
             if not i or i == self._hostgroup:
                 continue
-            self.add_process( i, self.process_type )
+            self.add_process(i, self.process_type)
+
     def get_status(self):
         """ Same as BusinessProcess.get_status()
 
@@ -358,10 +376,12 @@ class Hostgroup(BusinessProcess):
             self.errors.append(e)
             return 3
 
+
 class Servicegroup(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup """
     status_calculation_methods = ['worst_host_state']
     _default_status_calculation_method = 'worst_service_state'
+
     def __init__(self, name):
         self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
         self._servicegroup = self._livestatus.get_servicegroup(name)
@@ -369,7 +389,7 @@ class Servicegroup(BusinessProcess):
         self.notes = self.servicegroup.get('notes')
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
         if not display_name:
-            display_name  = self._servicegroup.get('alias')
+            display_name = self._servicegroup.get('alias')
         self.display_name = display_name
         # Get information about child servicegroups
         subgroups = self._pynag_object.servicegroup_members or ''
@@ -380,7 +400,8 @@ class Servicegroup(BusinessProcess):
             if not i:
                 continue
             subprocess = Servicegroup(i)
-            self.add_process( subprocess )
+            self.add_process(subprocess)
+
     def get_status(self):
         """ Same as BusinessProcess.get_status()
 
@@ -391,16 +412,17 @@ class Servicegroup(BusinessProcess):
         """
         servicegroup = self._livestatus.get_servicegroup(self.servicegroup_name)
 
-
         service_status = servicegroup.get('worst_service_state')
         if service_status == 3:
             return 2
         return service_status
 
+
 class Service(BusinessProcess):
     process_type = 'service'
     status_calculation_methods = ['service_state']
     _default_status_calculation_method = 'service_state'
+
     def load(self):
             tmp = self.name.split('/', 1)
             if len(tmp) != 2:
@@ -409,6 +431,7 @@ class Service(BusinessProcess):
             service_description = tmp[1]
             self._livestatus = pynag.Parsers.mk_livestatus()
             self._service = self._livestatus.get_service(host_name, service_description)
+
     def get_status(self):
         try:
             self.load()
@@ -417,16 +440,19 @@ class Service(BusinessProcess):
             self.errors.append(e)
             return 3
 
+
 class Host(BusinessProcess):
-    status_calculation_methods = ['worst_service_state','host_state']
+    status_calculation_methods = ['worst_service_state', 'host_state']
     _default_status_calculation_method = 'worst_service_state'
     process_type = 'host'
+
     def load(self):
         try:
             self._livestatus = pynag.Parsers.mk_livestatus()
             self._host = self._livestatus.get_host(host_name)
         except Exception, e:
             self.errors.append(e)
+
     def get_status(self):
         try:
             self.load()
@@ -456,8 +482,9 @@ def get_all_json(filename=None):
     """ Return contents of a particular file after json parsing them  """
     if not filename:
         filename = BusinessProcess._default_filename
+    raw_data = None
     try:
-        raw_data = open(filename,'r').read()
+        raw_data = open(filename, 'r').read()
     except IOError, e:
         if e.errno == 2:  # File does not exist
             return []
@@ -465,6 +492,7 @@ def get_all_json(filename=None):
         return []
     json_data = json.loads(raw_data)
     return json_data
+
 
 def get_all_processes(filename=None):
     """ Return all saved business processes
@@ -482,10 +510,13 @@ def get_all_processes(filename=None):
         result.append(bp)
     return result
 
+
 def get_all_process_names(filename=None):
     """ Return a list of all process names out there
     """
     return map(lambda x: x.name, get_all_processes(filename=filename))
+
+
 def get_business_process(process_name, process_type=None, **kwargs):
     """ Create and load a BusinessProcess
 
@@ -503,11 +534,10 @@ def get_business_process(process_name, process_type=None, **kwargs):
     return my_business_process
 
 
-
 class PNP4NagiosGraph:
     """ Represents one single PNP 4 nagios graph
     """
-    def __init__(self,host_name, service_description, label):
+    def __init__(self, host_name, service_description, label):
         """
         """
         self.host_name = host_name
@@ -525,19 +555,11 @@ class PNP4NagiosGraph:
         return graphs
 
 
-
-
-
-import unittest
-
-
 class TestGraphs(unittest.TestCase):
     def testPNP4NagiosGraph_get_image_url(self):
 
-        pnp = PNP4NagiosGraph('apc01.acme.com','Ping', 'rta')
+        pnp = PNP4NagiosGraph('apc01.acme.com', 'Ping', 'rta')
         pnp.get_image_url()
-
-
 
 
 class TestBusinessProcess(unittest.TestCase):
@@ -564,7 +586,8 @@ class TestBusinessProcess(unittest.TestCase):
         b = BusinessProcess(bp_name)
         b.load()
 
-        self.assertEqual(b.display_name,new_display_name)
+        self.assertEqual(b.display_name, new_display_name)
+
     def test_add_process(self):
         """ Test adding new processes to a current BP
         """
@@ -578,11 +601,13 @@ class TestBusinessProcess(unittest.TestCase):
                 return
         else:
             self.assertTrue(False, 'We tried adding a business process but could not find it afterwards')
+
     def test_hostgroup_bp(self):
         bp_name = 'test'
         hostgroup_name = 'acme-network'
         b = BusinessProcess(bp_name)
-        b.add_process(hostgroup_name,'hostgroup')
+        b.add_process(hostgroup_name, 'hostgroup')
+
     def test_remove_process(self):
         """ Test removing a subprocess from a businessprocess
         """
@@ -594,9 +619,9 @@ class TestBusinessProcess(unittest.TestCase):
         self.assertNotEqual([], b.processes)
         b.remove_process(sub_process_name)
         self.assertEqual([], b.processes)
+
     def test_get_all_processes(self):
         get_all_processes()
-
 
 
 if __name__ == '__main__':
@@ -604,4 +629,3 @@ if __name__ == '__main__':
     for i in tmp:
         print i.name
         print i.run_business_rules()
-
