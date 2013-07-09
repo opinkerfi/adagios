@@ -83,15 +83,18 @@
 
     <div id="content_div" class="centralized_dashboard">
         <h3 class="dashboard_header">{{ bp.display_name }} <span class="status_{{ bp.get_status }}">Status</span></h3>
-        <div class="top-margin alert alert-{{ bp.css_hint }}">
+        <div class="top-margin service alert alert-{{ bp.css_hint }}">
             {% if bp.css_hint == 'success' %}
-                All Systems are operational
+                Overall health status
+                <span class="bold pull-right">ok</span>
             {% endif %}
             {% if bp.css_hint == 'warning' %}
-                There are some minor problems
+                Overall health status
+                <span class="bold pull-right">minor problems</span>
             {% endif %}
             {% if bp.css_hint == 'danger' %}
-                We are currently dealing with problems
+                Overall health status
+                <span class="bold pull-right">major problems</span>
             {% endif %}
             {% if bp.css_hint == 'unknown' %}
                 Some probes are returning status "unknown"
