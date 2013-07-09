@@ -86,6 +86,9 @@
         .graph_image {
             float: right;
         }
+        .graph_last_value {
+            font-weight: bold;
+        }
         #objecttab {
             margin-bottom: 40px;
         }
@@ -219,10 +222,15 @@
                                             graph_row = document.createElement( 'div');
                                             graph_row.setAttribute("class", "graph_row");
 
-                                            notes_div = document.createElement('div');
-                                            notes_div.setAttribute("class", "graph_notes");
-                                            notes_div.textContent = item['notes'];
-                                            graph_row.appendChild( notes_div );
+                                            div_notes = document.createElement('div');
+                                            div_notes.setAttribute("class", "graph_notes");
+                                            div_notes.textContent = item['notes'];
+                                            graph_row.appendChild( div_notes );
+
+                                            div_last_value = document.createElement('div');
+                                            div_last_value.setAttribute("class", "graph_last_value");
+                                            div_last_value.textContent = item['last_value'];
+                                            div_notes.appendChild( div_last_value );
 
                                             new_img = document.createElement( 'img');
                                             new_img.setAttribute("title", item['notes']);

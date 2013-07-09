@@ -1269,9 +1269,8 @@ def business_process_graphs_json(request, process_name):
             for i in json_data:
                 if i.get('ds_name') == graph.get('metric_name'):
                     notes = graph.get('notes')
-                    if '$LAST_VALUE' in notes:
-                        last_value = bp.get_pnp_last_value(host_name, service_description, metric_name)
-                        notes = notes.replace('$LAST_VALUE', last_value)
+                    last_value = bp.get_pnp_last_value(host_name, service_description, metric_name)
+                    i['last_value'] = last_value
                     i['notes'] = notes
                     graphs.append(i)
     graph_json = json.dumps(graphs)
