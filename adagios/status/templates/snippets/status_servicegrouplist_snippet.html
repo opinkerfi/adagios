@@ -1,0 +1,34 @@
+<!-- snippet status_hostgrouplist_snippet.html starts -->
+{% load adagiostags %}
+
+{% if servicegroups %}
+    <table class="table well table-condensed searchtable" style="font-size:12px;" >
+        <tr>
+            <th>Servicegroup</th>
+            <th>Alias</th>
+            <th>Number of services</th>
+            <th>Notes</th>
+            <th>urls</th>
+        </tr>
+        <tbody>
+        {% for row in servicegroups %}
+
+            <tr>
+                <td><a href="{% url adagios.status.views.services %}?groups__has_field={{ row.name }}">{{ row.name }}</a></td>
+                <td><a href="{% url adagios.status.views.services %}?groups__has_field={{ row.name }}">{{ row.alias }}</a></td>
+                <td><a href="{% url adagios.status.views.services %}?groups__has_field={{ row.name }}">{{ row.num_services }}</a></td>
+                <td>{{ row.notes }}</td>
+                <td>
+                    {% if row.notes_url %}
+                        <a href="{{ row.notes_url }}">notes</a><
+                    {% endif %}
+                    {% if row.action_url %}
+                        <a href="{{ row.action_url }}">action url</a>
+                    {% endif %}
+            </tr>
+        {% endfor %}
+            </tbody>
+    </table>
+{% else %}
+{% endif %}
+<!-- snippet status_hostgrouplist_snippet.html ends -->

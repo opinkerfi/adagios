@@ -448,6 +448,20 @@ def _add_statistics_to_hostgroups(hostgroups):
 
 
 @error_handler
+def status_servicegroups(request):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    servicegroup_name = None
+    livestatus = utils.livestatus(request)
+    servicegroups = livestatus.get_servicegroups()
+    c['servicegroup_name'] = servicegroup_name
+    c['request'] = request
+    c['servicegroups'] = servicegroups
+    return render_to_response('status_servicegroups.html', c, context_instance=RequestContext(request))
+
+
+@error_handler
 def status_hostgroups(request):
     c = {}
     c['messages'] = []

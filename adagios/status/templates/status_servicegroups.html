@@ -1,0 +1,18 @@
+{% extends "base_status.html" %}
+
+{% block title %}Servicegroups{% endblock %}
+
+{% block nav2 %}
+    <a href="{% url status.views.status_servicegroups %}">Servicegroups</a>
+{% endblock %}
+{% block smallheader %}{% endblock %}
+
+{% block largeheader %}Servicegroups{% endblock %}
+
+{% block content %}
+    {% include "snippets/status_servicegrouplist_snippet.html" %}
+{% endblock %}
+
+
+
+
