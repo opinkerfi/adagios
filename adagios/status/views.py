@@ -1292,6 +1292,7 @@ def business_process_add(request):
         form = adagios.status.forms.BusinessProcessForm(instance=bp, data=request.POST)
         if form.is_valid():
             form.save()
+            return redirect('adagios.status.views.business_process_edit', bp.name)
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
