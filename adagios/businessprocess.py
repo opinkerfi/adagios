@@ -215,7 +215,10 @@ class BusinessProcess(object):
         """ Looks up current nagios perfdata via mk-livestatus and returns the last value for a specific metric (str)
         """
         l = pynag.Parsers.mk_livestatus()
-        service = l.get_service(host_name, service_description)
+        try:
+            service = l.get_service(host_name, service_description)
+        except Exception:
+            return None
         raw_perfdata = service.get('perf_data') or ''
         perfdata = pynag.Utils.PerfData(raw_perfdata)
         for i in perfdata.metrics:
