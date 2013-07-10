@@ -108,7 +108,7 @@ class AddSubProcess(forms.Form):
     process_type = forms.ChoiceField(choices=process_type_choices)
     process_name = forms.CharField(widget=forms.HiddenInput(attrs={'style': "width: 300px;"}), max_length=100)
     display_name = forms.CharField(max_length=100, required=False)
-    tags = forms.CharField(max_length=100, required=False, initial="non critical")
+    tags = forms.CharField(max_length=100, required=False, initial="not critical")
 
     def __init__(self, instance, *args, **kwargs):
         self.bp = instance
