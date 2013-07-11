@@ -132,7 +132,10 @@ body {
     background-color: lightblue;
 }
 a {
-    color: #383838;
+    color: #4b4b4b;
+
+}
+#left_sidebar a {
     font-weight: normal;
 }
 .small{
