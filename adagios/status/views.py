@@ -39,6 +39,7 @@ from adagios.pnp.functions import run_pnp
 from adagios.status import utils
 import adagios.status.rest
 import adagios.status.forms
+import adagios.businessprocess
 
 
 state = defaultdict(lambda: "unknown")
@@ -251,6 +252,7 @@ def status_detail(request, host_name=None, service_description=None):
             return error_page(request, c)
 
     c['my_object'] = primary_object
+    c['object_type'] = primary_object['object_type']
 
     # Friendly statusname (i.e. turn 2 into "critical")
     primary_object['status'] = state[primary_object['state']]
@@ -1105,7 +1107,10 @@ def perfdata(request):
     l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
     perfdata = l.query('GET services', 'Columns: host_name description perf_data state host_state')
     for i in perfdata:
-        i['metrics'] = pynag.Utils.PerfData(i['perf_data']).metrics
+        metrics = pynag.Utils.PerfData(i['perf_data']).metrics
+        metrics = filter(lambda x: x.is_valid(), metrics)
+        i['metrics'] = metrics
+    # Filter metrics according to whatever was put in querystring
     c['perfdata'] = pynag.Utils.grep(perfdata, **request.GET)
     return render_to_response('status_perfdata.html', c, context_instance=RequestContext(request))
 
@@ -1204,7 +1209,6 @@ def business_process_edit(request, process_name):
     """
 
     messages = []
-    import adagios.businessprocess
     bp = adagios.businessprocess.get_business_process(process_name)
     errors = bp.errors or []
     status = bp.get_status()
@@ -1222,7 +1226,6 @@ def business_process_edit(request, process_name):
             removeform = adagios.status.forms.RemoveSubProcessForm(instance=bp, data=request.POST)
             if removeform.is_valid():
                 removeform.save()
-                print "form remove"
         elif 'add_process' in request.POST:
             if form.is_valid():
                 form.add_process()
@@ -1245,6 +1248,52 @@ def business_process_edit(request, process_name):
         bp = adagios.businessprocess.get_business_process(process_name)
 
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
+
+
+def business_process_add_graph(request):
+    """ Add one or more graph to a single business process
+    """
+    c = {}
+    c['errors'] = []
+    c.update(csrf(request))
+    if request.method == 'GET':
+        source = request.GET
+    else:
+        source = request.POST
+    name = source.get('name', None)
+    if name:
+        c['name'] = name
+    bp = adagios.businessprocess.get_business_process(name)
+    c['graphs'] = []
+    # Convert every graph= in the querystring into host_name,service_description,metric attribute
+    graphs = source.getlist('graph')
+    for graph in graphs:
+        tmp = graph.split(',')
+        if len(tmp) != 3:
+            c['errors'].append("Invalid graph string: %s" % (tmp))
+        graph_dict = {}
+        graph_dict['host_name'] = tmp[0]
+        graph_dict['service_description'] = tmp[1]
+        graph_dict['metric_name'] = tmp[1]
+        c['graphs'].append(graph_dict)
+        print graph_dict
+    #
+    # When we get here, we have parsed all the data from the client, if
+    # its a post, lets add the graphs to our business process
+    if request.method == 'POST':
+        if not name:
+            raise Exception("Booh! you need to supply name= to the querystring")
+        for graph in c['graphs']:
+            form = adagios.status.forms.AddGraphForm(instance=bp, data=graph)
+            print "saving graph"
+            if form.is_valid():
+                form.save()
+            else:
+                e = form.errors
+                raise e
+        return redirect('adagios.status.views.business_process_edit', bp.name)
+
+    return render_to_response('business_process_add_graph.html', c, context_instance=RequestContext(request))
 
 
 @error_handler
@@ -1292,6 +1341,33 @@ def business_process_graphs_json(request, process_name):
 
 
 @error_handler
+def business_process_add_subprocess(request):
+    """ View one specific business process
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    c.update(csrf(request))
+    process_list, parameters = _business_process_parse_querystring(request)
+
+    if request.method == 'POST':
+        if 'name' not in request.POST:
+            raise Exception("You must specify which subprocess to add all these objects to")
+        bp = adagios.businessprocess.get_business_process(request.POST.get('name'))
+        # Find all subprocesses in the post, can for each one call add_process with all parmas as well
+        for i in process_list:
+            process_name = i.get('name')
+            process_type = i.get('process_type')
+            bp.add_process(process_name, process_type, **parameters)
+            c['messages'].append('%s: %s added to %s' % (process_type, process_name, bp.name))
+        bp.save()
+        return redirect('adagios.status.views.business_process_edit', bp.name)
+    c['subprocesses'] = process_list
+    c['parameters'] = parameters
+    return render_to_response('business_process_add_subprocess.html', c, context_instance=RequestContext(request))
+
+
+@error_handler
 def business_process_add(request):
     """ View one specific business process
     """
@@ -1333,3 +1409,50 @@ def business_process_delete(request, process_name):
         return redirect('adagios.status.views.business_process_list')
 
     return render_to_response('business_process_delete.html', locals(), context_instance=RequestContext(request))
+
+
+@error_handler
+def business_process_change_status_calculation_method(request, process_name):
+    import adagios.businessprocess
+    bp = adagios.businessprocess.get_business_process(process_name)
+    if request.method == 'POST':
+        for i in bp.status_calculation_methods:
+            if i in request.POST:
+                bp.status_method = i
+                bp.save()
+        return redirect('adagios.status.views.business_process_list')
+
+
+def _business_process_parse_querystring(request):
+    """ Parses querystring into process_list and parameters
+
+    Returns:
+      (parameters,processs_list) where:
+         -- process_list is a list of all business processes that were mentioned in the querystring
+         -- Parameters is a dict of all other querystrings that were not in process_list and not in exclude list
+    """
+    ignored_querystring_parameters = ("csrfmiddlewaretoken")
+    import adagios.businessprocess
+    data = {}
+    print "HG: ", request.GET.get('hostgroup')
+    if request.method == 'GET':
+        data = request.GET
+    elif request.method == 'POST':
+        data = request.POST
+    else:
+        raise Exception("Booh, use either get or POST")
+    parameters = {}
+    process_list = []
+    for key in data:
+        for value in data.getlist(key):
+            if key in ignored_querystring_parameters:
+                continue
+            type_of_process = adagios.businessprocess.get_class(key, None)
+
+            if type_of_process is None:
+                parameters[key] = value
+            else:
+                process_type = type_of_process.process_type
+                process = adagios.businessprocess.get_business_process(value, process_type=process_type)
+                process_list.append(process)
+    return process_list, parameters

@@ -312,6 +312,10 @@ class BusinessProcess(object):
             return self.get_processes()
         elif key == 'get_status':
             return self.get_status()
+        elif key == 'status_calculation_methods':
+            return self.status_calculation_methods
+        elif key == 'process_type':
+            return self.process_type
         elif key == 'css_hint':
             return self.css_hint()
         elif key == 'get_human_friendly_status':
@@ -476,7 +480,7 @@ class Host(BusinessProcess):
         return self._host.get('state', 3)
 
 
-def get_class(process_type):
+def get_class(process_type, default=BusinessProcess):
     """ Looks up process_type and return apropriate BusinessProcess Class
 
      Example:
@@ -489,7 +493,7 @@ def get_class(process_type):
     dictionary['service'] = Service
     dictionary['host'] = Host
     dictionary['process'] = BusinessProcess
-    return dictionary.get(process_type, BusinessProcess)
+    return dictionary.get(process_type, default)
 
 
 def get_all_json(filename=None):

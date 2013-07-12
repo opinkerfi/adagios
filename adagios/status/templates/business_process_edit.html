@@ -41,8 +41,23 @@
         <div class="tab-pane " id="subprocesses">
 
             <div id="sub_processes">
+                <form action="{% url adagios.status.views.business_process_add_subprocess %}" method="get">
+                    <button class="pull-right btn btn-small enable_on_select" name=test>
+                        <i class="glyph-circle-plus " title="Add new ..."> </i> Add to another businessgroup
+                    </button>
+
                 <table class="well table table-condensed">
                     <tr>
+                        <th class="small">
+                            <div class="btn-group">
+                                <a data-toggle="dropdown" ><input type="checkbox" id="select_many"></a>
+                                <ul class="dropdown-menu">
+                                    <li><a id="select_all"> All</a></li>
+                                    <li><a id="select_none"> None</a></li>
+                                </ul>
+                            </div>
+                        </th>
+
                         <th>Name</th>
                         <th>Alias</th>
                         <th>Status Method</th>
@@ -52,6 +67,9 @@
                     </tr>
                     {% for i in bp.get_processes %}
                         <tr class="subprocess-row">
+                            <td class="small selectable">
+                                <input type=checkbox class="chkbox" name="{{ i.process_type }}" value="{{ i.name }}">
+                            </td>
                             <td>
                                 <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
                                 {{ i.process_type }}: {{ i.name }}
@@ -71,6 +89,7 @@
                         </tr>
                     {% endfor %}
                 </table>
+                </form>
             </div>
 
 
@@ -187,7 +206,8 @@
 
 {% endblock %}
 {% block action_buttons %}
-<div>
+
+    <div class="pull-left">
 
     <a class="btn" id="open_subprocess_modal" data-toggle="modal" data-target="#add_subprocess_modal" href="#">
         <i class="glyph-circle-plus " title="Add new ..."> </i> Add sub item
@@ -199,7 +219,8 @@
         <i class="glyph-circle-plus " title="Add new ..."> </i> Add graphs
     </a>
 
-</div>
+    </div>
+
 
 {% endblock %}
 {% block toolbar %}{{ block.super }}{% endblock %}

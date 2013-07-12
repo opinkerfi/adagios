@@ -1,0 +1,45 @@
+{% extends "base_status.html" %}
+
+{% block title %}Business Process{% endblock %}
+{% block smallheader %}add{% endblock %}
+{% block largeheader %}graphs{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.business_process_list %}">Business Process</a>{% endblock %}
+
+{% load adagiostags %}
+
+{% block content %}
+    <form action="" method="post">{% csrf_token %}
+
+        <table class="table table-condensed well">
+        <tr>
+            <th class="small"></th>
+            <th>Host</th>
+            <th>Service</th>
+            <th>Performance metric</th>
+        </tr>
+            {% for i in graphs %}
+                <tr>
+                    <td class="small">
+                        <input type=checkbox checked="checked" name="graph" value="{{ i.host_name }},{{ i.service_description }},{{ i.metric_name }}">
+                    </td>
+                    <td>{{ i.host_name }}</td>
+                    <td>{{ i.service_description }}</td>
+                    <td>{{ i.metric_name }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type="text" name="name" placeholder="Enter name of a business group here" value="{{ name }}">
+        <button type="submit">Submit</button>
+    </form>
+
+{% endblock %}
+
+
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}
+
+{% endblock %}
+
