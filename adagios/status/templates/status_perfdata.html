@@ -13,6 +13,7 @@
         <thead>
         <tr>
             <th class="small"></th>
+            <th class="small"></th>
             <th>host</th>
             <th class="small"></th>
             <th>service</th>
@@ -29,6 +30,9 @@
     {% for service in perfdata %}
         {% for i in service.metrics %}
             <tr class=mainrow>
+                <td class="selectable small">
+                    <input type=checkbox class="chkbox" name="graph" value="{{ service.host_name }},{{ service.description }},{{ i.label }}">
+                </td>
                 <td class="small"> <div class="circle state_{{ service.host_state }}"></div></td>
                 <td>{{ service.host_name }}</td>
                 <td class="small"> <div class="circle state_{{ service.state }}"></div></td>
