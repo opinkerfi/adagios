@@ -55,6 +55,10 @@ body {
     }
 }
 
+/* Convenience classes */
+.nomargin {
+    margin: 0 0 0 0;
+}
 /* .status_* are used to make a text color change according to status */
 .status_ok, .status_0 {
     color: #339966;
@@ -133,8 +137,8 @@ body {
 }
 a {
     color: #4b4b4b;
-
 }
+
 #left_sidebar a {
     font-weight: normal;
 }
