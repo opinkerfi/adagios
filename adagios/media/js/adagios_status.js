@@ -254,14 +254,19 @@ adagios.objectbrowser.select2_objects_query = function(object_type, query) {
 
     params = {
         object_type: object_type,
-        shortname__contains:query.term
+        name__contains:query.term
     };
 
-    adagios.rest.pynag.get_objects(params)
+    adagios.rest.status.get(params)
         .done( function(data) {
             var name, item, i;
             for (i in data) {
-                name = data[i].shortname;
+                if (object_type == 'service') {
+                    name = data[i].host_name + "/" + data[i].description;
+                }
+                else {
+                    name = data[i].name;
+                }
                 item  = {id: name, text: name};
                 results.results.push(item);
             }
