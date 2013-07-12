@@ -382,10 +382,30 @@ def update_check_command(host_name,service_description=None,**kwargs):
         raise Exception("Object not found")
 
 
-
-
 def get_business_process_names():
     """ Returns all configured business processes
     """
     import adagios.businessprocess
     return map(lambda x: x.name, adagios.businessprocess.get_all_processes())
+
+
+def get(object_type, *args, **kwargs):
+    livestatus_arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
+    if not object_type.endswith('s'):
+        object_type = object_type + 's'
+    print kwargs
+    if 'name__contains' in kwargs and object_type == 'services':
+        print "ok fixing service"
+        name = str(kwargs['name__contains'])
+        livestatus_arguments = filter(lambda x: x.startswith('name'), livestatus_arguments)
+        livestatus_arguments.append('Filter: host_name ~ %s' % name)
+        livestatus_arguments.append('Filter: description ~ %s' % name)
+        livestatus_arguments.append('Or: 2')
+    livestatus = pynag.Parsers.mk_livestatus()
+    print livestatus_arguments
+    results = livestatus.query('GET %s' % object_type, *livestatus_arguments)
+
+    if object_type == 'service':
+        for i in results:
+            i['name'] = i.get('host_name') + "/" + i.get('description')
+    return results
