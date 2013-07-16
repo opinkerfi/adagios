@@ -19,6 +19,7 @@ from django import forms
 import adagios.status.utils
 import adagios.businessprocess
 
+
 class LiveStatusForm(forms.Form):
     """ This form is used to generate a mk_livestatus query """
     table = forms.ChoiceField()
@@ -32,16 +33,19 @@ class RemoveSubProcessForm(forms.Form):
     """
     process_name = forms.CharField(max_length=100, required=True)
     process_type = forms.CharField(max_length=100, required=True)
-    def __init__(self, instance, *args,**kwargs):
+
+    def __init__(self, instance, *args, **kwargs):
         self.bp = instance
-        super(RemoveSubProcessForm, self).__init__(*args,**kwargs)
+        super(RemoveSubProcessForm, self).__init__(*args, **kwargs)
+
     def save(self):
         process_name = self.cleaned_data.get('process_name')
         process_type = self.cleaned_data.get('process_type')
         self.bp.remove_process(process_name, process_type)
         self.bp.save()
 
-status_method_choices = map(lambda x: (x,x), adagios.businessprocess.BusinessProcess.status_calculation_methods)
+status_method_choices = map(lambda x: (x, x), adagios.businessprocess.BusinessProcess.status_calculation_methods)
+
 
 class BusinessProcessForm(forms.Form):
     """ Use this form to edit a BusinessProcess """
@@ -54,14 +58,16 @@ class BusinessProcessForm(forms.Form):
     status_method = forms.ChoiceField(choices=status_method_choices, help_text="Here you can choose which method is used to calculate the global status of this business process")
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
-    def __init__(self, instance, *args,**kwargs):
+
+    def __init__(self, instance, *args, **kwargs):
         self.bp = instance
-        super(BusinessProcessForm, self).__init__(*args,**kwargs)
+        super(BusinessProcessForm, self).__init__(*args, **kwargs)
 
     def save(self):
         c = self.cleaned_data
         self.bp.data.update(c)
         self.bp.save()
+
     def remove(self):
         c = self.data
         process_name = c.get('process_name')
@@ -70,6 +76,7 @@ class BusinessProcessForm(forms.Form):
             process_type = None
         self.bp.remove_process(process_name, process_type)
         self.bp.save()
+
     def clean(self):
         cleaned_data = super(BusinessProcessForm, self).clean()
 
@@ -77,13 +84,16 @@ class BusinessProcessForm(forms.Form):
         new_name = cleaned_data.get('name')
         if new_name and new_name != self.bp.name:
             if new_name in adagios.businessprocess.get_all_process_names():
-                raise forms.ValidationError("Cannot rename process to %s. Another process with that name already exists" % (new_name))
+                raise forms.ValidationError(
+                    "Cannot rename process to %s. Another process with that name already exists" % new_name
+                )
         return cleaned_data
+
     def delete(self):
         """ Delete this business process """
         self.bp.delete()
+
     def add_process(self):
-        c = self.cleaned_data
 
         process_name = self.data.get('process_name')
         hostgroup_name = self.data.get('hostgroup_name')
@@ -129,9 +139,9 @@ class AddGraphForm(forms.Form):
     metric_name = forms.CharField(max_length=100, required=True)
     notes = forms.CharField(max_length=100, required=False, help_text="Put here a friendly description of the graph")
 
-    def __init__(self, instance, *args,**kwargs):
+    def __init__(self, instance, *args, **kwargs):
         self.bp = instance
-        super(AddGraphForm, self).__init__(*args,**kwargs)
+        super(AddGraphForm, self).__init__(*args, **kwargs)
 
     def save(self):
         self.bp.add_pnp_graph(**self.cleaned_data)
