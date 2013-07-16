@@ -40,7 +40,7 @@ service nagios reload
             Install instructions for debian-based systems:
             <pre>
 apt-get install check-mk-livestatus
-pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus
+pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
 service nagios3 reload
             </pre>
         {% endif %}
