@@ -56,6 +56,10 @@ class BusinessProcessForm(forms.Form):
                                    help_text="This is the name that will be displayed to users on this process. Usually it is the name of the system this business group represents.")
     notes = forms.CharField(max_length=1000, required=False, help_text="Here you can put in any description of the business process you are adding. Its a good idea to write down what the business process is about and who to contact in case of downtimes.")
     status_method = forms.ChoiceField(choices=status_method_choices, help_text="Here you can choose which method is used to calculate the global status of this business process")
+    state_0 = forms.CharField(max_length=100, required=False, help_text="Human friendly text for this respective state. You can type whatever you want but nagios style exit codes indicate that 0 should be 'ok'")
+    state_1 = forms.CharField(max_length=100, required=False, help_text="Typically used to represent warning or performance problems")
+    state_2 = forms.CharField(max_length=100, required=False, help_text="Typically used to represent critical status")
+    state_3 = forms.CharField(max_length=100, required=False, help_text="Use this when status is unknown")
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
 

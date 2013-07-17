@@ -5,6 +5,8 @@ import simplejson as json
 import pynag.Model
 import pynag.Parsers
 import unittest
+import adagios.pnp.functions
+import adagios.settings
 
 
 class BusinessProcess(object):
@@ -19,7 +21,13 @@ class BusinessProcess(object):
      processes      - Sub Processeses of this business process
     """
     process_type = 'businessprocess'
-    status_calculation_methods = ['use_business_rules', 'use_worst_state', 'use_best_state', 'always_ok', 'always_minor', 'always_major']
+    status_calculation_methods = ['use_business_rules',
+                                  'use_worst_state',
+                                  'use_best_state',
+                                  'always_ok',
+                                  'always_minor',
+                                  'always_major'
+                                  ]
     _default_status_calculation_method = 'use_business_rules'
     _default_filename = '/etc/adagios/bpi.json'
 
@@ -31,14 +39,21 @@ class BusinessProcess(object):
         if 'processes' not in self.data:
             self.data['processes'] = []
 
-        for i in ('name', 'display_name', 'processes', 'rules', 'tags', 'status_method', 'graphs'):
+        for i in ('name', 'display_name', 'processes', 'rules', 'tags',
+                  'status_method', 'graphs',
+                  'state_0', 'state_1', 'state_2', 'state_3'):
             self._add_property(i)
+
+        # Default status messages if none are configured
+        self.state_0 = self.state_0 or 'normal'
+        self.state_1 = self.state_1 or 'minor problems'
+        self.state_2 = self.state_2 or 'major problems'
+        self.state_3 = self.state_3 or 'unknown'
 
         if 'rules' not in self.data:
             self.data['rules'] = []
             self.data['rules'].append(('mission critical', 1, 'major'))
             self.data['rules'].append(('not critical', 1, 'minor'))
-            rule1 = {'tag': 'mission critical', 'return_status': 'major', 'min_number_of_problems': 1, }
         if not self.status_method:
             self.status_method = self._default_status_calculation_method
         self.tags = self.data.get('tags', '')
@@ -189,7 +204,7 @@ class BusinessProcess(object):
         return result
 
     def add_pnp_graph(self, host_name, service_description, metric_name, notes=''):
-        """ Adds one graph to this business process. The graph must exist in pnp4nagios, metric_name equals pnp's ds_name
+        """ Adds one graph to this business process. The graph must exist in PNP, metric_name equals pnp's ds_name
         """
         data = {}
         data['graph_type'] = "pnp"
@@ -242,7 +257,7 @@ class BusinessProcess(object):
         # If we are renaming a process, take special
         # Precautions that we are not overwriting a current one
         if self.name != self._original_name and self.name in get_all_process_names():
-            raise PynagError("Can not rename process to %s. Another process with that name already exists" % (self.name))
+            raise PynagError("Cannot rename process to %s. Another process with same name already exists" % (self.name))
         # Look for a json object that matches our name
         for i, data in enumerate(json_data):
             current_name = data.get('name', None)
@@ -272,10 +287,15 @@ class BusinessProcess(object):
 
     def get_human_friendly_status(self):
         state = {}
-        state[0] = "ok"
-        state[1] = "warning"
-        state[2] = "critical"
-        return state.get(self.get_status(), "unknown")
+        state[0] = self.state_0
+        state[1] = self.state_1
+        state[2] = self.state_2
+        state[3] = self.state_3
+        human_friendly_state = state.get(self.get_status(), "unknown")
+        if '%NUM_PROBLEMS%' in human_friendly_state:
+            num_problems = len(filter(lambda x: x > 0, self.get_all_states()))
+            human_friendly_state = human_friendly_state.replace('%NUM_PROBLEMS%', str(num_problems))
+        return human_friendly_state
 
     def _read_file(self, filename=None):
         if not filename:
@@ -395,6 +415,8 @@ class Hostgroup(BusinessProcess):
             return 3
 
 
+# TODO: Servicegroup implementation in incomplete. Test it, see if hostgroup Host and servicegroup can
+# be abstracted
 class Servicegroup(BusinessProcess):
     """ Business Process object that represents the state of one hostgroup """
     status_calculation_methods = ['worst_host_state']
@@ -563,9 +585,6 @@ class PNP4NagiosGraph:
         self.label = label
 
     def get_image_urls(self):
-        import adagios.pnp.functions
-        import adagios.settings
-        import simplejson as json
         json_str = adagios.pnp.functions.run_pnp('json', host=self.host_name, srv=self.service_description)
         graphs = json.loads(json_str)
         # only use graphs with same label
@@ -640,10 +659,3 @@ class TestBusinessProcess(unittest.TestCase):
 
     def test_get_all_processes(self):
         get_all_processes()
-
-
-if __name__ == '__main__':
-    tmp = get_all_processes()
-    for i in tmp:
-        print i.name
-        print i.run_business_rules()

@@ -1,0 +1,59 @@
+    <div id="content_div" class="centralized_dashboard">
+        <h3 class="dashboard_header">{{ bp.display_name }} <span class="status_{{ bp.get_status }}">Status</span></h3>
+        <div class="top-margin service alert alert-{{ bp.css_hint }}">
+            Overall health status
+            <span class="bold pull-right">{{ bp.get_human_friendly_status }}</span>
+        </div>
+        {% if bp.notes %}
+            <p>
+                {{ bp.notes }}
+            </p>
+        {% endif %}
+        <h4 class="dashboard_header">More information</h4>
+
+
+        {% if bp.get_processes %}
+            <div class="table top-margin" id="services">
+                {% for i in bp.get_processes %}
+                    <div class="service" title="{{ i.process_type }}">
+                        {% if i.process_type == 'businessprocess' %}
+                            <a href="{% url adagios.status.views.business_process_view i.process_name %}">{{ i }}</a>
+                        {% else %}
+                            {{ i }}
+                        {% endif %}
+                        <span class="bold pull-right status_{{ i.get_status }}">{{ i.get_human_friendly_status }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            No subgroups in {{ bp.display_name }}
+        {% endif %}
+        <h4 class="dashboard_header">Graphs</h4>
+        <div id="objecttab" class="tabbable"> <!-- Only required for left/right tabs -->
+            <ul class="nav nav-tabs" id="graphs_ul">
+                <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
+                <li><a href="#day" class="active" data-toggle="tab" id="25hours">25 Hours</a></li>
+                <li><a href="#week" data-toggle="tab">One Week</a></li>
+                <li><a href="#month" data-toggle="tab">One Month</a></li>
+                <li><a href="#year" data-toggle="tab">One Year</a></li>
+            </ul>
+
+            <div class="tab-content" id="graphs_content">
+                <div class="tab-pane" id="hours">
+                    <!-- Javascript will put images here if applicable -->
+                </div>
+                <div class="tab-pane active" id="day">
+                    <!-- Javascript will put images here if applicable -->
+                </div>
+                <div class="tab-pane" id="week">
+                    <!-- Javascript will put images here if applicable -->
+                </div>
+                <div class="tab-pane" id="month">
+                    <!-- Javascript will put images here if applicable -->
+                </div>
+                <div class="tab-pane" id="year">
+                    <!-- Javascript will put images here if applicable -->
+                </div>
+            </div>
+        </div>
+    </div>

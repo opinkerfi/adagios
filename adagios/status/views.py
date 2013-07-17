@@ -1275,6 +1275,7 @@ def business_process_add_graph(request):
         graph_dict['host_name'] = tmp[0]
         graph_dict['service_description'] = tmp[1]
         graph_dict['metric_name'] = tmp[2]
+        graph_dict['notes'] = tmp[2]
         c['graphs'].append(graph_dict)
         print graph_dict
     #

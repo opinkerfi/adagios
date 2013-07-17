@@ -28,7 +28,7 @@ def serve_page(request, pagename):
     if not os.path.isfile(filename):
         raise ValueError("Cannot find page %s" % pagename)
 
-    contents = open(filename,'r').read()
+    contents = open(filename, 'r').read()
     t = template.Template(contents)
     c = template.Context({})
     html = t.render(c)
