@@ -30,6 +30,22 @@ class BusinessProcess(object):
                                   ]
     _default_status_calculation_method = 'use_business_rules'
     _default_filename = '/etc/adagios/bpi.json'
+    _macros = [
+        'num_state_0',
+        'num_state_1',
+        'num_state_2',
+        'num_state_3',
+        'num_problems',
+
+        'percent_state_0',
+        'percent_state_1',
+        'percent_state_2',
+        'percent_state_3',
+        'percent_problems',
+
+        'current_state',
+        'friendly_state',
+    ]
 
     def __init__(self, name, **kwargs):
         self.data = kwargs
@@ -84,6 +100,15 @@ class BusinessProcess(object):
         except Exception, e:
             self.errors.append(e)
             return 3
+
+    def get_state_summary(self):
+        """ Returns a list of state statistics i.e. totals of: [ok,warn,crit,unknown]
+
+        """
+        result = [0, 0, 0, 0]
+        for i in self.get_all_states():
+            result[i] += 1
+        return result
 
     def get_all_states(self):
         """ Returns a list of all subprocess states """
@@ -167,6 +192,82 @@ class BusinessProcess(object):
             return 0
         else:
             return 3
+
+    def get_all_macros(self):
+        """ Return a list of all supported macros """
+        return self._macros
+
+    def resolve_all_macros(self):
+        """ Returns a dict with all macros resolved in a {'macroname:macrovalue} format """
+        result = {}
+        for macro in self.get_all_macros():
+            result[macro] = self.resolve_macro(macro)
+        return result
+
+    def resolve_macrostring(self, string, default='raise exception'):
+        """ Resolve all macros in a given string, and  return the resolved string
+
+        >>> bp = get_business_process('test business process')
+        >>> bp.resolve_macrostring("number of problems: $num_problems$")
+        'number of problems: 0'
+        """
+        for macro, value in self.resolve_all_macros().items():
+            string = string.replace('$' + macro + '$', str(value))
+        return string
+
+    def resolve_macro(self, macroname, default='raise exception'):
+        """ Returns the resolved value of a given macro.
+
+        Arguments:
+          macroname - the name of the macro, e.g. $num_problems$
+          default   - If given, return this when macroname is not found
+                      If default is not specified, exception will be
+                      raised if macro could not be resolved
+        """
+        macroname = macroname.strip('$')
+        if macroname not in self.get_all_macros():
+            if default == 'raise exception':
+                raise PynagError("Could not resolve macro '%s'" % macroname)
+            else:
+                return default
+        elif macroname == 'num_state_0':
+            return self.get_state_summary()[0]
+        elif macroname == 'num_state_1':
+            return self.get_state_summary()[1]
+        elif macroname == 'num_state_2':
+            return self.get_state_summary()[2]
+        elif macroname == 'num_state_3':
+            return self.get_state_summary()[3]
+        elif macroname == 'num_problems':
+            return sum(self.get_state_summary()[1:])
+        elif macroname == 'num_problems':
+            return sum(self.get_state_summary()[1:])
+        elif macroname == 'percent_state_0':
+            if len(self.get_all_states()) == 0:
+                return 0
+            return 100.0 * self.get_state_summary()[0] / sum(self.get_state_summary())
+        elif macroname == 'percent_state_1':
+            if len(self.get_all_states()) == 0:
+                return 0
+            return 100.0 * self.get_state_summary()[1] / sum(self.get_state_summary())
+        elif macroname == 'percent_state_2':
+            if len(self.get_all_states()) == 0:
+                return 0
+            return 100.0 * self.get_state_summary()[2] / sum(self.get_state_summary())
+        elif macroname == 'percent_state_3':
+            if len(self.get_all_states()) == 0:
+                return 0
+            return 100.0 * self.get_state_summary()[3] / sum(self.get_state_summary())
+        elif macroname == 'percent_problems':
+            if len(self.get_all_states()) == 0:
+                return 0
+            return 100.0 * sum(self.get_state_summary()[1:]) / sum(self.get_state_summary())
+        elif macroname == 'current_state':
+            return self.get_status()
+        elif macroname == 'friendly_state':
+            return self.get_human_friendly_status(resolve_macros=False)
+        else:
+            raise PynagError("Dont know how to resolve macro named '%s'" % macroname)
 
     def add_process(self, process_name, process_type=None, **kwargs):
         """ Add one business process to self.data """
@@ -285,16 +386,15 @@ class BusinessProcess(object):
         json_string = json.dumps(json_data, indent=4)
         self._write_file(json_string)
 
-    def get_human_friendly_status(self):
+    def get_human_friendly_status(self, resolve_macros=True):
         state = {}
         state[0] = self.state_0
         state[1] = self.state_1
         state[2] = self.state_2
         state[3] = self.state_3
         human_friendly_state = state.get(self.get_status(), "unknown")
-        if '%NUM_PROBLEMS%' in human_friendly_state:
-            num_problems = len(filter(lambda x: x > 0, self.get_all_states()))
-            human_friendly_state = human_friendly_state.replace('%NUM_PROBLEMS%', str(num_problems))
+        if resolve_macros:
+            human_friendly_state = self.resolve_macrostring(human_friendly_state)
         return human_friendly_state
 
     def _read_file(self, filename=None):
@@ -659,3 +759,54 @@ class TestBusinessProcess(unittest.TestCase):
 
     def test_get_all_processes(self):
         get_all_processes()
+
+    def test_macros(self):
+        bp = get_business_process('uniq test case')
+        sub1 = get_business_process('sub1')
+        sub2 = get_business_process('sub2')
+
+        sub1.status_method = 'always_ok'
+        sub2.status_method = 'always_critical'
+
+        macros_for_empty_process = {
+            'num_problems': 0,
+            'num_state_0': 0,
+            'num_state_1': 0,
+            'num_state_2': 0,
+            'num_state_3': 0,
+            'current_state': 0,
+            'friendly_state': 'normal',
+            'percent_problems': 0,
+            'percent_state_3': 0,
+            'percent_state_2': 0,
+            'percent_state_1': 0,
+            'percent_state_0': 0
+        }
+
+        self.assertEqual(macros_for_empty_process, bp.resolve_all_macros())
+
+        bp.processes = [
+            {
+                'process_name': 'sub1',
+                'status_method': 'always_ok',
+            },
+            {
+                'process_name': 'sub1',
+                'status_method': 'always_critical',
+            },
+        ]
+        macros_for_nonempty_process = {
+            'num_problems': 1,
+            'num_state_0': 1,
+            'num_state_1': 0,
+            'num_state_2': 0,
+            'num_state_3': 1,
+            'current_state': 0,
+            'friendly_state': 'normal',
+            'percent_problems': 50.0,
+            'percent_state_3': 50.0,
+            'percent_state_2': 0.0,
+            'percent_state_1': 0.0,
+            'percent_state_0': 50.0
+        }
+        self.assertEqual(macros_for_nonempty_process, bp.resolve_all_macros())
