@@ -1,0 +1,127 @@
+<html>
+<head>
+    <link href="{% url media path="css/style.css" %}" rel="stylesheet">
+    <link href="{% url media path="css/status.css" %}" rel="stylesheet">
+
+	    <link href="{% url media path="css/bi.css" %}" rel="stylesheet">
+<script src="{% url media path="jquery/jquery-1.9.1.min.js" %}"></script>
+<script src="{% url media path="bootstrap/js/bootstrap.min.js" %}"></script>
+
+<script src="{% url media path="datatables/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% url media path="datatables/DT_bootstrap.js" %}"></script>
+
+
+</head>
+<body style="padding-top: 0;">
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+ 
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <!-- Be sure to leave the brand out there if you want it shown -->
+      <a class="brand" href="/">Health of Iceland</a>
+<div class="nav-collapse collapse navbar-responsive-collapse">
+                    <ul class="nav">
+                      <li><a href="/">Home</a></li>
+                      <li><a href="http://adagios.org">About Adagios</a></li>
+                    </ul>
+ 
+</div>
+ 
+      <!-- Everything you want hidden at 940px or less, place within here -->
+      <div class="nav-collapse collapse">
+        <!-- .nav, .navbar-search, .navbar-form, etc -->
+      </div>
+ 
+    </div>
+  </div>
+</div>
+    {% include "snippets/business_process_view_snippet.html" %}
+    <script src="{% url home %}rest/status.js"></script>
+    <script>
+        // When graphs link is clicked, simulate a click on 25hours tab as well
+        $(document).ready(function() {
+            $('#25hours').click();
+
+
+            //
+            function querystring(key) {
+                var re=new RegExp('(?:\\?|&)'+key+'=(.*?)(?=&|$)','gi');
+                var r=[], m;
+                while ((m=re.exec(document.location.search)) != null) r.push(m[1]);
+                return r;
+            }
+            var dom_id;
+            var doms_to_hide = querystring('hide');
+            for (i in doms_to_hide) {
+                dom_id = '#' + doms_to_hide[i];
+                $(dom_id).hide();
+            }
+
+        });
+
+        // Load graphs when you click a new timeperiod under graphs tab
+        $('#graphs_ul').click(function(event){
+            var anchor = event.target.href.split('#')[1];
+            var title = event.target.text;
+            my_element = document.getElementById(anchor);
+
+
+            if (my_element.childElementCount == 0) {
+                spinner = document.createElement( 'img');
+                spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
+                my_element.appendChild( spinner );
+                var url = '{{ graphs_url }}';
+                $.getJSON(url)
+                        .done( function(data) {
+                            $.each(data, function(i, item) {
+                                        if (item['title'] == title) {
+                                            graph_row = document.createElement( 'div');
+                                            graph_row.setAttribute("class", "graph_row");
+
+                                            div_notes = document.createElement('div');
+                                            div_notes.setAttribute("class", "graph_notes");
+                                            div_notes.textContent = item['notes'];
+                                            graph_row.appendChild( div_notes );
+
+                                            div_last_value = document.createElement('div');
+                                            div_last_value.setAttribute("class", "graph_last_value");
+                                            div_last_value.textContent = item['last_value'];
+                                            div_notes.appendChild( div_last_value );
+
+                                            new_img = document.createElement( 'img');
+                                            new_img.setAttribute("title", item['notes']);
+                                            new_img.setAttribute("class", 'graph_image');
+                                            {% if static %}
+                                            new_img.setAttribute("src", item['image_url']);
+                                            {% else %}
+                                            new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url'] + "&graph_width=350&graph_height=30");
+                                            {% endif %}
+                                            graph_row.appendChild( new_img );
+
+                                            my_element.appendChild( graph_row );
+                                        }
+                                    }
+                            )
+
+                        })
+                        .fail( function() {
+                            console.log('failed to fetch info from pnp4nagios');
+                        })
+                        .always( function() {
+                            spinner.setAttribute('class', 'hide');
+                        });
+            }
+
+        });
+    </script>
+
+
+</body>
+</html>
+
