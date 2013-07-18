@@ -1,0 +1,80 @@
+/* These stylesheets are mostly used by business intelligengence module of adagios.
+
+
+*/
+.centralized_dashboard {
+    width:  600px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+.bold {
+    font-weight: bold;
+}
+.status_0 {
+    color: #339966;
+}
+.status_1 {
+    color: #f29d50;
+}
+.status_2 {
+    color: #cc3300;
+}
+h4.dashboard_header {
+    margin-top: 40px;
+
+    margin-bottom: 10px;
+}
+.top-margin {
+    margin-top: 20px;
+}
+
+/* Shamelessly stolen from github
+
+/* line 186, /data/octostatus/app/assets/styles/basics.scss */
+#services {
+    margin: 0 0 36px;
+    border: 1px solid #e8e8e8;
+    border-radius: 3px;
+}
+    /* line 191, /data/octostatus/app/assets/styles/basics.scss */
+#services .service {
+    padding: 8px 12px;
+    overflow: hidden;
+}
+    /* line 195, /data/octostatus/app/assets/styles/basics.scss */
+#services .service .name {
+    float: left;
+}
+    /* line 199, /data/octostatus/app/assets/styles/basics.scss */
+#services .service .status {
+    float: right;
+    font-weight: bold;
+}
+    /* line 205, /data/octostatus/app/assets/styles/basics.scss */
+#services .service + .service {
+    border-top: 1px solid #efefef;
+}
+/* Graphs list */
+.graph_row {
+    margin: 0 0 2px;
+    border: 1px solid #e8e8e8;
+    border-radius: 3px;
+    padding: 8px 12px;
+    overflow: hidden;
+
+}
+.graph_notes {
+    width: 150px;
+    float: left;
+
+}
+.graph_image {
+    float: right;
+}
+.graph_last_value {
+    font-weight: bold;
+}
+#objecttab {
+    margin-bottom: 40px;
+}

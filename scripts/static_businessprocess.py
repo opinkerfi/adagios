@@ -25,17 +25,14 @@ import django.http
 from adagios.pnp.functions import run_pnp
 
 
-
 # Start by parsing some arguments
-parser = OptionParser(usage="usage: %prog [options]", version = "%prog 1.0")
+parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
 
-parser.add_option('--all', help="Parse all business processes", dest="all",action="store_true",default=False)
-parser.add_option('--graphs', help="", dest="graphs",action="store_true",default=False)
-parser.add_option('--destination', help="destination to write static html into", dest="destination",default=destination_directory)
-parser.add_option('--source-template', help="Source template used to render business processes", dest="source",default=source_template)
-parser.add_option('--verbose', help="verbose output", dest="verbose",action="store_true",default=False)
-
-
+parser.add_option('--all', help="Parse all business processes", dest="all", action="store_true", default=False)
+parser.add_option('--graphs', help="", dest="graphs", action="store_true", default=False)
+parser.add_option('--destination', help="destination to write static html into", dest="destination", default=destination_directory)
+parser.add_option('--source-template', help="Source template used to render business processes", dest="source", default=source_template)
+parser.add_option('--verbose', help="verbose output", dest="verbose", action="store_true", default=False)
 
 
 (options, args) = parser.parse_args()
@@ -43,7 +40,8 @@ parser.add_option('--verbose', help="verbose output", dest="verbose",action="sto
 
 def verbose(message):
     if options.verbose:
-         print message
+        print message
+
 
 def businessprocess_to_html(process_name, process_type='businessprocess'):
     bp = adagios.businessprocess.get_business_process(process_name=process_name, process_type=process_type)
@@ -51,66 +49,46 @@ def businessprocess_to_html(process_name, process_type='businessprocess'):
     c = {}
     c['bp'] = bp
     c['csrf_token'] = ''
+    c['graphs_url'] = "graphs.json"
+    c['static'] = True
 
     directory = "%s/%s" % (options.destination, bp.name)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    
-    # Save some graphs
 
-    """
-    images = []
-    for graph in bp.graphs:
-      json_data = run_pnp('json', host=graph.get('host_name'), srv=graph.get('service_description'))
-      graphs = json.loads(json_data)
-      for i in graphs:
-        url = i.get('image_url')
-        client = Client()
-        image = client.get("/pnp/image?%s&%s" % (url,pnp_parameters)).content
-        graph_filename = "%s/%s/%s.png" % (destination_directory,process_name,url)
-	open(graph_filename,'w').write(image)
-        i['new_url'] = "%s.png" % (url)
-        images.append(i)
-    """
     if options.graphs:
-        graphs = bi_graphs_to_json(process_name,process_type)
+        graphs = bi_graphs_to_json(process_name, process_type)
         for i in graphs:
             url = i.get('image_url')
             client = Client()
             verbose("Saving image %s" % url)
-            image = client.get("/pnp/image?%s&%s" % (url,pnp_parameters)).content
-            graph_filename = "%s/%s.png" % (directory,url)
-            open(graph_filename,'w').write(image)
+            image = client.get("/pnp/image?%s&%s" % (url, pnp_parameters)).content
+            graph_filename = "%s/%s.png" % (directory, url)
+            open(graph_filename, 'w').write(image)
         graph_json_file = "%s/graphs.json" % (directory)
-        graph_json = json.dumps(graphs,indent=4)
-        open(graph_json_file,'w').write(graph_json)
-    
-    content = open(source_template,'r').read()
+        for i in graphs:
+            i['image_url'] = i['image_url'] + '.png'
+        graph_json = json.dumps(graphs, indent=4)
+        open(graph_json_file, 'w').write(graph_json)
+
+    content = open(options.source, 'r').read()
     t = template.Template(content)
     c = template.Context(c)
     
     html = t.render(c)
-    destination_file = "%s/index.html" % (directory)
-    open(destination_file,'w').write(html.encode('utf-8'))
-    
-    
-
-
-
-
+    destination_file = "%s/index.html" % directory
+    open(destination_file, 'w').write(html.encode('utf-8'))
 
 
 def bi_graphs_to_json(process_name, process_type='businessprocess'):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    import adagios.businessprocess
-    bp = adagios.businessprocess.get_business_process(process_name=process_name,process_type=process_type)
+    bp = adagios.businessprocess.get_business_process(process_name=process_name, process_type=process_type)
 
     graphs = []
     if not bp.graphs:
         return []
-    a = bp.graphs
     for graph in bp.graphs or []:
         if graph.get('graph_type') == 'pnp':
             host_name = graph.get('host_name')
@@ -129,12 +107,12 @@ def bi_graphs_to_json(process_name, process_type='businessprocess'):
 
 
 if options.all:
-  processlist = adagios.businessprocess.get_all_process_names()
+    processlist = adagios.businessprocess.get_all_process_names()
 else:
-  processlist = args
+    processlist = args
 
 if not processlist:
-  parser.error("Either provide business process name or specify --all")
+    parser.error("Either provide business process name or specify --all")
 
 for i in processlist:
     print "doing ", i

@@ -40,6 +40,7 @@ from adagios.status import utils
 import adagios.status.rest
 import adagios.status.forms
 import adagios.businessprocess
+from django.core.urlresolvers import reverse
 
 
 state = defaultdict(lambda: "unknown")
@@ -1306,6 +1307,7 @@ def business_process_view(request, process_name):
     c['errors'] = []
     import adagios.businessprocess
     bp = adagios.businessprocess.get_business_process(process_name)
+    graphs_url = reverse('adagios.status.views.business_process_graphs_json', kwargs={"process_name":process_name})
 
     return render_to_response('business_process_view.html', locals(), context_instance=RequestContext(request))
 
@@ -1322,7 +1324,6 @@ def business_process_graphs_json(request, process_name):
     graphs = []
     if not bp.graphs:
         return HttpResponse('[]')
-    a = bp.graphs
     for graph in bp.graphs or []:
         if graph.get('graph_type') == 'pnp':
             host_name = graph.get('host_name')
@@ -1354,9 +1355,11 @@ def business_process_add_subprocess(request):
     if request.method == 'POST':
         if 'name' not in request.POST:
             raise Exception("You must specify which subprocess to add all these objects to")
+        parameters.pop('name')
         bp = adagios.businessprocess.get_business_process(request.POST.get('name'))
         # Find all subprocesses in the post, can for each one call add_process with all parmas as well
         for i in process_list:
+            print "debug name:", i.get('name')
             process_name = i.get('name')
             process_type = i.get('process_type')
             bp.add_process(process_name, process_type, **parameters)
@@ -1455,5 +1458,6 @@ def _business_process_parse_querystring(request):
             else:
                 process_type = type_of_process.process_type
                 process = adagios.businessprocess.get_business_process(value, process_type=process_type)
+                print "debug: ", value,process_type, process['name']
                 process_list.append(process)
     return process_list, parameters

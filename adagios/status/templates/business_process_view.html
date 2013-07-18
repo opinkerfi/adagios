@@ -9,93 +9,12 @@
 
 {% load adagiostags %}
 
+{% block header %}
+    {{ block.super }}
+    <link href="{% url media path="css/bi.css" %}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-    <style>
-        .centralized_dashboard {
-            width:  600px;
-            margin-left: auto;
-            margin-right: auto;
-
-        }
-        .bold {
-            font-weight: bold;
-        }
-        .status_ok, .status_0 {
-            color: #339966;
-        }
-        .status_warning, .status_1 {
-            color: #f29d50;
-        }
-
-            /* line 297, /data/octostatus/app/assets/styles/basics.scss */
-        .status_critical, .status_2 {
-            color: #cc3300;
-        }
-        h4.dashboard_header {
-            margin-top: 40px;
-
-            margin-bottom: 10px;
-        }
-        .top-margin {
-            margin-top: 20px;
-        }
-
-        /* Shamelessly stolen from github
-
-/* line 186, /data/octostatus/app/assets/styles/basics.scss */
-        #services {
-            margin: 0 0 36px;
-            border: 1px solid #e8e8e8;
-            border-radius: 3px;
-        }
-            /* line 191, /data/octostatus/app/assets/styles/basics.scss */
-        #services .service {
-            padding: 8px 12px;
-            overflow: hidden;
-        }
-            /* line 195, /data/octostatus/app/assets/styles/basics.scss */
-        #services .service .name {
-            float: left;
-        }
-            /* line 199, /data/octostatus/app/assets/styles/basics.scss */
-        #services .service .status {
-            float: right;
-            font-weight: bold;
-        }
-            /* line 205, /data/octostatus/app/assets/styles/basics.scss */
-        #services .service + .service {
-            border-top: 1px solid #efefef;
-        }
-
-    </style>
-    <style>
-        /* Graphs list */
-        .graph_row {
-            margin: 0 0 2px;
-            border: 1px solid #e8e8e8;
-            border-radius: 3px;
-            padding: 8px 12px;
-            overflow: hidden;
-
-        }
-        .graph_notes {
-            width: 150px;
-            float: left;
-
-        }
-        .graph_image {
-            float: right;
-        }
-        .graph_last_value {
-            font-weight: bold;
-        }
-        #objecttab {
-            margin-bottom: 40px;
-        }
-
-
-    </style>
-
     {% include "snippets/business_process_view_snippet.html" %}
 {% endblock %}
 
@@ -125,6 +44,7 @@
             }
             var dom_id;
             var doms_to_hide = querystring('hide');
+            var i;
             for (i in doms_to_hide) {
                 dom_id = '#' + doms_to_hide[i];
                 $(dom_id).hide();
@@ -143,7 +63,7 @@
                 spinner = document.createElement( 'img');
                 spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
                 my_element.appendChild( spinner );
-                var url = '{% url adagios.status.views.business_process_graphs_json bp.name %}';
+                var url = '{{ graphs_url }}';
                 $.getJSON(url)
                         .done( function(data) {
                             $.each(data, function(i, item) {
@@ -164,7 +84,11 @@
                                             new_img = document.createElement( 'img');
                                             new_img.setAttribute("title", item['notes']);
                                             new_img.setAttribute("class", 'graph_image');
+                                            {% if static %}
+                                            new_img.setAttribute("src", item['image_url']);
+                                            {% else %}
                                             new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url'] + "&graph_width=350&graph_height=30");
+                                            {% endif %}
                                             graph_row.appendChild( new_img );
 
                                             my_element.appendChild( graph_row );
