@@ -17,7 +17,11 @@
                 {% for i in bp.get_processes %}
                     <div class="service" title="{{ i.process_type }}">
                         {% if i.process_type == 'businessprocess' %}
+                            {% if static %}
+                            <a href="/{{ i.process_name }}%}">{{ i }}</a>
+                            {% else %}
                             <a href="{% url adagios.status.views.business_process_view i.process_name %}">{{ i }}</a>
+                            {% endif %}
                         {% else %}
                             {{ i }}
                         {% endif %}
