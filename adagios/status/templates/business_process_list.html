@@ -5,7 +5,7 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.bi.views.index %}">Business Process</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -39,18 +39,18 @@
                     <td>
                         <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
 
-                        <a href="{% url bi.views.edit i.name %} ">{{ i.name }}</a>
+                        <a href="{% url adagios.bi.views.edit i.name %} ">{{ i.name }}</a>
                     </td>
                     <td>{{ i.display_name }}</td>
                     <td>{{ i.processes|length }}</td>
 
                     <td>
-                        <a class="btn btn-mini btn-primary" href="{% url bi.views.edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> edit </a>
-                        <a class="btn btn-mini btn-primary" href="{% url bi.views.view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> view</a>
-                        <a class="btn btn-mini btn-danger" href="{% url bi.views.delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> delete</a>
+                        <a class="btn btn-mini btn-primary" href="{% url adagios.bi.views.edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> edit </a>
+                        <a class="btn btn-mini btn-primary" href="{% url adagios.bi.views.view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> view</a>
+                        <a class="btn btn-mini btn-danger" href="{% url adagios.bi.views.delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> delete</a>
                     </td>
                 <td>
-                    <form class="nomargin" action="{% url bi.views.change_status_calculation_method i.name %}" method="post">{% csrf_token %}
+                    <form class="nomargin" action="{% url adagios.bi.views.change_status_calculation_method i.name %}" method="post">{% csrf_token %}
                     {% for x in i.status_calculation_methods %}
                         <button name="{{ x }}" type="submit" class="btn btn-mini {% if x == 'always_major' %}btn-danger{% endif %}{% if x == 'always_minor' %}btn-warning{% endif %}{% if x == 'always_ok' %}btn-success{% endif %} {% if x == i.status_method %}active{% endif %} ">{{ x }}</button>
                     {% endfor %}
@@ -68,7 +68,7 @@
 {% block view_buttons %}{% endblock %}
 {% block action_buttons %}
     <div>
-        <a class="btn" id="open_public_view" href="{% url bi.views.add %}">
+        <a class="btn" id="open_public_view" href="{% url adagios.bi.views.add %}">
             <i class="glyph-circle-plus " title="Add new ..."> </i> Create new Business Process
         </a>
     </div>

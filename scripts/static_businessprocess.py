@@ -20,7 +20,7 @@ from django.test.client import Client
 from optparse import OptionParser
 
 
-import adagios.businessprocess
+import adagios.bi
 import django.http
 from adagios.pnp.functions import run_pnp
 
@@ -44,7 +44,7 @@ def verbose(message):
 
 
 def businessprocess_to_html(process_name, process_type='businessprocess'):
-    bp = adagios.businessprocess.get_business_process(process_name=process_name, process_type=process_type)
+    bp = adagios.bi.get_business_process(process_name=process_name, process_type=process_type)
     verbose("Rendering business process %s" % bp.name)
     c = {}
     c['bp'] = bp
@@ -84,7 +84,7 @@ def bi_graphs_to_json(process_name, process_type='businessprocess'):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    bp = adagios.businessprocess.get_business_process(process_name=process_name, process_type=process_type)
+    bp = adagios.bi.get_business_process(process_name=process_name, process_type=process_type)
 
     graphs = []
     if not bp.graphs:
@@ -107,7 +107,7 @@ def bi_graphs_to_json(process_name, process_type='businessprocess'):
 
 
 if options.all:
-    processlist = adagios.businessprocess.get_all_process_names()
+    processlist = adagios.bi.get_all_process_names()
 else:
     processlist = args
 

@@ -102,7 +102,7 @@ def add_graph(request):
             else:
                 e = form.errors
                 raise e
-        return redirect('bi.views.edit', bp.name)
+        return redirect('adagios.bi.views.edit', bp.name)
 
     return render_to_response('business_process_add_graph.html', c, context_instance=RequestContext(request))
 
@@ -116,7 +116,7 @@ def view(request, process_name):
     c['errors'] = []
     import adagios.businessprocess
     bp = adagios.bi.get_business_process(process_name)
-    graphs_url = reverse('bi.views.graphs_json', kwargs={"process_name":process_name})
+    graphs_url = reverse('adagios.bi.views.graphs_json', kwargs={"process_name":process_name})
 
     return render_to_response('business_process_view.html', locals(), context_instance=RequestContext(request))
 
@@ -174,7 +174,7 @@ def add_subprocess(request):
             bp.add_process(process_name, process_type, **parameters)
             c['messages'].append('%s: %s added to %s' % (process_type, process_name, bp.name))
         bp.save()
-        return redirect('bi.views.edit', bp.name)
+        return redirect('adagios.bi.views.edit', bp.name)
     c['subprocesses'] = process_list
     c['parameters'] = parameters
     return render_to_response('business_process_add_subprocess.html', c, context_instance=RequestContext(request))
@@ -195,7 +195,7 @@ def add(request):
         form = adagios.bi.forms.BusinessProcessForm(instance=bp, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('bi.views.edit', bp.name)
+            return redirect('adagios.bi.views.edit', bp.name)
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
@@ -217,7 +217,7 @@ def delete(request, process_name):
     if request.method == 'POST':
         form = adagios.bi.forms.BusinessProcessForm(instance=bp, data=request.POST)
         form.delete()
-        return redirect('bi.views.index')
+        return redirect('adagios.bi.views.index')
 
     return render_to_response('business_process_delete.html', locals(), context_instance=RequestContext(request))
 
@@ -230,7 +230,7 @@ def change_status_calculation_method(request, process_name):
             if i in request.POST:
                 bp.status_method = i
                 bp.save()
-        return redirect('bi.views.index')
+        return redirect('adagios.bi.views.index')
 
 
 def _business_process_parse_querystring(request):
