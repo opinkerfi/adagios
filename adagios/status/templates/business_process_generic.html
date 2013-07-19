@@ -5,7 +5,7 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.business_process_list %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -23,15 +23,15 @@
                 <td>
                     <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
 
-                    <a href="{% url adagios.status.views.business_process_edit i.name %} ">{{ i.name }}</a>
+                    <a href="{% url bi.views.edit i.name %} ">{{ i.name }}</a>
                 </td>
                 <td>{{ i.display_name }}</td>
                 <td>{{ i.processes|length }}</td>
 
                 <td>
-                    <a class="btn btn-mini btn-primary" href="{% url adagios.status.views.business_process_edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> edit </a>
-                    <a class="btn btn-mini btn-primary" href="{% url adagios.status.views.business_process_view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> view</a>
-                    <a class="btn btn-mini btn-danger" href="{% url adagios.status.views.business_process_delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> delete</a>
+                    <a class="btn btn-mini btn-primary" href="{% url bi.views.edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> edit </a>
+                    <a class="btn btn-mini btn-primary" href="{% url bi.views.view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> view</a>
+                    <a class="btn btn-mini btn-danger" href="{% url bi.views.delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> delete</a>
                 </td>
             </tr>
         {% endfor %}
@@ -48,7 +48,7 @@
 {% block toolbar %}
     <div>
 
-        <a class="btn" id="open_public_view" href="{% url adagios.status.views.business_process_add %}">
+        <a class="btn" id="open_public_view" href="{% url bi.views.add %}">
             <i class="glyph-circle-plus " title="Add new ..."> </i> Create new Business Process
         </a>
 

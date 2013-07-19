@@ -95,7 +95,7 @@
                                 <li class="divider"></li>
                                 <li><a href="{% url adagios.objectbrowser.views.add_object 'template' %}"> Template</a></li>
                                 <li class="divider"></li>
-                                <li><a href="{% url adagios.status.views.business_process_add %}"> Business Process</a></li>
+                                <li><a href="{% url bi.views.add %}"> Business Process</a></li>
                             </ul>
                         </a>
                 </div>
@@ -161,7 +161,6 @@
                 <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
                 <li><a href="{% url status.views.perfdata %}">Performance Data</a></li>
-                <li><a href="{% url status.views.business_process_list %}">Business Processes</a></li>
                 <li><a href="{% url status.views.dashboard %}">Dashboard</a></li>
             </ul>
         </div>
@@ -216,7 +215,7 @@
                                 <li><a href="{% url adagios.objectbrowser.views.add_object 'servicegroup' %}"> Servicegroup</a></li>
                                 <li><a href="{% url adagios.objectbrowser.views.add_object 'contactgroup' %}"> Contactgroup</a></li>
                                 <li class="divider"></li>
-                                <li><a href="{% url adagios.status.views.business_process_add %}"> Business Process</a></li>
+                                <li><a href="{% url bi.views.add %}"> Business Process</a></li>
                             </ul>
                         </a>
                         -->
@@ -849,10 +848,10 @@
                 }
             });
             if (doing_graphs == true) {
-                window.location.href = "{% url adagios.status.views.business_process_add_graph %}/?" + querystring;
+                window.location.href = "{% url bi.views.add_graph %}/?" + querystring;
             }
             else {
-                window.location.href = "{% url adagios.status.views.business_process_add_subprocess %}/?" + querystring;
+                window.location.href = "{% url bi.views.add_subprocess %}/?" + querystring;
             }
 
 

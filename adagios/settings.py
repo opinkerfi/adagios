@@ -131,6 +131,7 @@ enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
 enable_pages_view = True
+enable_bi = True
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
 administrators="nagiosadmin,@users"
@@ -198,6 +199,8 @@ if enable_status_view:
   plugins['status'] = 'adagios.status'
 if enable_pages_view:
   plugins['pages'] = 'adagios.pages'
+if enable_bi:
+  plugins['bi'] = 'adagios.bi'
 
 for k,v in plugins.items():
     INSTALLED_APPS.append( v )

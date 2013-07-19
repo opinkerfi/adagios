@@ -5,7 +5,7 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.business_process_list %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -41,7 +41,7 @@
         <div class="tab-pane " id="subprocesses">
 
             <div id="sub_processes">
-                <form action="{% url adagios.status.views.business_process_add_subprocess %}" method="get">
+                <form action="{% url bi.views.add_subprocess %}" method="get">
                     <button class="pull-right btn btn-small enable_on_select" name=test>
                         <i class="glyph-circle-plus " title="Add new ..."> </i> Add to another businessgroup
                     </button>
@@ -212,7 +212,7 @@
     <a class="btn" id="open_subprocess_modal" data-toggle="modal" data-target="#add_subprocess_modal" href="#">
         <i class="glyph-circle-plus " title="Add new ..."> </i> Add sub item
     </a>
-    <a class="btn" id="open_public_view" href="{% url adagios.status.views.business_process_view bp.name %}">
+    <a class="btn" id="open_public_view" href="{% url bi.views.view bp.name %}">
         <i class="glyph-eye-open " title="Add new ..."> </i> Public view for this process
     </a>
     <a class="btn" id="open_graphs_modal" data-toggle="modal" data-target="#add_graph_modal" href="#">

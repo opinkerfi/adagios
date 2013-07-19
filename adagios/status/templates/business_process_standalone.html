@@ -5,7 +5,7 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.business_process_list %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -143,7 +143,7 @@
                 spinner = document.createElement( 'img');
                 spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
                 my_element.appendChild( spinner );
-                var url = '{% url adagios.status.views.business_process_graphs_json bp.name %}';
+                var url = '{% url bi.views.graphs_json bp.name %}';
                 $.getJSON(url)
                         .done( function(data) {
                             $.each(data, function(i, item) {
