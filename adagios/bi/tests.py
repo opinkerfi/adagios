@@ -6,6 +6,8 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
+from django.test.client import Client
+
 from adagios.bi import *
 
 
@@ -127,3 +129,7 @@ class TestBusinessProcess(TestCase):
             'percent_state_0': 50.0
         }
         self.assertEqual(macros_for_nonempty_process, bp.resolve_all_macros())
+    def testPageLoad(self):
+        c = Client()
+        response = c.get('/bi/')
+        self.assertEqual(response.status_code, 200)

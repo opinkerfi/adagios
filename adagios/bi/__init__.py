@@ -473,7 +473,9 @@ class Hostgroup(BusinessProcess):
     """
     process_type = 'hostgroup'
     status_calculation_methods = ['worst_service_state', 'worst_host_state']
-    _default_status_calculation_method = 'worst_service_state'
+    _default_status_calculation_method = 'worst_host_state'
+    subitem_methods = ['host', 'service', 'hostgroups']
+    subitem_method = 'host'
 
     def load(self):
         self._livestatus = pynag.Parsers.mk_livestatus()
@@ -517,7 +519,7 @@ class Hostgroup(BusinessProcess):
     def get_processes(self):
         result = []
         if self.status_method == 'worst_host_state':
-            livestatus_objects = self.hostgroup.get('members_with_state', [])
+            livestatus_objects = self._hostgroup.get('members_with_state', [])
         else:
             services = self._livestatus.get_services('Filter: host_groups >= %s' % self.name)
             livestatus_objects = map(
