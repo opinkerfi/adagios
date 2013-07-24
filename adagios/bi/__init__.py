@@ -51,6 +51,7 @@ class BusinessProcess(object):
         self.data = kwargs
         self.errors = []
         self.data['name'] = name
+        self._macro_cache = {}
         self._original_name = name
         if 'processes' not in self.data:
             self.data['processes'] = []
@@ -199,10 +200,10 @@ class BusinessProcess(object):
 
     def resolve_all_macros(self):
         """ Returns a dict with all macros resolved in a {'macroname:macrovalue} format """
-        result = {}
-        for macro in self.get_all_macros():
-            result[macro] = self.resolve_macro(macro)
-        return result
+        if not self._macro_cache:
+            for macro in self.get_all_macros():
+                self._macro_cache[macro] = self.resolve_macro(macro)
+        return self._macro_cache
 
     def resolve_macrostring(self, string, default='raise exception'):
         """ Resolve all macros in a given string, and  return the resolved string
