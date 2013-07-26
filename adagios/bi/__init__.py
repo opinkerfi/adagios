@@ -57,7 +57,7 @@ class BusinessProcess(object):
             self.data['processes'] = []
 
         for i in ('name', 'display_name', 'processes', 'rules', 'tags',
-                  'status_method', 'graphs',
+                  'status_method', 'graphs', 'notes',
                   'state_0', 'state_1', 'state_2', 'state_3'):
             self._add_property(i)
 
@@ -205,64 +205,67 @@ class BusinessProcess(object):
                 self._macro_cache[macro] = self.resolve_macro(macro)
         return self._macro_cache
 
-    def resolve_macrostring(self, string, default='raise exception'):
+    def resolve_macrostring(self, string):
         """ Resolve all macros in a given string, and  return the resolved string
 
         >>> bp = get_business_process('test business process')
-        >>> bp.resolve_macrostring("number of problems: $num_problems$")
+        >>> bp.resolve_macrostring("number of problems: {num_problems}")
         'number of problems: 0'
+        For a list of supported macros, call self.resolve_all_macros()
         """
-        for macro, value in self.resolve_all_macros().items():
-            string = string.replace('$' + macro + '$', str(value))
-        return string
+        all_macros = self.resolve_all_macros()
+        try:
+            return string.format(**all_macros)
+        except KeyError, e:
+            raise PynagError("Invalid macro in string. %s" % str(e))
 
     def resolve_macro(self, macroname, default='raise exception'):
         """ Returns the resolved value of a given macro.
 
         Arguments:
-          macroname - the name of the macro, e.g. $num_problems$
+          macroname - the name of the macro, e.g. num_problems
           default   - If given, return this when macroname is not found
                       If default is not specified, exception will be
                       raised if macro could not be resolved
         """
-        macroname = macroname.strip('$')
+        state_summary = self.get_state_summary()
         if macroname not in self.get_all_macros():
             if default == 'raise exception':
                 raise PynagError("Could not resolve macro '%s'" % macroname)
             else:
                 return default
         elif macroname == 'num_state_0':
-            return self.get_state_summary()[0]
+            return state_summary[0]
         elif macroname == 'num_state_1':
-            return self.get_state_summary()[1]
+            return state_summary[1]
         elif macroname == 'num_state_2':
-            return self.get_state_summary()[2]
+            return state_summary[2]
         elif macroname == 'num_state_3':
-            return self.get_state_summary()[3]
+            return state_summary[3]
         elif macroname == 'num_problems':
-            return sum(self.get_state_summary()[1:])
+            return sum(state_summary[1:])
         elif macroname == 'num_problems':
-            return sum(self.get_state_summary()[1:])
+            return sum(state_summary[1:])
         elif macroname == 'percent_state_0':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * self.get_state_summary()[0] / sum(self.get_state_summary())
+            return 100.0 * state_summary[0] / sum(state_summary)
         elif macroname == 'percent_state_1':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * self.get_state_summary()[1] / sum(self.get_state_summary())
+            return 100.0 * state_summary[1] / sum(state_summary)
         elif macroname == 'percent_state_2':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * self.get_state_summary()[2] / sum(self.get_state_summary())
+            return 100.0 * state_summary[2] / sum(state_summary)
         elif macroname == 'percent_state_3':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * self.get_state_summary()[3] / sum(self.get_state_summary())
+            return 100.0 * state_summary[3] / sum(state_summary)
         elif macroname == 'percent_problems':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * sum(self.get_state_summary()[1:]) / sum(self.get_state_summary())
+            return 100.0 * sum(state_summary[1:]) / sum(state_summary)
         elif macroname == 'current_state':
             return self.get_status()
         elif macroname == 'friendly_state':
@@ -482,7 +485,7 @@ class Hostgroup(BusinessProcess):
         self._livestatus = pynag.Parsers.mk_livestatus()
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
         self.display_name = self._hostgroup.get('alias')
-        self.notes = self._hostgroup.get('notes')
+        self.notes = self._hostgroup.get('notes') or "You are looking at the hostgorup %s" % (self.name)
 
         # Get information about child hostgroups
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(self.name)
@@ -607,6 +610,8 @@ class Host(BusinessProcess):
     def load(self):
             self._livestatus = pynag.Parsers.mk_livestatus()
             self._host = self._livestatus.get_host(self.name)
+            self.display_name = self._host.get('display_name') or self.name
+            self.notes =  self._host.get('notes') or 'You are looking at the host %s' % self.name
 
     def get_status(self):
         try:
@@ -614,7 +619,25 @@ class Host(BusinessProcess):
         except Exception, e:
             self.errors.append(e)
             return 3
-        return self._host.get('state', 3)
+        method = self.status_method
+        if method == 'worst_service_state':
+            return self._host.get('worst_service_state', 3)
+        elif method == 'host_state':
+            return self._host.get('state', 3)
+        else:
+            raise PynagError("%s is not a status calculation method i know" % method)
+
+    def get_processes(self):
+        self.load()
+        livestatus_objects = self._host.get('services_with_state', [])
+        result = []
+        for i in livestatus_objects:
+            process_name = "%s/%s" % (self.name, i[0])
+            process = Service(process_name)
+            process.display_name = i[0]
+            #process.get_status = lambda: min(e,3)
+            result.append(process)
+        return result
 
 
 def get_class(process_type, default=BusinessProcess):
@@ -705,3 +728,7 @@ class PNP4NagiosGraph:
         # only use graphs with same label
         graphs = filter(lambda x: x['ds_name'] == self.label, graphs)
         return graphs
+
+
+h = get_business_process('localhost', process_type='host', status_method='worst_service_state')
+print h.get_processes()
