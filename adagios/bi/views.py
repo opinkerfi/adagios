@@ -87,7 +87,7 @@ def add_graph(request):
         graph_dict['metric_name'] = tmp[2]
         graph_dict['notes'] = tmp[2]
         c['graphs'].append(graph_dict)
-        print graph_dict
+
     #
     # When we get here, we have parsed all the data from the client, if
     # its a post, lets add the graphs to our business process
@@ -96,7 +96,6 @@ def add_graph(request):
             raise Exception("Booh! you need to supply name= to the querystring")
         for graph in c['graphs']:
             form = adagios.bi.forms.AddGraphForm(instance=bp, data=graph)
-            print "saving graph"
             if form.is_valid():
                 form.save()
             else:
@@ -107,16 +106,15 @@ def add_graph(request):
     return render_to_response('business_process_add_graph.html', c, context_instance=RequestContext(request))
 
 
-
-def view(request, process_name):
+def view(request, process_name, process_type=None):
     """ View one specific business process
     """
     c = {}
     c['messages'] = []
     c['errors'] = []
     import adagios.businessprocess
-    bp = adagios.bi.get_business_process(process_name)
-    graphs_url = reverse('adagios.bi.views.graphs_json', kwargs={"process_name":process_name})
+    bp = adagios.bi.get_business_process(process_name,process_type=process_type)
+    graphs_url = reverse('adagios.bi.views.graphs_json', kwargs={"process_name": process_name})
 
     return render_to_response('business_process_view.html', locals(), context_instance=RequestContext(request))
 
@@ -151,9 +149,8 @@ def graphs_json(request, process_name):
     return HttpResponse(graph_json)
 
 
-
 def add_subprocess(request):
-    """ View one specific business process
+    """ Add subitems to one specific businessprocess
     """
     c = {}
     c['messages'] = []
@@ -168,7 +165,6 @@ def add_subprocess(request):
         bp = adagios.bi.get_business_process(request.POST.get('name'))
         # Find all subprocesses in the post, can for each one call add_process with all parmas as well
         for i in process_list:
-            print "debug name:", i.get('name')
             process_name = i.get('name')
             process_type = i.get('process_type')
             bp.add_process(process_name, process_type, **parameters)
@@ -178,7 +174,6 @@ def add_subprocess(request):
     c['subprocesses'] = process_list
     c['parameters'] = parameters
     return render_to_response('business_process_add_subprocess.html', c, context_instance=RequestContext(request))
-
 
 
 def add(request):
@@ -244,7 +239,6 @@ def _business_process_parse_querystring(request):
     ignored_querystring_parameters = ("csrfmiddlewaretoken")
     import adagios.businessprocess
     data = {}
-    print "HG: ", request.GET.get('hostgroup')
     if request.method == 'GET':
         data = request.GET
     elif request.method == 'POST':
@@ -264,6 +258,5 @@ def _business_process_parse_querystring(request):
             else:
                 process_type = type_of_process.process_type
                 process = adagios.bi.get_business_process(value, process_type=process_type)
-                print "debug: ", value, process_type, process['name']
                 process_list.append(process)
     return process_list, parameters
