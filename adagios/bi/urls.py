@@ -10,5 +10,6 @@ urlpatterns = patterns('adagios',
         (r'^/(?P<process_name>.+)/edit/?$', 'bi.views.edit'),
         (r'^/(?P<process_name>.+)/graphs.json/?$', 'bi.views.graphs_json'),
         (r'^/(?P<process_name>.+)/delete/?$', 'bi.views.delete'),
+        (r'^/(?P<process_type>.+)/(?P<process_name>.+)/$', 'bi.views.view'),
         (r'^/(?P<process_name>.+)/?$', 'bi.views.view'),
         )
