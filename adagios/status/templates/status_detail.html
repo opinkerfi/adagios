@@ -155,17 +155,69 @@
     </div>
 
     <div class="tab-pane" id="information">
-        <table class="table">
+        <p>
+            This {{ my_object.object_type }} is checked every <a href="#">{{ my_object.check_interval }}</a> minutes.
 
+            When a problem occurs it will be checked <a href="#">{{ my_object.max_check_attempts }}</a> times
+
+            every <a href="#">{{ my_object.retry_interval }}</a> minutes before going to
+            hard state and start sending out notifications.
+        </p>
+
+        {% if my_object.notes %}
+        <p>
+            <b>Notes:</b> {{ my_object.notes }}
+        </p>
+        {% endif %}
+
+        <table class=table>
             <tr>
-                <td>External Links </td>
+                <td>Last Check</td>
                 <td>
-                    {% if my_object.notes_url_expanded %}
-                        <a href="{{ my_object.notes_url_expanded }}">notes</a>
+                    {% if my_object.last_check %}
+                        {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
+                         <span class="pull-right">({{ my_object.last_check|timestamp|timesince  }} ago)</span>
+                    {% else %}
+                        check has never been executed.
                     {% endif %}
-                    {% if my_object.action_url_expanded %}
-                        <a href="{{ my_object.action_url_expanded }}">actions</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Next Check</td>
+                <td>
+                    {% if my_object.next_check %}
+                        {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
+                        <span class="pull-right">({{ my_object.next_check|timestamp|timeuntil }} from now)</span>
+                    {% else %}
+                        Check is not scheduled to be executed.
                     {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Check Period</td>
+                <td>
+                    {% if my_object.check_period %}
+                    <a href="{% url edit_by_shortname "timeperiod" my_object.check_period %}">{{ my_object.check_period }}</a>
+                    {% else %}
+                    Unknown
+                    {% endif %}
+                    <span class="pull-right">
+                        (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Notification Period</td>
+                <td>
+                    {% if my_object.notification_period %}
+                    <a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a>
+                    {% else %}
+                    Unknown
+                    {% endif %}
+                    <span class="pull-right">
+                        (currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period)
+                    </span>
+                </td>
             </tr>
             <tr>
                 <td>
@@ -174,16 +226,6 @@
                 <td id="effective_check_command"> Loading...</td>
             </tr>
             <tr></tr>
-            <tr>
-                <td>
-                <label for="id_notes">Notes</label>
-                </td>
-                <td>
-                    <textarea id="id_notes" class="editable_field" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea>
-                    <div id="notes_status">status</div>
-                </td>
-
-            </tr>
             <tr>
                 <td>
                     Downtimes:
@@ -232,78 +274,27 @@
 
                 </td>
             </tr>
-        </table>
-
-        This check is executed every <a href="#">{{ my_object.check_interval }}</a> minutes.
-
-        When a problem occurs it will check <a href="#">{{ my_object.max_check_attempts }}</a> times
-
-        every <a href="#">{{ my_object.retry_interval }}</a> minutes before going to
-        hard state and start sending out notifications.
-        <table class=table>
-            <tr>
-                <td>Last Check</td>
-                <td>
-                    {% if my_object.last_check %}
-                        {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
-                         ({{ my_object.last_check|timestamp|timesince  }} ago)
-                    {% else %}
-                        check has never been executed.
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Next Check</td>
-                <td>
-                    {% if my_object.next_check %}
-                        {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
-                        ({{ my_object.next_check|timestamp|timeuntil }} from now)
-                    {% else %}
-                        Check is not scheduled to be executed.
-                    {% endif %}
-                    <button class="pull-right btn btn-small">
-                        <i class="glyph-refresh" title="Recheck - Execute check immediately"> </i>
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>Check Period</td>
-                <td>
-                    {% if my_object.check_period %}
-                    <a href="{% url edit_by_shortname "timeperiod" my_object.check_period %}">{{ my_object.check_period }}</a></td>
-                    {% else %}
-                    Unknown
-                    {% endif %}
-            </tr>
-            <tr>
-                <td>Notification Period</td>
-                <td>
-                    {% if my_object.notification_period %}
-                    <a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a></td>
-                    {% else %}
-                    Unknown
-                    {% endif %}
-            </tr>
             <tr>
                 <td>Network Parents</td>
                 <td>
                     {% if network_parents %}
                         <table>
-                        <tbody>
-
-                        {% for parent_level in network_parents %}
-                            <tr>
-                                {% for parent in parent_level %}
-                                    <td>
-                                        <div class="alert state_{{ parent.state }}">
-                                            <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
-                                        </div>
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
+                            <tbody>
+                            {% for parent_level in network_parents %}
+                                <tr>
+                                    {% for parent in parent_level %}
+                                        <td>
+                                            <div class="alert state_{{ parent.state }}">
+                                                <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
                         </table>
+                    {% else %}
+                        This {{ my_object.object_type }} has no configured network parents.
                     {% endif %}
             </tr>
         </table>
@@ -442,6 +433,24 @@
         </ul>
     {% endif %}
 
+    <h5>External Links</h5>
+    <ul class="nav nav-list">
+        {% if my_object.action_url %}
+            <li><a href="{{ my_object.action_url_expanded }}">Extra Actions</a></li>
+        {% endif %}
+
+        {% if my_object.notes_url %}
+            <li><a href="{{ my_object.notes_url_expanded }}">Extra Notes</a></li>
+        {% endif %}
+
+        {% if my_object.host_action_url %}
+            <li><a href="{{ my_object.host_action_url_expanded }}">Host Actions</a></li>
+        {% endif %}
+
+        {% if my_object.host_notes_url %}
+            <li><a href="{{ my_object.host_notes_url_expanded }}">Host Notes</a></li>
+        {% endif %}
+    </ul>
     {% if hostgroup_name %}
         {% if hostgroups %}
             <h5>Is a member of hostgroup:</h5>
