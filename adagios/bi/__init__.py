@@ -536,6 +536,7 @@ class Hostgroup(BusinessProcess):
             result.append(process)
         return result
 
+
 # TODO: Servicegroup implementation in incomplete. Test it, see if hostgroup Host and servicegroup can
 # be abstracted
 class Servicegroup(BusinessProcess):
@@ -611,7 +612,7 @@ class Host(BusinessProcess):
             self._livestatus = pynag.Parsers.mk_livestatus()
             self._host = self._livestatus.get_host(self.name)
             self.display_name = self._host.get('display_name') or self.name
-            self.notes =  self._host.get('notes') or 'You are looking at the host %s' % self.name
+            self.notes = self._host.get('notes') or 'You are looking at the host %s' % self.name
 
     def get_status(self):
         try:
@@ -640,6 +641,43 @@ class Host(BusinessProcess):
         return result
 
 
+class Domain(Host):
+    """ Special class that is supposed to represent a whole domain
+
+    Will autocreate the domain if it exists
+    """
+    _host = None
+    _livestatus = None
+
+    def load(self):
+        self._livestatus = pynag.Parsers.mk_livestatus()
+        try:
+            self._host = self._livestatus.get_hostgroup(self.name)
+        except IndexError:
+            self.create_host()
+            self._host = self._livestatus.get_hostgroup(self.name)
+        self.display_name = self._host.get('display_name') or self.name
+        self.notes = self._host.get('notes') or 'You are looking at the host %s' % self.name
+
+    def create_host(self):
+        """ Create a new Host object in nagios config and reload nagios  """
+        import pynag.Model
+        import pynag.Control
+        import socket
+        try:
+            socket.gethostbyname(self.name)
+        except Exception:
+            self.host_not_found = True
+        all_hosts = pynag.Model.Host.objects.all
+        all_hosts = map(lambda x: x.host_name, all_hosts)
+        if self.name not in all_hosts:
+            host = pynag.Model.Host(use="generic-domain", host_name=self.name)
+            host.save()
+            host.action_url = "http://%s" % i
+            host.hostgroups = 'domains,nameservers,mailservers,http-servers,https-servers'
+        pynag.Control.daemon.reload()
+
+
 def get_class(process_type, default=BusinessProcess):
     """ Looks up process_type and return apropriate BusinessProcess Class
 
@@ -653,6 +691,7 @@ def get_class(process_type, default=BusinessProcess):
     dictionary['service'] = Service
     dictionary['host'] = Host
     dictionary['process'] = BusinessProcess
+    dictionary['domain'] = Domain
     return dictionary.get(process_type, default)
 
 
@@ -728,7 +767,3 @@ class PNP4NagiosGraph:
         # only use graphs with same label
         graphs = filter(lambda x: x['ds_name'] == self.label, graphs)
         return graphs
-
-
-h = get_business_process('localhost', process_type='host', status_method='worst_service_state')
-print h.get_processes()
