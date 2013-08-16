@@ -38,22 +38,32 @@ class adagios_build(build):
         # Normal build:
         build.run(self)
 
-        # Custom build steps:
-        adagios_conf_lines = []
+        # We drop in a config file for apache and we modify
+        # that config file to represent python path on the host
+        # building
         site_packages_str = '/usr/lib/python2.7/site-packages'
-        # Python 2.4 compatibility
-        conf_r = open('build/lib/adagios/apache/adagios.conf', 'r')
+        python_lib = get_python_lib()
+
+        # If we happen to be running on python 2.7, there is nothing more
+        # to do.
+        if site_packages_str == python_lib:
+            return
+
+        apache_config_file = None
+        for dirpath, dirname, filenames in os.walk('build'):
+            if dirpath.endswith('apache') and 'adagios.conf' in filenames:
+                apache_config_file = os.path.join(dirpath, 'adagios.conf')
+        # If build process did not create any config file, we have nothing more to do
+        if not apache_config_file:
+            return
+
+        # Replace the python path with actual values
         try:
-            for line in conf_r.readlines():
-                adagios_conf_lines.append(line.replace(site_packages_str, get_python_lib()))
+            contents = open(apache_config_file, 'r').read()
+            contents = contents.replace(site_packages_str, python_lib)
+            open(apache_config_file, 'w').write(contents)
         finally:
-            conf_r.close()
-        conf_w = open('build/lib/adagios/apache/adagios.conf', 'w')
-        try:
-            for line in adagios_conf_lines:
-                conf_w.write(line)
-        finally:
-            conf_w.close()
+            pass
 
 setup(name=app_name,
     version=version,
