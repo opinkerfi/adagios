@@ -1,0 +1,13 @@
+Source: adagios
+Maintainer: Pall Sigurdsson <palli@opensource.is>
+Section: python
+Priority: optional
+Build-Depends: python (>= 2.6.6-3~), debhelper (>= 7.4.3)
+Standards-Version: 3.9.3
+Homepage: http://adagios.org/
+
+X-Python-Version: >= 2.4
+Package: adagios
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, pynag, python-django, python-simplejson
+Description: Adagios is a web based Nagios configuration interface built to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. Additionally adagios has a rest interface for both status and configuration data as well a feature complete status interface that can be used as an alternative to nagios web interface.

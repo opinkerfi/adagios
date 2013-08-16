@@ -1,0 +1,3 @@
+version=3
+opts=filenamemangle=s/.+\/(\d\S*)\-.*.tar\.gz/adagios-$1.tar.gz/ \
+  http://github.com/opinkerfi/adagios/tags .*/(\d\S*)-.*\.tar\.gz
