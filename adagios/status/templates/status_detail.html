@@ -254,13 +254,17 @@
                 </td>
                 <td>
                     <div id="downtimes">
-                        {% for i in my_object.comments_with_info %}
-                            <div class="alert alert-info">
-                                <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
-                                    <i class="glyph-bin"></i></button>
-                                <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
-                            </div>
-                        {% endfor %}
+                        {% if my_object.comments_with_info %}
+                            {% for i in my_object.comments_with_info %}
+                                <div class="alert alert-info">
+                                    <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
+                                        <i class="glyph-bin"></i></button>
+                                    <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>This {{ my_object.object_type }} has no comments.</p>
+                        {% endif %}
                         <div id="div_add_comment" class="alert alert-info">
                                     <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
                                     <input type="hidden" name="host_name" id="id_host_name" value="{{ host_name }}"/>
