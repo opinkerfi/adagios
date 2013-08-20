@@ -1,0 +1,68 @@
+{% extends "base_status.html" %}
+
+{% block title %}Performance Data Metrics{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Performance Data Metrics{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.perfdata %}">Performance Data</a>{% endblock %}
+{% load adagiostags %}
+
+{% block content %}
+    <table class="table table-condensed searchtable datatable well" style="font-size:12px;" >
+        <thead>
+        <tr>
+            <th class="small"></th>
+            <th>host</th>
+            <th>service</th>
+            {% for i in metrics %}
+                <th>{{ i }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+    {% for service in services %}
+        {% if service.metrics|length == metrics|length %}
+            <tr class=mainrow>
+                <td class="selectable small">
+                    <input type=checkbox class="chkbox" name="graph" value="{{ service.host_name }},{{ service.description }},{{ i.label }}">
+                </td>
+
+                <td>
+                    <div class="circle state_{{ service.host_state }}"></div>
+                    <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
+                </td>
+                <td>
+                    <div class="circle state_{{ service.state }}"></div>
+                    <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&description={{ service.description }}">{{ service.description }}</a>
+                </td>
+                    {% for i in service.metrics %}
+                        <td>
+                            <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
+                                <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
+                            </a>
+                        </td>
+                    {% endfor %}
+
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </table>
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+
+    <script>
+        // Perfomance Graph Preview on hover
+        $("a.preview").popover({
+        placement: 'left',
+            trigger: 'hover',
+            template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
+            content: function() {
+                return "<img src='"+ $(this)[0].href +"' alt='Image preview' />";
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block toolbar %}{% endblock %}

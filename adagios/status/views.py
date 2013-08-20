@@ -1082,7 +1082,8 @@ def perfdata(request):
     c['messages'] = []
     c['errors'] = []
     l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
-    perfdata = l.query('GET services', 'Columns: host_name description perf_data state host_state')
+    arguments = pynag.Utils.grep_to_livestatus(**request.GET)
+    perfdata = l.query('GET services', 'Columns: host_name description perf_data state host_state', *arguments)
     for i in perfdata:
         metrics = pynag.Utils.PerfData(i['perf_data']).metrics
         metrics = filter(lambda x: x.is_valid(), metrics)
@@ -1180,3 +1181,40 @@ def contactgroup_detail(request, contactgroup_name):
     return render_to_response('status_contactgroup.html', c, context_instance=RequestContext(request))
 
 
+@error_handler
+def perfdata2(request):
+    """ Just a test method, feel free to remove it
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    columns = 'Columns: host_name description perf_data state host_state'    
+    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+
+    # User can specify from querystring a filter of which services to fetch
+    # we convert querystring into livestatus filters.
+    # User can also specify specific metrics to watch, so we extract from querystring as well
+    querystring = request.GET.copy()
+    interesting_metrics = querystring.pop('metrics',[''])[0]
+    arguments = pynag.Utils.grep_to_livestatus(**querystring)
+    services = l.query('GET services', columns, *arguments)
+    # If no metrics= was specified on querystring, we take the string
+    # from first service in our search result
+    if not interesting_metrics and services:
+        perfdata = pynag.Utils.PerfData(services[0]['perf_data'])
+        interesting_metrics = map(lambda x: x.label, perfdata.metrics)
+    else:
+        interesting_metrics = interesting_metrics.split(',')
+
+    # Iterate through all the services and parse perfdata
+    for service in services:
+        perfdata = pynag.Utils.PerfData(service['perf_data'])
+        null_metric = pynag.Utils.PerfDataMetric()
+        metrics = map(lambda x: perfdata.get_perfdatametric(x) or null_metric, interesting_metrics)
+        #metrics = filter(lambda x: x.is_valid(), metrics)
+        service['metrics'] = metrics
+
+    c['metrics'] = interesting_metrics
+    c['services'] = services
+
+    return render_to_response('status_perfdata2.html', c, context_instance=RequestContext(request))
