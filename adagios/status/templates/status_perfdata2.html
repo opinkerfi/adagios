@@ -33,7 +33,7 @@
                 </td>
                 <td>
                     <div class="circle state_{{ service.state }}"></div>
-                    <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&description={{ service.description }}">{{ service.description }}</a>
+                    <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
                 </td>
                     {% for i in service.metrics %}
                         <td>
