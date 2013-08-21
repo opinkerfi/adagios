@@ -4,8 +4,20 @@
 {% if hostgroups %}
     <table class="table well table-condensed searchtable" style="font-size:12px;" >
         <tr>
-            <th>
+            <th class="small">
+                <div class="btn-group" id="select_bar">
+                    <a class="" data-toggle="dropdown" href="#">
+                        <input style="margin-left: -1px; padding: 0px;" type="checkbox" id="select_many">
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a id="select_all"> All</a></li>
+                        <li><a id="select_none"> None</a></li>
+                        <li><a id="select_unhandled_problems" > Unhandled Problems</a></li>
+                        <li><a id="select_problems"> All Problems</a></li>
+                    </ul>
+                </div>
             </th>
+            <th ></th>
             <th>Hostgroup</th>
             <th>Child Hostgroups</th>
             <th>Parent Hostgroups</th>
@@ -17,11 +29,13 @@
         {% for row in hostgroups %}
             {% if row.members|length > 0 %}
                 <tr >
+                    <td class="selectable small">
+                        <input class="chkbox"  type="checkbox" name="hostgroup" value="{{ row.name }}" style="margin: -1px; padding: 0px;">
+                    </td>
+
                     <td onclick='$(".subrow_{{ forloop.counter }}").toggle();'>
-                        <a href="#">
-                        <div class="subrow_{{ forloop.counter }}">&#x25b7;</div>
-                        <div class="subrow_{{ forloop.counter }} hide">&#x25bd;</div>
-                            </a>
+                        <div class="pull-right subrow_{{ forloop.counter }}"><a href="#">&#x25b7;</a></div>
+                        <div class="pull-right subrow_{{ forloop.counter }} hide"><a href="#">&#x25bd;</a></div>
                     </td>
                     <td><a href="{% url status.views.status_hostgroup row.name %}">{{ row.name }}</a></td>
                     <td>
