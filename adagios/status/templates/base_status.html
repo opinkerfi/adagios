@@ -199,9 +199,6 @@
                             <a class="btn btn-small" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
                                 <i class="glyph-envelope" > </i>
                             </a>
-                            <a class="btn btn-small enable_on_select" title="Add to businesgroup" id="add_to_businessprocess_button" onclick="add_to_business_process();">
-                                <i class="glyph-clock" > </i> Add to business process
-                            </a>
 
                         <!--
                         <a class="btn-s "><button class="btn pull-left btn-small  dropdown-toggle" data-toggle="dropdown"  ><i class="icon-search"></i> Add new...<span class="caret"></span></button>
@@ -222,6 +219,17 @@
 
                     {% endblock %}
                 </div >
+                <div class="btn-group pull-left" id="more_buttons">
+                    <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="glyph-more" title="View"> </i> <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>                            <a class="enable_on_select" title="Add to businesgroup" id="add_to_businessprocess_button" onclick="add_to_business_process();">
+                                <i class="glyph-clock" > </i> Add to business process
+                            </a></li>
+                    </ul>
+                </div>
+
+
 
 
 
