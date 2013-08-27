@@ -161,6 +161,7 @@ def verify_okconfig(request):
             c['errors'].append('There seems to be a problem with your okconfig installation')
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
+
 def install_agent(request):
     """ Installs an okagent on a remote host """
     c = {}
@@ -201,6 +202,44 @@ def install_agent(request):
                 c['stdout'] = '\n'.join(c['stdout'])
             except Exception,e:
                 c['errors'].append(  e )
+        else:
+            c['errors'].append('invalid input')
+
+    return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
+
+def install_agentv2(request):
+    """ Installs an okagent on a remote host """
+    import adagios.tasks
+
+    c = {}
+    c['errors'] = []
+    c['messages'] = []
+    c['form'] = forms.InstallAgentForm(initial=request.GET )
+    c['nsclient_installfiles'] = okconfig.config.nsclient_installfiles
+    if request.GET.has_key('task_id'):
+        celery = adagios.tasks.initialize()
+        task = celery.AsyncResult(request.GET.get('task_id'))
+        return HttpResponse(simplejson.dumps({"state": task.state, "result": task.result }),
+                            mimetype='application/json')
+    elif request.method == 'POST':
+
+        c['form'] = f = forms.InstallAgentForm(request.POST)
+        if f.is_valid():
+            f.clean()
+            host = f.cleaned_data['remote_host']
+            user = f.cleaned_data['username']
+            passw = f.cleaned_data['password']
+            method = f.cleaned_data['install_method']
+            domain = f.cleaned_data['windows_domain']
+
+            if not domain:
+                # Local auth
+                domain = '.'
+            c['stages'] = ['Check_Prerequisites', 'Connection_test', 'Upload_NSClient++_Setup', 'Installing_NSClient++']
+            task = adagios.tasks.okconfig_installNSClient.apply_async(args=[host, domain, user, passw])
+            c['task_id'] = [task.task_id]
+
+            return render_to_response('install_agent_progress.html', c, context_instance=RequestContext(request))
         else:
             c['errors'].append('invalid input')
 
