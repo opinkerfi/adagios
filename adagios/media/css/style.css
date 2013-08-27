@@ -236,3 +236,9 @@ textarea#id_filecontent {
 table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
     background-color: transparent;
 }
+
+
+// okconfig install_agent_progress.html
+div#agent_install_progress div:first-child {
+    width: 300px;
+}
