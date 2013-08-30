@@ -88,6 +88,9 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         try:
             host['num_problems'] = host['num_services_crit'] + host['num_services_warn'] + host['num_services_unknown']
             host['children'] = host['services_with_state']
+
+            if host.get('last_state_change') == 0:
+                host['state'] = 3
             host['status'] = state[host['state']]
 
             ok = host.get('num_services_ok')
@@ -191,6 +194,9 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
                 else:
                     service_tags.append('ishandled')
                     service['handled'] = "handled"
+            elif service.get('last_state_change') == 0:
+                service['state'] = 3
+                service_tags.append('pending')
             else:
                 service_tags.append('ok')
             if service['acknowledged'] == 1:
