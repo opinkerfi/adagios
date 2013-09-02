@@ -7,7 +7,7 @@
 %define release 1
 
 Name: adagios
-Version: 1.2.3
+Version: 1.2.4
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
@@ -67,6 +67,81 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
 
 %changelog
+* Wed Aug 28 2013 Pall Sigurdsson <palli@opensource.is> 1.2.4-1
+- Fix syntax error in adagios.conf (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- More button made part of the action_buttons block (tommi@tommi.org)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- status/perfdata2 - fix link to services (palli@opensource.is)
+- status/hostgroups - checkboxes next to hostgroups (palli@opensource.is)
+- Added more button for extra actions in status view (tommi@tommi.org)
+- New view /status/perfdata2 (palli@opensource.is)
+- hostgrouplist refactored to use snippet (palli@opensource.is)
+- status_detail layout changes (palli@opensource.is)
+- Update debian package (palli@opensource.is)
+- Moved WSGIProcessGroup within <location /adagios> (tommi@tommi.org)
+- Debian package directory created (palli@opensource.is)
+- adagios.conf - Clarifications to default values (palli@opensource.is)
+- setup.py - python paths for apache fixes (palli@opensource.is)
+- setup.py - pep8 cleanup (palli@opensource.is)
+- BI - Fix reference to non-existing localhost (palli@opensource.is)
+- Updates to status_detail look (palli@opensource.is)
+- objectbrowser/forms.py pep8 cleanup (palli@opensource.is)
+- BI - cleanup in views.py (palli@opensource.is)
+- BI - urls.py allow for any process_type (palli@opensource.is)
+- BI: macro resolving updates (palli@opensource.is)
+- Performance: adagios.bi resolve macros only once per instance
+  (palli@opensource.is)
+- Fix: urls for pnp4nagios edit file (palli@opensource.is)
+- Minor updates to BI module (palli@opensource.is)
+- PEP8 fix (palli@opensource.is)
+- BI unit tests moved to tests.py (palli@opensource.is)
+- Fix: path issues in bi (palli@opensource.is)
+- Business Intelligence moved from status to its own module
+  (palli@opensource.is)
+- bi: Macro support in human friendly status (palli@opensource.is)
+- Fix: links on static BI pages (palli@opensource.is)
+- added static BI view for iceland.adagios.org (palli@opensource.is)
+- cleanup for static BI pages (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- incremental updates to BI (palli@opensource.is)
+- Merge branch 'master' of github.com:opinkerfi/adagios (palli@opensource.is)
+- scripts->static_businessprocess.py - incremental updates
+  (palli@opensource.is)
+- status -> forms: pep8 cleanups (palli@opensource.is)
+- Fix: BI add graphs typo (palli@opensource.is)
+- Update status_error.html - Fix typo (mikecom32@gmail.com)
+- scripts directory created (palli@opensource.is)
+- status->services: Put a timed refresh on 30seconds (palli@opensource.is)
+- selectable class added to status.html and status_detail.html
+  (palli@opensource.is)
+- selectable class added to status.html (palli@opensource.is)
+- enhanchement: links on state_history view (palli@opensource.is)
+- new status/rest function 'get' (palli@opensource.is)
+- base status updates to javascript (palli@opensource.is)
+- javascript updates to select2 objects query (palli@opensource.is)
+- css: nomargin class added (palli@opensource.is)
+- update servicelist checkboxes to new status standard (palli@opensource.is)
+- checkboxes on perfdata metrics (palli@opensource.is)
+- add subprocess and add graphs improvements (palli@opensource.is)
+- CSS: links are bold again (for now) except on left_sidemenu
+  (palli@opensource.is)
+- Create servicegroups view (palli@opensource.is)
+- fix typo in bpi forms (palli@opensource.is)
+- error handler on businessprocess graphs (palli@opensource.is)
+- Fix: business process add now redirects to edit after save
+  (palli@opensource.is)
+- PNP graphs now have last_value attribute (palli@opensource.is)
+- Business Intelligence support last value of graph (palli@opensource.is)
+- adagios.businessprocess - pep8 cleanup (palli@opensource.is)
+- Business intelligence dashboard headers improved (palli@opensource.is)
+- better graph support in business intelligence module (palli@opensource.is)
+- PEP8 remove linebreak (palli@opensource.is)
+- status.views pep8 cleanup (palli@opensource.is)
+- Fix: rest/pynag delete_object was using obsolete pynag code
+  (palli@opensource.is)
+- New modules for custom pages (palli@opensource.is)
+
 * Thu Jul 04 2013 Pall Sigurdsson <palli@opensource.is> 1.2.3-1
 - Fix check_command editor when effective command line returns null
   (palli@opensource.is)
