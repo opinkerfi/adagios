@@ -1,0 +1,56 @@
+{% extends "base_okconfig.html" %}
+{% block title %}Install Agent - Progress{% endblock %}
+{% block smallheader %}Install{% endblock %}
+{% block largeheader %}Agent{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.install_agent %}">Install Agent</a>{% endblock %}
+{% block footer %}
+<script>
+
+    function updateTask(task_id) {
+        var agent_install_progress = $("div#agent_install_progress");
+        $.ajax({
+            url: window.location.pathname + "?task_id=" + task_id
+        }).done(function(data) {
+            if (data['state'] === "RUNNING") {
+                window.setTimeout(function() {
+                    updateTask(task_id);
+                }, 1000);
+            }
+            var current_state = data['result'][0];
+
+            for (stage in data['result'][1]) {
+                var state = data['result'][1][stage];
+                console.log(stage + ": " + state);
+                if (state === 'OK') {
+                    agent_install_progress.find("div#stage_" + stage.replace(" ", "_")).find(".label").attr('class', "label label-success");
+                    agent_install_progress.find("div#stage_" + stage.replace(" ", "_")).find(".label").html('<i class="glyph-white glyph-circle-ok"></i> ' + state);
+                } else {
+                    if (state.toLowerCase().indexOf("error") == 0) {
+                        agent_install_progress.find("div#stage_" + stage.replace(" ", "_")).find(".label").html('<i class="glyph-white glyph-circle-exclamation-mark"></i> ' + state);
+                        agent_install_progress.find("div#stage_" + stage.replace(" ", "_")).find(".label").attr('class', "label label-important");
+                    } else {
+                        agent_install_progress.find("div#stage_" + stage.replace(" ", "_")).find(".label").html('<i class="glyph-white glyph-circle-info"></i> ' + state);
+                        agent_install_progress.find("div#stage_" + stage.replace(" ", "_")).find(".label").attr('class', "label label-info");
+                    }
+                }
+            }
+        });
+    }
+    $(document).ready(function() {
+        updateTask("{{ task_id.0 }}");
+    });
+</script>
+{% endblock %}
+
+
+{% block content %}
+    <h2>Installing Agent to {{ remote_host }}</h2>
+    <div id="agent_install_progress" class="well">
+    {% for stage in stages %}
+        <div class="row-fluid" id="stage_{{ stage }}">
+            <span class="span4">{{ stage }}</span> <span class="label">Pending</span>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}
