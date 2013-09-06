@@ -216,13 +216,13 @@ def install_agentv2(request):
     c['messages'] = []
     c['form'] = forms.InstallAgentForm(initial=request.GET )
     c['nsclient_installfiles'] = okconfig.config.nsclient_installfiles
+
     if request.GET.has_key('task_id'):
         celery = adagios.tasks.initialize()
         task = celery.AsyncResult(request.GET.get('task_id'))
         return HttpResponse(simplejson.dumps({"state": task.state, "result": task.result }),
                             mimetype='application/json')
     elif request.method == 'POST':
-
         c['form'] = f = forms.InstallAgentForm(request.POST)
         if f.is_valid():
             f.clean()
