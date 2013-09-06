@@ -139,6 +139,9 @@ pnp_url = "/pnp4nagios"
 pnp_filepath = "/usr/share/nagios/html/pnp4nagios/index.php"
 include=""
 django_secret_key = ""
+celery_backend = ""
+celery_broker = ""
+celery_result_dburi = ""
 
 # pages module, path to extra pages the user can upload
 extra_pages = "/etc/adagios/pages.d"
