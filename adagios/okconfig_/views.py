@@ -235,7 +235,7 @@ def install_agentv2(request):
             if not domain:
                 # Local auth
                 domain = '.'
-            c['stages'] = ['Check_Prerequisites', 'Connection_test', 'Upload_NSClient++_Setup', 'Installing_NSClient++']
+            c['stages'] = ['Check Prerequisites', 'Connection test', 'Upload NSClient++ Setup', 'Installing NSClient++']
             task = adagios.tasks.okconfig_installNSClient.apply_async(args=[host, domain, user, passw])
             c['task_id'] = [task.task_id]
 
