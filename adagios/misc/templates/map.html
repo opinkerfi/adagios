@@ -296,8 +296,8 @@
         function initilize_map() {
             // Create map
             var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 10,
-                center: new google.maps.LatLng(64.119595,-21.655426),
+                zoom: {{ map_zoom }},
+                center: new google.maps.LatLng({{ map_center }}),
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             });
             map.markers = new Array();
