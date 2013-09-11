@@ -139,6 +139,8 @@ pnp_url = "/pnp4nagios"
 pnp_filepath = "/usr/share/nagios/html/pnp4nagios/index.php"
 include=""
 django_secret_key = ""
+map_center = "64.119595,-21.655426"
+map_zoom = "10"
 
 # pages module, path to extra pages the user can upload
 extra_pages = "/etc/adagios/pages.d"
