@@ -77,6 +77,8 @@ class AdagiosSettingsForm(forms.Form):
     warn_if_selinux_is_active = forms.BooleanField(required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
     pnp_filepath = forms.CharField(help_text="Full path to your pnp4nagios/index.php file. Adagios will use this to generate graphs")
     pnp_url = forms.CharField(help_text="Full or relative url to pnp4nagios web interface, adagios can use this to link directly to pnp")
+    map_center = forms.CharField(help_text="Default coordinates when opening up the world map. This should be in the form of longitude,latitude")
+    map_zoom = forms.CharField(help_text="Default Zoom level when opening up the world map. 10 is a good default value")
     include = forms.CharField(required=False, help_text="Include configuration options from files matching this pattern")
     def save(self):
         # First of all, if configfile does not exist, lets try to create it:
