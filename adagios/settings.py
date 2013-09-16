@@ -142,6 +142,8 @@ django_secret_key = ""
 celery_backend = ""
 celery_broker = ""
 celery_result_dburi = ""
+map_center = "64.119595,-21.655426"
+map_zoom = "10"
 
 # pages module, path to extra pages the user can upload
 extra_pages = "/etc/adagios/pages.d"

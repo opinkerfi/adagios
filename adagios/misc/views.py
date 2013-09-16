@@ -99,6 +99,8 @@ def map_view(request):
         import pynag.Parsers
         livestatus = pynag.Parsers.mk_livestatus()
         c['hosts'] = livestatus.get_hosts()
+        c['map_center'] = adagios.settings.map_center
+        c['map_zoom'] = adagios.settings.map_zoom
     except Exception:
         pass
     return render_to_response('map.html', c, context_instance = RequestContext(request))
