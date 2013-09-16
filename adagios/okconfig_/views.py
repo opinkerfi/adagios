@@ -15,9 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.shortcuts import render_to_response, redirect
-from django.core import serializers
-from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
@@ -27,7 +26,6 @@ from django.core.urlresolvers import reverse
 from adagios.okconfig_ import forms
 
 import okconfig
-import okconfig.network_scan
 from pynag import Model
 
 
@@ -235,9 +233,14 @@ def install_agentv2(request):
             if not domain:
                 # Local auth
                 domain = '.'
-            c['stages'] = ['Check Prerequisites', 'Connection test', 'Upload NSClient++ Setup', 'Installing NSClient++']
-            task = adagios.tasks.okconfig_installNSClient.apply_async(args=[host, domain, user, passw])
-            c['task_id'] = [task.task_id]
+            c['tasks'] = []
+            for h in host.split():
+                task = adagios.tasks.okconfig_installNSClient.apply_async(args=[h, domain, user, passw])
+                c['tasks'].append({
+                    'host_name': h,
+                    'task_id': task,
+                })
+            #c['tasks'] = [{ 'host_name': host, 'task_id': task.task_id }]
 
             return render_to_response('install_agent_progress.html', c, context_instance=RequestContext(request))
         else:
