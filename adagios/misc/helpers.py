@@ -257,7 +257,7 @@ def add_object(object_type, filename=None, **kwargs):
     return {"filename":my_object.get_filename(), "raw_definition":str(my_object)}
 
 def check_command(host_name, service_description, name=None,check_command=None,**kwargs):
-    """ Get al
+    """ Returns all macros of a given service/host
         Arguments:
             host_name           -- Name of host
             service_description -- Service description

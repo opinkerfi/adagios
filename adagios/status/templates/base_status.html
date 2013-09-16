@@ -219,7 +219,17 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="enable_on_select" title="Add to businesgroup" id="add_to_businessprocess_button" onclick="add_to_business_process();">
-                                    <i class="glyph-clock" > </i> Add to business process
+                                    Add selected services to business process
+                                </a>
+                            </li>
+                            <li>
+                                <a class="enable_on_select" title="Add to contactgroup" onclick="add_to_group('contactgroup');">
+                                    Add selected services to contactgroup
+                                </a>
+                            </li>
+                            <li>
+                                <a class="enable_on_select" title="Add to contactgroup" onclick="add_to_group('hostgroup');">
+                                    Add selected services to servicegroup
                                 </a>
                             </li>
                         </ul>
@@ -872,6 +882,17 @@
 
 
             return false;
+        }
+        // When this function is called, gather all selected objects and add them to a specific group
+        function add_to_group(group_type) {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.add_to_group %}/" + group_type + "?" + querystring;
         }
 
 

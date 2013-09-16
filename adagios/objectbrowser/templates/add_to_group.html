@@ -1,0 +1,97 @@
+{% extends "adagios_standard.html" %}
+{% block title %}Bulk edit{% endblock %}
+{% block smallheader %}add{% endblock %}
+{% block largeheader %}to {{ group_type }}{% endblock %}
+{% block nav1 %}Object Browser{% endblock %}
+{%  block content %}
+    <p>
+    You are about to add {{ objects|length }} objects to a {{ group_type }} named:
+    </p>
+
+    <input type="text" id="group_name" value="{{ group_name }}" placeholder="Please enter a group name"/>
+    <button class="pull-right btn btn-primary" onclick="add_to_group();" id="add_to_group_button" type="submit">OK, sounds good</button>
+
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+
+        <div>
+            <table id="objects">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Object Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in objects %}
+                    <tr class="add_to_group_row">
+                        <td>
+                            <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
+                            <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                        </td>
+
+                        <td class="object_type">{{ obj.object_type }}</td>
+                        <td class="description">{{ obj.description }}</td>
+                        <td class="status" id="result_{{ forloop.counter0 }}"></td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+{%  endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        // Iterate through table "objects" for every row in that table, post to add_to_group url
+        //
+        function add_to_group() {
+            $('#add_to_group_button').hide();
+            var group_name = $("#group_name").val();
+            var group_type = "{{ group_type }}";
+            var object_type;
+            var description;
+            var result;
+            var status_span;
+            var url;
+            var data;
+            $(".add_to_group_row").each( function(index) {
+                object_type = $(this).find('.object_type').text();
+                description = $(this).find('.description').text();
+                status_span = $(this).find('.status');
+                status_span.text('Pending ...');
+                url = "{% url objectbrowser.views.add_to_group %}/" + group_type + "/" + group_name;
+                url = url.split("?")[0];
+                url = url + "?" + object_type + '=' + description;
+                data = {}
+                data["csrfmiddlewaretoken"] = window.csrftoken;
+                data['object_type'] = object_type;
+                data['description'] = description;
+                result = $.post(url, data)
+                        .done(function(data) {
+                            $("#result_" + index).text(data);
+                        })
+                        .fail(function(data) {
+                            $("#result_" + index).text(JSON.stringify(data));
+                        });
+                status_span.text("Working ...")
+            });
+        }
+    </script>
+
+
+        <script>
+        $('table#objects').dataTable( {
+                    "sPaginationType": "bootstrap",
+                    "bAutoWidth": false,
+                    "bScrollCollapse": true,
+                    "bPaginate": false,
+                    "sDom": 'rtp'
+                }
+        );
+    </script>
+
+{% endblock %}
