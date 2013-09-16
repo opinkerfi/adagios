@@ -139,11 +139,17 @@ pnp_url = "/pnp4nagios"
 pnp_filepath = "/usr/share/nagios/html/pnp4nagios/index.php"
 include=""
 django_secret_key = ""
-celery_backend = ""
-celery_broker = ""
-celery_result_dburi = ""
 map_center = "64.119595,-21.655426"
 map_zoom = "10"
+
+# Celery enables background tasks on the webserver side for long running tasks
+# such as installing agents on machines, reloads and other such.
+celery_enable = False
+
+# Default to sqlalchemy and sqlite
+celery_backend = "database"
+celery_broker = "sqla+sqlite:////var/lib/adagios/celerydb.sqlite"
+celery_result_dburi = "sqlite:////var/lib/adagios/celerydb.sqlite"
 
 # pages module, path to extra pages the user can upload
 extra_pages = "/etc/adagios/pages.d"
