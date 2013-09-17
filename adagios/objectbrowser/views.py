@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, HttpResponse, Http404
 from django.http import  HttpResponseRedirect
 from django.template import RequestContext
 from django.core.context_processors import csrf
@@ -23,9 +23,11 @@ from django.core.urlresolvers import reverse
 import os
 from os.path import dirname
 
-from pynag.Model import ObjectDefinition
+from pynag.Model import ObjectDefinition,string_to_class
 from pynag import Model
 from pynag.Parsers import status
+from collections import defaultdict, namedtuple
+import pynag.Model
 
 from adagios import settings
 from adagios.objectbrowser.forms import *
@@ -687,3 +689,54 @@ def add_object(request, object_type):
             c['errors'].append('Could not validate form input')
 
     return render_to_response('add_object.html', c, context_instance = RequestContext(request))
+
+
+def _querystring_to_objects(dictionary):
+    """ Finds all nagios objects in a querystring and returns a list of objects
+
+    >>> dictionary = {'host':'localhost1','host':'localhost2'}
+    >>> print _querystring_to_objects
+    {'host':'localhost1','localhost2'}
+    """
+    result = []
+    Object = namedtuple('Object', 'object_type description')
+    keys = dictionary.keys()
+    for object_type in string_to_class.keys():
+        objects = dictionary.getlist(object_type)
+        for i in objects:
+            obj = (Object(object_type, i))
+            result.append(obj)
+    return result
+
+
+def add_to_group(request, group_type=None, group_name=''):
+    """ Add one or more objects into a group
+    """
+
+    c = {}
+    messages = []
+    errors = []
+    if not group_type:
+        raise Exception("Please include group type")
+    if request.method == 'GET':
+        objects = _querystring_to_objects(request.GET)
+    elif request.method == 'POST':
+        objects = _querystring_to_objects(request.GET)
+        for i in objects:
+            try:
+                obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
+                if group_type == 'contactgroup':
+                    obj.add_to_contactgroup(group_name)
+                elif group_type == 'hostgroup':
+                    obj.add_to_hostgroup(group_name)
+                elif group_type == 'servicegroup':
+                    obj.add_to_servicegroup(group_name)
+                return HttpResponse("Success")
+            except Exception, e:
+                errortype = e.__dict__.get('__name__') or str(type(e))
+                error = str(e)
+                return HttpResponse("Failed to add object: %s %s " % (errortype, error))
+
+
+    return render_to_response('add_to_group.html', locals(), context_instance=RequestContext(request))
+
