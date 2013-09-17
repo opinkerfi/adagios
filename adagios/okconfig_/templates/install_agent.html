@@ -6,19 +6,20 @@
 {% block footer %}
     <script>
     $(document).ready(function() {
-        $("label.control-label[for='windows_domain']").parent().hide();
-        if ($("div#install_agent #id_install_method").val() == 'winexe') {
-            $("label.control-label[for='windows_domain']").parent().show();
+        var windows_domain_div = $("label.control-label[for='windows_domain']").parent();
+        var install_method = $("div#install_agent #id_install_method");
+        if (install_method.val() == 'winexe') {
+            windows_domain_div.show();
         } else {
-            $("label.control-label[for='windows_domain']").parent().hide();
+            windows_domain_div.hide();
         }
         $("div#install_agent").show();
-        $("div#install_agent #id_install_method").on('change', function() {
+        install_method.on('change', function() {
             if ($(this).val() == 'winexe') {
-                $("label.control-label[for='windows_domain']").parent().show();
+                windows_domain_div.show();
                 $('#id_username').val("administrator");
             } else {
-                $("label.control-label[for='windows_domain']").parent().hide();
+                windows_domain_div.hide();
                 $('#id_username').val("root");
             }
         });
