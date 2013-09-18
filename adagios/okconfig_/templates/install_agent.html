@@ -5,7 +5,7 @@
 {% block nav2 %}<a href="{% url adagios.okconfig_.views.install_agent %}">Install Agent</a>{% endblock %}
 {% block footer %}
     <script>
-    $(document).ready(function() {
+        $(document).ready(function() {
         var windows_domain_div = $("label.control-label[for='windows_domain']").parent();
         var install_method = $("div#install_agent #id_install_method");
         if (install_method.val() == 'winexe') {
@@ -33,7 +33,12 @@
         if (stdout.search("NT_STATUS_ACCESS_DENIED") >= 0) { $("#NT_STATUS_ACCESS_DENIED").show(); }
         if (stderr.search("Error: Directory") >= 0 && stderr.search("not found") >= 0 ) { $("#nsclient_missing").show(); }
 
+
+        $('input[name="remote_host"]').attr('type', 'hidden');
+        //$('input').addClass('span7 ');
+        $('input[name="remote_host"]').select2({tags:[],tokenSeparators: [" "]});
     });
+
     </script>
 {% endblock %}
 
