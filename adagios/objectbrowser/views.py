@@ -138,7 +138,7 @@ def geek_edit(request, object_id):
 
 
 def advanced_edit(request, object_id):
-    ''' Handles POST only requests for the "advanced" object edit form. '''
+    """ Handles POST only requests for the "advanced" object edit form. """
     c = {}
     c.update(csrf(request))
     c['messages'] = m = []
@@ -488,8 +488,10 @@ def _edit_host(request, c):
 
 
 def config_health(request):
+    """ Display possible errors in your nagios config
+    """
     c = dict()
-    c['messages'] = m = []
+    c['messages'] = []
     c['object_health'] = s = {}
     c['booleans'] = {}
     services_no_description = Model.Service.objects.filter(
@@ -565,6 +567,8 @@ def show_plugins(request):
 
 
 def edit_nagios_cfg(request):
+    """ This views is made to make modifications to nagios.cfg
+    """
     from pynag.Model.all_attributes import main_config
     c = {'filename': Model.config.cfg_file}
     c['content'] = []
@@ -703,7 +707,7 @@ def delete_object_by_shortname(request, object_type, shortname):
 
 
 def delete_object(request, object_id):
-    ''' View to Delete a single object definition '''
+    """ View to Delete a single object definition """
     c = {}
     c.update(csrf(request))
     c['messages'] = []
@@ -778,13 +782,12 @@ def add_object(request, object_type):
 def _querystring_to_objects(dictionary):
     """ Finds all nagios objects in a querystring and returns a list of objects
 
-    >>> dictionary = {'host':'localhost1','host':'localhost2'}
+    >>> dictionary = {'host':('localhost1', 'localhost2'),}
     >>> print _querystring_to_objects
-    {'host':'localhost1','localhost2'}
+    {'host':('localhost1','localhost2')}
     """
     result = []
     Object = namedtuple('Object', 'object_type description')
-    keys = dictionary.keys()
     for object_type in string_to_class.keys():
         objects = dictionary.getlist(object_type)
         for i in objects:
