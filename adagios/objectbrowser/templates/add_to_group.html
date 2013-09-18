@@ -33,7 +33,10 @@
 
                         <td class="object_type">{{ obj.object_type }}</td>
                         <td class="description">{{ obj.description }}</td>
-                        <td class="status" id="result_{{ forloop.counter0 }}"></td>
+                        <td class="status" >
+                            <span  id="result_{{ forloop.counter0 }}" class="pull-right">
+                            </span>
+                        </td>
                     </tr>
 
                 {% endfor %}
@@ -61,7 +64,7 @@
             $(".add_to_group_row").each( function(index) {
                 object_type = $(this).find('.object_type').text();
                 description = $(this).find('.description').text();
-                status_span = $(this).find('.status');
+                status_span = $(this).find('#result_' + index);
                 status_span.text('Pending ...');
                 url = "{% url objectbrowser.views.add_to_group %}/" + group_type + "/" + group_name;
                 url = url.split("?")[0];

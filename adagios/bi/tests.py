@@ -12,13 +12,15 @@ from adagios.bi import *
 
 
 class TestGraphs(TestCase):
+
     def testPNP4NagiosGraph_get_image_url(self):
 
         pnp = PNP4NagiosGraph('apc01.acme.com', 'Ping', 'rta')
-        #pnp.get_image_url()
+        # pnp.get_image_url()
 
 
 class TestBusinessProcess(TestCase):
+
     def test_save_and_load(self):
         """ This test will test load/save of a business process.
 
@@ -56,7 +58,8 @@ class TestBusinessProcess(TestCase):
             if i.name == sub_process_name and i.display_name == sub_process_display_name:
                 return
         else:
-            self.assertTrue(False, 'We tried adding a business process but could not find it afterwards')
+            self.assertTrue(
+                False, 'We tried adding a business process but could not find it afterwards')
 
     def test_hostgroup_bp(self):
         bp_name = 'test'
@@ -129,6 +132,7 @@ class TestBusinessProcess(TestCase):
             'percent_state_0': 50.0
         }
         self.assertEqual(macros_for_nonempty_process, bp.resolve_all_macros())
+
     def testPageLoad(self):
         c = Client()
         response = c.get('/bi/')

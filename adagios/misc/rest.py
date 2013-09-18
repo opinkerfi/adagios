@@ -42,7 +42,8 @@ def add_notification(level="info", message="message", notification_id=None):
     """
     if not notification_id:
         notification_id = str(message.__hash__())
-    notifications[notification_id] = { "level": level, "message":message }
+    notifications[notification_id] = {"level": level, "message": message}
+
 
 def clear_notification(notification_id):
     """ Clear one notification from adagios notification panel """
@@ -51,9 +52,12 @@ def clear_notification(notification_id):
         return "success"
     return "not found"
 
+
 def get_notifications():
     """ Shows all current notifications """
     return notifications
+
+
 def clear_all_notifications():
     """ Removes all notifications from adagios notification panel """
     notifications.clear()

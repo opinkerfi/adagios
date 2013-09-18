@@ -95,7 +95,8 @@ def _status(request):
     c['messages'] = []
     from collections import defaultdict
     authuser = request.GET.get('contact_name', None)
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
     all_hosts = livestatus.get_hosts()
     all_services = livestatus.get_services()
     all_contacts = livestatus.get_contacts()
@@ -141,14 +142,16 @@ def _status(request):
 
     #    services[service['host_name']].append(service)
     for host in all_hosts:
-        host['num_problems'] = host['num_services_crit'] + host['num_services_warn'] + host['num_services_unknown']
+        host['num_problems'] = host['num_services_crit'] + \
+            host['num_services_warn'] + host['num_services_unknown']
         host['children'] = host['services_with_state']
         if len(services[host['name']]) > 0:
             host['status'] = state[host['state']]
             host['services'] = services[host['name']]
             hosts.append(host)
     # Sort by service status
-    hosts.sort(reverse=True, cmp=lambda a, b: cmp(a['num_problems'], b['num_problems']))
+    hosts.sort(reverse=True, cmp=lambda a, b:
+               cmp(a['num_problems'], b['num_problems']))
     c['services'] = services
     c['hosts'] = hosts
     seconds_in_a_day = 60 * 60 * 24
@@ -172,7 +175,7 @@ def status(request):
     """ Compatibility layer around status.views.services
     """
     #c = _status(request)
-    #return render_to_response('status.html', c, context_instance=RequestContext(request))
+    # return render_to_response('status.html', c, context_instance=RequestContext(request))
     # Left here for compatibility reasons:
     return services(request)
 
@@ -183,7 +186,9 @@ def services(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    fields = ['host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state', 'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
+    fields = [
+        'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state',
+        'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
     c['services'] = utils.get_services(request, fields=fields, **request.GET)
     return render_to_response('status_services.html', c, context_instance=RequestContext(request))
 
@@ -220,18 +225,23 @@ def status_detail(request, host_name=None, service_description=None):
             return status_detail(request, host_name, service_description=tmp)
         primary_object = my_host
         c['service_description'] = '_HOST_'
-        c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name, service_description=None)
+        c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
+            host_name=host_name, service_description=None)
 
     else:
         try:
-            c['service'] = my_service = livestatus.get_service(host_name, service_description)
+            c['service'] = my_service = livestatus.get_service(
+                host_name, service_description)
             my_service['object_type'] = 'service'
             c['service_description'] = service_description
-            my_service['short_name'] = "%s/%s" % (my_service['host_name'], my_service['description'])
+            my_service['short_name'] = "%s/%s" % (
+                my_service['host_name'], my_service['description'])
             primary_object = my_service
-            c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(host_name=host_name, service_description=service_description)
+            c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
+                host_name=host_name, service_description=service_description)
         except IndexError:
-            c['errors'].append("Could not find any service named '%s'" % service_description)
+            c['errors'].append(
+                "Could not find any service named '%s'" % service_description)
             return error_page(request, c)
 
     c['my_object'] = primary_object
@@ -240,11 +250,14 @@ def status_detail(request, host_name=None, service_description=None):
     # Friendly statusname (i.e. turn 2 into "critical")
     primary_object['status'] = state[primary_object['state']]
 
-    # Plugin longoutput comes to us with special characters escaped. lets undo that:
-    primary_object['long_plugin_output'] = primary_object['long_plugin_output'].replace('\\n', '\n')
+    # Plugin longoutput comes to us with special characters escaped. lets undo
+    # that:
+    primary_object['long_plugin_output'] = primary_object[
+        'long_plugin_output'].replace('\\n', '\n')
 
     # Service list on the sidebar should be sorted
-    my_host['services_with_info'] = sorted(my_host.get('services_with_info', []))
+    my_host['services_with_info'] = sorted(
+        my_host.get('services_with_info', []))
     c['host_name'] = host_name
 
     perfdata = primary_object['perf_data']
@@ -319,7 +332,8 @@ def _get_network_parents(host_name):
     elif isinstance(host_name, dict):
         host = host_name
     else:
-        raise KeyError('host_name must be str or dict (got %s)' % type(host_name))
+        raise KeyError(
+            'host_name must be str or dict (got %s)' % type(host_name))
     parent_names = host['parents']
     while len(parent_names) > 0:
         parents = map(lambda x: livestatus.get_host(x), parent_names)
@@ -341,10 +355,13 @@ def status_hostgroup(request, hostgroup_name):
     c['errors'] = []
     c['hostgroup_name'] = hostgroup_name
     c['object_type'] = 'hostgroup'
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
 
-    my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
-    c['my_hostgroup'] = livestatus.get_hostgroups('Filter: name = %s' % hostgroup_name)[0]
+    my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(
+        hostgroup_name)
+    c['my_hostgroup'] = livestatus.get_hostgroups(
+        'Filter: name = %s' % hostgroup_name)[0]
 
     _add_statistics_to_hostgroups([c['my_hostgroup']])
     # Get information about child hostgroups
@@ -352,22 +369,26 @@ def status_hostgroup(request, hostgroup_name):
     subgroups = subgroups.split(',')
     if subgroups == ['']:
         subgroups = []
-    c['hostgroups'] = map(lambda x: livestatus.get_hostgroups('Filter: name = %s' % x)[0], subgroups)
+    c['hostgroups'] = map(
+        lambda x: livestatus.get_hostgroups('Filter: name = %s' % x)[0], subgroups)
     _add_statistics_to_hostgroups(c['hostgroups'])
 
     # Get hosts that belong in this hostgroup
-    c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
+    c['hosts'] = livestatus.query(
+        'GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
     _add_statistics_to_hosts(c['hosts'])
     # Sort by service status
     c['hosts'].sort(cmp=lambda a, b: cmp(a['percent_ok'], b['percent_ok']))
 
     # Get services that belong in this hostgroup
-    c['services'] = livestatus.query('GET services', 'Filter: host_groups >= %s' % hostgroup_name)
+    c['services'] = livestatus.query(
+        'GET services', 'Filter: host_groups >= %s' % hostgroup_name)
     c['services'] = pynag.Utils.grep(c['services'], **request.GET)
     # Get recent log entries for this hostgroup
     l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     all_history = l.get_state_history()
-    c['log'] = filter(lambda x: x['host_name'] in c['my_hostgroup']['members'], all_history)
+    c['log'] = filter(lambda x: x['host_name']
+                      in c['my_hostgroup']['members'], all_history)
 
     # Create some state history progress bar from our logs:
     if len(c['log']) > 0:
@@ -399,7 +420,8 @@ def _add_statistics_to_hostgroups(hostgroups):
     # Lets establish a good list of all hostgroups and parentgroups
     all_hostgroups = pynag.Model.Hostgroup.objects.all
     all_subgroups = set()  # all hostgroups that belong in some other hostgroup
-    hostgroup_parentgroups = defaultdict(set)  # "subgroup":['master1','master2']
+    # "subgroup":['master1','master2']
+    hostgroup_parentgroups = defaultdict(set)
     hostgroup_childgroups = pynag.Model.ObjectRelations.hostgroup_hostgroups
 
     for hostgroup, subgroups in hostgroup_childgroups.items():
@@ -460,7 +482,8 @@ def status_hostgroups(request):
     # Lets establish a good list of all hostgroups and parentgroups
     all_hostgroups = pynag.Model.Hostgroup.objects.all
     all_subgroups = set()  # all hostgroups that belong in some other hostgroup
-    hostgroup_parentgroups = defaultdict(set)  # "subgroup":['master1','master2']
+    # "subgroup":['master1','master2']
+    hostgroup_parentgroups = defaultdict(set)
     hostgroup_childgroups = pynag.Model.ObjectRelations.hostgroup_hostgroups
 
     for hostgroup, subgroups in hostgroup_childgroups.items():
@@ -481,7 +504,8 @@ def status_hostgroups(request):
         c['hostgroups'] = my_hostgroups
 
     else:
-        my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
+        my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(
+            hostgroup_name)
         subgroups = my_hostgroup.hostgroup_members or ''
         subgroups = subgroups.split(',')
         # Strip out any group that is not a subgroup of hostgroup_name
@@ -492,7 +516,8 @@ def status_hostgroups(request):
         c['hostgroups'] = right_hostgroups
 
         # If a hostgroup was specified lets also get all the hosts for it
-        c['hosts'] = livestatus.query('GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
+        c['hosts'] = livestatus.query(
+            'GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
     for host in c['hosts']:
         ok = host.get('num_services_ok')
         warn = host.get('num_services_warn')
@@ -627,7 +652,8 @@ def status_paneview(request):
         pane3_object = pynag.Model.ObjectDefinition.objects.get_by_id(pane3)
         pane3_objects = get_related_objects(pane3)
 
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     hosts = livestatus.get_hosts()
     services = livestatus.get_services()
 
@@ -712,7 +738,8 @@ def test_livestatus(request):
     c['messages'] = []
     c['table'] = table = request.GET.get('table')
 
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     if table is not None:
         columns = livestatus.query('GET columns', 'Filter: table = %s' % table)
         c['columns'] = columns
@@ -745,10 +772,13 @@ def _status_combined(request, optimized=False):
     If optimized is True, fewer attributes are loaded it, makes it run faster but with less data
     """
     c = {}
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     if optimized == True:
-        hosts = livestatus.get_hosts('Columns: name state acknowledged downtimes childs parents')
-        services = livestatus.get_services('Columns: host_name description state acknowledged downtimes host_state')
+        hosts = livestatus.get_hosts(
+            'Columns: name state acknowledged downtimes childs parents')
+        services = livestatus.get_services(
+            'Columns: host_name description state acknowledged downtimes host_state')
     else:
         hosts = livestatus.get_hosts()
         services = livestatus.get_services()
@@ -794,7 +824,8 @@ def _status_combined(request, optimized=False):
     if service_totals == 0:
         c['service_status'] = 0
     else:
-        c['service_status'] = map(lambda x: 100 * x / service_totals, service_status)
+        c['service_status'] = map(
+            lambda x: 100 * x / service_totals, service_status)
     if host_totals == 0:
         c['host_status'] = 0
     else:
@@ -822,7 +853,8 @@ def dashboard(request):
     hostnames_that_are_down = map(lambda x: x.get('name'), all_down_hosts)
     # Discover network outages,
 
-    # Remove acknowledgements and also all hosts where all parent hosts are down
+    # Remove acknowledgements and also all hosts where all parent hosts are
+    # down
     c['host_problems'] = []  # Unhandled host problems
     c['network_problems'] = []  # Network outages
     for i in all_down_hosts:
@@ -856,10 +888,12 @@ def dashboard(request):
                                                scheduled_downtime_depth="0",
                                                host_state="0",
                                                **request.GET
-    )
+                                               )
     # Sort problems by state and last_check as secondary sort field
-    c['service_problems'].sort(reverse=True, cmp=lambda a, b: cmp(a['last_check'], b['last_check']))
-    c['service_problems'].sort(reverse=True, cmp=lambda a, b: cmp(a['state'], b['state']))
+    c['service_problems'].sort(
+        reverse=True, cmp=lambda a, b: cmp(a['last_check'], b['last_check']))
+    c['service_problems'].sort(
+        reverse=True, cmp=lambda a, b: cmp(a['state'], b['state']))
     return render_to_response('status_dashboard.html', c, context_instance=RequestContext(request))
 
 
@@ -869,7 +903,8 @@ def state_history(request):
     c['messages'] = []
     c['errors'] = []
 
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     start_time = request.GET.get('start_time', None)
     end_time = request.GET.get('end_time', None)
     if end_time is None:
@@ -908,7 +943,8 @@ def state_history(request):
                 services[short_name] = s
 
             services[short_name]['log'].append(i)
-            services[short_name]['worst_logfile_state'] = max(services[short_name]['worst_logfile_state'], i['state'])
+            services[short_name]['worst_logfile_state'] = max(
+                services[short_name]['worst_logfile_state'], i['state'])
     for service in services.values():
         last_item = None
         service['sla'] = float(0)
@@ -921,8 +957,10 @@ def state_history(request):
             if last_item is not None:
                 last_item['end_time'] = i['time']
                 #last_item['time'] = max(last_item['time'], start_time)
-                last_item['duration'] = duration = last_item['end_time'] - last_item['time']
-                last_item['duration_percent'] = 100 * float(duration) / total_duration
+                last_item['duration'] = duration = last_item[
+                    'end_time'] - last_item['time']
+                last_item['duration_percent'] = 100 * float(
+                    duration) / total_duration
                 service['duration'] += last_item['duration_percent']
                 if last_item['state'] == 0:
                     service['sla'] += last_item['duration_percent']
@@ -931,7 +969,8 @@ def state_history(request):
             last_item = i
         if not last_item is None:
             last_item['end_time'] = end_time
-            last_item['duration'] = duration = last_item['end_time'] - last_item['time']
+            last_item['duration'] = duration = last_item[
+                'end_time'] - last_item['time']
             last_item['duration_percent'] = 100 * duration / total_duration
             service['duration'] += last_item['duration_percent']
             if last_item['state'] == 0:
@@ -980,8 +1019,9 @@ def _status_log(request):
     for k, v in request.GET.items():
         if k == 'search':
             k = 'search'
-        elif k in ('start_time', 'end_time', 'start_time_picker', 'end_time_picker', 'limit',
-                   'start_hours', 'end_hours'):
+        elif k in (
+            'start_time', 'end_time', 'start_time_picker', 'end_time_picker', 'limit',
+            'start_hours', 'end_hours'):
             continue
         elif v is None or len(v) == 0:
             continue
@@ -989,7 +1029,8 @@ def _status_log(request):
         v = str(v)
         kwargs[k] = v
     l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    c['log'] = l.get_log_entries(start_time=start_time, end_time=end_time, **kwargs)[-limit:]
+    c['log'] = l.get_log_entries(
+        start_time=start_time, end_time=end_time, **kwargs)[-limit:]
     c['log'].reverse()
     c['logs'] = {'all': []}
     for line in c['log']:
@@ -1010,15 +1051,14 @@ def status_log(request):
     return render_to_response('status_log.html', c, context_instance=RequestContext(request))
 
 
-
-
 @error_handler
 def comment_list(request):
     """ Display a list of all comments """
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     comments = l.query('GET comments')
     downtimes = l.query('GET downtimes')
     args = request.GET.copy()
@@ -1034,7 +1074,8 @@ def downtime_list(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     comments = l.query('GET comments')
     downtimes = l.query('GET downtimes')
     args = request.GET.copy()
@@ -1081,9 +1122,11 @@ def perfdata(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     arguments = pynag.Utils.grep_to_livestatus(**request.GET)
-    perfdata = l.query('GET services', 'Columns: host_name description perf_data state host_state', *arguments)
+    perfdata = l.query(
+        'GET services', 'Columns: host_name description perf_data state host_state', *arguments)
     for i in perfdata:
         metrics = pynag.Utils.PerfData(i['perf_data']).metrics
         metrics = filter(lambda x: x.is_valid(), metrics)
@@ -1100,7 +1143,8 @@ def contact_list(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     c['contacts'] = l.query('GET contacts')
     c['contacts'] = pynag.Utils.grep(c['contacts'], **request.GET)
     c['contactgroups'] = l.query('GET contactgroups')
@@ -1115,7 +1159,8 @@ def contact_detail(request, contact_name):
     c['messages'] = []
     c['errors'] = []
     c['contact_name'] = contact_name
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
 
     # Fetch contact and basic information
     result = l.query("GET contacts", "Filter: name = %s" % contact_name)
@@ -1128,7 +1173,8 @@ def contact_detail(request, contact_name):
         c['contact'] = contact
 
     # Active comments
-    c['comments'] = l.query('GET comments', 'Filter: comment ~ %s' % contact_name,)
+    c['comments'] = l.query(
+        'GET comments', 'Filter: comment ~ %s' % contact_name,)
     for i in c['comments']:
         if i.get('type') == 1:
             i['state'] = i['host_state']
@@ -1136,13 +1182,16 @@ def contact_detail(request, contact_name):
             i['state'] = i['service_state']
 
     # Services this contact can see
-    c['services'] = l.query('GET services', "Filter: contacts >= %s" % contact_name)
+    c['services'] = l.query(
+        'GET services', "Filter: contacts >= %s" % contact_name)
 
     # Activity log
-    c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_log_entries(search=str(contact_name))
+    c['log'] = pynag.Parsers.LogFiles(
+        maincfg=adagios.settings.nagios_config).get_log_entries(search=str(contact_name))
 
     # Contact groups
-    c['groups'] = l.query('GET contactgroups', 'Filter: members >= %s' % contact_name)
+    c['groups'] = l.query(
+        'GET contactgroups', 'Filter: members >= %s' % contact_name)
 
     # Git audit logs
     nagiosdir = dirname(adagios.settings.nagios_config)
@@ -1159,21 +1208,26 @@ def contactgroup_detail(request, contactgroup_name):
     c['messages'] = []
     c['errors'] = []
     c['contactgroup_name'] = contactgroup_name
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
 
     # Fetch contact and basic information
-    result = l.query("GET contactgroups", "Filter: name = %s" % contactgroup_name)
+    result = l.query("GET contactgroups", "Filter: name = %s" %
+                     contactgroup_name)
     if result == []:
-        c['errors'].append("Contactgroup named '%s' was not found." % contactgroup_name)
+        c['errors'].append(
+            "Contactgroup named '%s' was not found." % contactgroup_name)
     else:
         contactgroup = result[0]
         c['contactgroup'] = contactgroup
 
     # Services this contact can see
-    c['services'] = l.query('GET services', "Filter: contact_groups >= %s" % contactgroup_name)
+    c['services'] = l.query(
+        'GET services', "Filter: contact_groups >= %s" % contactgroup_name)
 
     # Services this contact can see
-    c['hosts'] = l.query('GET hosts', "Filter: contact_groups >= %s" % contactgroup_name)
+    c['hosts'] = l.query(
+        'GET hosts', "Filter: contact_groups >= %s" % contactgroup_name)
 
     # Contact groups
     #c['contacts'] = l.query('GET contacts', 'Filter: contactgroup_ >= %s' % contact_name)
@@ -1188,14 +1242,16 @@ def perfdata2(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    columns = 'Columns: host_name description perf_data state host_state'    
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    columns = 'Columns: host_name description perf_data state host_state'
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
 
     # User can specify from querystring a filter of which services to fetch
     # we convert querystring into livestatus filters.
-    # User can also specify specific metrics to watch, so we extract from querystring as well
+    # User can also specify specific metrics to watch, so we extract from
+    # querystring as well
     querystring = request.GET.copy()
-    interesting_metrics = querystring.pop('metrics',[''])[0]
+    interesting_metrics = querystring.pop('metrics', [''])[0]
     arguments = pynag.Utils.grep_to_livestatus(**querystring)
     services = l.query('GET services', columns, *arguments)
     # If no metrics= was specified on querystring, we take the string
@@ -1210,7 +1266,8 @@ def perfdata2(request):
     for service in services:
         perfdata = pynag.Utils.PerfData(service['perf_data'])
         null_metric = pynag.Utils.PerfDataMetric()
-        metrics = map(lambda x: perfdata.get_perfdatametric(x) or null_metric, interesting_metrics)
+        metrics = map(lambda x: perfdata.get_perfdatametric(
+            x) or null_metric, interesting_metrics)
         #metrics = filter(lambda x: x.is_valid(), metrics)
         service['metrics'] = metrics
 

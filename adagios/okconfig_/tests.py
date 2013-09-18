@@ -8,11 +8,14 @@ import adagios.settings
 
 okconfig.cfg_file = adagios.settings.nagios_config
 
+
 class TestOkconfig(unittest.TestCase):
+
     def testOkconfigVerifies(self):
         result = okconfig.verify()
-        for k,v in result.items():
+        for k, v in result.items():
             self.assertTrue(v, msg="Failed on test: %s" % k)
+
     def testIndexPage(self):
         c = Client()
         response = c.get('/okconfig/verify_okconfig')

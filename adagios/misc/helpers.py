@@ -7,7 +7,6 @@ Convenient stateless functions for pynag. This module is used by the /rest/ inte
 '''
 
 
-
 import platform
 import re
 from pynag import Model
@@ -25,9 +24,11 @@ maincfg_values = Model.config.maincfg_values
 cfg_file = Model.config.cfg_file
 version = __version__
 
+
 def _get_dict(x):
     x.__delattr__('objects')
     return x._original_attributes
+
 
 def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwargs):
     ''' Get any type of object definition in a dict-compatible fashion
@@ -44,10 +45,12 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
         Returns:
             List of ObjectDefinition
     '''
-    tmp = Model.ObjectDefinition.objects.filter(object_type=object_type, **kwargs)
+    tmp = Model.ObjectDefinition.objects.filter(
+        object_type=object_type, **kwargs)
     with_fields = with_fields.split(',')
-    #return map(lambda x: _get_dict(x), tmp)
-    return map( lambda x: object_to_dict(x, attributes=with_fields), tmp)
+    # return map(lambda x: _get_dict(x), tmp)
+    return map(lambda x: object_to_dict(x, attributes=with_fields), tmp)
+
 
 def servicestatus(with_fields="host_name,service_description,current_state,plugin_output"):
     """ Returns a list of all active services and their current status """
@@ -57,28 +60,31 @@ def servicestatus(with_fields="host_name,service_description,current_state,plugi
     result_list = []
     for serv in s.data['servicestatus']:
         current_object = {}
-        for k,v in serv.items():
+        for k, v in serv.items():
             if fields == ['*'] or k in fields:
                 current_object[k] = v
-        result_list.append( current_object )
+        result_list.append(current_object)
     return result_list
+
 
 def object_to_dict(object, attributes="id,shortname,object_type"):
     """ Takes in a specific object definition, returns a hash maps with "attributes" as keys"""
     result = {}
     if not attributes or attributes == '*':
         return object._original_attributes
-    elif isinstance(attributes,list):
+    elif isinstance(attributes, list):
         pass
     else:
-        attributes=attributes.split(',')
+        attributes = attributes.split(',')
     for k in attributes:
         result[k] = object[k]
     return result
-def get_object(id,with_fields="id,shortname,object_type"):
+
+
+def get_object(id, with_fields="id,shortname,object_type"):
     '''Returns one specific ObjectDefinition'''
     o = Model.ObjectDefinition.objects.get_by_id(id)
-    return object_to_dict(o,attributes=with_fields)
+    return object_to_dict(o, attributes=with_fields)
 
 
 def delete_object(object_id, recursive=False, cleanup_related_items=True):
@@ -106,11 +112,13 @@ def get_host_names(invalidate_cache=False):
     hostnames = []
     for i in all_hosts:
         if not i['host_name'] is None:
-            hostnames.append( i['host_name'])
-    return sorted( hostnames )
+            hostnames.append(i['host_name'])
+    return sorted(hostnames)
+
+
 def change_attribute(id, attribute_name, new_value):
     '''Changes object with the designated ID to file
-    
+
     Arguments:
         id                -- object_id of the definition to be saved
         attribute_name    -- name of the attribute (i.e. "host_name")
@@ -119,6 +127,7 @@ def change_attribute(id, attribute_name, new_value):
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
+
 
 def change_service_attribute(identifier, new_value):
     """
@@ -135,15 +144,18 @@ def change_service_attribute(identifier, new_value):
     """
     tmp = identifier.split('::')
     if len(tmp) != 3:
-        raise ValueError("identifier must be in the form of host_name::service_description::attribute_name (got %s)" % identifier)
-    host_name,service_description,attribute_name = tmp
+        raise ValueError(
+            "identifier must be in the form of host_name::service_description::attribute_name (got %s)" % identifier)
+    host_name, service_description, attribute_name = tmp
     try:
-        service = Model.Service.objects.get_by_shortname("%s/%s" % (host_name,service_description))
+        service = Model.Service.objects.get_by_shortname(
+            "%s/%s" % (host_name, service_description))
     except KeyError, e:
         raise KeyError("Could not find service %s" % e)
     service[attribute_name] = new_value
     service.save()
     return True
+
 
 def copy_object(object_id, recursive=False, **kwargs):
     """ Copy one objectdefinition.
@@ -162,9 +174,11 @@ def copy_object(object_id, recursive=False, **kwargs):
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     new_object = o.copy(recursive=recursive, **kwargs)
     return "Object successfully copied to %s" % new_object.get_filename()
+
+
 def run_check_command(object_id):
     ''' Runs the check_command for one specified object
-    
+
     Arguments:
         object_id         -- object_id of the definition (i.e. host or service)
     Returns:
@@ -176,37 +190,47 @@ def run_check_command(object_id):
     return o.run_check_command()
 
 
-def set_maincfg_attribute(attribute,new_value, old_value='None', append=False):
+def set_maincfg_attribute(attribute, new_value, old_value='None', append=False):
     """ Sets specific configuration values of nagios.cfg
 
-	Required Arguments:
-		attribute   -- Attribute to change (i.e. process_performance_data)
-		new_value   -- New value for the attribute (i.e. "1")
+        Required Arguments:
+                attribute   -- Attribute to change (i.e. process_performance_data)
+                new_value   -- New value for the attribute (i.e. "1")
 
-	Optional Arguments:
-		old_value   -- Specify this to change specific value
-		filename    -- Configuration file to modify (i.e. /etc/nagios/nagios.cfg)
-		append      -- Set to 'True' to append a new configuration attribute
-	Returns:
-		True	-- If any changes were made
-		False	-- If no changes were made
-	"""
+        Optional Arguments:
+                old_value   -- Specify this to change specific value
+                filename    -- Configuration file to modify (i.e. /etc/nagios/nagios.cfg)
+                append      -- Set to 'True' to append a new configuration attribute
+        Returns:
+                True	-- If any changes were made
+                False	-- If no changes were made
+        """
     filename = Model.config.cfg_file
-    if old_value.lower() == 'none': old_value=None
-    if new_value.lower() == 'none': new_value=None
-    if filename.lower() == 'none': filename=None
-    if append.lower() == 'false': append=False
-    elif append.lower() == 'true': append=True
-    elif append.lower() == 'none': append=None
-    return Model._edit_static_file(attribute=attribute,new_value=new_value,old_value=old_value,filename=filename, append=append)
+    if old_value.lower() == 'none':
+        old_value = None
+    if new_value.lower() == 'none':
+        new_value = None
+    if filename.lower() == 'none':
+        filename = None
+    if append.lower() == 'false':
+        append = False
+    elif append.lower() == 'true':
+        append = True
+    elif append.lower() == 'none':
+        append = None
+    return Model._edit_static_file(attribute=attribute, new_value=new_value, old_value=old_value, filename=filename, append=append)
+
 
 def reload_nagios():
     """ Reloads nagios. Returns "Success" on Success """
-    daemon = Control.daemon(nagios_cfg=Model.config.cfg_file, nagios_init='/etc/init.d/nagios3', nagios_bin='/usr/sbin/nagios3')
+    daemon = Control.daemon(nagios_cfg=Model.config.cfg_file,
+                            nagios_init='/etc/init.d/nagios3', nagios_bin='/usr/sbin/nagios3')
     if daemon.reload() == 0:
         return "Success"
     else:
         return "Failed to reload nagios (do you have enough permission?)"
+
+
 def needs_reload():
     """ Returns True if Nagios server needs to reload configuration """
     return Model.config.needs_reload()
@@ -215,9 +239,10 @@ def needs_reload():
 def dnslookup(host_name):
     try:
         (name, aliaslist, addresslist) = gethostbyname_ex(host_name)
-        return { 'host': name, 'aliaslist': aliaslist, 'addresslist': addresslist }
+        return {'host': name, 'aliaslist': aliaslist, 'addresslist': addresslist}
     except Exception, e:
-        return { 'error': str(e) }
+        return {'error': str(e)}
+
 
 def contactgroup_hierarchy(**kwargs):
     result = []
@@ -226,12 +251,13 @@ def contactgroup_hierarchy(**kwargs):
         for i in groups:
             display = {}
             display['v'] = i.contactgroup_name
-            display['f'] = '%s<div style="color:green; font-style:italic">%s contacts</div>' % (i.contactgroup_name, 0)
-            arr = [ display, i.contactgroup_members or '', str(i)]
-            result.append( arr )
+            display['f'] = '%s<div style="color:green; font-style:italic">%s contacts</div>' % (
+                i.contactgroup_name, 0)
+            arr = [display, i.contactgroup_members or '', str(i)]
+            result.append(arr)
         return result
-    except Exception,e :
-        return { 'error': str(e) }
+    except Exception, e:
+        return {'error': str(e)}
 
 
 def add_object(object_type, filename=None, **kwargs):
@@ -251,12 +277,13 @@ def add_object(object_type, filename=None, **kwargs):
     my_object = Model.string_to_class.get(object_type)()
     if filename is not None:
         my_object.set_filename(filename)
-    for k,v in kwargs.items():
+    for k, v in kwargs.items():
         my_object[k] = v
     my_object.save()
-    return {"filename":my_object.get_filename(), "raw_definition":str(my_object)}
+    return {"filename": my_object.get_filename(), "raw_definition": str(my_object)}
 
-def check_command(host_name, service_description, name=None,check_command=None,**kwargs):
+
+def check_command(host_name, service_description, name=None, check_command=None, **kwargs):
     """ Returns all macros of a given service/host
         Arguments:
             host_name           -- Name of host
@@ -273,14 +300,14 @@ def check_command(host_name, service_description, name=None,check_command=None,*
               '$SERVICE_MACROx$': ...,
             }
     """
-    if host_name in ('None',None,''):
+    if host_name in ('None', None, ''):
         my_object = Model.Service.objects.get_by_name(name)
-    elif service_description in ('None',None,'',u''):
+    elif service_description in ('None', None, '', u''):
         my_object = Model.Host.objects.get_by_shortname(host_name)
     else:
         short_name = "%s/%s" % (host_name, service_description)
         my_object = Model.Service.objects.get_by_shortname(short_name)
-    if check_command in (None,'','None'):
+    if check_command in (None, '', 'None'):
         command = my_object.get_effective_check_command()
     else:
         command = Model.Command.objects.get_by_shortname(check_command)
@@ -293,7 +320,7 @@ def check_command(host_name, service_description, name=None,check_command=None,*
 
     # Lets get all macros that this check command defines:
     regex = re.compile("(\$\w+\$)")
-    macronames = regex.findall( command.command_line )
+    macronames = regex.findall(command.command_line)
     for i in macronames:
         macros[i] = my_object.get_macro(i) or ''
 
