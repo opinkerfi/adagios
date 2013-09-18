@@ -31,11 +31,18 @@ import okconfig.network_scan
 from pynag import Model
 
 
-def addcomplete(request, c={}):
+def addcomplete(request, c=None):
+    """ Landing page when a new okconfig group has been added
+    """
+    if not c:
+        c = {}
     return render_to_response('addcomplete.html', c, context_instance=RequestContext(request))
 
 
 def addgroup(request):
+    """ Add a new okconfig group
+
+    """
     c = {}
     c['messages'] = []
     c['errors'] = []
@@ -66,6 +73,8 @@ def addgroup(request):
 
 
 def addhost(request):
+    """ Add a new host from an okconfig template
+    """
     c = {}
     c['messages'] = []
     c['errors'] = []
@@ -98,6 +107,9 @@ def addhost(request):
 
 
 def addtemplate(request, host_name=None):
+    """ Add a new okconfig template to a host
+
+    """
     c = {}
     c['messages'] = []
     c['errors'] = []
@@ -124,6 +136,8 @@ def addtemplate(request, host_name=None):
 
 
 def addservice(request):
+    """ Create a new service derived from an okconfig template
+    """
     c = {}
     c.update(csrf(request))
     c['form'] = forms.AddServiceToHostForm()
@@ -277,6 +291,8 @@ def choose_host(request):
 
 
 def scan_network(request):
+    """ Scan a single network and show hosts that are alive
+    """
     c = {}
     c['errors'] = []
     if not okconfig.is_valid():
