@@ -60,10 +60,15 @@ def on_page_load(request):
 def get_current_time(request):
     """ Make current timestamp available to templates
     """
+    result = {}
     try:
-        return {'current_timestamp':int(time.time())}
+
+        result['current_timestamp'] = int(time.time())
+        result['current_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
+        result['current_time'] = time.strftime("%b %d %H:%M", time.gmtime(time.time()))
     except Exception:
-        return {}
+        return result
+    return result
 def activate_plugins(request):
     """ Activates any plugins specified in settings.plugins """
     for k,v in settings.plugins.items():

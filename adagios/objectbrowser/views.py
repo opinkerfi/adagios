@@ -610,9 +610,15 @@ def bulk_edit(request):
     c['errors'] = []
     c['objects'] = objects = []
 
+    # Newer, alternative way to input items from the post data is in the form of
+    # object_type=shortname
+    # i.e. timeperiod=24x7, timeperiod=workhours
+    for i in _querydict_to_objects(request):
+        objects.append(i)
+
     if request.method == 'GET':
-        # We only call get when we are testing stuff
-        c['objects'] = Model.Timeperiod.objects.all
+        if len(objects) == 1:
+            return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': objects[0].get_id()}), )
         c['form'] = BulkEditForm(objects=objects)
     if request.method == "POST":
         c['form'] = BulkEditForm(objects=objects, data=request.POST)
@@ -639,9 +645,15 @@ def bulk_delete(request):
     c['objects'] = objects = []
     c['form'] = BulkDeleteForm(objects=objects)
 
-    if request.method == 'GET':
-        # We only call get when we are testing stuff
-        c['objects'] = Model.Timeperiod.objects.all
+    # Newer, alternative way to input items from the post data is in the form of
+    # object_type=shortname
+    # i.e. timeperiod=24x7, timeperiod=workhours
+    for i in _querystring_to_objects(request.GET or request.POST):
+        obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
+        objects.append(obj)
+    if request.method == "GET" and len(objects) == 1:
+        return HttpResponseRedirect(reverse('delete_object', kwargs={'object_id': objects[0].get_id()}), )
+
     if request.method == "POST":
         # Post items starting with "hidden_" will be displayed on the resulting web page
         # Post items starting with "change_" will be modified
@@ -650,6 +662,7 @@ def bulk_delete(request):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
                 objects.append(my_obj)
+
         c['form'] = BulkDeleteForm(objects=objects, data=request.POST)
         if c['form'].is_valid():
             try:
@@ -673,10 +686,16 @@ def bulk_copy(request):
     c['objects'] = objects = []
     c['form'] = BulkCopyForm(objects=objects)
 
-    if request.method == 'GET':
-        # We only call get when we are testing stuff
-        c['objects'] = Model.Timeperiod.objects.all
-    if request.method == "POST":
+    # Newer, alternative way to input items from the post data is in the form of
+    # object_type=shortname
+    # i.e. timeperiod=24x7, timeperiod=workhours
+    for i in _querystring_to_objects(request.GET or request.POST):
+        obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
+        objects.append(obj)
+
+    if request.method == "GET" and len(objects) == 1:
+        return HttpResponseRedirect(reverse('copy_object', kwargs={'object_id': objects[0].get_id()}), )
+    elif request.method == "POST":
         # Post items starting with "hidden_" will be displayed on the resulting web page
         # Post items starting with "change_" will be modified
         for i in request.POST.keys():
@@ -684,6 +703,7 @@ def bulk_copy(request):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
                 objects.append(my_obj)
+
         c['form'] = BulkCopyForm(objects=objects, data=request.POST)
         if c['form'].is_valid():
             try:
@@ -733,6 +753,7 @@ def copy_object(request, object_id):
     c['messages'] = []
     c['errors'] = []
     c['object'] = my_obj = Model.ObjectDefinition.objects.get_by_id(object_id)
+
     if request.method == 'GET':
         c['form'] = CopyObjectForm(pynag_object=my_obj, initial=request.GET)
     elif request.method == 'POST':
@@ -796,6 +817,45 @@ def _querystring_to_objects(dictionary):
     return result
 
 
+def _querydict_to_objects(request, raise_on_not_found=False):
+    """ Finds all object specifications in a querydict and returns a list of pynag objects
+
+    Typically this is used to name specific objects from the querystring.
+
+    Valid input in the request is either id=object_id or object_type=short_name
+
+    Arguments:
+        request  - A django request object. Usually the data is in a querystring or POST data
+                 - Example: host=localhost,service=localhost/Ping
+        raise_on_not_found - Raise ValueError if some object is not found
+    Returns:
+        List of pynag objects
+    """
+    result = []
+    mydict = request.GET or request.POST
+
+    # Find everything in the querystring in the form of id=[object_ids]
+    for object_id in mydict.getlist('id'):
+        try:
+            my_object = ObjectDefinition.objects.get_by_id(object_id)
+            result.append(my_object)
+        except Exception, e:
+            if raise_on_not_found is True:
+                raise e
+
+    # Find everything in querystring in the form of object_type=[shortnames]
+    for object_type,Class in string_to_class.items():
+        objects = mydict.getlist(object_type)
+        for shortname in objects:
+            try:
+                my_object = Class.objects.get_by_shortname(shortname)
+                result.append(my_object)
+            except Exception, e:
+                if raise_on_not_found is True:
+                    raise e
+    return result
+
+
 def add_to_group(request, group_type=None, group_name=''):
     """ Add one or more objects into a group
     """
@@ -811,8 +871,7 @@ def add_to_group(request, group_type=None, group_name=''):
         objects = _querystring_to_objects(request.GET)
         for i in objects:
             try:
-                obj = pynag.Model.string_to_class[
-                    i.object_type].objects.get_by_shortname(i.description)
+                obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
                 if group_type == 'contactgroup':
                     obj.add_to_contactgroup(group_name)
                 elif group_type == 'hostgroup':
