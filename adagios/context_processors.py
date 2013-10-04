@@ -11,6 +11,7 @@ import adagios
 import adagios.status.utils
 from pynag import Model
 import time
+import datetime
 
 
 def on_page_load(request):
@@ -62,10 +63,9 @@ def get_current_time(request):
     """
     result = {}
     try:
-
+        now = datetime.datetime.now()
+        result['current_time'] = now.strftime("%b %d %H:%M")
         result['current_timestamp'] = int(time.time())
-        result['current_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
-        result['current_time'] = time.strftime("%b %d %H:%M", time.gmtime(time.time()))
     except Exception:
         return result
     return result
