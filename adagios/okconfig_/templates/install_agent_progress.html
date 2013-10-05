@@ -1,0 +1,77 @@
+{% extends "base_okconfig.html" %}
+{% block title %}Install Agent - Progress{% endblock %}
+{% block smallheader %}Install{% endblock %}
+{% block largeheader %}Agent{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.install_agent %}">Install Agent</a>{% endblock %}
+{% block footer %}
+<script>
+
+    function updateTask(task_id) {
+        var agent_install_progress = $("div#agent_install_progress");
+        $.ajax({
+            url: window.location.pathname + "?task_id=" + task_id,
+            beforeSend: function(jqXHR) {
+                jqXHR.task_id = task_id;
+            }
+        }).done(function(data, status, jqXHR) {
+            var task_id = jqXHR.task_id;
+            console.log("TASK: " + task_id);
+            console.log(data);
+            if (data['state'] === "RUNNING") {
+                window.setTimeout(function() {
+                    updateTask(task_id);
+                }, 1000);
+            }
+            var current_state = data['state'];
+
+            var adagios_task_div = $("div#" + task_id + ".adagios_task");
+            var where = 0;
+            if (current_state !== "RUNNING") {
+                adagios_task_div.find('.progress').removeClass('active');
+            }
+            for (var subtask in data['result'][1]) {
+                console.log(data['result'][1][subtask].name);
+                var task_status_string = data['result'][1][subtask].status;
+                if (task_status_string !== "OK") {
+                    if (task_status_string.toLowerCase().indexOf("error") == 0) {
+                        adagios_task_div.find(".progress").addClass('progress-danger');
+                        adagios_task_div.find(".task_detail").text(task_status_string);
+                    }
+                    adagios_task_div.find(".task_status").text(data['result'][1][subtask].name);
+                    var percent = subtask / data['result'][1].length * 100;
+                    adagios_task_div.find(".bar").css( 'width', percent + "%" );
+                    return true;
+                }
+            }
+            adagios_task_div.find(".task_status").text("Done");
+            adagios_task_div.find(".bar").css( 'width', "100%");
+            adagios_task_div.find(".progress").addClass('progress-success');
+
+            return true;
+        });
+    }
+    $(document).ready(function() {
+        $("div.adagios_task").each(function() {
+            console.log("adagios task: " + $(this).attr('id'));
+            updateTask($(this).attr('id'));
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+    <div id="agent_install_progress" class="well">
+    {% for task in tasks %}
+        <div class="row-fluid adagios_task" id="{{ task.task_id }}">
+            <div class="span2 task_host_name">{{ task.host_name }}</div>
+            <div class="span2 task_status"></div>
+            <div class="span4">
+                <div class="progress progress-striped active">
+                    <div class="bar" style="width: 1%;"></div>
+                </div>
+            </div>
+            <div class="span4 task_detail"></div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

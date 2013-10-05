@@ -1,9 +1,11 @@
+import re
+import socket
+
 from django import forms
+from django.core.exceptions import ValidationError
+
 import okconfig
 from adagios.misc import helpers
-import re
-from django.core.exceptions import ValidationError
-import socket
 from pynag import Model
 from adagios.forms import AdagiosForm
 
@@ -144,15 +146,19 @@ class AddTemplateForm(AdagiosForm):
 class InstallAgentForm(AdagiosForm):
     remote_host = forms.CharField(help_text="Host or ip address")
     install_method = forms.ChoiceField(
-        initial='ssh', help_text="Make sure firewalls are not blocking ports 22(for ssh) or 445(for winexe)",
-        choices=[('auto detect', 'auto detect'), ('ssh', 'ssh'), ('winexe', 'winexe')])
-    username = forms.CharField(
-        initial='root', help_text="Log into remote machine with as this user")
+        initial='ssh',
+        help_text="Make sure firewalls are not blocking ports 22(for ssh) or 445(for winexe)",
+        choices=[ ('auto detect','auto detect'), ('ssh','ssh'), ('winexe','winexe') ] )
     windows_domain = forms.CharField(
-        required=False, help_text="If remote machine is running a windows domain")
+        required=False,
+        help_text="If remote machine is running a windows domain")
+    username = forms.CharField(
+        initial='root',
+        help_text="Log into remote machine with as this user")
     password = forms.CharField(
-        required=False, widget=forms.PasswordInput, help_text="Leave empty if using kerberos or ssh keys")
-
+        required=False,
+        widget=forms.PasswordInput,
+        help_text="Leave empty if using kerberos or ssh keys")
 
 class ChooseHostForm(AdagiosForm):
     host_name = forms.ChoiceField(help_text="Select which host to edit")

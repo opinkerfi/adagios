@@ -15,9 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.shortcuts import render_to_response, redirect
-from django.core import serializers
-from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
@@ -27,7 +26,6 @@ from django.core.urlresolvers import reverse
 from adagios.okconfig_ import forms
 
 import okconfig
-import okconfig.network_scan
 from pynag import Model
 
 
@@ -183,7 +181,6 @@ def verify_okconfig(request):
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
 
-
 def install_agent(request):
     """ Installs an okagent on a remote host """
     c = {}
@@ -231,6 +228,48 @@ def install_agent(request):
 
     return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
 
+def install_agentv2(request):
+    """ Installs an okagent on a remote host """
+    import adagios.tasks
+
+    c = {}
+    c['errors'] = []
+    c['messages'] = []
+    c['form'] = forms.InstallAgentForm(initial=request.GET )
+    c['nsclient_installfiles'] = okconfig.config.nsclient_installfiles
+
+    if request.GET.has_key('task_id'):
+        celery = adagios.tasks.initialize()
+        task = celery.AsyncResult(request.GET.get('task_id'))
+        return HttpResponse(simplejson.dumps({"state": task.state, "result": task.result }),
+                            mimetype='application/json')
+    elif request.method == 'POST':
+        c['form'] = f = forms.InstallAgentForm(request.POST)
+        if f.is_valid():
+            f.clean()
+            host = f.cleaned_data['remote_host']
+            user = f.cleaned_data['username']
+            passw = f.cleaned_data['password']
+            method = f.cleaned_data['install_method']
+            domain = f.cleaned_data['windows_domain']
+
+            if not domain:
+                # Local auth
+                domain = '.'
+            c['tasks'] = []
+            for h in host.split():
+                task = adagios.tasks.okconfig_installNSClient.apply_async(args=[h, domain, user, passw])
+                c['tasks'].append({
+                    'host_name': h,
+                    'task_id': task,
+                })
+            #c['tasks'] = [{ 'host_name': host, 'task_id': task.task_id }]
+
+            return render_to_response('install_agent_progress.html', c, context_instance=RequestContext(request))
+        else:
+            c['errors'].append('invalid input')
+
+    return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
 
 def edit(request, host_name):
     """ Edit all the Service "__MACROS" for a given host """
