@@ -47,11 +47,14 @@ state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
+
+
 def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file
     c['version'] = __version__
-    return render_to_response('frontpage.html', c, context_instance = RequestContext(request))
+    return render_to_response('frontpage.html', c, context_instance=RequestContext(request))
+
 
 def settings(request):
     c = {}
@@ -70,11 +73,12 @@ def settings(request):
             except IOError, exc:
                 e.append(exc)
     c['form'] = form
-    return render_to_response('settings.html', c, context_instance = RequestContext(request))
+    return render_to_response('settings.html', c, context_instance=RequestContext(request))
 
-def contact_us( request ):
+
+def contact_us(request):
     """ Bring a small form that has a "contact us" form on it """
-    c={}
+    c = {}
     c.update(csrf(request))
     if request.method == 'GET':
         form = forms.ContactUsForm(initial=request.GET)
@@ -84,14 +88,16 @@ def contact_us( request ):
             form.save()
             c['thank_you'] = True
             c['sender'] = form.cleaned_data['sender']
-        
+
     c['form'] = form
-    return render_to_response('contact_us.html', c,  context_instance = RequestContext(request))
+    return render_to_response('contact_us.html', c,  context_instance=RequestContext(request))
+
 
 def nagios(request):
     c = {}
     c['nagios_url'] = adagios.settings.nagios_url
-    return render_to_response('nagios.html', c, context_instance = RequestContext(request))
+    return render_to_response('nagios.html', c, context_instance=RequestContext(request))
+
 
 def map_view(request):
     c = {}
@@ -103,11 +109,12 @@ def map_view(request):
         c['map_zoom'] = adagios.settings.map_zoom
     except Exception:
         pass
-    return render_to_response('map.html', c, context_instance = RequestContext(request))
+    return render_to_response('map.html', c, context_instance=RequestContext(request))
+
 
 def gitlog(request):
     """ View that displays a nice log of previous git commits in dirname(config.cfg_file) """
-    c = { }
+    c = {}
     c.update(csrf(request))
     c['messages'] = m = []
     c['errors'] = []
@@ -119,11 +126,9 @@ def gitlog(request):
         author_email = contact.email or None
     except Exception:
         author_email = None
-    nagiosdir = dirname( pynag.Model.config.cfg_file or None)
-    git = pynag.Utils.GitRepo(directory=nagiosdir, author_name=author_name, author_email=author_email)
-
-
-
+    nagiosdir = dirname(pynag.Model.config.cfg_file or None)
+    git = pynag.Utils.GitRepo(
+        directory=nagiosdir, author_name=author_name, author_email=author_email)
 
     c['nagiosdir'] = nagiosdir
     c['commits'] = []
@@ -134,25 +139,25 @@ def gitlog(request):
                 git.init()
             elif 'git_commit' in request.POST:
                 filelist = []
-                commit_message = request.POST.get('git_commit_message', "bulk commit by adagios")
+                commit_message = request.POST.get(
+                    'git_commit_message', "bulk commit by adagios")
                 for i in request.POST:
                     if i.startswith('commit_'):
-                        filename=i[len('commit_'):]
+                        filename = i[len('commit_'):]
                         git.add(filename)
-                        filelist.append( filename )
+                        filelist.append(filename)
                 if len(filelist) == 0:
                     raise Exception("No files selected.")
                 git.commit(message=commit_message, filelist=filelist)
                 m.append("%s files successfully commited." % len(filelist))
         except Exception, e:
-            c['errors'].append( e )
+            c['errors'].append(e)
     # Check if nagiosdir has a git repo or not
     try:
         c['uncommited_files'] = git.get_uncommited_files()
     except pynag.Model.EventHandlers.EventHandlerError, e:
         if e.errorcode == 128:
             c['no_git_repo_found'] = True
-
 
     # Show git history
     try:
@@ -179,12 +184,13 @@ def gitlog(request):
                     tag = "filename"
                 else:
                     continue
-                difflines.append({'tag':tag,'line':i})
+                difflines.append({'tag': tag, 'line': i})
             c['difflines'] = difflines
             c['commit_id'] = commit
     except Exception, e:
-        c['errors'].append( e )
-    return render_to_response('gitlog.html', c, context_instance = RequestContext(request))
+        c['errors'].append(e)
+    return render_to_response('gitlog.html', c, context_instance=RequestContext(request))
+
 
 def nagios_service(request):
     """ View to restart / reload nagios service """
@@ -192,8 +198,8 @@ def nagios_service(request):
     c['errors'] = []
     c['messages'] = []
     nagios_bin = adagios.settings.nagios_binary
-    nagios_init=adagios.settings.nagios_init_script
-    nagios_cfg=adagios.settings.nagios_config
+    nagios_init = adagios.settings.nagios_init_script
+    nagios_cfg = adagios.settings.nagios_config
     if request.method == 'GET':
         form = forms.NagiosServiceForm(initial=request.GET)
     else:
@@ -205,7 +211,8 @@ def nagios_service(request):
             c['command'] = form.command
     c['form'] = form
     sleep(1)
-    service = pynag.Control.daemon(nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
+    service = pynag.Control.daemon(
+        nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
     sleep(1)
     c['status'] = s = service.status()
     if s == 0:
@@ -216,17 +223,17 @@ def nagios_service(request):
         c['friendly_status'] = 'unknown'
     needs_reload = pynag.Model.config.needs_reload()
     if needs_reload == True:
-        c['messages'].append('Nagios Service Needs to be reloaded to apply latest configuration changes. Click Reload to reload Nagios Service now.')
+        c['messages'].append(
+            'Nagios Service Needs to be reloaded to apply latest configuration changes. Click Reload to reload Nagios Service now.')
     c['needs_reload'] = needs_reload
-    return render_to_response('nagios_service.html', c, context_instance = RequestContext(request))
-
+    return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))
 
 
 def pnp4nagios(request):
     """ View to handle integration with pnp4nagios """
     c = {}
-    c['errors'] = e=  []
-    c['messages'] =m= []
+    c['errors'] = e = []
+    c['messages'] = m = []
 
     c['broker_module'] = forms.PNPBrokerModuleForm(initial=request.GET)
     c['templates_form'] = forms.PNPTemplatesForm(initial=request.GET)
@@ -239,7 +246,8 @@ def pnp4nagios(request):
         c['errors'].append(e)
     #c['interesting_objects'] = form.interesting_objects
     if request.method == 'POST' and 'save_broker_module' in request.POST:
-        c['broker_module'] = broker_form = forms.PNPBrokerModuleForm(data=request.POST)
+        c['broker_module'] = broker_form = forms.PNPBrokerModuleForm(
+            data=request.POST)
         if broker_form.is_valid():
             broker_form.save()
             m.append("Broker Module updated in nagios.cfg")
@@ -247,17 +255,20 @@ def pnp4nagios(request):
         c['action_url'] = forms.PNPActionUrlForm(data=request.POST)
         if c['action_url'].is_valid():
             c['action_url'].save()
-            m.append('Action_url updated for %s services' % c['action_url'].total_services)
-            if c['action_url'].error_services  > 0:
-                e.append("%s services could not be updated (check permissions?)" % c['action_url'].error_services)
+            m.append('Action_url updated for %s services' %
+                     c['action_url'].total_services)
+            if c['action_url'].error_services > 0:
+                e.append(
+                    "%s services could not be updated (check permissions?)" %
+                    c['action_url'].error_services)
     elif request.method == 'POST' and 'save_npcd_config' in request.POST:
         c['npcd_config'] = forms.PNPConfigForm(data=request.POST)
         if c['npcd_config'].is_valid():
             c['npcd_config'].save()
             m.append("npcd.cfg updated")
 
+    return render_to_response('pnp4nagios.html', c, context_instance=RequestContext(request))
 
-    return render_to_response('pnp4nagios.html', c, context_instance = RequestContext(request))
 
 def edit_file(request, filename):
     """ This view gives raw read/write access to a given filename.
@@ -269,20 +280,23 @@ def edit_file(request, filename):
     c['messages'] = []
     c['errors'] = []
     try:
-        c['form'] = forms.EditFileForm(filename=filename,initial=request.GET)
+        c['form'] = forms.EditFileForm(filename=filename, initial=request.GET)
         c['filename'] = filename
         if request.method == 'POST':
-            c['form'] = forms.EditFileForm(filename=filename,data=request.POST)
+            c['form'] = forms.EditFileForm(
+                filename=filename, data=request.POST)
             if c['form'].is_valid():
                 c['form'].save()
     except Exception, e:
         c['errors'].append(e)
-    return render_to_response('editfile.html', c, context_instance = RequestContext(request))
+    return render_to_response('editfile.html', c, context_instance=RequestContext(request))
+
 
 def edit_nagios_cfg(request):
     """ Allows raw editing of nagios.cfg configfile
     """
     return edit_file(request, filename=adagios.settings.nagios_config)
+
 
 def pnp4nagios_edit_template(request, filename):
     """ Allows raw editing of a pnp4nagios template.
@@ -294,7 +308,9 @@ def pnp4nagios_edit_template(request, filename):
     if filename in form.templates:
         return edit_file(request, filename=filename)
     else:
-        raise Exception("Security violation. You are not allowed to edit %s" % filename)
+        raise Exception(
+            "Security violation. You are not allowed to edit %s" % filename)
+
 
 def icons(request, image_name=None):
     """ Use this view to see nagios icons/logos
@@ -304,7 +320,7 @@ def icons(request, image_name=None):
     c['errors'] = []
     image_path = '/usr/share/nagios3/htdocs/images/logos/'
     filenames = []
-    for root,subfolders,files in os.walk(image_path):
+    for root, subfolders, files in os.walk(image_path):
         for filename in files:
             filenames.append(os.path.join(root, filename))
     # Cut image_path out of every filename
@@ -317,15 +333,17 @@ def icons(request, image_name=None):
     if not image_name:
         # Return a list of images
         c['images'] = filenames
-        return render_to_response('icons.html', c, context_instance = RequestContext(request))
+        return render_to_response('icons.html', c, context_instance=RequestContext(request))
     else:
         if image_name in filenames:
             file_extension = image_name.split('.').pop()
-            mime_type=mimetypes.types_map.get(file_extension)
+            mime_type = mimetypes.types_map.get(file_extension)
             fsock = open("%s/%s" % (image_path, image_name,))
             return HttpResponse(fsock, mimetype=mime_type)
         else:
             raise Exception("Not allowed to see this image")
+
+
 def sign_out(request):
     """ Use this to force browser to update authentication """
     return HttpResponse('You have been signed out', status=401)
@@ -342,36 +360,40 @@ def mail(request):
     remote_user = request.META.get('REMOTE_USER', 'anonymous adagios user')
     if request.method == 'GET':
         c['form'] = forms.SendEmailForm(remote_user, initial=request.GET)
-        services = request.GET.getlist('service') or request.GET.getlist('service[]')
+        services = request.GET.getlist(
+            'service') or request.GET.getlist('service[]')
         if services == []:
-            c['form'].services = adagios.status.utils.get_services(request,host_name='localhost')
+            c['form'].services = adagios.status.utils.get_services(
+                request, host_name='localhost')
     elif request.method == 'POST':
         c['form'] = forms.SendEmailForm(remote_user, data=request.POST)
-        services = request.POST.getlist('service') or request.POST.getlist('service[]')
-
+        services = request.POST.getlist(
+            'service') or request.POST.getlist('service[]')
 
     for i in services:
         try:
-            host_name,service_description = i.split('/',1)
+            host_name, service_description = i.split('/', 1)
             service = adagios.status.utils.get_services(request,
                                                         host_name=host_name,
                                                         service_description=service_description
-            )
+                                                        )
             if len(service) == 0:
-                c['errors'].append('Service "%s"" not found. Maybe a typo or you do not have access to it ?' % i)
+                c['errors'].append(
+                    'Service "%s"" not found. Maybe a typo or you do not have access to it ?' % i)
             for x in service:
-                c['form'].services.append( x )
+                c['form'].services.append(x)
                 #c['messages'].append( x )
         except AttributeError, e:
-            c['errors'].append("AttributeError for '%s': %s"% (i,e))
+            c['errors'].append("AttributeError for '%s': %s" % (i, e))
         except KeyError, e:
-            c['errors'].append("Error adding service '%s': %s"% (i,e))
+            c['errors'].append("Error adding service '%s': %s" % (i, e))
 
     c['services'] = c['form'].services
-    c['form'].html_content = render(request, "snippets/misc_mail_servicelist.html", c).content
+    c['form'].html_content = render(
+        request, "snippets/misc_mail_servicelist.html", c).content
     if request.method == 'POST' and c['form'].is_valid():
         c['form'].save()
-    return render_to_response('misc_mail.html', c, context_instance = RequestContext(request))
+    return render_to_response('misc_mail.html', c, context_instance=RequestContext(request))
 
 
 def test(request):
@@ -389,7 +411,7 @@ def test(request):
     else:
         c['form'] = forms.PluginOutputForm(initial=request.GET)
 
-    return render_to_response('test.html', c, context_instance = RequestContext(request))
+    return render_to_response('test.html', c, context_instance=RequestContext(request))
 
 
 def edit_check_command(request):
@@ -400,30 +422,32 @@ def edit_check_command(request):
     c['errors'] = []
     c.update(csrf(request))
 
-
     for i in 'host_name', 'service_description', 'check_command':
         if i in request.GET:
             c[i] = request.GET.get(i).split('!')[0]
         else:
-            c['errors'].append( "%s is required" % i)
-            return render_to_response('edit_check_command.html', c, context_instance = RequestContext(request))
+            c['errors'].append("%s is required" % i)
+            return render_to_response('edit_check_command.html', c, context_instance=RequestContext(request))
 
     hosts = pynag.Model.Host.objects.filter(host_name=c['host_name'])
     if len(hosts) == 0:
-        c['errors'].append( "Host %s was not found " % (host_name))
-    services = pynag.Model.Service.objects.filter(host_name=c['host_name'], service_description=c['service_description'])
+        c['errors'].append("Host %s was not found " % (host_name))
+    services = pynag.Model.Service.objects.filter(
+        host_name=c['host_name'], service_description=c['service_description'])
     if len(services) == 0:
-        c['errors'].append( "Service %s/%s was not found " % (host_name, service_description))
-    command_names = map(lambda x: x.get("command_name",''), pynag.Model.Command.objects.all)
-    if c['check_command'] in (None,'','None'):
+        c['errors'].append("Service %s/%s was not found " %
+                           (host_name, service_description))
+    command_names = map(
+        lambda x: x.get("command_name", ''), pynag.Model.Command.objects.all)
+    if c['check_command'] in (None, '', 'None'):
         c['check_command'] = ''
     elif c['check_command'] not in command_names:
-        c['errors'].append( "Check Command %s was not found " % (c['check_command']))
+        c['errors'].append(
+            "Check Command %s was not found " % (c['check_command']))
     c['command_names'] = command_names
 
-
     # Overwrites from the browser
-    return render_to_response('edit_check_command.html', c, context_instance = RequestContext(request))
+    return render_to_response('edit_check_command.html', c, context_instance=RequestContext(request))
 
 
 def paste(request):
@@ -441,4 +465,4 @@ def paste(request):
     else:
         c['form'] = forms.PasteForm(initial=request.GET)
 
-    return render_to_response('test2.html', c, context_instance = RequestContext(request))
+    return render_to_response('test2.html', c, context_instance=RequestContext(request))

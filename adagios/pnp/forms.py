@@ -19,6 +19,7 @@ from django import forms
 
 
 class LiveStatusForm(forms.Form):
+
     """ This form is used to generate a mk_livestatus query """
     table = forms.ChoiceField()
     columns = forms.MultipleChoiceField()

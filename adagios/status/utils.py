@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Utility functions for the status app. These are mostly used by adagios.status.views
+# Utility functions for the status app. These are mostly used by
+# adagios.status.views
 
 import pynag.Utils
 import pynag.Parsers
@@ -23,13 +24,16 @@ def livestatus(request):
         authuser = request.META.get('REMOTE_USER', None)
     else:
         authuser = None
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
     return livestatus
 
-def query(request, *args,**kwargs):
+
+def query(request, *args, **kwargs):
     """ Wrapper around pynag.Parsers.mk_livestatus().query(). Any authorization logic should be performed here. """
     l = livestatus(request)
     return l.query(*args, **kwargs)
+
 
 def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     """ Get a list of hosts from mk_livestatus
@@ -55,7 +59,8 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     else:
         q = []
 
-    # If keyword "unhandled" is in kwargs, then we will fetch unhandled services only
+    # If keyword "unhandled" is in kwargs, then we will fetch unhandled
+    # services only
     if 'unhandled' in kwargs:
         del kwargs['unhandled']
         kwargs['state__isnot'] = 0
@@ -64,29 +69,29 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         #kwargs['host_scheduled_downtime_depth'] = 0
         #kwargs['host_acknowledged'] = 0
 
-    arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
+    arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     # if "q" came in from the querystring, lets filter on host_name
     for i in q:
         arguments.append('Filter: name ~~ %s' % i)
         arguments.append('Filter: address ~~ %s' % i)
         arguments.append('Filter: plugin_output ~~ %s' % i)
-        arguments.append('Or: 3' )
+        arguments.append('Or: 3')
 
     if not fields is None:
     # fields should be a list, lets create a Column: query for livestatus
-        if isinstance(fields, (str,unicode) ):
+        if isinstance(fields, (str, unicode)):
             fields = fields.split(',')
         if len(fields) > 0:
-            argument = 'Columns: %s' % ( ' '.join(fields))
+            argument = 'Columns: %s' % (' '.join(fields))
             arguments.append(argument)
     l = livestatus(request)
     result = l.get_hosts(*arguments)
 
-
     # Add statistics to every hosts:
     for host in result:
         try:
-            host['num_problems'] = host['num_services_crit'] + host['num_services_warn'] + host['num_services_unknown']
+            host['num_problems'] = host['num_services_crit'] + \
+                host['num_services_warn'] + host['num_services_unknown']
             host['children'] = host['services_with_state']
 
             if host.get('last_state_change') == 0:
@@ -98,17 +103,17 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
             crit = host.get('num_services_crit')
             pending = host.get('num_services_pending')
             unknown = host.get('num_services_unknown')
-            total = ok + warn + crit +pending + unknown
+            total = ok + warn + crit + pending + unknown
             host['total'] = total
             host['problems'] = warn + crit + unknown
             try:
                 total = float(total)
                 host['health'] = float(ok) / total * 100.0
-                host['percent_ok'] = ok/total*100
-                host['percent_warn'] = warn/total*100
-                host['percent_crit'] = crit/total*100
-                host['percent_unknown'] = unknown/total*100
-                host['percent_pending'] = pending/total*100
+                host['percent_ok'] = ok / total * 100
+                host['percent_warn'] = warn / total * 100
+                host['percent_crit'] = crit / total * 100
+                host['percent_unknown'] = unknown / total * 100
+                host['percent_pending'] = pending / total * 100
             except ZeroDivisionError:
                 host['health'] = 'n/a'
         except Exception:
@@ -116,12 +121,13 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
             pass
 
     # Sort by host and service status
-    result.sort(reverse=True, cmp=lambda a,b: cmp(a['num_problems'], b['num_problems']))
-    result.sort(reverse=True, cmp=lambda a,b: cmp(a['state'], b['state']))
+    result.sort(reverse=True, cmp=lambda a, b:
+                cmp(a['num_problems'], b['num_problems']))
+    result.sort(reverse=True, cmp=lambda a, b: cmp(a['state'], b['state']))
     return result
 
 
-def get_services(request=None, tags=None, fields=None, *args,**kwargs):
+def get_services(request=None, tags=None, fields=None, *args, **kwargs):
     """ Get a list of services from mk_livestatus.
 
         This is a wrapper around pynag.Parsers.mk_livestatus().query()
@@ -150,7 +156,8 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
     if not isinstance(q, list):
         q = [q]
 
-    # If keyword "unhandled" is in kwargs, then we will fetch unhandled services only
+    # If keyword "unhandled" is in kwargs, then we will fetch unhandled
+    # services only
     if 'unhandled' in kwargs:
         del kwargs['unhandled']
         kwargs['state__isnot'] = 0
@@ -158,7 +165,7 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
         kwargs['scheduled_downtime_depth'] = 0
         kwargs['host_scheduled_downtime_depth'] = 0
         kwargs['host_acknowledged'] = 0
-    arguments = pynag.Utils.grep_to_livestatus(*args,**kwargs)
+    arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
 
     # If q was added, it is a fuzzy filter on services
     for i in q:
@@ -168,17 +175,15 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
         arguments.append('Filter: host_address ~~ %s' % i)
         arguments.append('Or: 4')
 
-
     if not fields is None:
     # fields should be a list, lets create a Column: query for livestatus
-        if isinstance(fields, (str,unicode) ):
+        if isinstance(fields, (str, unicode)):
             fields = fields.split(',')
         if len(fields) > 0:
-            argument = 'Columns: %s' % ( ' '.join(fields))
+            argument = 'Columns: %s' % (' '.join(fields))
             arguments.append(argument)
     l = livestatus(request)
     result = l.get_services(*arguments)
-
 
     # Add custom tags to our service list
     try:
@@ -209,10 +214,11 @@ def get_services(request=None, tags=None, fields=None, *args,**kwargs):
         if isinstance(tags, str):
             tags = [tags]
         if isinstance(tags, list):
-            result = pynag.Utils.grep(result,tags__contains=tags)
+            result = pynag.Utils.grep(result, tags__contains=tags)
     except Exception, e:
         pass
     return result
+
 
 def get_statistics(request):
     """ Return a list of dict. That contains various statistics from mk_livestatus (like service totals and host totals)
@@ -220,8 +226,10 @@ def get_statistics(request):
     c = {}
     l = livestatus(request)
     # Get host/service totals as an array of [ok,warn,crit,unknown]
-    c['service_totals'] = l.query('GET services', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2','Stats: state = 3',columns=False)
-    c['host_totals'] = l.query('GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2',columns=False)
+    c['service_totals'] = l.query('GET services', 'Stats: state = 0',
+                                  'Stats: state = 1', 'Stats: state = 2', 'Stats: state = 3', columns=False)
+    c['host_totals'] = l.query(
+        'GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2', columns=False)
 
     # Get total number of host/services
     c['total_hosts'] = sum(c['host_totals'])
@@ -231,52 +239,55 @@ def get_statistics(request):
     c['total_service_problems'] = c['total_services'] - c['service_totals'][0]
     # Calculate percentage of hosts/services that are "ok"
     try:
-        c['service_totals_percent'] = map(lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
+        c['service_totals_percent'] = map(
+            lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
     except ZeroDivisionError:
-        c['service_totals_percent'] = [0,0,0,0]
+        c['service_totals_percent'] = [0, 0, 0, 0]
     try:
-        c['host_totals_percent'] = map(lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
+        c['host_totals_percent'] = map(
+            lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
     except ZeroDivisionError:
-        c['host_totals_percent'] = [0,0,0,0]
-
+        c['host_totals_percent'] = [0, 0, 0, 0]
 
     c['unhandled_services'] = l.query('GET services',
-                                            'Filter: acknowledged = 0',
-                                            'Filter: scheduled_downtime_depth = 0',
-                                            'Filter: host_state = 0',
-                                            'Stats: state > 0',
-                                            columns=False
-    )[0]
+                                      'Filter: acknowledged = 0',
+                                      'Filter: scheduled_downtime_depth = 0',
+                                      'Filter: host_state = 0',
+                                      'Stats: state > 0',
+                                      columns=False
+                                      )[0]
     c['unhandled_hosts'] = l.query('GET hosts',
-                                         'Filter: acknowledged = 0',
-                                         'Filter: scheduled_downtime_depth = 0',
-                                         'Stats: state > 0',
-                                         columns=False,
-                                         )[0]
+                                   'Filter: acknowledged = 0',
+                                   'Filter: scheduled_downtime_depth = 0',
+                                   'Stats: state > 0',
+                                   columns=False,
+                                   )[0]
     c['total_unhandled_network_problems'] = l.query('GET hosts',
-                                          'Filter: acknowledged = 0',
-                                          'Filter: scheduled_downtime_depth = 0',
-                                          'Filter: childs != ',
-                                          'Stats: state > 0',
-                                          columns=False
-                                          )[0]
+                                                    'Filter: acknowledged = 0',
+                                                    'Filter: scheduled_downtime_depth = 0',
+                                                    'Filter: childs != ',
+                                                    'Stats: state > 0',
+                                                    columns=False
+                                                    )[0]
     tmp = l.query('GET hosts',
-                     'Filter: childs != ',
-                     'Stats: state >= 0',
-                     'Stats: state > 0',
-                     columns=False
-                     )
+                  'Filter: childs != ',
+                  'Stats: state >= 0',
+                  'Stats: state > 0',
+                  columns=False
+                  )
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
 
 
 class BusinessProcess(object):
+
     """ Business Process Object
     """
     _default_filename = "/etc/adagios/bpi.json"
+
     def __init__(self):
         self.data = {}
-        attributes = ('process_type','notes','display_name','name')
+        attributes = ('process_type', 'notes', 'display_name', 'name')
         for i in attributes:
             self._add_property(i)
 
@@ -299,25 +310,28 @@ class BusinessProcess(object):
         fset = lambda self, value: self.set(name, value)
         fdel = lambda self: self.set(name, None)
         fdoc = "This is the %s attribute for object definition"
-        setattr( self.__class__, name, property(fget,fset,fdel,fdoc))
-
+        setattr(self.__class__, name, property(fget, fset, fdel, fdoc))
 
     def set(self, key, value):
         """ Same as self[name] = value """
         self[key] = value
+
     def get_status(self):
         """ Returns nagios-style exit code that represent the state of this whole group """
         status = -1
         for i in self.processes:
             status = max(status, i.get_status())
         return status
+
     def __repr__(self):
         return "Business Process %s" % (self.display_name or self.name)
+
     def add_process(self, business_process):
         if not self.processes:
             self.processes = [business_process]
         else:
             self.processes.append(business_process)
+
     def css_hint(self):
         """ Return a bootstrap friendly hint on what css class is applicate for this object """
         css_hint = {}
@@ -326,30 +340,37 @@ class BusinessProcess(object):
         css_hint[2] = 'danger'
         css_hint[3] = 'unknown'
         return css_hint.get(self.get_status(), "unknown")
+
     def get_human_friendly_status(self):
         state = {}
         state[0] = "ok"
         state[1] = "warning"
         state[2] = "critical"
-        return state.get( self.get_status(), "unknown")
+        return state.get(self.get_status(), "unknown")
+
     def __getitem__(self, key):
         return self.data.get(key, None)
-    def __setitem__(self,key,value):
+
+    def __setitem__(self, key, value):
         return self.data.__setitem__(key, value)
 
+
 class HostgroupBP(BusinessProcess):
+
     """ Business Process object that represents the state of one hostgroup """
 
     def __init__(self, name, display_name=None):
         super(self.__class__, self).__init__()
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._livestatus = pynag.Parsers.mk_livestatus(
+            nagios_cfg_file=adagios.settings.nagios_config)
         self._hostgroup = self._livestatus.get_hostgroup(name)
         self.name = name
         if not display_name:
-            display_name  = self._hostgroup.get('alias')
+            display_name = self._hostgroup.get('alias')
         self.display_name = display_name
         self.notes = self._hostgroup.get('notes')
-        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
+        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(
+            name)
         self.process_type = 'hostgroup'
         # Get information about child hostgroups
         subgroups = self._pynag_object.hostgroup_members or ''
@@ -359,7 +380,8 @@ class HostgroupBP(BusinessProcess):
             if not i or i == self._hostgroup:
                 continue
             subprocess = HostgroupBP(i)
-            self.add_process( subprocess )
+            self.add_process(subprocess)
+
     def get_status(self):
         """ Same as BusinessProcess.get_status()
 
@@ -379,16 +401,21 @@ class HostgroupBP(BusinessProcess):
             return 2
         return service_status
 
+
 class ServicegroupBP(BusinessProcess):
+
     """ Business Process object that represents the state of one hostgroup """
+
     def __init__(self, name):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._livestatus = pynag.Parsers.mk_livestatus(
+            nagios_cfg_file=adagios.settings.nagios_config)
         self._servicegroup = self._livestatus.get_servicegroup(name)
         self.servicegroup_name = name
         self.notes = self.servicegroup.get('notes')
-        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
+        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(
+            name)
         if not display_name:
-            display_name  = self._servicegroup.get('alias')
+            display_name = self._servicegroup.get('alias')
         self.display_name = display_name
         # Get information about child servicegroups
         subgroups = self._pynag_object.servicegroup_members or ''
@@ -399,7 +426,8 @@ class ServicegroupBP(BusinessProcess):
             if not i:
                 continue
             subprocess = ServicegroupBP(i)
-            self.add_process( subprocess )
+            self.add_process(subprocess)
+
     def get_status(self):
         """ Same as BusinessProcess.get_status()
 
@@ -408,25 +436,33 @@ class ServicegroupBP(BusinessProcess):
          Otherwise worst service state
          OK if there are no service or host problems
         """
-        servicegroup = self._livestatus.get_servicegroup(self.servicegroup_name)
-
+        servicegroup = self._livestatus.get_servicegroup(
+            self.servicegroup_name)
 
         service_status = servicegroup.get('worst_service_state')
         if service_status == 3:
             return 2
         return service_status
 
+
 class ServiceBP(BusinessProcess):
+
     """ BusinessProcess around one single service
     """
     process_type = 'service'
-    def __init__(self,host_name, service_description):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
-        self._service = self._livestatus.get_service(host_name, service_description)
+
+    def __init__(self, host_name, service_description):
+        self._livestatus = pynag.Parsers.mk_livestatus(
+            nagios_cfg_file=adagios.settings.nagios_config)
+        self._service = self._livestatus.get_service(
+            host_name, service_description)
+
     def get_status(self):
         return self._service.get('state', 3)
 
+
 class CustomBP(BusinessProcess):
+
     """ Custom Business Process. Usually a wrapper around other types of Business Processes """
     critical_processes = []
     noncritical_processes = []
@@ -434,6 +470,7 @@ class CustomBP(BusinessProcess):
     noncritical_threshold = 0
 
     process_type = 'custom'
+
     def _get_all_json(self, filename=None):
         """ Get all business processes from a specific file
         """
@@ -450,6 +487,7 @@ class CustomBP(BusinessProcess):
             return result
         result = all_json_data
         return result
+
     def all(self):
         """ Returns a list of All custom Business Processes """
         all_json = self._get_all_json()
@@ -462,6 +500,7 @@ class CustomBP(BusinessProcess):
             c.data = i
             result.append(c)
         return result
+
     def load(self, filename=None):
         if not filename:
             filename = self._default_filename
@@ -474,10 +513,12 @@ class CustomBP(BusinessProcess):
                 self.data = i
                 self.processes = []
                 for subprocess in self.data.get('processes', []):
-                    bp = get_business_process(subprocess['process_type'], subprocess['process_name'])
+                    bp = get_business_process(
+                        subprocess['process_type'], subprocess['process_name'])
                     self.processes.append(bp)
                 return
-        raise Exception("Could not load a BusinessProcess with name: %s" % self.name)
+        raise Exception(
+            "Could not load a BusinessProcess with name: %s" % self.name)
 
     def save(self, filename=None):
         """ Saves this business process in a json format  to file
@@ -502,21 +543,23 @@ class CustomBP(BusinessProcess):
         super(CustomBP, self).__init__()
         self.name = name
         self.process_type = "custom"
+
     def add_process(self, business_process, critical=True):
         """ Add another business process into this group """
         if not self.processes:
             self.processes = []
-        self.processes.append( business_process )
+        self.processes.append(business_process)
         tmp = {}
         tmp['process_name'] = business_process.name
         tmp['process_type'] = business_process.process_type
         if 'processes' not in self.data:
             self.data['processes'] = []
-        self.data['processes'].append(  tmp )
+        self.data['processes'].append(tmp)
         if critical == True:
-            self.critical_processes.append( business_process )
+            self.critical_processes.append(business_process)
         else:
-            self.noncritical_processes.append( business_process )
+            self.noncritical_processes.append(business_process)
+
     def get_status(self):
         worst_status = 0
         criticals = 0
@@ -534,6 +577,7 @@ class CustomBP(BusinessProcess):
         if noncriticals > self.noncritical_threshold:
             return 2
         return worst_status
+
 
 def get_business_process(process_type, name):
     """ Returns a BusinessProcess instance """

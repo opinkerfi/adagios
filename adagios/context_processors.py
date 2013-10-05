@@ -11,6 +11,7 @@ import adagios
 import adagios.status.utils
 from pynag import Model
 import time
+import datetime
 
 
 def on_page_load(request):
@@ -60,10 +61,14 @@ def on_page_load(request):
 def get_current_time(request):
     """ Make current timestamp available to templates
     """
+    result = {}
     try:
-        return {'current_timestamp':int(time.time())}
+        now = datetime.datetime.now()
+        result['current_time'] = now.strftime("%b %d %H:%M")
+        result['current_timestamp'] = int(time.time())
     except Exception:
-        return {}
+        return result
+    return result
 def activate_plugins(request):
     """ Activates any plugins specified in settings.plugins """
     for k,v in settings.plugins.items():

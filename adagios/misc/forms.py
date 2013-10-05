@@ -34,18 +34,21 @@ TOPIC_CHOICES = (
     ('bug', 'I think i have found a bug'),
     ('suggestion', 'I have a particular task in mind that i would like to do with Adagios'),
     ('easier', 'I have an idea how make a certain task easier to do'),
-                )
+)
+
 
 class ContactUsForm(forms.Form):
     topic = forms.ChoiceField(choices=TOPIC_CHOICES)
     sender = forms.CharField(
-                            required=False,
-                            help_text="Optional email address if you want feedback from us",
-                            )
+        required=False,
+        help_text="Optional email address if you want feedback from us",
+    )
     message = forms.CharField(
-                            widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
-                            help_text="See below for examples of good suggestions",
-                            )
+        widget=forms.widgets.Textarea(
+            attrs={'rows': 15, 'cols': 40}),
+        help_text="See below for examples of good suggestions",
+    )
+
     def save(self):
         from_address = 'adagios@adagios.opensource.is'
         to_address = ["palli@ok.is"]
@@ -60,45 +63,71 @@ class ContactUsForm(forms.Form):
         from: %s
 
         %s
-        """ % (topic,sender,message)
+        """ % (topic, sender, message)
         send_mail(subject, msg, from_address, to_address, fail_silently=False)
 
 
 class AdagiosSettingsForm(forms.Form):
-    nagios_config = forms.CharField(required=False, initial=settings.nagios_config, help_text="Path to nagios configuration file. i.e. /etc/nagios/nagios.cfg")
-    destination_directory = forms.CharField(required=False, initial=settings.destination_directory, help_text="Where to save new objects that adagios creates.")
-    nagios_url = forms.CharField(required=False, initial=settings.nagios_url, help_text="URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi.")
-    nagios_init_script = forms.CharField(help_text="Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios")
-    nagios_binary = forms.CharField(help_text="Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'")
-    enable_githandler = forms.BooleanField(required=False, initial=settings.enable_githandler, help_text="If set. Adagios will commit any changes it makes to git repository.")
-    enable_loghandler = forms.BooleanField(required=False, initial=settings.enable_loghandler, help_text="If set. Adagios will log any changes it makes to a file.")
-    enable_authorization = forms.BooleanField(required=False, initial=settings.enable_authorization, help_text="If set. Users in Status view will only see hosts/services they are a contact for. Unset means everyone will see everything.")
-    enable_status_view = forms.BooleanField(required=False, initial=settings.enable_status_view, help_text="If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect")
-    warn_if_selinux_is_active = forms.BooleanField(required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
-    pnp_filepath = forms.CharField(help_text="Full path to your pnp4nagios/index.php file. Adagios will use this to generate graphs")
-    pnp_url = forms.CharField(help_text="Full or relative url to pnp4nagios web interface, adagios can use this to link directly to pnp")
-    map_center = forms.CharField(help_text="Default coordinates when opening up the world map. This should be in the form of longitude,latitude")
-    map_zoom = forms.CharField(help_text="Default Zoom level when opening up the world map. 10 is a good default value")
-    include = forms.CharField(required=False, help_text="Include configuration options from files matching this pattern")
+    nagios_config = forms.CharField(
+        required=False, initial=settings.nagios_config,
+        help_text="Path to nagios configuration file. i.e. /etc/nagios/nagios.cfg")
+    destination_directory = forms.CharField(
+        required=False, initial=settings.destination_directory, help_text="Where to save new objects that adagios creates.")
+    nagios_url = forms.CharField(required=False, initial=settings.nagios_url,
+                                 help_text="URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi.")
+    nagios_init_script = forms.CharField(
+        help_text="Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios")
+    nagios_binary = forms.CharField(
+        help_text="Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'")
+    enable_githandler = forms.BooleanField(
+        required=False, initial=settings.enable_githandler, help_text="If set. Adagios will commit any changes it makes to git repository.")
+    enable_loghandler = forms.BooleanField(
+        required=False, initial=settings.enable_loghandler, help_text="If set. Adagios will log any changes it makes to a file.")
+    enable_authorization = forms.BooleanField(
+        required=False, initial=settings.enable_authorization,
+        help_text="If set. Users in Status view will only see hosts/services they are a contact for. Unset means everyone will see everything.")
+    enable_status_view = forms.BooleanField(
+        required=False, initial=settings.enable_status_view,
+        help_text="If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect")
+    warn_if_selinux_is_active = forms.BooleanField(
+        required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
+    pnp_filepath = forms.CharField(
+        help_text="Full path to your pnp4nagios/index.php file. Adagios will use this to generate graphs")
+    pnp_url = forms.CharField(
+        help_text="Full or relative url to pnp4nagios web interface, adagios can use this to link directly to pnp")
+    map_center = forms.CharField(
+        help_text="Default coordinates when opening up the world map. This should be in the form of longitude,latitude")
+    map_zoom = forms.CharField(
+        help_text="Default Zoom level when opening up the world map. 10 is a good default value")
+    include = forms.CharField(
+        required=False, help_text="Include configuration options from files matching this pattern")
+
     def save(self):
         # First of all, if configfile does not exist, lets try to create it:
-        if not os.path.isfile( settings.adagios_configfile ):
-            open(settings.adagios_configfile, 'w').write("# Autocreated by adagios")
-        for k,v in self.cleaned_data.items():
-            Model.config._edit_static_file(attribute=k, new_value=v, filename=settings.adagios_configfile)
+        if not os.path.isfile(settings.adagios_configfile):
+            open(settings.adagios_configfile, 'w').write(
+                "# Autocreated by adagios")
+        for k, v in self.cleaned_data.items():
+            Model.config._edit_static_file(
+                attribute=k, new_value=v, filename=settings.adagios_configfile)
             self.adagios_configfile = settings.adagios_configfile
             #settings.__dict__[k] = v
-    def __init__(self, *args,**kwargs):
-        # Since this form is always bound, lets fetch current configfiles and prepare them as post:
+
+    def __init__(self, *args, **kwargs):
+        # Since this form is always bound, lets fetch current configfiles and
+        # prepare them as post:
         if 'data' not in kwargs or kwargs['data'] == '':
             kwargs['data'] = settings.__dict__
-        super(self.__class__,self).__init__(*args,**kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
+
     def clean_pnp_filepath(self):
         filename = self.cleaned_data['pnp_filepath']
         return self.check_file_exists(filename)
+
     def clean_destination_directory(self):
         filename = self.cleaned_data['destination_directory']
         return self.check_file_exists(filename)
+
     def clean_nagios_init_script(self):
         filename = self.cleaned_data['nagios_init_script']
         if filename.startswith('sudo'):
@@ -106,12 +135,15 @@ class AdagiosSettingsForm(forms.Form):
         else:
             self.check_file_exists(filename)
         return filename
+
     def clean_nagios_binary(self):
         filename = self.cleaned_data['nagios_binary']
         return self.check_file_exists(filename)
+
     def clean_nagios_config(self):
         filename = self.cleaned_data['nagios_config']
         return self.check_file_exists(filename)
+
     def check_file_exists(self, filename):
         """ Raises validation error if filename does not exist """
         if not os.path.exists(filename):
@@ -120,7 +152,7 @@ class AdagiosSettingsForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(self.__class__, self).clean()
-        for k,v in cleaned_data.items():
+        for k, v in cleaned_data.items():
             # Convert all unicode to quoted strings
             if type(v) == type(u''):
                 cleaned_data[k] = str('''"%s"''' % v)
@@ -129,11 +161,14 @@ class AdagiosSettingsForm(forms.Form):
                 cleaned_data[k] = str(v)
         return cleaned_data
 
+
 class EditAllForm(forms.Form):
+
     """ This form intelligently modifies all attributes of a specific type.
 
 
     """
+
     def __init__(self, object_type, attribute, new_value, *args, **kwargs):
         self.object_type = object_type
         self.attribute = attribute
@@ -146,15 +181,21 @@ class EditAllForm(forms.Form):
         interesting_objects = []
         for i in items:
             if attribute in i._defined_attributes or i.use is None:
-                interesting_objects.append( i )
+                interesting_objects.append(i)
         self.interesting_objects = interesting_objects
         for i in interesting_objects:
-            self.fields[ 'modify_%s' % i.get_id() ] = forms.BooleanField(required=False,initial=True)
+            self.fields['modify_%s' % i.get_id()] = forms.BooleanField(
+                required=False, initial=True)
+
 
 class PNPActionUrlForm(forms.Form):
+
     """ This form handles applying action_url to bunch of hosts and services """
     #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
-    action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Reset the action_url attribute of every service check in your nagios configuration with this one. ")
+    action_url = forms.CharField(
+        required=False, initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$",
+        help_text="Reset the action_url attribute of every service check in your nagios configuration with this one. ")
+
     def save(self):
         action_url = self.cleaned_data['action_url']
         services = Model.Service.objects.filter(action_url__isnot=action_url)
@@ -168,116 +209,160 @@ class PNPActionUrlForm(forms.Form):
                 except Exception:
                     self.error_services += 1
 
+
 class PNPTemplatesForm(forms.Form):
+
     """ This form manages your pnp4nagios templates """
-    def __init__(self, *args,**kwargs):
+
+    def __init__(self, *args, **kwargs):
         self.template_directories = []
         self.templates = []
         tmp = Model.config._load_static_file('/etc/pnp4nagios/config.php')
-        for k,v in tmp:
+        for k, v in tmp:
             if k == "$conf['template_dirs'][]":
                 # strip all ' and " from directory
                 directory = v.strip(";").strip('"').strip("'")
-                self.template_directories.append( directory )
+                self.template_directories.append(directory)
                 if os.path.isdir(directory):
                     for file in os.listdir(directory):
-                        self.templates.append( "%s/%s" % (directory,file))
-                        #self.templates.append(file)
+                        self.templates.append("%s/%s" % (directory, file))
+                        # self.templates.append(file)
 
-        super(self.__class__,self).__init__(*args,**kwargs)
-pnp_loglevel_choices = [ ('0', '0 - Only Errors'), ('1', '1 - Little logging'), ('2', '2 - Log Everything'), ('-1','-1 Debug mode (log all and slower processing')]
-pnp_log_type_choices = [('syslog','syslog'),('file','file')]
+        super(self.__class__, self).__init__(*args, **kwargs)
+pnp_loglevel_choices = [('0', '0 - Only Errors'), ('1', '1 - Little logging'), (
+    '2', '2 - Log Everything'), ('-1', '-1 Debug mode (log all and slower processing')]
+pnp_log_type_choices = [('syslog', 'syslog'), ('file', 'file')]
+
+
 class PNPConfigForm(forms.Form):
+
     """ This form handles the npcd.cfg configuration file """
-    user = forms.CharField(help_text="npcd service will have privileges of this group")
-    group = forms.CharField(help_text="npcd service will have privileges of this user")
-    log_type = forms.ChoiceField(widget=forms.RadioSelect, choices=pnp_log_type_choices, help_text="Define if you want to log to 'syslog' or 'file'")
-    log_file = forms.CharField(help_text="If log_type is set to file. Log to this file")
-    max_logfile_size = forms.IntegerField(help_text="Defines the maximum filesize (bytes) before logfile will rotate.")
-    log_level = forms.ChoiceField(help_text="How much should we log?", choices=pnp_loglevel_choices)
-    perfdata_spool_dir = forms.CharField(help_text="where we can find the performance data files")
-    perfdata_file_run_cmd = forms.CharField(help_text="execute following command for each found file in perfdata_spool_dir")
-    perfdata_file_run_cmd_args = forms.CharField(required=False, help_text="optional arguments to perfdata_file_run_cmd")
-    identify_npcd = forms.ChoiceField(widget=forms.RadioSelect, choices=(('1','Yes'),('0', 'No')), help_text="If yes, npcd will append -n to the perfdata_file_run_cmd")
-    npcd_max_threads = forms.IntegerField(help_text="Define how many parallel threads we should start")
-    sleep_time = forms.IntegerField(help_text="How many seconds npcd should wait between dirscans")
-    load_threshold = forms.FloatField(help_text="npcd won't start if load is above this threshold")
+    user = forms.CharField(
+        help_text="npcd service will have privileges of this group")
+    group = forms.CharField(
+        help_text="npcd service will have privileges of this user")
+    log_type = forms.ChoiceField(
+        widget=forms.RadioSelect, choices=pnp_log_type_choices, help_text="Define if you want to log to 'syslog' or 'file'")
+    log_file = forms.CharField(
+        help_text="If log_type is set to file. Log to this file")
+    max_logfile_size = forms.IntegerField(
+        help_text="Defines the maximum filesize (bytes) before logfile will rotate.")
+    log_level = forms.ChoiceField(
+        help_text="How much should we log?", choices=pnp_loglevel_choices)
+    perfdata_spool_dir = forms.CharField(
+        help_text="where we can find the performance data files")
+    perfdata_file_run_cmd = forms.CharField(
+        help_text="execute following command for each found file in perfdata_spool_dir")
+    perfdata_file_run_cmd_args = forms.CharField(
+        required=False, help_text="optional arguments to perfdata_file_run_cmd")
+    identify_npcd = forms.ChoiceField(widget=forms.RadioSelect, choices=(
+        ('1', 'Yes'), ('0', 'No')), help_text="If yes, npcd will append -n to the perfdata_file_run_cmd")
+    npcd_max_threads = forms.IntegerField(
+        help_text="Define how many parallel threads we should start")
+    sleep_time = forms.IntegerField(
+        help_text="How many seconds npcd should wait between dirscans")
+    load_threshold = forms.FloatField(
+        help_text="npcd won't start if load is above this threshold")
     pid_file = forms.CharField(help_text="Location of your pid file")
-    perfdata_file = forms.CharField(help_text="Where should npcdmod.o write the performance data. Must not be same directory as perfdata_spool_dir")
-    perfdata_spool_filename = forms.CharField(help_text="Filename for the spooled files")
-    perfdata_file_processing_interval = forms.IntegerField(help_text="Interval between file processing")
-    def __init__(self,initial={}, *args,**kwargs):
+    perfdata_file = forms.CharField(
+        help_text="Where should npcdmod.o write the performance data. Must not be same directory as perfdata_spool_dir")
+    perfdata_spool_filename = forms.CharField(
+        help_text="Filename for the spooled files")
+    perfdata_file_processing_interval = forms.IntegerField(
+        help_text="Interval between file processing")
+
+    def __init__(self, initial={}, *args, **kwargs):
         my_initial = {}
-        # Lets use PNPBrokerModuleForm to find sensible path to npcd config file
+        # Lets use PNPBrokerModuleForm to find sensible path to npcd config
+        # file
         broker_form = PNPBrokerModuleForm()
         self.npcd_cfg = broker_form.initial.get('config_file')
         npcd_values = Model.config._load_static_file(self.npcd_cfg)
-        for k,v in npcd_values:
+        for k, v in npcd_values:
             my_initial[k] = v
-        super(self.__class__,self).__init__(initial=my_initial,*args,**kwargs)
+        super(self.__class__, self).__init__(
+            initial=my_initial, *args, **kwargs)
+
     def save(self):
         for i in self.changed_data:
-            Model.config._edit_static_file(attribute=i, new_value=self.cleaned_data[i], filename=self.npcd_cfg)
-
+            Model.config._edit_static_file(
+                attribute=i, new_value=self.cleaned_data[i], filename=self.npcd_cfg)
 
 
 class EditFileForm(forms.Form):
+
     """ Manages editing of a single file """
-    filecontent = forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'rows':'50', 'cols':'2000'}) )
-    def __init__(self,filename,initial={},*args,**kwargs):
+    filecontent = forms.CharField(widget=forms.Textarea(
+        attrs={'wrap': 'off', 'rows': '50', 'cols': '2000'}))
+
+    def __init__(self, filename, initial={}, *args, **kwargs):
         self.filename = filename
         my_initial = initial.copy()
         if 'filecontent' not in my_initial:
             my_initial['filecontent'] = open(filename).read()
-        super(self.__class__,self).__init__(initial=my_initial, *args,**kwargs)
+        super(self.__class__, self).__init__(
+            initial=my_initial, *args, **kwargs)
+
     def save(self):
         if 'filecontent' in self.changed_data:
             data = self.cleaned_data['filecontent']
-            open(self.filename,'w').write(data)
+            open(self.filename, 'w').write(data)
+
+
 class PNPBrokerModuleForm(forms.Form):
+
     """ This form is responsible for configuring PNP4Nagios. """
     #enable_pnp= forms.BooleanField(required=False, initial=True,help_text="If set, PNP will be enabled and will graph Nagios Performance Data.")
-    broker_module=forms.CharField(help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
-    config_file=forms.CharField(help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
-    event_broker_options=forms.IntegerField(initial="-1", help_text="Nagios's default of -1 is recommended here. PNP Documentation says you will need at least bits 2 and 3. Only change this if you know what you are doing.")
-    process_performance_data= forms.BooleanField(required=False, initial=True,help_text="PNP Needs the nagios option process_performance_data enabled to function. Make sure it is enabled.")
+    broker_module = forms.CharField(
+        help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
+    config_file = forms.CharField(
+        help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
+    event_broker_options = forms.IntegerField(
+        initial="-1", help_text="Nagios's default of -1 is recommended here. PNP Documentation says you will need at least bits 2 and 3. Only change this if you know what you are doing.")
+    process_performance_data = forms.BooleanField(
+        required=False, initial=True, help_text="PNP Needs the nagios option process_performance_data enabled to function. Make sure it is enabled.")
     #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
     #action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
+
     def clean_broker_module(self):
         """ Raises validation error if filename does not exist """
         filename = self.cleaned_data['broker_module']
         if not os.path.exists(filename):
             raise forms.ValidationError('File not found')
         return filename
+
     def clean_config_file(self):
         """ Raises validation error if filename does not exist """
         filename = self.cleaned_data['config_file']
         if not os.path.exists(filename):
             raise forms.ValidationError('File not found')
         return filename
-    def __init__(self, initial={}, *args,**kwargs):
+
+    def __init__(self, initial={}, *args, **kwargs):
         my_initial = {}
         Model.config.parse()
-        maincfg_values=Model.config.maincfg_values
+        maincfg_values = Model.config.maincfg_values
         self.nagios_configline = None
-        for k,v in Model.config.maincfg_values:
+        for k, v in Model.config.maincfg_values:
             if k == 'broker_module' and v.find('npcdmod.o') > 0:
-                self.nagios_configline=v
+                self.nagios_configline = v
                 v = v.split()
-                my_initial['broker_module']=v.pop(0)
+                my_initial['broker_module'] = v.pop(0)
                 for i in v:
                     if i.find('config_file=') > -1:
-                        my_initial['config_file']=i.split('=',1)[1]
+                        my_initial['config_file'] = i.split('=', 1)[1]
             elif k == "event_broker_options":
                 my_initial[k] = v
         # If view specified any initial values, they overwrite ours
-        for k,v in initial.items():
+        for k, v in initial.items():
             my_initial[k] = v
         if 'broker_module' not in my_initial:
             my_initial['broker_module'] = self.get_suggested_npcdmod_path()
         if 'config_file' not in my_initial:
             my_initial['config_file'] = self.get_suggested_npcd_path()
-        super(self.__class__,self).__init__(initial=my_initial,*args,**kwargs)
+        super(self.__class__, self).__init__(
+            initial=my_initial, *args, **kwargs)
+
     def get_suggested_npcdmod_path(self):
         """ Returns best guess for full path to npcdmod.o file """
         possible_locations = [
@@ -288,6 +373,7 @@ class PNPBrokerModuleForm(forms.Form):
             if os.path.isfile(i):
                 return i
         return i
+
     def get_suggested_npcd_path(self):
         """ Returns best guess for full path to npcd.cfg file """
         possible_locations = [
@@ -297,36 +383,49 @@ class PNPBrokerModuleForm(forms.Form):
             if os.path.isfile(i):
                 return i
         return i
+
     def save(self):
         if 'broker_module' in self.changed_data or 'config_file' in self.changed_data or self.nagios_configline is None:
-            v = "%s config_file=%s" % ( self.cleaned_data['broker_module'], self.cleaned_data['config_file'] )
-            Model.config._edit_static_file(attribute="broker_module", new_value=v, old_value = self.nagios_configline, append=True)
+            v = "%s config_file=%s" % (
+                self.cleaned_data['broker_module'], self.cleaned_data['config_file'])
+            Model.config._edit_static_file(
+                attribute="broker_module", new_value=v, old_value=self.nagios_configline, append=True)
 
-        # We are supposed to handle process_performance_data attribute.. lets do that here
-        process_performance_data = "1" if self.cleaned_data['process_performance_data'] else "0"
-        Model.config._edit_static_file(attribute="process_performance_data", new_value=process_performance_data)
+        # We are supposed to handle process_performance_data attribute.. lets
+        # do that here
+        process_performance_data = "1" if self.cleaned_data[
+            'process_performance_data'] else "0"
+        Model.config._edit_static_file(
+            attribute="process_performance_data", new_value=process_performance_data)
 
         # Update event broker only if it has changed
         name = "event_broker_options"
         if name in self.changed_data:
-            Model.config._edit_static_file(attribute=name, new_value=self.cleaned_data[name])
+            Model.config._edit_static_file(
+                attribute=name, new_value=self.cleaned_data[name])
 
 
 class PluginOutputForm(forms.Form):
-    plugin_output = forms.CharField( widget=forms.Textarea(attrs={ 'wrap':'off', 'cols':'80'}) )
+    plugin_output = forms.CharField(
+        widget=forms.Textarea(attrs={'wrap': 'off', 'cols': '80'}))
+
     def parse(self):
         from pynag import Utils
         plugin_output = self.cleaned_data['plugin_output']
         output = Utils.PluginOutput(plugin_output)
         self.results = output
 
-COMMAND_CHOICES = [('reload','reload'), ('status','status'),('restart','restart'),('stop','stop'),('start','start')]
+COMMAND_CHOICES = [('reload', 'reload'), ('status', 'status'),
+                   ('restart', 'restart'), ('stop', 'stop'), ('start', 'start')]
+
 
 class NagiosServiceForm(forms.Form):
+
     """ Maintains control of the nagios service / reload / restart / etc """
     #path_to_init_script = forms.CharField(help_text="Path to your nagios init script", initial=NAGIOS_INIT)
     #nagios_binary = forms.CharField(help_text="Path to your nagios binary", initial=NAGIOS_BIN)
     #command = forms.ChoiceField(choices=COMMAND_CHOICES)
+
     def save(self):
         #nagios_bin = self.cleaned_data['nagios_bin']
         if "reload" in self.data:
@@ -345,24 +444,25 @@ class NagiosServiceForm(forms.Form):
         #from subprocess import Popen, PIPE
         command = "%s %s" % (nagios_init, command)
         #p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-        code,stdout,stderr = pynag.Utils.runCommand(command)
+        code, stdout, stderr = pynag.Utils.runCommand(command)
         self.stdout = stdout or None
         self.stderr = stderr or None
         self.exit_code = code
 
 
 class SendEmailForm(forms.Form):
+
     """ Form used to send email to one or more contacts regarding particular services
     """
     to = forms.CharField(
         required=True,
         help_text="E-mail address",
-        )
+    )
     message = forms.CharField(
-        widget=forms.widgets.Textarea(attrs={'rows':15, 'cols':40}),
-        required = False,
+        widget=forms.widgets.Textarea(attrs={'rows': 15, 'cols': 40}),
+        required=False,
         help_text="Message that is to be sent to recipients",
-        )
+    )
     add_myself_to_cc = forms.BooleanField(
         required=False,
         help_text="If checked, you will be added automatically to CC"
@@ -371,6 +471,7 @@ class SendEmailForm(forms.Form):
         required=False,
         help_text="If checked, also acknowledge all problems as they are sent"
     )
+
     def __init__(self, remote_user, *args, **kwargs):
         """ Create a new instance of SendEmailForm, contact name and email is used as from address.
         """
@@ -379,13 +480,14 @@ class SendEmailForm(forms.Form):
         self.html_content = "There is now HTML content with this message."
         self.services = []
         self._resolve_remote_user(self.remote_user)
-        super(self.__class__,self).__init__(*args,**kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
+
     def save(self):
 
         subject = "%s sent you a a message through adagios" % self.remote_user
 
         cc_address = []
-        from_address = self._resolve_remote_user( self.remote_user )
+        from_address = self._resolve_remote_user(self.remote_user)
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')
         text_content = self.cleaned_data['message']
@@ -397,9 +499,11 @@ class SendEmailForm(forms.Form):
             comment = "Sent mail to %s" % self.cleaned_data['to']
             self.acknowledge_all_services(comment)
         # Here we actually send some email:
-        msg = EmailMultiAlternatives(subject=subject, body=text_content, from_email=from_address, cc=cc_address, to=to_address)
+        msg = EmailMultiAlternatives(
+            subject=subject, body=text_content, from_email=from_address, cc=cc_address, to=to_address)
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+
     def acknowledge_all_services(self, comment):
         """ Acknowledge all problems in self.services()
         """
@@ -420,21 +524,20 @@ class SendEmailForm(forms.Form):
                                                           author=author,
                                                           comment=comment)
 
-
     def _resolve_remote_user(self, username):
         """ Returns a valid "Full Name <email@example.com>" for remote http authenticated user.
          If Remote user is a nagios contact, then return: Contact_Alias <contact_email>"
          Else if remote user is a valid email address, return that address
          Else return None
         """
-        livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=settings.nagios_config)
+        livestatus = pynag.Parsers.mk_livestatus(
+            nagios_cfg_file=settings.nagios_config)
         try:
-            contact = livestatus.get_contact( username )
+            contact = livestatus.get_contact(username)
             return "%s <%s>" % (contact.get('alias'), contact.get('email'))
         except IndexError:
             # If we get here, then remote_user does not exist as a contact.
             return username
-
 
 
 initial_paste = """
@@ -449,29 +552,30 @@ define service {
     check_command   okc-check_http
 }
 """
+
+
 class PasteForm(forms.Form):
-    paste = forms.CharField( initial=initial_paste, widget=forms.Textarea() )
+    paste = forms.CharField(initial=initial_paste, widget=forms.Textarea())
+
     def parse(self):
         c = pynag.Parsers.config()
         self.config = c
         c.reset()
         paste = self.cleaned_data['paste']
-        # Also convert raw paste into a string so we can display errors at the right place:
+        # Also convert raw paste into a string so we can display errors at the
+        # right place:
         self.pasted_string = paste.splitlines()
         items = c.parse_string(paste)
         c.pre_object_list = items
         c._post_parse()
         all_objects = []
         for object_type, objects in c.data.items():
-            model = pynag.Model.string_to_class.get(object_type, pynag.Model.ObjectDefinition)
+            model = pynag.Model.string_to_class.get(
+                object_type, pynag.Model.ObjectDefinition)
             for i in objects:
-                Class = pynag.Model.string_to_class.get( i['meta']['object_type'] )
+                Class = pynag.Model.string_to_class.get(
+                    i['meta']['object_type'])
                 my_object = Class(item=i)
                 all_objects.append(my_object)
                 print my_object._inherited_attributes
         self.objects = all_objects
-
-
-
-
-

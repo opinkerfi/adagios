@@ -18,7 +18,8 @@ def startup():
     if settings.enable_githandler == True:
         from pynag.Model import EventHandlers
         pynag.Model.eventhandlers.append(
-            pynag.Model.EventHandlers.GitEventHandler(os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
+            pynag.Model.EventHandlers.GitEventHandler(
+                os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
         )
 
 

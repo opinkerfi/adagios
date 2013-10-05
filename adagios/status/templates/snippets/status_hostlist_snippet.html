@@ -30,9 +30,13 @@
             <td>
                 {{ row.last_check|timestamp|timesince }} ago
             </td>
-            {% if row.state  == 0 %}
+            {% if row.last_check == 0 %}
+                <td class="alert alert-info">Pending</td>
+            {% endif %}
+            {% if row.last_check != 0 and row.state  == 0 %}
                 <td class="alert alert-success">Host UP</td>
-            {% else %}
+            {% endif %}
+            {% if row.last_check != 0 and row.state  > 0 %}
                 <td class="alert alert-danger">{% if row.childs %}Network outage {% else %}Host Down {% endif %}</td>
             {% endif %}
             <td>

@@ -30,7 +30,7 @@ def pnp(request, pnp_command='image'):
     result = run_pnp(pnp_command, **request.GET)
     mimetype = "text"
     if pnp_command == 'image':
-        mimetype="image/png"
+        mimetype = "image/png"
     elif pnp_command == 'json':
-        mimetype="application/json"
+        mimetype = "application/json"
     return HttpResponse(result, mimetype)

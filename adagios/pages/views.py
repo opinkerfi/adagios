@@ -23,7 +23,8 @@ def serve_page(request, pagename):
     filename = page_directory + "/" + pagename
     filename = os.path.normpath(filename)
     if not filename.startswith(page_directory):
-        raise ValueError("Please only try to load pages within the pages.d directory")
+        raise ValueError(
+            "Please only try to load pages within the pages.d directory")
 
     if not os.path.isfile(filename):
         raise ValueError("Cannot find page %s" % pagename)

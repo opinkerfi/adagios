@@ -29,10 +29,10 @@ def hosts(fields=None, *args, **kwargs):
     query = list(args)
     if not fields is None:
         # fields should be a list, lets create a Column: query for livestatus
-        if isinstance(fields, (str,unicode) ):
+        if isinstance(fields, (str, unicode)):
             fields = fields.split(',')
         if len(fields) > 0:
-            argument = 'Columns: %s' % ( ' '.join(fields))
+            argument = 'Columns: %s' % (' '.join(fields))
             query.append(argument)
     livestatus_arguments = pynag.Utils.grep_to_livestatus(*query, **kwargs)
 
@@ -40,54 +40,61 @@ def hosts(fields=None, *args, **kwargs):
     hosts = livestatus.get_hosts(*livestatus_arguments)
     return hosts
 
-def services(fields=None,*args,**kwargs):
+
+def services(fields=None, *args, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
     """
-    return adagios.status.utils.get_services(fields=fields,*args,**kwargs)
+    return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
 
-def contacts(fields=None,*args,**kwargs):
+
+def contacts(fields=None, *args, **kwargs):
     """ Wrapper around pynag.Parsers.mk_livestatus.get_contacts()
     """
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
-    return l.get_contacts(*args,**kwargs)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
+    return l.get_contacts(*args, **kwargs)
 
-def emails(*args,**kwargs):
+
+def emails(*args, **kwargs):
     """ Returns a list of all emails of all contacts
     """
-    l = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
     return map(lambda x: x['email'], l.get_contacts('Filter: email !='))
 
 
-def acknowledge(host_name, service_description=None, sticky=1, notify=1,persistent=0,author='adagios',comment='acknowledged by Adagios'):
+def acknowledge(host_name, service_description=None, sticky=1, notify=1, persistent=0, author='adagios', comment='acknowledged by Adagios'):
     """ Acknowledge one single host or service check
 
     """
     if service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.acknowledge_host_problem(host_name=host_name,
-            sticky=sticky,
-            notify=notify,
-            persistent=persistent,
-            author=author,
-            comment=comment,
-        )
+                                                       sticky=sticky,
+                                                       notify=notify,
+                                                       persistent=persistent,
+                                                       author=author,
+                                                       comment=comment,
+                                                       )
     else:
         pynag.Control.Command.acknowledge_svc_problem(host_name=host_name,
-            service_description=service_description,
-            sticky=sticky,
-            notify=notify,
-            persistent=persistent,
-            author=author,
-            comment=comment,
-        )
+                                                      service_description=service_description,
+                                                      sticky=sticky,
+                                                      notify=notify,
+                                                      persistent=persistent,
+                                                      author=author,
+                                                      comment=comment,
+                                                      )
 
-def downtime(host_name,service_description=None,start_time=None,end_time=None,fixed=1,trigger_id=0,duration=7200,author='adagios',comment='Downtime scheduled by adagios',all_services_on_host=False):
+
+def downtime(host_name, service_description=None, start_time=None, end_time=None, fixed=1, trigger_id=0, duration=7200, author='adagios', comment='Downtime scheduled by adagios', all_services_on_host=False):
     """ Schedule downtime for a host or a service """
-    if fixed in (1,'1') and start_time in (None,''):
+    if fixed in (1, '1') and start_time in (None, ''):
         start_time = time.time()
-    if fixed in (1,'1') and end_time in (None,''):
+    if fixed in (1, '1') and end_time in (None, ''):
         end_time = int(start_time) + int(duration)
     if all_services_on_host == True:
-        return pynag.Control.Command.schedule_host_svc_downtime(host_name=host_name,
+        return pynag.Control.Command.schedule_host_svc_downtime(
+            host_name=host_name,
             start_time=start_time,
             end_time=end_time,
             fixed=fixed,
@@ -97,7 +104,8 @@ def downtime(host_name,service_description=None,start_time=None,end_time=None,fi
             comment=comment,
         )
     elif service_description in (None, '', u'', '_HOST_'):
-        return pynag.Control.Command.schedule_host_downtime(host_name=host_name,
+        return pynag.Control.Command.schedule_host_downtime(
+            host_name=host_name,
             start_time=start_time,
             end_time=end_time,
             fixed=fixed,
@@ -108,17 +116,18 @@ def downtime(host_name,service_description=None,start_time=None,end_time=None,fi
         )
     else:
         return pynag.Control.Command.schedule_svc_downtime(host_name=host_name,
-            service_description=service_description,
-            start_time=start_time,
-            end_time=end_time,
-            fixed=fixed,
-            trigger_id=trigger_id,
-            duration=duration,
-            author=author,
-            comment=comment,
-        )
+                                                           service_description=service_description,
+                                                           start_time=start_time,
+                                                           end_time=end_time,
+                                                           fixed=fixed,
+                                                           trigger_id=trigger_id,
+                                                           duration=duration,
+                                                           author=author,
+                                                           comment=comment,
+                                                           )
 
-def reschedule(host_name,service_description, check_time=time.time(), wait=0):
+
+def reschedule(host_name, service_description, check_time=time.time(), wait=0):
     """ Reschedule a check of this service/host
 
     Arguments:
@@ -129,32 +138,39 @@ def reschedule(host_name,service_description, check_time=time.time(), wait=0):
     """
     if check_time is None or check_time is '':
         check_time = time.time()
-    if service_description in (None,'',u'','_HOST_'):
+    if service_description in (None, '', u'', '_HOST_'):
         service_description = ""
-        pynag.Control.Command.schedule_forced_host_check(host_name=host_name,check_time=check_time)
+        pynag.Control.Command.schedule_forced_host_check(
+            host_name=host_name, check_time=check_time)
     else:
-        pynag.Control.Command.schedule_forced_svc_check(host_name=host_name,service_description=service_description,check_time=check_time)
+        pynag.Control.Command.schedule_forced_svc_check(
+            host_name=host_name, service_description=service_description, check_time=check_time)
     if wait == "1":
         livestatus = pynag.Parsers.mk_livestatus()
         livestatus.query("GET services",
-            "WaitObject: %s %s" % (host_name,service_description),
-            "WaitCondition: last_check > %s" % check_time,
-            "WaitTrigger: check",
-            "Filter: host_name = %s" % host_name,
-        )
+                         "WaitObject: %s %s" % (
+                             host_name, service_description),
+                         "WaitCondition: last_check > %s" % check_time,
+                         "WaitTrigger: check",
+                         "Filter: host_name = %s" % host_name,
+                         )
     return "ok"
 
-def comment(author,comment,host_name,service_description=None,persistent=1):
+
+def comment(author, comment, host_name, service_description=None, persistent=1):
     """ Adds a comment to a particular service.
 
     If the "persistent" field is set to zero (0), the comment will be deleted the next time Nagios is restarted.
     Otherwise, the comment will persist across program restarts until it is deleted manually. """
 
-    if service_description in (None,'',u'','_HOST_'):
-        pynag.Control.Command.add_host_comment(host_name=host_name,persistent=persistent,author=author,comment=comment)
+    if service_description in (None, '', u'', '_HOST_'):
+        pynag.Control.Command.add_host_comment(
+            host_name=host_name, persistent=persistent, author=author, comment=comment)
     else:
-        pynag.Control.Command.add_svc_comment(host_name=host_name,service_description=service_description,persistent=persistent,author=author,comment=comment)
+        pynag.Control.Command.add_svc_comment(
+            host_name=host_name, service_description=service_description, persistent=persistent, author=author, comment=comment)
     return "ok"
+
 
 def delete_comment(comment_id, host_name, service_description=None):
     """
@@ -162,11 +178,12 @@ def delete_comment(comment_id, host_name, service_description=None):
     if not host_name:
         # TODO host_name is not used here, why do we need it ?
         pass
-    if service_description in (None,'',u'','_HOST_'):
+    if service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.del_host_comment(comment_id=comment_id)
     else:
         pynag.Control.Command.del_svc_comment(comment_id=comment_id)
     return "ok"
+
 
 def edit(object_type, short_name, attribute_name, new_value):
     """ Change one single attribute for one single object.
@@ -193,7 +210,8 @@ def get_map_data(host_name=None):
     """ Returns a list of (host_name,2d_coords). If host_name is provided, returns a list with only that host """
     livestatus = pynag.Parsers.mk_livestatus()
     all_hosts = livestatus.query('GET hosts', )
-    hosts_with_coordinates = pynag.Model.Host.objects.filter(**{'2d_coords__exists':True})
+    hosts_with_coordinates = pynag.Model.Host.objects.filter(
+        **{'2d_coords__exists': True})
     hosts = []
     connections = []
     for i in all_hosts:
@@ -212,16 +230,17 @@ def get_map_data(host_name=None):
             if len(tmp) != 2:
                 continue
 
-            x,y = tmp
+            x, y = tmp
             host = {}
             host['host_name'] = name
             host['state'] = i['state']
             i['x_coordinates'] = x
             i['y_coordinates'] = y
 
-            hosts.append( i )
+            hosts.append(i)
 
-    # For all hosts that have network parents, lets return a proper line for those two
+    # For all hosts that have network parents, lets return a proper line for
+    # those two
     for i in hosts:
         # Loop through all network parents. If network parent is also in our hostlist
         # Then create a connection between the two
@@ -242,12 +261,13 @@ def get_map_data(host_name=None):
     return result
 
 
-def change_host_coordinates(host_name, latitude,longitude):
+def change_host_coordinates(host_name, latitude, longitude):
     """ Updates longitude and latitude for one specific host """
     host = pynag.Model.Host.objects.get_by_shortname(host_name)
-    coords = "%s,%s" % (latitude,longitude)
+    coords = "%s,%s" % (latitude, longitude)
     host['2d_coords'] = coords
     host.save()
+
 
 def autocomplete(q):
     """ Returns a list of {'hosts':[], 'hostgroups':[],'services':[]} matching search query q
@@ -256,12 +276,17 @@ def autocomplete(q):
         q = ''
     result = {}
     hosts = pynag.Model.Host.objects.filter(host_name__contains=q)
-    services = pynag.Model.Service.objects.filter(service_description__contains=q)
-    hostgroups = pynag.Model.Hostgroup.objects.filter(hostgroup_name__contains=q)
+    services = pynag.Model.Service.objects.filter(
+        service_description__contains=q)
+    hostgroups = pynag.Model.Hostgroup.objects.filter(
+        hostgroup_name__contains=q)
     result['hosts'] = sorted(set(map(lambda x: x.host_name, hosts)))
-    result['hostgroups'] = sorted(set(map(lambda x: x.hostgroup_name, hostgroups)))
-    result['services'] = sorted(set(map(lambda x: x.service_description, services)))
+    result['hostgroups'] = sorted(
+        set(map(lambda x: x.hostgroup_name, hostgroups)))
+    result['services'] = sorted(
+        set(map(lambda x: x.service_description, services)))
     return result
+
 
 def delete_downtime(downtime_id, is_service=True):
     """ Delete one specific downtime with id that matches downtime_id.
@@ -270,13 +295,13 @@ def delete_downtime(downtime_id, is_service=True):
       downtime_id -- Id of the downtime to be deleted
       is_service  -- If set to True or 1, then this is assumed to be a service downtime, otherwise assume host downtime
     """
-    if is_service in (True,1,'1'):
+    if is_service in (True, 1, '1'):
         return pynag.Control.Command.del_svc_downtime(downtime_id)
     else:
         return pynag.Control.Command.del_host_downtime(downtime_id)
 
 
-def top_alert_producers(limit=5, start_time=None,end_time=None):
+def top_alert_producers(limit=5, start_time=None, end_time=None):
     """ Return a list of ["host_name",number_of_alerts]
 
      Arguments:
@@ -288,13 +313,13 @@ def top_alert_producers(limit=5, start_time=None,end_time=None):
     if end_time == '':
         end_time = None
     l = pynag.Parsers.LogFiles()
-    log = l.get_state_history(start_time=start_time,end_time=end_time)
+    log = l.get_state_history(start_time=start_time, end_time=end_time)
     top_alert_producers = collections.defaultdict(int)
     for i in log:
         if 'host_name' in i and 'state' in i and i['state'] > 0:
             top_alert_producers[i['host_name']] += 1
     top_alert_producers = top_alert_producers.items()
-    top_alert_producers.sort(cmp=lambda a,b: cmp(a[1],b[1]), reverse=True)
+    top_alert_producers.sort(cmp=lambda a, b: cmp(a[1], b[1]), reverse=True)
     if limit > len(top_alert_producers):
         top_alert_producers = top_alert_producers[:int(limit)]
     return top_alert_producers
@@ -315,7 +340,8 @@ def log_entries(*args, **kwargs):
 
     """
     l = pynag.Parsers.LogFiles()
-    return l.get_log_entries(*args,**kwargs)
+    return l.get_log_entries(*args, **kwargs)
+
 
 def state_history(start_time=None, end_time=None, host_name=None, service_description=None):
     """ Returns a list of dicts, with the state history of hosts and services. Parameters behaves similar to get_log_entries
@@ -331,7 +357,8 @@ def state_history(start_time=None, end_time=None, host_name=None, service_descri
         service_description = None
 
     l = pynag.Parsers.LogFiles()
-    return l.get_state_history(start_time=start_time, end_time=end_time,host_name=host_name, service_description=service_description)
+    return l.get_state_history(start_time=start_time, end_time=end_time, host_name=host_name, service_description=service_description)
+
 
 def _get_service_model(host_name, service_description=None):
     """ Return one pynag.Model.Service object for one specific service as seen
@@ -346,34 +373,37 @@ def _get_service_model(host_name, service_description=None):
     """
     try:
         return pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
-    except KeyError,e:
+    except KeyError, e:
         host = pynag.Model.Host.objects.get_by_shortname(host_name)
         for i in host.get_effective_services():
             if i.service_description == service_description:
                 return i
         raise e
 
-def command_line(host_name,service_description=None):
+
+def command_line(host_name, service_description=None):
     """ Returns effective command line for a host or a service (i.e. resolves check_command)
     """
     try:
-        if service_description in (None,'','_HOST_'):
+        if service_description in (None, '', '_HOST_'):
             obj = pynag.Model.Host.objects.get_by_shortname(host_name)
         else:
-            obj = _get_service_model(host_name,service_description)
+            obj = _get_service_model(host_name, service_description)
         return obj.get_effective_command_line(host_name=host_name)
     except KeyError:
         return "Could not resolve commandline. Object not found"
 
-def update_check_command(host_name,service_description=None,**kwargs):
+
+def update_check_command(host_name, service_description=None, **kwargs):
     """ Saves all custom variables of a given service
     """
     try:
-        for k,v in kwargs.items():
-            if service_description is None or service_description=='':
+        for k, v in kwargs.items():
+            if service_description is None or service_description == '':
                 obj = pynag.Model.Host.objects.get_by_shortname(host_name)
             else:
-                obj = pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
+                obj = pynag.Model.Service.objects.get_by_shortname(
+                    "%s/%s" % (host_name, service_description))
             if k.startswith("$_SERVICE") or k.startswith('$ARG'):
                 obj.set_macro(k, v)
                 obj.save()
@@ -397,7 +427,8 @@ def get(object_type, *args, **kwargs):
     if 'name__contains' in kwargs and object_type == 'services':
         print "ok fixing service"
         name = str(kwargs['name__contains'])
-        livestatus_arguments = filter(lambda x: x.startswith('name'), livestatus_arguments)
+        livestatus_arguments = filter(
+            lambda x: x.startswith('name'), livestatus_arguments)
         livestatus_arguments.append('Filter: host_name ~ %s' % name)
         livestatus_arguments.append('Filter: description ~ %s' % name)
         livestatus_arguments.append('Or: 2')

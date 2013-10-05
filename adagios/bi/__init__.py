@@ -10,6 +10,7 @@ import adagios.settings
 
 
 class BusinessProcess(object):
+
     """ Wrapper class around pynag Business Processes.
 
      Essentially BusinessProcesses are nothing more than a grouping of nagios
@@ -81,7 +82,8 @@ class BusinessProcess(object):
         """
         try:
             if self.status_method not in self.status_calculation_methods:
-                self.errors.append("Unknown state calculation method %s" % str(self.status_method))
+                self.errors.append(
+                    "Unknown state calculation method %s" % str(self.status_method))
                 return 3
             elif self.status_method == 'always_ok':
                 return 0
@@ -96,7 +98,8 @@ class BusinessProcess(object):
             elif self.status_method == 'use_business_rules':
                 return self.run_business_rules()
             else:
-                self.errors.append("We have not implemented how to use status method %s" % str(self.status_method))
+                self.errors.append(
+                    "We have not implemented how to use status method %s" % str(self.status_method))
                 return 3
         except Exception, e:
             self.errors.append(e)
@@ -271,7 +274,8 @@ class BusinessProcess(object):
         elif macroname == 'friendly_state':
             return self.get_human_friendly_status(resolve_macros=False)
         else:
-            raise PynagError("Dont know how to resolve macro named '%s'" % macroname)
+            raise PynagError(
+                "Dont know how to resolve macro named '%s'" % macroname)
 
     def add_process(self, process_name, process_type=None, **kwargs):
         """ Add one business process to self.data """
@@ -302,8 +306,10 @@ class BusinessProcess(object):
         if not self.processes:
             return result
         for i in self.processes:
-            bp = get_business_process(i.get('process_name'), i.get('process_type'))
-            # If we have specific overwrites in our local config, lets apply them here
+            bp = get_business_process(
+                i.get('process_name'), i.get('process_type'))
+            # If we have specific overwrites in our local config, lets apply
+            # them here
             bp.data.update(i)
             result.append(bp)
         return result
@@ -329,7 +335,8 @@ class BusinessProcess(object):
         data['metric_name'] = metric_name
         if not self.graphs:
             return
-        self.graphs = filter(lambda x: frozenset(x) != frozenset(data), self.graphs)
+        self.graphs = filter(
+            lambda x: frozenset(x) != frozenset(data), self.graphs)
 
     def get_pnp_last_value(self, host_name, service_description, metric_name):
         """ Looks up current nagios perfdata via mk-livestatus and returns the last value for a specific metric (str)
@@ -362,13 +369,15 @@ class BusinessProcess(object):
         # If we are renaming a process, take special
         # Precautions that we are not overwriting a current one
         if self.name != self._original_name and self.name in get_all_process_names():
-            raise PynagError("Cannot rename process to %s. Another process with same name already exists" % (self.name))
+            raise PynagError(
+                "Cannot rename process to %s. Another process with same name already exists" % (self.name))
         # Look for a json object that matches our name
         for i, data in enumerate(json_data):
             current_name = data.get('name', None)
             if not current_name:
                 continue
-            if current_name == self._original_name:  # We found our item, lets save it
+            # We found our item, lets save it
+            if current_name == self._original_name:
                 json_data[i] = self.data
                 break
         else:
@@ -398,7 +407,8 @@ class BusinessProcess(object):
         state[3] = self.state_3
         human_friendly_state = state.get(self.get_status(), "unknown")
         if resolve_macros:
-            human_friendly_state = self.resolve_macrostring(human_friendly_state)
+            human_friendly_state = self.resolve_macrostring(
+                human_friendly_state)
         return human_friendly_state
 
     def _read_file(self, filename=None):
@@ -473,6 +483,7 @@ class BusinessProcess(object):
 
 
 class Hostgroup(BusinessProcess):
+
     """ Business Process object that represents the state of one hostgroup
     """
     process_type = 'hostgroup'
@@ -485,10 +496,12 @@ class Hostgroup(BusinessProcess):
         self._livestatus = pynag.Parsers.mk_livestatus()
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
         self.display_name = self._hostgroup.get('alias')
-        self.notes = self._hostgroup.get('notes') or "You are looking at the hostgorup %s" % (self.name)
+        self.notes = self._hostgroup.get(
+            'notes') or "You are looking at the hostgorup %s" % (self.name)
 
         # Get information about child hostgroups
-        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(self.name)
+        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(
+            self.name)
         subgroups = self._pynag_object.hostgroup_members or ''
         subgroups = subgroups.split(',')
 
@@ -525,9 +538,11 @@ class Hostgroup(BusinessProcess):
         if self.status_method == 'worst_host_state':
             livestatus_objects = self._hostgroup.get('members_with_state', [])
         else:
-            services = self._livestatus.get_services('Filter: host_groups >= %s' % self.name)
+            services = self._livestatus.get_services(
+                'Filter: host_groups >= %s' % self.name)
             livestatus_objects = map(
-                lambda x: [x.get('host_name') + '/' + x.get('description'), x.get('state')],
+                lambda x: [x.get('host_name') + '/' + x.get(
+                    'description'), x.get('state')],
                 services
             )
         for i in livestatus_objects:
@@ -540,16 +555,19 @@ class Hostgroup(BusinessProcess):
 # TODO: Servicegroup implementation in incomplete. Test it, see if hostgroup Host and servicegroup can
 # be abstracted
 class Servicegroup(BusinessProcess):
+
     """ Business Process object that represents the state of one hostgroup """
     status_calculation_methods = ['worst_host_state']
     _default_status_calculation_method = 'worst_service_state'
 
     def __init__(self, name):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        self._livestatus = pynag.Parsers.mk_livestatus(
+            nagios_cfg_file=adagios.settings.nagios_config)
         self._servicegroup = self._livestatus.get_servicegroup(name)
         self.servicegroup_name = name
         self.notes = self.servicegroup.get('notes')
-        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(name)
+        self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(
+            name)
         if not display_name:
             display_name = self._servicegroup.get('alias')
         self.display_name = display_name
@@ -572,7 +590,8 @@ class Servicegroup(BusinessProcess):
          Otherwise worst service state
          OK if there are no service or host problems
         """
-        servicegroup = self._livestatus.get_servicegroup(self.servicegroup_name)
+        servicegroup = self._livestatus.get_servicegroup(
+            self.servicegroup_name)
 
         service_status = servicegroup.get('worst_service_state')
         if service_status == 3:
@@ -592,7 +611,8 @@ class Service(BusinessProcess):
             host_name = tmp[0]
             service_description = tmp[1]
             self._livestatus = pynag.Parsers.mk_livestatus()
-            self._service = self._livestatus.get_service(host_name, service_description)
+            self._service = self._livestatus.get_service(
+                host_name, service_description)
 
     def get_status(self):
         try:
@@ -612,7 +632,8 @@ class Host(BusinessProcess):
             self._livestatus = pynag.Parsers.mk_livestatus()
             self._host = self._livestatus.get_host(self.name)
             self.display_name = self._host.get('display_name') or self.name
-            self.notes = self._host.get('notes') or 'You are looking at the host %s' % self.name
+            self.notes = self._host.get(
+                'notes') or 'You are looking at the host %s' % self.name
 
     def get_status(self):
         try:
@@ -626,7 +647,8 @@ class Host(BusinessProcess):
         elif method == 'host_state':
             return self._host.get('state', 3)
         else:
-            raise PynagError("%s is not a status calculation method i know" % method)
+            raise PynagError(
+                "%s is not a status calculation method i know" % method)
 
     def get_processes(self):
         self.load()
@@ -642,6 +664,7 @@ class Host(BusinessProcess):
 
 
 class Domain(Host):
+
     """ Special class that is supposed to represent a whole domain
 
     Will autocreate the domain if it exists
@@ -657,7 +680,8 @@ class Domain(Host):
             self.create_host()
             self._host = self._livestatus.get_hostgroup(self.name)
         self.display_name = self._host.get('display_name') or self.name
-        self.notes = self._host.get('notes') or 'You are looking at the host %s' % self.name
+        self.notes = self._host.get(
+            'notes') or 'You are looking at the host %s' % self.name
 
     def create_host(self):
         """ Create a new Host object in nagios config and reload nagios  """
@@ -752,8 +776,10 @@ def get_business_process(process_name, process_type=None, **kwargs):
 
 
 class PNP4NagiosGraph:
+
     """ Represents one single PNP 4 nagios graph
     """
+
     def __init__(self, host_name, service_description, label):
         """
         """
@@ -762,7 +788,8 @@ class PNP4NagiosGraph:
         self.label = label
 
     def get_image_urls(self):
-        json_str = adagios.pnp.functions.run_pnp('json', host=self.host_name, srv=self.service_description)
+        json_str = adagios.pnp.functions.run_pnp(
+            'json', host=self.host_name, srv=self.service_description)
         graphs = json.loads(json_str)
         # only use graphs with same label
         graphs = filter(lambda x: x['ds_name'] == self.label, graphs)
