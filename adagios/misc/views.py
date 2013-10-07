@@ -210,17 +210,16 @@ def nagios_service(request):
             c['stderr'] = form.stderr
             c['command'] = form.command
     c['form'] = form
-    sleep(1)
     service = pynag.Control.daemon(
         nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
     sleep(1)
     c['status'] = s = service.status()
     if s == 0:
-        c['friendly_status'] = "started"
+        c['friendly_status'] = "running"
     elif s == 1:
-        c['friendly_status'] = "stopped"
+        c['friendly_status'] = "not running"
     else:
-        c['friendly_status'] = 'unknown'
+        c['friendly_status'] = 'unknown (exit status %s)' % (s)
     needs_reload = pynag.Model.config.needs_reload()
     if needs_reload == True:
         c['messages'].append(

@@ -10,22 +10,6 @@
 {% block content %}
 
 
-
-
-    <div class="alert alert-info">
-        <b>Nagios Service is:</b>
-            {% if status  == 0 %}
-                <b>Started</b>
-            {% endif %}
-            {% if status  == 1 %}
-                <b>Stopped</b>
-            {% endif %}
-            {% if status  > 1 %}
-                <b>unknown</b> ("service nagios status" returned {{ status }})
-            {% endif %}
-    </div>
-
-
     {% if form %}
         <form action="#" method="post" class="form-horizontal">{% csrf_token %}
             {% if status == 0 %}
@@ -43,6 +27,7 @@
                 <button class="btn" type="submit" name="reload">Reload</button>
             {% endif %}
             <button class="btn " type="submit" name="status">Status</button>
+             <button class="btn " type="submit" name="verify">Verify</button>
         </form>
     {% else %}
         No form found
@@ -51,7 +36,8 @@
 
 
     {% if command %}
-        <div class="alert alert-info">Executing <b>service nagios {{ command }}</b>
+        <div >
+            Executing <b>nagios {{ command }}</b>
             {% if stderr %}
                 <h4>Errors</h4>
                 <pre>{{ stderr }}</pre>
@@ -81,6 +67,9 @@
 
     {% endif %}
 
+    <hr>
+    <div>Nagios Service is <b>{{ friendly_status }}</b>.</div>
+
 {% endblock %}
 
 
@@ -90,6 +79,10 @@
 
 {% block header %} {{ block.super }} {% endblock %}
 
-{% block sidebar %} {{ block.super }} {% endblock %}
+{% block sidebar %}
+    <h5>Diagnostics</h5>
+        <div>Nagios Service is {{ friendly_status }}.</div>
+
+{% endblock %}
 
 {% block footer %} {{ block.super }} {% endblock %}

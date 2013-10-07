@@ -12,6 +12,7 @@ import re
 from pynag import Model
 from pynag import Parsers
 from pynag import Control
+from pynag import Utils
 from pynag import __version__
 from socket import gethostbyname_ex
 import adagios.settings
@@ -325,3 +326,38 @@ def check_command(host_name, service_description, name=None, check_command=None,
         macros[i] = my_object.get_macro(i) or ''
 
     return macros
+
+def verify_configuration():
+    """ Verifies nagios configuration and returns the output of nagios -v nagios.cfg
+    """
+    binary = adagios.settings.nagios_binary
+    config = adagios.settings.nagios_config
+    command = "%s -v '%s'" % (binary, config)
+    code, stdout, stderr = Utils.runCommand(command)
+
+    result = {}
+    result['return_code'] = code
+    result['output'] = stdout
+    result['errors'] = stderr
+
+    return result
+
+    total_errors = 0
+    total_warnings = 0
+
+    for line in stdout.splitlines():
+        output = {}
+        output['tags'] = tags = []
+        output['content'] = line
+        if line.lower().startswith('warning'):
+            tags.append('warning')
+            total_warnings += 1
+            print line
+        if line.lower().startswith('error'):
+            tags.append('error')
+            total_errors += 1
+        result['output'].append(output)
+        result['error_count'] = total_errors
+        result['warning_count'] = total_warnings
+    return result
+
