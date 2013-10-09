@@ -139,8 +139,11 @@ class BusinessProcess(object):
         # Where the keys are tags, and the values are a list of statuses
         # untagged processes go in with the tag ''
         # and every processes will also go in with the tag '*'
+        processes = self.get_processes()
+        if not processes:
+            return 3
         tags = defaultdict(list)
-        for i in self.get_processes():
+        for i in processes:
             i_status = i.get_status()
             i_tags = i.data.get('tags', '').split(',')
             for tag in i_tags:
