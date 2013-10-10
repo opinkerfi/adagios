@@ -726,6 +726,7 @@ def _add_statistics_to_hosts(hosts):
 @error_handler
 def status_index(request):
     c = adagios.status.utils.get_statistics(request)
+    c['services'] = adagios.status.utils.get_services(request, 'unhandled')
     #c['top_alert_producers'] = adagios.status.rest.top_alert_producers(limit=5)
 
     return render_to_response('status_index.html', c, context_instance=RequestContext(request))

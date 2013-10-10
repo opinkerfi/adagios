@@ -9,13 +9,13 @@
 {% block action_buttons %}{% endblock %}
 
 {% block content %}
-
+        <div class="row-fluid" style="margin-top: 40px;"> &nbsp;</div>
+    <div class="row-fluid">
         <div class="span4">
-            <h3>Status Overview</h3>
-            <table class="table well table-condensed">
+            <table class="table  well table-condensed">
                 <thead>
                 <tr>
-                    <th>Description</th>
+                    <th>Status Overview</th>
                     <th>#</th>
                     <th><i class="glyph-warning-sign" title="Unhandled Problems"></i></th>
                 </tr>
@@ -28,7 +28,7 @@
                         {% if  total_unhandled_network_problems == 0 %}
                         {% else %}
 
-                                <a href="{%  url status.views.services %}?state__isnot=0&acknowledged__isnot=1">
+                                <a href="{%  url status.views.status_parents %}?unhandled">
                                     {{ total_unhandled_network_problems }}
                                 </a>
 
@@ -41,7 +41,7 @@
                     <td>
                         {% if  unhandled_hosts == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status_host %}?state__isnot=0&acknowledged=0&">
+                            <a href="{%  url status.views.status_host %}?unhandled">
                                 {{ unhandled_hosts }}
                             </a>
                         {% endif %}
@@ -53,7 +53,7 @@
                     <td>
                         {% if  unhandled_services == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.services %}?state__isnot=0&acknowledged=0&">
+                            <a href="{%  url status.views.services %}?unhandled">
                                 {{ unhandled_services }}
                             </a>
                         {% endif %}
@@ -62,9 +62,12 @@
                 </tbody>
             </table>
         </div>
-        <div class="span4">
-            <h3>Current Health</h3>
-            <table class="table well">
+        <div class="span4" >
+            <table class="table well table-condensed">
+                <thead>
+                <tr><th colspan="2">Current Health</th></tr>
+                </thead>
+                <tbody>
                 <tr>
                     <td  style="white-space: nowrap" width=20px>All hosts</td>
                     <th>
@@ -89,20 +92,29 @@
 
                     </th>
                 </tr>
+                </tbody>
+
             </table>
         </div>
-        <div class="span4">
-            <h3>Top Alert Producers</h3>
+        <div class="span4" >
             <table class="table-condensed well table" id="top_alert_producers">
-                <tr>
-                    <th>Host</th>
-                    <th>Recent Alerts</th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>Top Alert Producers</th>
+                        <th>Recent Alerts</th>
+                    </tr>
+                </thead>
                 <tr id="top_alert_producers_loading">
                     <td id="top_alert_loading_message" colspan=2><img src="{% url media path="select2/spinner.gif" %}"> Loading...</td>
                 </tr>
             </table>
         </div>
+    <hr>
+    </div>
+    <div id="servicelist_in_overview">
+        <h4>Unhandled service problems</h4>
+        {% include "snippets/status_servicelist_snippet.html" %}
+    </div>
     <!--
     <div class="span5">
         <h3>Nagios Components</h3>
@@ -223,7 +235,7 @@
 
     $(document).ready(function() {
         // Hide the action buttons
-        $('#action_buttons').hide();
+        //$('#action_buttons').hide();
 
         // Update top_alert_producers
         update_top_alert_producers(5);
