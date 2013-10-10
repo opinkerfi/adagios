@@ -198,7 +198,6 @@ def edit(object_type, short_name, attribute_name, new_value):
       edit('service', 'localhost/Ping', 'contactgroups', 'None')
     """
     # TODO : MK Livestatus access acording to remote_user
-    time.sleep(2)
     c = pynag.Model.string_to_class[object_type]
     my_obj = c.objects.get_by_shortname(short_name)
     my_obj[attribute_name] = new_value
@@ -440,3 +439,30 @@ def get(object_type, *args, **kwargs):
         for i in results:
             i['name'] = i.get('host_name') + "/" + i.get('description')
     return results
+
+
+def get_business_process(process_name=None, process_type=None):
+    """ Returns a list of all processes in json format.
+
+    If process_name is specified, return all sub processes.
+    """
+    import adagios.bi
+    print str(process_name) == "blabla"
+    print repr(process_name)
+    if not process_name:
+        processes = adagios.bi.get_all_processes()
+    else:
+        process = adagios.bi.get_business_process(str(process_name), process_type)
+        print process
+        processes = process.get_processes()
+    result = []
+    # Turn processes into nice json
+    for i in processes:
+        json = {}
+        json['state'] = i.get_status()
+        json['name'] = i.name
+        json['display_name'] = i.display_name
+        json['subprocess_count'] = len(i.processes)
+        json['process_type'] = i.process_type
+        result.append(json)
+    return result

@@ -212,7 +212,6 @@ def nagios_service(request):
     c['form'] = form
     service = pynag.Control.daemon(
         nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
-    sleep(1)
     c['status'] = s = service.status()
     if s == 0:
         c['friendly_status'] = "running"
