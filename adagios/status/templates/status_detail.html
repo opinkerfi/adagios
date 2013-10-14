@@ -71,10 +71,10 @@
                 <td>Check output</td>
                 <td>
                     {% if my_object.long_plugin_output %}
-                    <pre>{{ my_object.plugin_output }}
+                    <pre id="plugin_output">{{ my_object.plugin_output }}
 {{ my_object.long_plugin_output }}</pre>
                     {% else %}
-                    <pre>{{ my_object.plugin_output }}</pre>
+                    <pre id="plugin_output">{{ my_object.plugin_output }}</pre>
                     {% endif %}
                 </td>
             </tr>
@@ -567,6 +567,8 @@
                         console.log(data);
                     });
 
+            // If there happens to be any html in the plugin output, lets render it
+            $("#plugin_output").html($("#plugin_output").text());
 
         });
         // When graphs link is clicked, simulate a click on 25hours tab as well

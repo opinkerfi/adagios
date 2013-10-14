@@ -220,9 +220,6 @@ def nagios_service(request):
     else:
         c['friendly_status'] = 'unknown (exit status %s)' % (s)
     needs_reload = pynag.Model.config.needs_reload()
-    if needs_reload == True:
-        c['messages'].append(
-            'Nagios Service Needs to be reloaded to apply latest configuration changes. Click Reload to reload Nagios Service now.')
     c['needs_reload'] = needs_reload
     return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))
 
