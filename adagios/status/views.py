@@ -194,6 +194,48 @@ def services(request):
 
 
 @error_handler
+def snippets_log(request):
+    """ Returns a html stub with the  snippet_statehistory_snippet.html
+    """
+    host_name = request.GET.get('host_name')
+    service_description = request.GET.get('service_description')
+    if not host_name:
+        raise Exception("host_name is required")
+    if not service_description or service_description == '_HOST_':
+        # Get host logs
+        log = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
+            host_name=host_name, service_description=None)
+    else:
+        log = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
+            host_name=host_name, service_description=service_description)
+
+    c = {'log':log}
+    # Create some state history progress bar from our logs:
+    if len(c['log']) > 0:
+        log = c['log']
+        c['start_time'] = start_time = log[0]['time']
+        c['end_time'] = end_time = log[-1]['time']
+        now = time.time()
+
+        total_duration = now - start_time
+        state_hist = []
+        start = start_time
+        last_item = None
+        css_hint = {}
+        css_hint[0] = 'success'
+        css_hint[1] = 'warning'
+        css_hint[2] = 'danger'
+        css_hint[3] = 'unknown'
+        for i in log:
+            i['duration_percent'] = 100 * i['duration'] / total_duration
+            i['bootstrap_status'] = css_hint[i['state']]
+
+
+    return render_to_response('snippets/status_statehistory_snippet.html', locals(), context_instance=RequestContext(request))
+
+
+
+@error_handler
 def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """
     c = {}
@@ -225,9 +267,8 @@ def status_detail(request, host_name=None, service_description=None):
             return status_detail(request, host_name, service_description=tmp)
         primary_object = my_host
         c['service_description'] = '_HOST_'
-        c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
-            host_name=host_name, service_description=None)
-
+        #c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
+        #    host_name=host_name, service_description=None)
     else:
         try:
             c['service'] = my_service = livestatus.get_service(
@@ -237,8 +278,8 @@ def status_detail(request, host_name=None, service_description=None):
             my_service['short_name'] = "%s/%s" % (
                 my_service['host_name'], my_service['description'])
             primary_object = my_service
-            c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
-                host_name=host_name, service_description=service_description)
+            #c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
+            #    host_name=host_name, service_description=service_description)
         except IndexError:
             c['errors'].append(
                 "Could not find any service named '%s'" % service_description)
@@ -275,25 +316,6 @@ def status_detail(request, host_name=None, service_description=None):
         c['network_parents'] = reversed(_get_network_parents(host_name))
     except Exception, e:
         c['errors'].append(e)
-    # Create some state history progress bar from our logs:
-    if len(c['log']) > 0:
-        log = c['log']
-        c['start_time'] = start_time = log[0]['time']
-        c['end_time'] = end_time = log[-1]['time']
-        now = time.time()
-
-        total_duration = now - start_time
-        state_hist = []
-        start = start_time
-        last_item = None
-        css_hint = {}
-        css_hint[0] = 'success'
-        css_hint[1] = 'warning'
-        css_hint[2] = 'danger'
-        css_hint[3] = 'unknown'
-        for i in log:
-            i['duration_percent'] = 100 * i['duration'] / total_duration
-            i['bootstrap_status'] = css_hint[i['state']]
 
     # Lets get some graphs
     try:

@@ -24,7 +24,7 @@
     <ul class="nav nav-tabs" id="objecttab">
         <li><a href="#general" data-toggle="tab">General</a></li>
         <li><a href="#information" data-toggle="tab">Information</a></li>
-        <li><a href="#events" data-toggle="tab">History</a></li>
+        <li><a href="#events" data-toggle="tab" id="history_link">History</a></li>
         <li><a href="#graphs" data-toggle="tab" id="graphs_link">Graphs</a></li>
         <li><a href="#custom_variables" data-toggle="tab">Custom Variables</a></li>
         <li><a href="#other" data-toggle="tab">Debug</a></li>
@@ -361,11 +361,7 @@
 
     </div>
     <div class="tab-pane" id="events">
-        {% if log %}
-            {% include "snippets/status_statehistory_snippet.html" %}
-        {% else %}
-            Host has no recent log entries. Try <a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">Log view</a> to search in older logs.
-        {% endif %}
+        <div id="logdiv">This tab should update when the tab is clicked</div>
     </div>
 
 
@@ -570,10 +566,20 @@
             // If there happens to be any html in the plugin output, lets render it
             $("#plugin_output").html($("#plugin_output").text());
 
+
         });
         // When graphs link is clicked, simulate a click on 25hours tab as well
         $('#graphs_link').click(function(event) {
             $('#25hours').click();
+
+
+        });
+        // When history link is clicked, load the log history for this object
+        $('#history_link').click(function(event) {
+            // Load log history in its own tab
+            $('#logdiv').html("Loading ...");
+            var snippet_url = '{% url adagios.status.views.snippets_log %}?host_name={{ host_name }}&service_description={{ service_description }}';
+            $('#logdiv').load(snippet_url);
 
         });
         // Load graphs when you click a new timeperiod under graphs tab
