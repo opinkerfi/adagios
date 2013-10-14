@@ -31,11 +31,9 @@ import okconfig.network_scan
 from pynag import Model
 
 
-def addcomplete(request, c=None):
+def addcomplete(request, c={}):
     """ Landing page when a new okconfig group has been added
     """
-    if not c:
-        c = {}
     return render_to_response('addcomplete.html', c, context_instance=RequestContext(request))
 
 
@@ -97,7 +95,7 @@ def addhost(request):
                 c['filelist'] = okconfig.addhost(host_name=host_name, group_name=group_name, address=address,
                                                  force=force, templates=templates)
                 c['host_name'] = host_name
-                return HttpResponseRedirect(reverse('adagios.okconfig_.views.edit', args=[host_name]))
+                return addcomplete(request, c)
             except Exception, e:
                 c['errors'].append("error adding host: %s" % e)
         else:
