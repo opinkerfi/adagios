@@ -453,6 +453,30 @@ class NagiosServiceForm(forms.Form):
         self.stderr = stderr or None
         self.exit_code = code
 
+    def verify(self):
+        """ Run "nagios -v nagios.cfg" and returns errors/warning
+
+        Returns:
+        [
+            {'errors': []},
+            {'warnings': []}
+        ]
+        """
+        nagios_binary = settings.nagios_binary
+        nagios_config = settings.nagios_config
+        command = "%s -v '%s'" % (nagios_binary, nagios_config)
+        code, stdout, stderr = pynag.Utils.runCommand(command)
+        self.stdout = stdout or None
+        self.stderr = stderr or None
+        self.exit_code = code
+
+        for line in stdout.splitlines():
+            line = line.strip()
+            warnings = []
+            errors = []
+            if line.lower.startswith('warning:'):
+                warning = {}
+
 
 class SendEmailForm(forms.Form):
 
