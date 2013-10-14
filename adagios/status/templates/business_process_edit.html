@@ -79,11 +79,11 @@
                             <td>{{ i.processes|length }}</td>
                             <td>{{ i.tags }}</td>
                             <td>
-                                <form action="" method="post">
+                                <form action="asd" method="POST">
                                     {% csrf_token %}
                                     <input type="hidden" name="process_name" value="{{ i.name }}">
                                     <input type="hidden" name="process_type" value="{{ i.process_type }}">
-                                    <button name="remove_process" title="Remove group from this business process" class="close status_critical" >×</button>
+                                    <button name="remove_process" type=submit title="Remove group from this business process" class="close status_critical" >×</button>
                                 </form>
                             </td>
                         </tr>
@@ -212,7 +212,7 @@
     <a class="btn" id="open_subprocess_modal" data-toggle="modal" data-target="#add_subprocess_modal" href="#">
         <i class="glyph-circle-plus " title="Add new ..."> </i> Add sub item
     </a>
-    <a class="btn" id="open_public_view" href="{% url bi.views.view bp.name %}">
+    <a class="btn" id="open_public_view" href="{% url bi.views.view bp.process_type bp.name  %}">
         <i class="glyph-eye-open " title="Add new ..."> </i> Public view for this process
     </a>
     <a class="btn" id="open_graphs_modal" data-toggle="modal" data-target="#add_graph_modal" href="#">
