@@ -38,7 +38,20 @@ jQuery ->
       button.addClass "active"  if button.val() is hidden.val()
 
 
+jQuery ->
+  $('input.livestatus').each ->
+    $this = $(this)
+    object_type = $this.attr('data-object-type')
+    return false if object_type is undefined
 
+    query_function = (query) ->
+      adagios.objectbrowser.select2_objects_query object_type, query
+
+    $this.select2
+      minimumInputLength: 0
+      query: query_function
+    $this.css 'width', '400px'
+    return true
 
 $.extend $.fn.dataTableExt.oStdClasses,
   sSortAsc: "header headerSortDown"
