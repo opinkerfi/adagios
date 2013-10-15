@@ -76,14 +76,16 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         arguments.append('Filter: address ~~ %s' % i)
         arguments.append('Filter: plugin_output ~~ %s' % i)
         arguments.append('Or: 3')
-
-    if not fields is None:
+    if fields is None:
+        fields = [
+            'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state',
+            'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
     # fields should be a list, lets create a Column: query for livestatus
-        if isinstance(fields, (str, unicode)):
-            fields = fields.split(',')
-        if len(fields) > 0:
-            argument = 'Columns: %s' % (' '.join(fields))
-            arguments.append(argument)
+    if isinstance(fields, (str, unicode)):
+        fields = fields.split(',')
+    if len(fields) > 0:
+        argument = 'Columns: %s' % (' '.join(fields))
+        arguments.append(argument)
     l = livestatus(request)
     result = l.get_hosts(*arguments)
 
