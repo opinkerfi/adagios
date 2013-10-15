@@ -578,7 +578,9 @@
         $('#history_link').click(function(event) {
             // Load log history in its own tab
             $('#logdiv').html("Loading ...");
-            var snippet_url = '{% url adagios.status.views.snippets_log %}?host_name={{ host_name }}&service_description={{ service_description }}';
+            var host_name = encodeURIComponent("{{ host_name }}");
+            var service_description = encodeURIComponent("{{ service_description }}");
+            var snippet_url = '{% url adagios.status.views.snippets_log %}?host_name=' + host_name + '&service_description=' + service_description;
             $('#logdiv').load(snippet_url);
 
         });
