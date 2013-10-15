@@ -46,6 +46,7 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
         Returns:
             List of ObjectDefinition
     '''
+
     tmp = Model.ObjectDefinition.objects.filter(
         object_type=object_type, **kwargs)
     with_fields = with_fields.split(',')

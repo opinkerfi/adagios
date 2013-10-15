@@ -681,7 +681,7 @@
 
         }
         // Function to edit a single attribute of an object
-        function change_attribute(object_type,short_name,attribute_name,new_value, success) {
+        function change_attribute(object_type,short_name,attribute_name,new_value, success, error) {
             my_data  = {
                 "object_type": object_type,
                 "short_name": short_name,
@@ -695,6 +695,9 @@
                 async: true,
                 success: function(data) {
                     success(data);
+                },
+                error: function(data) {
+                    error(data);
                 },
                 contentType: "application/json",
                 dataType: 'json'
