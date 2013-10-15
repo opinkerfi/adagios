@@ -78,7 +78,7 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         arguments.append('Or: 3')
     if fields is None:
         fields = [
-            'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state',
+            'host_name', 'plugin_output', 'last_check', 'host_state', 'state',
             'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
     # fields should be a list, lets create a Column: query for livestatus
     if isinstance(fields, (str, unicode)):
