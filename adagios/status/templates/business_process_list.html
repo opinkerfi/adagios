@@ -10,55 +10,114 @@
 {% load adagiostags %}
 
 {% block content %}
-    Found {{ processes|length }} processes.
-    <table class="table table-condensed well searchtable">
-        <thead>
-            <tr>
-                <th class="small">
-                    <div class="btn-group">
-                        <a data-toggle="dropdown" ><input type="checkbox" id="select_many"></a>
-                        <ul class="dropdown-menu">
-                            <li><a id="select_all"> All</a></li>
-                            <li><a id="select_none"> None</a></li>
-                        </ul>
-                    </div>
-                </th>
-                <th>Process Name</th>
-                <th>Alias</th>
-                <th>Sub Processes</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in processes %}
-                <tr class="mainrow">
-                    <td class="small searchable">
-                        <input type=checkbox class="chkbox" name="{{ i.process_type }}" value="{{ i.name }}">
-                    </td>
+    <style>
+    .table tbody tr .businessprocess-subrow {
+        padding-top: 0px;
+        padding: 0px;
+        border-top: 0px;
+    }
+    .nomargin {
+        margin: 0px;
+    }
+    #processes, #processes li ul {
+        list-style-type: none;
+        margin-top: 5px;
+    }
+    </style>
+        <ul class="nav nav-tabs" id="objecttab">
+        <li><a href="#bp" class="active" data-toggle="tab">Business Processes</a></li>
+        <li><a href="#thruk" class="" data-toggle="tab">Thruk Processes</a></li>
+    </ul>
+    <div class="tab-content">
 
-                    <td>
-                        <div title="State is '{{ i.get_status }}'" class="circle state_{{ i.get_status }}"></div>
+        <div class="tab-pane active" id="bp">
+            <ul id="processes"></ul>
+        </div>
+        <div class="tab-pane " id="thruk">
+            No thruk business processes are configured.
+        </div>
+    </div>
 
-                        <a href="{% url adagios.bi.views.edit i.name %} ">{{ i.name }}</a>
-                    </td>
-                    <td>{{ i.display_name }}</td>
-                    <td>{{ i.processes|length }}</td>
+    <table class="hide" id="bi_table" class="table well">
+    <thead id="thead-master">
+        <tr>
+            <th class="small">
+            </th>
 
-                    <td>
-                        <a class="btn btn-mini btn-primary" href="{% url adagios.bi.views.edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> edit </a>
-                        <a class="btn btn-mini btn-primary" href="{% url adagios.bi.views.view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> view</a>
-                        <a class="btn btn-mini btn-danger" href="{% url adagios.bi.views.delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> delete</a>
-                    </td>
-                <td>
-                    <form class="nomargin" action="{% url adagios.bi.views.change_status_calculation_method i.name %}" method="post">{% csrf_token %}
-                    {% for x in i.status_calculation_methods %}
-                        <button name="{{ x }}" type="submit" class="btn btn-mini {% if x == 'always_major' %}btn-danger{% endif %}{% if x == 'always_minor' %}btn-warning{% endif %}{% if x == 'always_ok' %}btn-success{% endif %} {% if x == i.status_method %}active{% endif %} ">{{ x }}</button>
-                    {% endfor %}
-                    </form>
-                </td>
-                </tr>
-            {% endfor %}
-        </tbody>
+            <th class="small nowrap">Name</th>
+            <th></th>
+            <th><button name="remove_process" class="close pull-right status_ok" type="submit">×</button></th>
+        </tr>
+    </thead>
+    <tbody id="processes_"></tbody>
+    </table>
+
+    <div id="total_count">You have 0 total business processes</div>
+
+    <!-- This div is used as a template on how to generate markup for a single business process -->
+    <div class="hide" id="business-process-li-element">
+
+        <!-- Start of process -->
+        <li class="hoverable" id="__ID__">
+                <a onclick='toggle_businessprocess($(this));' href="#" data-name="__NAME__" data-for="__ID__-subprocesses" data-count="__LENGTH__">&#x25b7;</a>
+
+                <div title="State is __STATE__" class="circle state___STATE__"></div>
+                <a href="{% url adagios.bi.views.view '__PROCESS_TYPE__' '__NAME__'  %}">__NAME__</a>
+
+            <span>__PROCESS_TYPE__ with __LENGTH__ sub processes.</span>
+            <span class="pull-right">
+                                <a href="__LOCATION__/edit/__PROCESS_TYPE__/__NAME__">edit</a>
+
+                <a href="__LOCATION__/edit/__PROCESS_TYPE__/__NAME__">edit</a>
+            </span>
+
+            <ul id="__ID__-subprocesses"></ul>
+
+        </li>
+        <!-- End of process !-->
+
+    </div>
+
+    <!-- Alternative way -->
+    <table class="hide">
+
+    <tbody class="hide" id="business-process-table-element">
+
+        <!-- Start of process -->
+        <tr >
+            <td class="small">
+                <a onclick='toggle_businessprocess($(this));' href="#" id="__ID__" data-name="__NAME__" data-for="__ID__-subprocesses" data-count="__LENGTH__">&#x25b7;</a>
+            </td>
+            <td class="small nowrap">
+                <div title="State is __STATE__" class="circle state___STATE__"></div>
+                <a href="{% url adagios.bi.views.edit '__NAME__' '__PROCESS_TYPE__' %} ">__NAME__</a>
+                <span>__PROCESS_TYPE__ with __LENGTH__ sub processes.</span>
+
+            </td>
+            <td>
+            </td>
+            <td>
+                <form class="pull-right nomargin" action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="process_name" value="__NAME__">
+                    <input type="hidden" name="process_type" value="__PROCESS_TYPE__">
+                    <button name="remove_process" title="Remove group from this business process" class="close status_critical" >×</button>
+                </form>
+        </tr>
+
+        <!-- Sub items go here -->
+        <tr >
+            <td class="businessprocess-subrow"></td>
+            <td colspan="6" class="businessprocess-subrow" style="width: 100%;">
+
+                <table class="table table-condensed well" >
+                    <thead id="thead-__ID__-subprocesses"></thead>
+                    <tbody id="__ID__-subprocesses" style="margin-top: 20px;"></tbody>
+                </table>
+            </td>
+        </tr>
+        <!-- End of process !-->
+    </tbody>
     </table>
 
 {% endblock %}
@@ -67,10 +126,84 @@
 
 {% block view_buttons %}{% endblock %}
 {% block action_buttons %}
-    <div>
+    <div class="pull-left">
         <a class="btn" id="open_public_view" href="{% url adagios.bi.views.add %}">
             <i class="glyph-circle-plus " title="Add new ..."> </i> Create new Business Process
         </a>
     </div>
 {% endblock %}
 
+{% block footer %}
+    {{ block.super }}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        $(document).ready(function() {
+            expand_businessprocess("processes");
+        });
+
+
+        function toggle_businessprocess(element) {
+            var expanded_icon = '&#x25bd;';
+            var collapsed_icon = '&#x25b7;';
+            var data = element.data();
+            var process_name = data['name'];
+            var destination_id = data['for'];
+            var destination_element = $("#" + destination_id);
+            var process_id = null;
+            // Do nothing if there are no subprocesses
+            if (data['count'] == "0") {
+                return;
+            }
+
+            console.log(destination_id);
+
+            if (destination_element.html() == "") {
+                element.html(expanded_icon);
+                destination_element.show();
+                expand_businessprocess(destination_id, process_name);
+            }
+            else {
+                // Assume we are closing, so clear the destination element
+                element.html(collapsed_icon);
+                //destination_element.hide();
+                destination_element.html("");
+            }
+        }
+    function expand_businessprocess(destination_id, process_name) {
+        var template_string = $("#business-process-li-element").html(); // This is used to generate html for bi
+        var destination_element = $("#" + destination_id);
+        destination_element.html("Loading...");
+
+        adagios.rest.status.get_business_process({'process_name':process_name})
+        .done( function(data) {
+                    var result = '';
+                    for (var i in data) {
+                        process_id = destination_id + "_" + i;
+                        result += business_process_to_html(template_string, process_id, data[i]);
+                    }
+                    destination_element.html(result);
+
+                    // Special hack, if no process name given, update total count
+                    var total_count = $("#total_count");
+                    total_count.html(total_count.html().replace("0", data.length));
+
+                    // Special hack, if the destination was a table, copy the headers from master table
+                    //$("#thead-" + destination_id).html($("#thead-master").html());
+                });
+    }
+
+    function business_process_to_html(template_string, element_id, process) {
+        var result = template_string; // my_destination will be written with the content of this
+        result = template_string;
+        var url = window.location.toString().split("#")[0].replace(/\/$/,'');
+        result = result.replace(/__NAME__/g, process['name']);
+        result = result.replace(/__STATE__/g, process['state']);
+        result = result.replace(/__ID__/g, element_id);
+        result = result.replace(/__LENGTH__/g, process['subprocess_count']);
+        result = result.replace(/__LOCATION__/g, url);
+
+        result = result.replace(/__PROCESS_TYPE__/g, process['process_type']);
+
+        return result
+    }
+    </script>
+{% endblock %}

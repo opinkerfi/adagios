@@ -20,7 +20,7 @@
                             {% if static %}
                             <a href="/{{ i.process_name }}">{{ i }}</a>
                             {% else %}
-                            <a href="{% url bi.views.view i.process_name %}">{{ i }}</a>
+                            <a href="{% url bi.views.view i.process_type i.process_name %}">{{ i }}</a>
                             {% endif %}
                         {% else %}
                             {{ i }}

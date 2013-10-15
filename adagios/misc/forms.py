@@ -438,16 +438,44 @@ class NagiosServiceForm(forms.Form):
             command = "start"
         elif "status" in self.data:
             command = "status"
+        elif "verify" in self.data:
+            command = "verify"
         self.command = command
         nagios_init = settings.nagios_init_script
-        #command = self.cleaned_data['command']
-        #from subprocess import Popen, PIPE
-        command = "%s %s" % (nagios_init, command)
-        #p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+        nagios_binary = settings.nagios_binary
+        nagios_config = settings.nagios_config
+        if command == "verify":
+            command = "%s -v '%s'" % (nagios_binary, nagios_config)
+        else:
+            command = "%s %s" % (nagios_init, command)
         code, stdout, stderr = pynag.Utils.runCommand(command)
         self.stdout = stdout or None
         self.stderr = stderr or None
         self.exit_code = code
+
+    def verify(self):
+        """ Run "nagios -v nagios.cfg" and returns errors/warning
+
+        Returns:
+        [
+            {'errors': []},
+            {'warnings': []}
+        ]
+        """
+        nagios_binary = settings.nagios_binary
+        nagios_config = settings.nagios_config
+        command = "%s -v '%s'" % (nagios_binary, nagios_config)
+        code, stdout, stderr = pynag.Utils.runCommand(command)
+        self.stdout = stdout or None
+        self.stderr = stderr or None
+        self.exit_code = code
+
+        for line in stdout.splitlines():
+            line = line.strip()
+            warnings = []
+            errors = []
+            if line.lower.startswith('warning:'):
+                warning = {}
 
 
 class SendEmailForm(forms.Form):

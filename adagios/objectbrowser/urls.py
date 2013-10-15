@@ -8,6 +8,7 @@ urlpatterns = patterns('adagios',
                        url(r'^/$', 'objectbrowser.views.list_object_types',
                            name="objectbrowser"),
 
+                       url(r'^/edit_all/(?P<object_type>.+)/(?P<attribute_name>.+)/?$', 'objectbrowser.views.edit_all'),
                        url(r'^/search/?$', 'objectbrowser.views.list_objects', name="search"),
                       (r'^/id=(?P<object_id>.+)$',
                        'objectbrowser.views.edit_object'),
@@ -56,6 +57,7 @@ urlpatterns = patterns('adagios',
                        'objectbrowser.views.copy_object'),
                       (r'/delete_object/id=(?P<object_id>.+)$',
                        'objectbrowser.views.delete_object'),
+
 
                        #
 

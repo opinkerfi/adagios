@@ -1,5 +1,7 @@
 <!-- status_statehistory_snippet.html starts -->
-{% load adagiostags %}
+{% if log %}
+
+    {% load adagiostags %}
     <div width=500px class="progress">
         {% for line in log %}
             {% if line.class == 1 %}
@@ -17,7 +19,7 @@
 
     </div>
     <hr>
-    Last {{ log|length }} state changes (<a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">see all log entries for this host</a>):
+    Last {{ log|length }} state changes (<a href="{% url status.views.status_log %}?search={{ host_name }}#tab_all">see all log entries for this host</a>):
     <table style="font-size: 80%;" class="table well table-condensed">
         <thead>
             <tr>
@@ -57,4 +59,9 @@
         {% endfor %}
     </tbody>
     </table>
+{% else %}
+    Host has no recent log entries. Try <a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">Log view</a> to search in older logs.
+{% endif %}
+
+
 <!-- status_state_history_snippet.html ends -->

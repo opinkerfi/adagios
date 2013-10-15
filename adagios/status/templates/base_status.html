@@ -138,6 +138,7 @@
                 <li><a href="{% url status.views.services %}">Services </a></li>
                 <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
                 <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
+                <li><a href="{% url objectbrowser.views.list_object_types %}">Configuration</a></li>
             </ul>
 
             <h5>Reports</h5>
@@ -161,6 +162,7 @@
                 <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
                 <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
                 <li><a href="{% url status.views.perfdata %}">Performance Data</a></li>
+                <li><a href="{% url bi.views.index %}">Business Intelligence</a></li>
                 <li><a href="{% url status.views.dashboard %}">Dashboard</a></li>
             </ul>
         </div>
@@ -679,7 +681,7 @@
 
         }
         // Function to edit a single attribute of an object
-        function change_attribute(object_type,short_name,attribute_name,new_value, success) {
+        function change_attribute(object_type,short_name,attribute_name,new_value, success, error) {
             my_data  = {
                 "object_type": object_type,
                 "short_name": short_name,
@@ -693,6 +695,9 @@
                 async: true,
                 success: function(data) {
                     success(data);
+                },
+                error: function(data) {
+                    error(data);
                 },
                 contentType: "application/json",
                 dataType: 'json'

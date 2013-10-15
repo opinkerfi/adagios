@@ -38,4 +38,6 @@ urlpatterns = patterns('adagios',
                       (r'^/error/?$', 'status.views.error_page'),
                       (r'^/detail/?$', 'status.views.status_detail'),
 
+                      (r'^/snippets/log/?$', 'status.views.snippets_log'),
+
                        )

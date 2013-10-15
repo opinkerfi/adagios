@@ -1,6 +1,5 @@
 
-import json
-
+import simplejson
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -14,7 +13,7 @@ import adagios.bi.forms
 from adagios.views import error_handler, error_page
 
 
-def edit(request, process_name):
+def edit(request, process_name, process_type):
     """ Edit one specific business process
     """
 
@@ -110,7 +109,7 @@ def add_graph(request):
             else:
                 e = form.errors
                 raise e
-        return redirect('adagios.bi.views.edit', bp.name)
+        return redirect('adagios.bi.views.edit', bp.process_type, bp.name)
 
     return render_to_response('business_process_add_graph.html', c, context_instance=RequestContext(request))
 
@@ -121,23 +120,44 @@ def view(request, process_name, process_type=None):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    import adagios.businessprocess
     bp = adagios.bi.get_business_process(
         process_name, process_type=process_type)
     graphs_url = reverse(
-        'adagios.bi.views.graphs_json', kwargs={"process_name": process_name})
+        'adagios.bi.views.graphs_json', kwargs={"process_type":process_type, "process_name": process_name})
+    c['bp'] = bp
+    c['graphs_url'] = graphs_url
+    return render_to_response('business_process_view.html', c, context_instance=RequestContext(request))
 
-    return render_to_response('business_process_view.html', locals(), context_instance=RequestContext(request))
 
+def json(request, process_name=None, process_type=None):
+    """ Returns a list of all processes in json format.
 
-def graphs_json(request, process_name):
+    If process_name is specified, return all sub processes.
+    """
+    if not process_name:
+        processes = adagios.bi.get_all_processes()
+    else:
+        process = adagios.bi.get_business_process(process_name, process_type)
+        processes = process.get_processes()
+    result = []
+    # Turn processes into nice json
+    for i in processes:
+        json = {}
+        json['state'] = i.get_status()
+        json['name'] = i.name
+        json['display_name'] = i.display_name
+        result.append(json)
+    json = simplejson.dumps(result)
+    return HttpResponse(json, content_type="application/json")
+
+def graphs_json(request, process_name, process_type):
     """ Get graphs for one specific business process
     """
     c = {}
     c['messages'] = []
     c['errors'] = []
     import adagios.businessprocess
-    bp = adagios.bi.get_business_process(process_name)
+    bp = adagios.bi.get_business_process(process_name=process_name, process_type=process_type)
 
     graphs = []
     if not bp.graphs:
@@ -149,7 +169,7 @@ def graphs_json(request, process_name):
             metric_name = graph.get('metric_name')
             pnp_result = run_pnp('json', host=graph.get(
                 'host_name'), srv=graph.get('service_description'))
-            json_data = json.loads(pnp_result)
+            json_data = simplejson.loads(pnp_result)
             for i in json_data:
                 if i.get('ds_name') == graph.get('metric_name'):
                     notes = graph.get('notes')
@@ -158,7 +178,7 @@ def graphs_json(request, process_name):
                     i['last_value'] = last_value
                     i['notes'] = notes
                     graphs.append(i)
-    graph_json = json.dumps(graphs)
+    graph_json = simplejson.dumps(graphs)
     return HttpResponse(graph_json)
 
 
@@ -186,7 +206,7 @@ def add_subprocess(request):
             c['messages'].append('%s: %s added to %s' %
                                  (process_type, process_name, bp.name))
         bp.save()
-        return redirect('adagios.bi.views.edit', bp.name)
+        return redirect('adagios.bi.views.edit', bp.process_type, bp.name)
     c['subprocesses'] = process_list
     c['parameters'] = parameters
     return render_to_response('business_process_add_subprocess.html', c, context_instance=RequestContext(request))
@@ -208,7 +228,7 @@ def add(request):
             instance=bp, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('adagios.bi.views.edit', bp.name)
+            return redirect('adagios.bi.views.edit', bp.process_type, bp.name)
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
@@ -218,7 +238,6 @@ def index(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    import adagios.businessprocess
     processes = adagios.bi.get_all_processes()
     return render_to_response('business_process_list.html', locals(), context_instance=RequestContext(request))
 

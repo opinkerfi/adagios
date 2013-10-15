@@ -885,3 +885,17 @@ def add_to_group(request, group_type=None, group_name=''):
                 return HttpResponse("Failed to add object: %s %s " % (errortype, error))
 
     return render_to_response('add_to_group.html', locals(), context_instance=RequestContext(request))
+
+
+def edit_all(request, object_type, attribute_name):
+    """  Edit many objects at once, changing only a single attribute
+
+    Example:
+        Edit notes_url of all services
+    """
+    messages = []
+    errors = []
+    objects = Model.string_to_class.get(object_type).objects.all
+    objects = map(lambda x: (x.get_shortname, x.get(attribute_name)), objects)
+    return render_to_response('edit_all.html', locals(), context_instance=RequestContext(request))
+

@@ -139,8 +139,11 @@ class BusinessProcess(object):
         # Where the keys are tags, and the values are a list of statuses
         # untagged processes go in with the tag ''
         # and every processes will also go in with the tag '*'
+        processes = self.get_processes()
+        if not processes:
+            return 3
         tags = defaultdict(list)
-        for i in self.get_processes():
+        for i in processes:
             i_status = i.get_status()
             i_tags = i.data.get('tags', '').split(',')
             for tag in i_tags:
@@ -216,6 +219,8 @@ class BusinessProcess(object):
         'number of problems: 0'
         For a list of supported macros, call self.resolve_all_macros()
         """
+        if '{' not in string:
+            return string
         all_macros = self.resolve_all_macros()
         try:
             return string.format(**all_macros)
@@ -613,6 +618,13 @@ class Service(BusinessProcess):
             self._livestatus = pynag.Parsers.mk_livestatus()
             self._service = self._livestatus.get_service(
                 host_name, service_description)
+            self.notes = self._service.get('plugin_output', '')
+            display_name = "service %s on host %s"
+            self.display_name = display_name % (self._service.get('display_name', service_description), host_name)
+            perfdata = pynag.Utils.PerfData(self._service.get('perf_data', ''))
+            for i in perfdata.metrics:
+                notes = '%s %s' % (service_description, i.label)
+                self.add_pnp_graph(host_name=host_name, service_description=service_description, metric_name=i.label, notes=notes)
 
     def get_status(self):
         try:
