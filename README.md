@@ -53,7 +53,9 @@ Install okconfig (optional). Okconfig is a collection of plugins and templates f
 
 	yum --enablerepo=ok-testing install -y okconfig
 
-	After packages are in, a little bit of configuration is required:
+
+After packages are in, a little bit of configuration is required:
+
 	# If you don't know how to configure SElinux, put it in permissive mode:
 	
 	sed -i "s/SELINUX=enforcing/SELINUX=permissive/" /etc/sysconfig/selinux
