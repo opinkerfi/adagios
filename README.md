@@ -40,38 +40,38 @@ Install Instructions
 ### RPM Installation
 These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.
 
-For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):
-
+	# For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):
 	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-8.noarch.rpm
-
-Next step is to install OK yum repository:
-
+	
+	# Next step is to install OK yum repository:
 	rpm -Uhv http://opensource.is/repo/ok-release-10-1.el6.noarch.rpm
-
-Install needed packages:
-
+	
+	# Install needed packages:
 	yum --enablerepo=ok-testing install -y nagios git adagios
 
 Install okconfig (optional). Okconfig is a collection of plugins and templates for monitoring enterprise equipment. If installed Adagios will have options such as network scan and remote installation of clients.
 
 	yum --enablerepo=ok-testing install -y okconfig
 
-Adagios will not work unless you turn off selinux:
-
+	After packages are in, a little bit of configuration is required:
+	# If you don't know how to configure SElinux, put it in permissive mode:
+	
 	sed -i "s/SELINUX=enforcing/SELINUX=permissive/" /etc/sysconfig/selinux
 	setenforce 0
-
-If you plan to access adagios through apache, make sure it is started:
-
+	
+	# If you plan to access adagios through apache, make sure it is started:
 	service httpd restart
 	chkconfig httpd on
 
 
-Same goes for nagios, start it if it is ready
-
+	# Same goes for nagios, it needs to be running
 	service nagios restart
 	chkconfig nagios on
 
+### Installing on debian-based systems
+Debian based platforms are known to work, but installation is a little more cumbersome.
+
+If you want to experiment with adagios on debian/ubuntu, read the instructions on the [wiki](https://github.com/opinkerfi/adagios/wiki/Install-guide)
 
 ### Source Installation
 
