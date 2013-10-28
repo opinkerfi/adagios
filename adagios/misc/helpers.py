@@ -362,3 +362,19 @@ def verify_configuration():
         result['warning_count'] = total_warnings
     return result
 
+
+def get_object_statistics():
+    """ Returns a list of all object_types with total number of configured objects
+
+    Example result:
+    [
+      {"object_type":"host", "total":50},
+      {"object_type":"service", "total":50},
+    ]
+    """
+    object_types = []
+    for object_type, Class in Model.string_to_class.items():
+        if object_type is not None:
+            total = len(Class.objects.all)
+            object_types.append({"object_type": object_type, "total": total})
+    return object_types

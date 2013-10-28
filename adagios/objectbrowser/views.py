@@ -76,18 +76,7 @@ def list_objects(request, object_type=None, display_these_objects=None):
 
 def list_object_types(request):
     """ Collects statistics about pynag objects and returns to template """
-    c = {'object_types': []}
-    for name, Class in Model.string_to_class.items():
-        if name is not None:
-            active = inactive = 0
-            all_instances = Class.objects.all
-            for i in all_instances:
-                if i['register'] == "0":
-                    inactive += 1
-                else:
-                    active += 1
-            c['object_types'].append(
-                {"name": name, "active": active, "inactive": inactive})
+    c = {}
     return render_to_response('list_object_types.html', c, context_instance=RequestContext(request))
 
 

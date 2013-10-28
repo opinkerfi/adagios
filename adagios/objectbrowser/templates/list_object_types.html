@@ -201,7 +201,34 @@
             return true;
         });
 
+        // Populate object statistics table
+        populate_object_statistics_table();
+
     } );
+
+    // This function will populate the object statistics table with statistics from all objects
+    function populate_object_statistics_table() {
+        adagios.rest.pynag.get_object_statistics()
+                .done( function(data) {
+                    var table=document.getElementById("objectoverview");
+                    var object_type, total;
+                    var row, cell1, cell2;
+                    for (i=0;i<data.length;i++){
+                        object_type = data[i].object_type;
+                        total = data[i].total;
+
+                        // Add a new row to our table
+                        row = table.insertRow(i+1);
+                        cell1 = row.insertCell(0);
+                        cell2 = row.insertCell(1);
+
+                        cell1.innerHTML = object_type;
+                        cell2.innerHTML = total;
+                    }
+                    $("#objectoverview_loading").hide();
+
+                });
+    }
 
     </script>
 {% endblock %}:
@@ -221,7 +248,6 @@
             </div>
         </div>
     </div>
-    {% if object_types %}
 
         <div class="row-fluid">
             <div class="span9">
@@ -291,22 +317,18 @@
 
 
                 <div class="block">
-                    <h4>Object Statistics</h4>
-                    <table style="width: 100%" id="objectoverview">
+                    <table class="table table-condensed" id="objectoverview">
                         <thead>
                         <tr>
-                            <th>Type</th>
+                            <th>Object Statistics</th>
                             <th>#</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {% for i in object_types %}
-                            <tr class="{% cycle 'even' 'odd' %}">
-                                <td><strong>{{ i.name }}</strong></td>
-                                <td class="center">{{ i.active }}</td>
+                        <tbody id="objectoverview_body">
+                            <tr id="objectoverview_loading">
+                            <td colspan=2><img src="{% url media path="select2/spinner.gif" %}"> Loading...</td>
                             </tr>
-                        {% endfor %}
-                        </tbody>
+                       </tbody>
                     </table>
 
                 </div>
@@ -316,10 +338,5 @@
             </div>
 
         </div>
-
-
-    {% else %}
-        <p>List of object types not found </p>
-    {% endif %}
 
 {% endblock %}
