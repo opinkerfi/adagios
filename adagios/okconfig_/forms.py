@@ -216,7 +216,11 @@ class EditTemplateForm(AdagiosForm):
             field_name = i.split('::')[2]
             field_name = field_name.replace('$_SERVICE', '_')
             field_name = field_name.replace('$', '')
-            self.service[field_name] = self.cleaned_data[i]
+            data = self.cleaned_data[i]
+            if field_name == 'register':
+                data = int(data)
+            self.service[field_name] = data
+            print field_name, data
         self.service.save()
         self.service.reload_object()
         # Lets also update commandline because form is being returned to the
