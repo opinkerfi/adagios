@@ -90,7 +90,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $this = $(this)
 
     current_version = $('#current_version').text()
-    $.getJSON("http://adagios.opensource.is/cgi-bin/version.cgi?version=#{current_version}&callback=?", (data) ->
+    $.getJSON("https://opensource.ok.is/cgi-bin/version.cgi?version=#{current_version}&callback=?", (data) ->
       this
     ).success( (data) ->
       $this.text data['version']
