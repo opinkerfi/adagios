@@ -126,7 +126,7 @@
 <hr id="seperate_top_and_content">
 
 <div class="container-fluid content">
-    <div class="row-fluid ">
+    <div class="row-fluid" id="container">
         <div class="span2"   id="left_sidebar">
             <h5>Shortcuts</h5>
             <ul class="nav nav-list">
@@ -269,9 +269,20 @@
             {% block content %}block=content{% endblock %}
             <!-- block content ends -->
             </div>
+
         </div>
 
+
+
     </div>
+
+            <div id="footers" class="row-fluid">
+            <hr>
+            <div class="pull-right" id="make_a_wish" >
+                <input type="text" class="input-medium"  placeholder="i wish this page could..." onclick='$("#wish_modal").modal("show");' />
+                <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
+            </div>
+        </div>
 
     <!-- Acknowledge modal -->
     <div class="modal hide fade" id="acknowledge_modal">
@@ -424,7 +435,29 @@
                 <button type="submit" class="btn btn-primary" onclick='$("#mail_modal").modal("hide"); send_mail();'>Send</button>
             </div>
     </div>
-    <!-- Downtime modal ends -->
+    <!-- Mail modal ends -->
+
+    <!-- Wish modal -->
+    <div class="modal hide fade" id="wish_modal">
+        <form class="form-horizontal" action="http://adagios.opensource.is/cgi-bin/wish.cgi" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Make a wish</h3>
+            </div>
+            <div class="modal-body">
+                <p>Anything cool you think Adagios could be doing for you ? Sweet ask for it here, and we'll see what we can do. We love to hear from you but we cannot guarantee that your wish will come true. </p>
+                <textarea style="width:100%;" cols="200" rows="10" name="wish"></textarea>
+                <hr>
+                <input name="bribes" type="checkbox" placeholder="i wish this page could..." /> I'll back it up with bribes.
+            </div>
+
+            <div class="modal-footer">
+                <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>Cancel</a>
+                <button type="submit" id="wish_submit_button" class="btn">Make a wish</button>
+            </div>
+        </form>
+    </div>
+    <!-- Wish modal ends -->
 
 </div> <!-- /container -->
 
@@ -761,6 +794,7 @@
 
         $(document).ready(function() {
             update_selected_rows();
+            adagios.objectbrowser.check_nagios_needs_reload();
         });
 
         // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
@@ -930,6 +964,8 @@
             });
             window.location.href = "{% url objectbrowser.views.bulk_copy %}" + "?" + querystring;
         }
+
+
 
 
     </script>

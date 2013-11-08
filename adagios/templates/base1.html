@@ -522,6 +522,8 @@
         */
         $(document).ready(function() {
             update_selected_rows();
+            adagios.objectbrowser.check_nagios_needs_reload();
+
         });
 
         // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.

@@ -19,6 +19,10 @@ body {
     background-color: white;
 }
 
+#main_content {
+    min-height: 450px;
+}
+
 /* Stuff related to the top part of the status view, toolbars and such...*/
 #seperate_top_and_content {
     margin-top: 5px;

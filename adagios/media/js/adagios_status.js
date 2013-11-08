@@ -295,3 +295,15 @@ adagios.objectbrowser.select2_business_process = function(query) {
 
         })
 };
+
+adagios.objectbrowser.check_nagios_needs_reload = function() {
+    adagios.rest.pynag.needs_reload()
+        .done(function(data) {
+            if (data === true) {
+                $("#nagios_needs_reload_button").show();
+            }
+
+        });
+};
+
+
