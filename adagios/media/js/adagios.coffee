@@ -126,7 +126,6 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     this
   $.fn.adagios_datetimepicker = (start_time, end_time) ->
-    console.log "datetimepicker (#{start_time}, #{end_time})"
     $this = $(this)
     $this.data 'start_time', start_time
     $this.data 'end_time', end_time
@@ -159,8 +158,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
       $this.find("input[name='#{which}_hours']")
         .val($this.data("#{which}_time_obj").getHours() + ":" + zeropad($this.data("#{which}_time_obj").getMinutes(), 2))
-        .on 'change', ->
-          console.log "cahnge"
+        .change
+          which: which
+        , (event) ->
           time = $(this).val()
           time_regex = /^\d{1,2}:\d{1,2}$/
           if !time_regex.test(time)
@@ -172,8 +172,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
           $(this).parent().removeClass 'error'
           $(this).val "#{time[0]}:#{time[1]}"
-          $this.data("#{which}_time_obj").setHours time[0]
-          $this.data("#{which}_time_obj").setMinutes time[1]
+          $this.data("#{event.data.which}_time_obj").setHours time[0]
+          $this.data("#{event.data.which}_time_obj").setMinutes time[1]
           true
     $this.submit ->
       for which in ['start', 'end']
