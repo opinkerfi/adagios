@@ -439,16 +439,24 @@
 
     <!-- Wish modal -->
     <div class="modal hide fade" id="wish_modal">
-        <form class="form-horizontal" action="http://adagios.opensource.is/cgi-bin/wish.cgi" >
+        <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Make a wish</h3>
             </div>
             <div class="modal-body">
-                <p>Anything cool you think Adagios could be doing for you ? Sweet ask for it here, and we'll see what we can do. We love to hear from you but we cannot guarantee that your wish will come true. </p>
-                <textarea style="width:100%;" cols="200" rows="10" name="wish"></textarea>
+                <p>Anything cool you think Adagios could be doing for you ?
+                </p>
+                <p>
+                Sweet ask for it here, and we'll see what we can do.
+                </p>
+                <p>We love to hear from you but we cannot guarantee that your wish will come true.
+
+                </p>
+                <textarea style="width:100%;" cols="200" rows="10" name="wish" placeholder="i wish this page could..."></textarea>
                 <hr>
-                <input name="bribes" type="checkbox" placeholder="i wish this page could..." /> I'll back it up with bribes.
+                <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
+                <label class="pull-left" for="id_bribes">I'll back it up with bribes.</label>
             </div>
 
             <div class="modal-footer">
