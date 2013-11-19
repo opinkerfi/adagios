@@ -1,6 +1,6 @@
 import os.path
 
-__version__="git-latest"
+__version__='1.2.5'
 
 notifications = {}
 active_plugins = {}
