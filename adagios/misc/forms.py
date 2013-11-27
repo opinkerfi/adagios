@@ -527,6 +527,7 @@ class SendEmailForm(forms.Form):
             comment = "Sent mail to %s" % self.cleaned_data['to']
             self.acknowledge_all_services(comment)
         # Here we actually send some email:
+        text_content = text_content.replace('\n','\r\n')
         msg = EmailMultiAlternatives(
             subject=subject, body=text_content, from_email=from_address, cc=cc_address, to=to_address)
         msg.attach_alternative(html_content, "text/html")
