@@ -4,6 +4,19 @@
 <table class="table table-condensed well searchtable" id="hoststable" style="font-size:12px;">
     <thead>
     <tr>
+        <th class="small">
+            <div class="btn-group" id="select_bar">
+                <a class="" data-toggle="dropdown" href="#">
+                    <input style="margin-left: -1px; padding: 0px;" type="checkbox" id="select_many">
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a id="select_all"> All</a></li>
+                    <li><a id="select_none"> None</a></li>
+                    <li><a id="select_unhandled_problems" > Unhandled Problems</a></li>
+                    <li><a id="select_problems"> All Problems</a></li>
+                </ul>
+            </div>
+        </th>
         <th></th>
         <th>Host Name</th>
         <th>Address</th>
@@ -15,6 +28,10 @@
     <tbody>
     {% for row in hosts %}
         <tr class="mainrow" id="row_{{ forloop.counter }}" >
+            <td class="selectable small">
+                <input class="chkbox"  type="checkbox" name="host" value="{{ row.name }}" style="margin: -1px; padding: 0px;">
+                <input type="hidden" class="input_hostname" name="host_name" value="{{ row.name }}">
+            </td>
             <td class=small style="cursor: pointer;" onclick='$(".hostsubrow_{{ forloop.counter }}").toggle();'>
                 <a href="#">
                 <div class="hostsubrow_{{ forloop.counter }}">&#x25b7;</div>
