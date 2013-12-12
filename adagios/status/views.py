@@ -1271,14 +1271,17 @@ def perfdata2(request):
     # User can also specify specific metrics to watch, so we extract from
     # querystring as well
     querystring = request.GET.copy()
-    interesting_metrics = querystring.pop('metrics', [''])[0]
+    interesting_metrics = querystring.pop('metrics', [''])[0].strip(',')
     arguments = pynag.Utils.grep_to_livestatus(**querystring)
     services = l.query('GET services', columns, *arguments)
     # If no metrics= was specified on querystring, we take the string
     # from first service in our search result
     if not interesting_metrics and services:
-        perfdata = pynag.Utils.PerfData(services[0]['perf_data'])
-        interesting_metrics = map(lambda x: x.label, perfdata.metrics)
+        metric_set = set()
+        for i in services:
+            perfdata = pynag.Utils.PerfData(i.get('perf_data',''))
+            map(lambda x: metric_set.add(x.label), perfdata.metrics)
+        interesting_metrics = sorted(list(metric_set))
     else:
         interesting_metrics = interesting_metrics.split(',')
 

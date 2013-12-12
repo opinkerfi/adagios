@@ -209,6 +209,10 @@ def nagios_service(request):
             c['stdout'] = form.stdout
             c['stderr'] = form.stderr
             c['command'] = form.command
+
+            for i in form.stdout.splitlines():
+                if i.strip().startswith('Error:'):
+                    c['errors'].append(i)
     c['form'] = form
     service = pynag.Control.daemon(
         nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
@@ -221,9 +225,6 @@ def nagios_service(request):
         c['friendly_status'] = 'unknown (exit status %s)' % (s)
     needs_reload = pynag.Model.config.needs_reload()
     c['needs_reload'] = needs_reload
-    for i in form.stdout.splitlines():
-        if i.strip().startswith('Error:'):
-            c['errors'].append(i)
     return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))
 
 

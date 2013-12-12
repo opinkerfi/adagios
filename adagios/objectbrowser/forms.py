@@ -614,7 +614,11 @@ class BulkDeleteForm(BaseBulkForm):
     def delete(self):
         """ Deletes every object in the form """
         for i in self.changed_objects:
-            i.delete()
+            if i.object_type == 'host':
+                recursive = True
+            else:
+                recursive = False
+            i.delete(recursive=recursive)
 
 
 class CheckCommandForm(PynagForm):

@@ -67,6 +67,7 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1, persist
     """ Acknowledge one single host or service check
 
     """
+    print "ack for", host_name, service_description
     if service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.acknowledge_host_problem(host_name=host_name,
                                                        sticky=sticky,

@@ -449,8 +449,8 @@ class NagiosServiceForm(forms.Form):
         else:
             command = "%s %s" % (nagios_init, command)
         code, stdout, stderr = pynag.Utils.runCommand(command)
-        self.stdout = stdout or None
-        self.stderr = stderr or None
+        self.stdout = stdout or ""
+        self.stderr = stderr or ""
         self.exit_code = code
 
     def verify(self):

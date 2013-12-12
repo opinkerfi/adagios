@@ -9,6 +9,9 @@
 {% load adagiostags %}
 
 {% block content %}
+    <form action="" method="get">
+    Metrics: <input type=text name="metrics" placeholder="time,size" value="{% for i in metrics %}{{i}},{% endfor %}">
+    </form>
     <table class="table table-condensed searchtable datatable well" style="font-size:12px;" >
         <thead>
         <tr>

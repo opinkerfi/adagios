@@ -14,7 +14,7 @@ echo new version: $new_version
 echo "### Updating version number"
 sed -i "s/Version: $current_version/Version: $new_version/" adagios.spec
 sed -i "s/__version__=.*/__version__='${new_version}'/" adagios/__init__.py
-echo "${current_version}-${current_release} /" > rel-eng/packages/adagios
+echo "${new_version}-${current_release} /" > rel-eng/packages/adagios
 
 echo "### commiting and tagging current git repo"
 git commit adagios/__init__.py rel-eng/packages/adagios adagios.spec -m "Bumped version number to $new_version" > /dev/null
@@ -23,5 +23,6 @@ git tag adagios-${new_version}-${current_release} -a -m "Bumped version number t
 # The following 2 require access to git repositories and pypi
 echo "### Pushing commit to github"
 git push origin master || exit 1
+git push --tags origin master || exit 1
 echo "Building package and uploading to pypi"
 python setup.py build sdist upload || exit 1
