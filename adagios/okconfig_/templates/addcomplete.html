@@ -14,7 +14,7 @@ Next Steps:
         <li><a href="{% url okconfig_.views.install_agent %}?remote_host={{ host_name }}">install an agent</a> on host {{host_name}}</li>
         <li><a href="{% url edit_by_shortname object_type='host' shortname=host_name %}">Configure</a> host {{host_name}}</li>
         <li><a href="{% url okconfig_.views.edit host_name=host_name %}">Edit the services</a> on host {{host_name}}</li>
-        <li><a href="{% url okconfig_.views.addtemplate %}?host_name={{host_name}}">Add monitoring packs</a> to {{host_name}}</li>
+        <li><a href="{% url okconfig_.views.addtemplate %}?host_name={{host_name}}">Add service checks</a> to {{host_name}}</li>
     {% endif %}
 
     {% if group_name %}
