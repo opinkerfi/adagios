@@ -372,7 +372,17 @@
                         <label class="help-block">Other people looking at this service will see this comment.</label>
                     </div>
                 </div>
+                <div class="control-group">
+                    <label class="control-label" for="id_downtime_recursive">
+                    </label>
+                    <div class="controls" id="id_downtime_recursive_field">
+                        <input type="checkbox" name="recursive" id="id_downtime_recursive" />
+                        Apply to selected hosts and all their services
+                    </div>
+                </div>
+
             </div>
+
             <div class="modal-footer">
                 <a href="#" class="btn" onclick='$("#downtime_modal").modal("hide");'>Cancel</a>
                 <button type="submit" class="btn btn-primary">Schedule Downtime</button>
@@ -423,7 +433,7 @@
                     <label class="control-label" for="id_acknowledge_all_problems">
                     </label>
                     <div class="controls" id="id_acknowledge_all_problems_field">
-                        <input type="checkbox" checked="checked" name="add_myself_to_cc" value="on" id="id_acknowledge_all_problems" />
+                        <input type="checkbox" checked="checked" name="acknowledge_all_problems" value="on" id="id_acknowledge_all_problems" />
                         Acknowledge Unhandled Problems
                     </div>
                 </div>
@@ -548,23 +558,23 @@
 
         function reschedule() {
             $("#reschedule_button").button('loading');
-            var my_services = get_selected_services();
-            var services_done = 0;
-            var total = my_services.length;
-            $.each(my_services, function(i, item) {
+            var selected_objects = get_selected_objects();
+            var objects_done = 0;
+            var total = selected_objects.length;
+            $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
-                service_description = item['service_description'];
+                service_description = item['service_description'] || '';
                 console.log('Rescheduling ' + host_name + ' ' + service_description);
                 var url = '{% url rest/status %}json/reschedule?wait=1&host_name='+host_name+'&service_description='+service_description;
                 $.getJSON(url, function(data) {
-                    services_done++;
-                    $("#reschedule_text").html(services_done + "/" + total + " done");
-                    if (services_done >= total) {
+                    objects_done++;
+                    $("#reschedule_text").html(objects_done + "/" + total + " done");
+                    if (objects_done >= total) {
                         $("#reschedule_text").html('All Done. Reloading page.');
                         location.reload();
                     }
                 });
-                if (total > i && services_done == 0) {
+                if (total > i && objects_done == 0) {
                     $("#reschedule_text").html(i+1 + "/" + total + " rescheduled");
                 }
                 else {
@@ -576,6 +586,7 @@
 
 
         }
+
         // This function responsible for acknowledge on all selected rows
         function acknowledge() {
             $('#acknowledge_modal').modal('hide');
@@ -584,9 +595,10 @@
                 comment = "No comment was entered...";
             }
             $("#acknowledge_button").button('loading');
-            var my_services = get_selected_services();
-            var services_done = 0;
-            $.each(my_services, function(i, item) {
+            var selected_objects = get_selected_objects();
+            var objects_done = 0;
+            var my_data;
+            $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'];
 
@@ -605,9 +617,9 @@
                     data: my_data,
                     async: false,
                     success: function(data) {
-                        services_done++;
-                        $("#acknowledge_text").html(services_done + "/" + my_services.length + " done");
-                        if (services_done >= my_services.length) {
+                        objects_done++;
+                        $("#acknowledge_text").html(objects_done + "/" + selected_objects.length + " done");
+                        if (objects_done >= selected_objects.length) {
                             $("#acknowledge_text").html('All Done. Reloading page.');
                             location.reload();
                         }
@@ -623,23 +635,27 @@
             var $form_downtime = $("form[name='downtime']");
             $('#downtime_modal').modal('hide');
             var comment = document.getElementById("id_downtime_comment").value;
-            if (comment == '') {
-                comment = "No comment was entered...";
-            }
+            var recursive = document.getElementById("id_downtime_recursive").checked;
+            if (comment == '') { comment = "No comment was entered..."; }
             var start_time = $form_downtime.find("input[name='start_time']").val();
             var end_time = $form_downtime.find("input[name='end_time']").val();
+            var host_name, service_description, hostgroup_name;
+            var my_data;
             $("#downtime_button").button('loading');
-            var my_services = get_selected_services();
+            var selected_objects = get_selected_objects();
             var services_done = 0;
-            $.each(my_services, function(i, item) {
+            $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'];
+                hostgroup_name = item['hostgroup_name'];
 
                 my_data = {
                     "host_name":host_name,
                     "service_description":service_description,
+                    "hostgroup_name":hostgroup_name,
                     "comment":comment,
                     "author":"{{ remote_user }}",
+                    "all_services_on_host":recursive,
                     "start_time":start_time,
                     "end_time":end_time
                 }
@@ -650,8 +666,8 @@
                     async: false,
                     success: function(data) {
                         services_done++;
-                        $("#downtime_text").html(services_done + "/" + my_services.length + " done");
-                        if (services_done >= my_services.length) {
+                        $("#downtime_text").html(services_done + "/" + selected_objects.length + " done");
+                        if (services_done >= selected_objects.length) {
                             $("#downtime_text").html('All Done. Reloading page.');
                             location.reload();
                         }
@@ -661,6 +677,7 @@
                 });
             });
         }
+
         // This function sends email to selected recipients for all selected rows
         function send_mail() {
             $('#mail_modal').modal('hide');
@@ -807,7 +824,7 @@
 
         // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
         function get_selected_services() {
-            var result = []
+            var result = [];
             checked_boxes = $( ".selectable :checked" );
             checked_boxes.each(function() {
                var host_name = $(this).next('.input_hostname').val();
@@ -815,6 +832,17 @@
                result.push( {'host_name': host_name, 'service_description': service_description} )
             });
             return result;
+        }
+        // Return a list of all objects that have been checked and have the selectable class. This is used for
+        // Acknowledge, downtime, etc.
+        function get_selected_objects() {
+            var result = [];
+            checked_boxes = $( ".selectable :checked" );
+            checked_boxes.each(function() {
+                result.push($(this).data());
+            });
+            return result;
+
         }
         // update_selected_rows()
         // highlights all rows that are selected in a table. Also shows/hides toolbar buttons if applicable.

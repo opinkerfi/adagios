@@ -67,7 +67,6 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1, persist
     """ Acknowledge one single host or service check
 
     """
-    print "ack for", host_name, service_description
     if service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.acknowledge_host_problem(host_name=host_name,
                                                        sticky=sticky,
@@ -87,14 +86,53 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1, persist
                                                       )
 
 
-def downtime(host_name, service_description=None, start_time=None, end_time=None, fixed=1, trigger_id=0, duration=7200, author='adagios', comment='Downtime scheduled by adagios', all_services_on_host=False):
+def downtime(host_name=None, service_description=None, start_time=None, end_time=None, fixed=1, trigger_id=0, duration=7200, author='adagios', comment='Downtime scheduled by adagios', all_services_on_host=False, hostgroup_name=None):
     """ Schedule downtime for a host or a service """
     if fixed in (1, '1') and start_time in (None, ''):
         start_time = time.time()
     if fixed in (1, '1') and end_time in (None, ''):
         end_time = int(start_time) + int(duration)
-    if all_services_on_host == True:
-        return pynag.Control.Command.schedule_host_svc_downtime(
+    if all_services_on_host == 'false':
+        all_services_on_host = False
+    elif all_services_on_host == 'true':
+        all_services_on_host = True
+
+    # Check if we are supposed to schedule downtime for a whole hostgroup:
+    if hostgroup_name:
+        result1 = pynag.Control.Command.schedule_hostgroup_host_downtime(
+            hostgroup_name=hostgroup_name,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+        ),
+        result2 = pynag.Control.Command.schedule_hostgroup_svc_downtime(
+            hostgroup_name=hostgroup_name,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+        )
+        return result1, result2
+    # Check if we are recursively scheduling downtime for host and all its services:
+    elif all_services_on_host:
+        result1 = pynag.Control.Command.schedule_host_svc_downtime(
+            host_name=host_name,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+        ),
+        result2 = pynag.Control.Command.schedule_host_downtime(
             host_name=host_name,
             start_time=start_time,
             end_time=end_time,
@@ -104,6 +142,8 @@ def downtime(host_name, service_description=None, start_time=None, end_time=None
             author=author,
             comment=comment,
         )
+        return result1, result2
+    # Otherwise, if this is a host
     elif service_description in (None, '', u'', '_HOST_'):
         return pynag.Control.Command.schedule_host_downtime(
             host_name=host_name,
@@ -115,20 +155,22 @@ def downtime(host_name, service_description=None, start_time=None, end_time=None
             author=author,
             comment=comment,
         )
+    # otherwise it must be a service:
     else:
-        return pynag.Control.Command.schedule_svc_downtime(host_name=host_name,
-                                                           service_description=service_description,
-                                                           start_time=start_time,
-                                                           end_time=end_time,
-                                                           fixed=fixed,
-                                                           trigger_id=trigger_id,
-                                                           duration=duration,
-                                                           author=author,
-                                                           comment=comment,
-                                                           )
+        return pynag.Control.Command.schedule_svc_downtime(
+            host_name=host_name,
+            service_description=service_description,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+        )
 
 
-def reschedule(host_name, service_description, check_time=time.time(), wait=0):
+def reschedule(host_name, service_description=None, check_time=None, wait=0):
     """ Reschedule a check of this service/host
 
     Arguments:
@@ -139,22 +181,30 @@ def reschedule(host_name, service_description, check_time=time.time(), wait=0):
     """
     if check_time is None or check_time is '':
         check_time = time.time()
-    if service_description in (None, '', u'', '_HOST_'):
+    if service_description in (None, '', u'', '_HOST_', 'undefined'):
         service_description = ""
         pynag.Control.Command.schedule_forced_host_check(
             host_name=host_name, check_time=check_time)
+        if wait == "1":
+            livestatus = pynag.Parsers.mk_livestatus()
+            livestatus.query("GET hosts",
+                             "WaitObject: %s " % host_name,
+                             "WaitCondition: last_check > %s" % check_time,
+                             "WaitTrigger: check",
+                             "Filter: host_name = %s" % host_name,
+                             )
     else:
         pynag.Control.Command.schedule_forced_svc_check(
             host_name=host_name, service_description=service_description, check_time=check_time)
-    if wait == "1":
-        livestatus = pynag.Parsers.mk_livestatus()
-        livestatus.query("GET services",
-                         "WaitObject: %s %s" % (
-                             host_name, service_description),
-                         "WaitCondition: last_check > %s" % check_time,
-                         "WaitTrigger: check",
-                         "Filter: host_name = %s" % host_name,
-                         )
+        if wait == "1":
+            livestatus = pynag.Parsers.mk_livestatus()
+            livestatus.query("GET services",
+                             "WaitObject: %s %s" % (
+                                 host_name, service_description),
+                             "WaitCondition: last_check > %s" % check_time,
+                             "WaitTrigger: check",
+                             "Filter: host_name = %s" % host_name,
+                             )
     return "ok"
 
 
