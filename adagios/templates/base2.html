@@ -130,6 +130,12 @@
     var MEDIA_URL = "{% url media path="" %}";
 </script>
 
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    $(document).ready(function() {
+        adagios.objectbrowser.check_nagios_needs_reload();
+    });
+</script>
+
 <!-- block footer starts -->
 {% block footer %}{% endblock %}
 <!-- block footer ends -->
