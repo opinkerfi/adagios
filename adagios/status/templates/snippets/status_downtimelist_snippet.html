@@ -16,7 +16,7 @@
     </thead>
     <tbody>
     {% for i in downtimes %}
-        <tr class="mainrow">
+        <tr class="mainrow" id="downtime_{{ i.id }}">
             <td class="nowrap">{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
             <td>
                 <a href="{% url status.views.contact_detail i.author %}">{{ i.author }}</a>
@@ -49,7 +49,7 @@
             </td>
             <td>{{ i.comment }}</td>
             <td>
-                <button class="close delete_downtime" data-dismiss="alert" title="Delete downtime {{ i.id }}" onclick="$.getJSON('{% url rest/status %}json/delete_downtime?downtime_id={{ i.id }}&is_service={{ i.is_service }}');">
+                <button class="close delete_downtime" data-dismiss="alert" title="Delete downtime {{ i.id }}" onclick="remove_downtime('{{ i.id }}', '{{ i.is_service }}');">
                     <i class="glyph-bin"></i>
                 </button>
             </td>
@@ -59,4 +59,15 @@
     </tbody>
 
 </table>
+<script>
+    function remove_downtime(downtime_id, is_service) {
+        var args = {}
+        args['downtime_id'] = downtime_id;
+        args['is_service'] = is_service;
+        adagios.rest.status.delete_downtime(args)
+                .done(function(data) {
+                    $("#downtime_" + downtime_id).hide();
+                });
+    }
+</script>
 <!-- snippet status_downtimelist_snippet.html ends -->

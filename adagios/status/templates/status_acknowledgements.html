@@ -12,13 +12,13 @@
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
         <li><a href="{% url adagios.status.views.comment_list %}" >Comments</a></li>
-        <li class="active"><a href="{% url adagios.status.views.downtime_list  %}">Downtimes</a></li>
-        <li><a href="{% url adagios.status.views.acknowledgement_list %}">Acknowledgements</a></li>
+        <li><a href="{% url adagios.status.views.downtime_list %}">Downtimes</a></li>
+        <li class="active"><a href="{% url adagios.status.views.acknowledgement_list %}">Acknowledgements</a></li>
     </ul>
     <div class="tab-content">
 
-        <div class="tab-pane active" id="downtimes">
-            {% include "snippets/status_downtimelist_snippet.html" %}
+        <div class="tab-pane active" id="acknowledgements">
+            {% include "snippets/status_acknowledgements_snippet.html" with comments=acknowledgements %}
         </div>
     </div>
 

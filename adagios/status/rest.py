@@ -346,10 +346,10 @@ def delete_downtime(downtime_id, is_service=True):
       is_service  -- If set to True or 1, then this is assumed to be a service downtime, otherwise assume host downtime
     """
     if is_service in (True, 1, '1'):
-        return pynag.Control.Command.del_svc_downtime(downtime_id)
+        pynag.Control.Command.del_svc_downtime(downtime_id)
     else:
-        return pynag.Control.Command.del_host_downtime(downtime_id)
-
+        pynag.Control.Command.del_host_downtime(downtime_id)
+    return "ok"
 
 def top_alert_producers(limit=5, start_time=None, end_time=None):
     """ Return a list of ["host_name",number_of_alerts]
@@ -517,3 +517,40 @@ def get_business_process(process_name=None, process_type=None):
         json['process_type'] = i.process_type
         result.append(json)
     return result
+
+
+def remove_downtime(host_name, service_description=None, downtime_id=None):
+    """ Remove downtime for one specific host or service """
+    downtimes_to_remove = []
+    # If downtime_id is not provided, remove all downtimes of that service or host
+    if downtime_id:
+        downtimes_to_remove.append(downtime_id)
+    else:
+        livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        query_parameters = []
+        query_parameters.append('GET downtimes')
+        query_parameters.append('Filter: host_name = {host_name}'.format(**locals()))
+        if service_description:
+            query_parameters.append('Filter: service_description = {service_description}'.format(**locals()))
+        result = livestatus.query(*query_parameters)
+        for i in result:
+            downtime_id = i['id']
+            downtimes_to_remove.append(downtime_id)
+
+    if service_description:
+        for i in downtimes_to_remove:
+            pynag.Control.Command.del_svc_downtime(downtime_id=i)
+    else:
+        for i in downtimes_to_remove:
+            pynag.Control.Command.del_host_downtime(downtime_id=i)
+    return "ok"
+
+
+def remove_acknowledgement(host_name, service_description=None):
+    """ Remove downtime for one specific host or service """
+    print "running", locals()
+    if not service_description:
+        pynag.Control.Command.remove_host_acknowledgement(host_name=host_name)
+    else:
+        pynag.Control.Command.remove_svc_acknowledgement(host_name=host_name, service_description=service_description)
+    return "ok"

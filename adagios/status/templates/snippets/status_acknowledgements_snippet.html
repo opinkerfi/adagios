@@ -1,0 +1,74 @@
+<!-- snippet status_downtimelist_snippet.html starts -->
+{% load adagiostags %}
+<table class="table table-condensed well searchtable" id="commentstable" style="font-size:12px;">
+    <thead>
+    <tr>
+        <th>Time</th>
+        <th colspan=2>Author</th>
+        <th colspan=2>Host</th>
+        <th colspan=2>Service</th>
+        <th>Comment</th>
+    </tr>
+
+    </thead>
+
+    <tbody>
+    {% for i in acknowledgements %}
+        <tr class="mainrow" id="comment_{{ i.id }}">
+            <td class="nowrap">{{ i.entry_time|timestamp|date:'Y-m-d H:i' }}</td>
+            <td class="small">
+                <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
+                {% if i.entry_type == 1 %}
+                    <i class="glyph-chat" title="User Comment"> </i>
+                {% endif %}
+                {% if i.entry_type == 2 %}
+                    <i class="glyph-stopwatch" title="Downtime"> </i>
+                {% endif %}
+                {% if i.entry_type == 3 %}
+                    <i class="glyph-random" title="Flap"> </i>
+                {% endif %}
+                {% if i.entry_type == 4 %}
+                    <i class="glyph-ok-2" title="Acknowledgement"> </i>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url status.views.contact_detail i.author %}">{{ i.author }}</a>
+            </td>
+            <td class=small>
+                <div class="circle state_{{ i.host_state }}"></div>
+            </td>
+            <td>
+                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}">
+                    {{ i.host_display_name }}
+                </a>
+            </td>
+            <td class=small>
+                <div class="circle state_{{ i.service_state }}"></div>
+            </td>
+            <td>
+                <a href="{% url status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
+                    {{ i.service_display_name}}
+                </a>
+            </td>
+            <td>{{ i.comment }}</td>
+            <td>
+                <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.id }}" onclick="remove_acknowledgement('{{ i.host_name }}', '{{ i.service_description }}', '{{ i.id }}');">
+                    <i class="glyph-bin"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<script>
+    function remove_acknowledgement(host_name, service_description, id) {
+        var args = {};
+        args['host_name'] = host_name;
+        args['service_description'] = service_description;
+        adagios.rest.status.remove_acknowledgement(args)
+                .done(function(data) {
+                    $("#comment_" + id).hide();
+                });
+    }
+</script>
+<!-- snippet status_downtimelist_snippet.html ends -->

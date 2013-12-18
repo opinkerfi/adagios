@@ -11,9 +11,9 @@
 
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
-        <li class="active"><a href="#comments" data-toggle="tab">Comments</a></li>
+        <li class="active"><a href="{% url adagios.status.views.comment_list %}" >Comments</a></li>
         <li><a href="{% url adagios.status.views.downtime_list  %}">Downtimes</a></li>
-        <li><a href="#acknowledgements" data-toggle="tab">Acknowledgements</a></li>
+        <li><a href="{% url adagios.status.views.acknowledgement_list %}">Acknowledgements</a></li>
     </ul>
     <div class="tab-content">
 
@@ -21,13 +21,6 @@
             {% include "snippets/status_commentlist_snippet.html" %}
         </div>
 
-        <div class="tab-pane" id="downtimes">
-            {% include "snippets/status_downtimelist_snippet.html" %}
-        </div>
-
-        <div class="tab-pane" id="acknowledgements">
-            {% include "snippets/status_commentlist_snippet.html" with comments=acknowledgements%}
-        </div>
     </div>
 
 {% endblock %}

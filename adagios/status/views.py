@@ -1107,6 +1107,21 @@ def downtime_list(request):
     c['downtimes'] = grep_dict(downtimes, **args)
     return render_to_response('status_downtimes.html', c, context_instance=RequestContext(request))
 
+@error_handler
+def acknowledgement_list(request):
+    """ Display a list of all comments """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    l = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config)
+    comments = l.query('GET comments')
+    downtimes = l.query('GET downtimes')
+    args = request.GET.copy()
+    c['comments'] = grep_dict(comments, **args)
+    c['acknowledgements'] = grep_dict(comments, entry_type=4)
+    c['downtimes'] = grep_dict(downtimes, **args)
+    return render_to_response('status_acknowledgements.html', c, context_instance=RequestContext(request))
 
 def grep_dict(array, **kwargs):
     """  Returns all the elements from array that match the keywords in **kwargs

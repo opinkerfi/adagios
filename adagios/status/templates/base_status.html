@@ -230,10 +230,21 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="enable_on_select" title="Add to contactgroup" onclick="add_to_group('servicegroup');">
+                                <a class="enable_on_select" title="Add to servicegroup" onclick="add_to_group('servicegroup');">
                                     Add to servicegroup
                                 </a>
                             </li>
+                            <li>
+                                <a class="enable_on_select" title="Remove acknowledgement" onclick="remove_acknowledgements();">
+                                    Remove Acknowledgement
+                                </a>
+                            </li>
+                            <li>
+                                <a class="enable_on_select" title="Remove Active Downtimes" onclick="remove_active_downtimes();">
+                                    Remove active downtimes
+                                </a>
+                            </li>
+
                         </ul>
 
                 </div>
@@ -999,6 +1010,48 @@
                 querystring += "&" + object_type + "=" + value;
             });
             window.location.href = "{% url objectbrowser.views.bulk_copy %}" + "?" + querystring;
+        }
+        // When a user clicks the remove acknowledgement button, this is called
+        // to remove acknowledgements of all "selected" objects
+        function remove_acknowledgements() {
+            var selected_objects = get_selected_objects();
+            var args;
+            var objects_done = 0;
+            $.each(selected_objects, function(i, item) {
+                args = {};
+                args['host_name'] = item['host_name'];
+                args['service_description'] = item['service_description'];
+                adagios.rest.status.remove_acknowledgement(args)
+                        .done(function() {
+                            objects_done += 1;
+                            if (objects_done == selected_objects.length) {
+                                location.reload();
+                            }
+                    })
+            });
+        }
+
+        // When a user clicks the remove downtimes button, this is called
+        // to remove downtimes of all "selected" objects
+        function remove_active_downtimes() {
+            var selected_objects = get_selected_objects();
+            var args;
+            var objects_done = 0;
+            $.each(selected_objects, function(i, item) {
+                args = {};
+                args['host_name'] = item['host_name'];
+                args['service_description'] = item['service_description'];
+                args['downtime_id'] = item['downtime_id'];
+                adagios.rest.status.remove_downtime(args)
+                        .done(function() {
+                            objects_done += 1;
+                            if (objects_done == selected_objects.length) {
+                                location.reload();
+                            }
+                        })
+            });
+
+
         }
 
 
