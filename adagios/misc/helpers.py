@@ -220,7 +220,7 @@ def set_maincfg_attribute(attribute, new_value, old_value='None', append=False):
         append = True
     elif append.lower() == 'none':
         append = None
-    return Model._edit_static_file(attribute=attribute, new_value=new_value, old_value=old_value, filename=filename, append=append)
+    return Model.config._edit_static_file(attribute=attribute, new_value=new_value, old_value=old_value, filename=filename, append=append)
 
 
 def reload_nagios():
