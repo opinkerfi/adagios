@@ -38,28 +38,36 @@
                     <td>Network Parents</td>
                     <td><a href="{% url status.views.status_parents %}">{{ total_network_parents }}</a></td>
                     <td>
+                        <a href="{% url status.views.status_parents %}?state__isnot=0">
                         <div class="alert alert-warning">{{ total_network_problems }}</div>
+                        </a>
                     </td>
                     <td>
+                        <a href="{% url status.views.status_parents %}?unhandled">
                         {% if total_unhandled_network_problems == 0 %}
                             <div class="alert alert-success">{{ total_unhandled_network_problems }}</div>
                         {% else %}
                             <div class="alert alert-danger">{{ total_unhandled_network_problems }}</div>
                         {% endif %}
+                        </a>
                     </td>
                 </tr>
                 <tr>
                     <td>Hosts</td>
-                    <td><a href="{% url status.views.status_host %}">{{ total_hosts }}</a></td>
+                    <td><a href="{% url status.views.hosts %}">{{ total_hosts }}</a></td>
                     <td>
+                        <a href="{% url status.views.hosts %}?state__isnot=0">
                         <div class="alert alert-warning">{{  total_host_problems }}</div>
+                        </a>
                     </td>
                     <td>
+                        <a href="{% url status.views.hosts %}?unhandled">
                         {% if host_problems|length == 0 %}
                             <div class="alert alert-success">{{ host_problems|length }}</div>
                         {% else %}
                             <div class="alert alert-danger">{{ host_problems|length }}</div>
                         {% endif %}
+                        </a>
                     </td>
 
                 </tr>
@@ -67,14 +75,18 @@
                     <td>Services</td>
                     <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
                     <td>
+                        <a href="{% url status.views.services %}?unhandled">
                         <div class="alert alert-warning">{{ total_service_problems }}</div>
+                        </a>
                     </td>
                     <td>
+                        <a href="{% url status.views.services %}?unhandled">
                         {% if service_problems|length == 0 %}
                             <div class="alert alert-success">{{ service_problems|length }}</div>
                         {% else %}
                             <div class="alert alert-danger">{{ service_problems|length }}</div>
                         {% endif %}
+                        </a>
                     </td>
 
                 </tr>
