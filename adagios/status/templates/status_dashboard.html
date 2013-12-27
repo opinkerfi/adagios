@@ -75,7 +75,7 @@
                     <td>Services</td>
                     <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
                     <td>
-                        <a href="{% url status.views.services %}?unhandled">
+                        <a href="{% url status.views.services %}?state__isnot=0">
                         <div class="alert alert-warning">{{ total_service_problems }}</div>
                         </a>
                     </td>
