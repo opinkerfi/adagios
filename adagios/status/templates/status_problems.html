@@ -1,0 +1,60 @@
+{% extends "base_status.html" %}
+
+{% block title %}Host And Service Overview{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block adagios_hausinn %}
+{% endblock %}
+{% block largeheader %}Host And Service Overview
+{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.services %}">Services</a>{% endblock %}
+{% load adagiostags %}
+
+{% block sidebar_outer %}
+{% endblock %}
+
+
+{% block content %}
+
+    {% if hosts %}
+        Hosts:
+        {% include "snippets/status_hostlist_snippet.html" %}
+    {% else %}
+        <p>There are no host problems.</p>
+    {% endif %}
+    {% if services %}
+        Services:
+        {% include "snippets/status_servicelist_snippet.html" %}
+    {% else %}
+        <p>There are no service problems.</p>
+    {% endif %}
+{% endblock %}
+
+
+
+{% block footer %}
+    {{ block.super }}
+
+    <script>
+        function timedRefresh(timeoutPeriod) {
+            var interval = setInterval(refreshPage, timeoutPeriod);
+        }
+
+        function refreshPage() {
+            checked_boxes = $( ".selectable :checked" );
+            shown_modals = $("div .modal.in");
+            if (checked_boxes.length + shown_modals.length == 0) {
+                console.log("Refreshing page...");
+                location.reload(true);
+            }
+            else {
+                console.log("Canceled auto-refresh of page because input boxes or modals have been edited");
+                clearInterval(1);
+            }
+        }
+
+        $(document).ready(function() {
+            timedRefresh(30000);
+        });
+    </script>
+{% endblock %}

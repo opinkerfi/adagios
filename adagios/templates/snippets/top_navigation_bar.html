@@ -58,7 +58,7 @@
                         </div>
                     </li>
                     {% if num_problems and plugins.status  %}
-                        <li style="color: red";><a style="color: red"; href="{% url status.views.services %}?unhandled"><i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
+                        <li style="color: red";><a style="color: red"; href="{% url status.views.problems %}?unhandled"><i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i> {{ num_problems }} problems</a> </li>
                     {% endif %}
                     <!--
                     <li>

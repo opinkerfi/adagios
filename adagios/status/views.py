@@ -600,6 +600,18 @@ def status_host(request):
     c['host_name'] = request.GET.get('detail', None)
     return render_to_response('status_host.html', c, context_instance=RequestContext(request))
 
+@error_handler
+def problems(request):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    search_filter = request.GET.copy()
+    if 'state__isnot' not in search_filter and 'state' not in search_filter:
+        search_filter['state__isnot'] = '0'
+    c['hosts'] = utils.get_hosts(request, **search_filter)
+    c['services'] = utils.get_services(request, **search_filter)
+    return render_to_response('status_problems.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def status_boxview(request):
