@@ -161,10 +161,10 @@
                     <th>Last Check</th>
                 </tr>
                 {% for i in service_problems %}
-                    {% if i.state == 0 %}<tr class="alert alert-success">{% endif %}
-                    {% if i.state == 1 %}<tr class="alert alert-warning">{% endif %}
-                    {% if i.state == 2 %}<tr class="alert alert-danger">{% endif %}
-                    {% if i.state == 3 %}<tr class="alert alert-danger">{% endif %}
+                    {% if i.state == 0 %}<tr class="dashboard alert alert-success">{% endif %}
+                    {% if i.state == 1 %}<tr class="dashboard alert alert-warning">{% endif %}
+                    {% if i.state == 2 %}<tr class="dashboard alert alert-danger">{% endif %}
+                    {% if i.state == 3 %}<tr class="dashboard alert alert-danger">{% endif %}
                     <td>
                         <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}">
                             {{ i.host_name }}
@@ -184,7 +184,7 @@
                     </td>
                     -->
                     <td>
-                        <span title="{{ i.plugin_output }}" style="font-size: 100%; color: #808080; font-weight: normal;">
+                        <span title="{{ i.plugin_output }}" style="font-size: 100%; color: #3d3d3d; font-weight: normal;">
                             {{ i.plugin_output|slice:"70" }}
                         </span>
                     </td>
