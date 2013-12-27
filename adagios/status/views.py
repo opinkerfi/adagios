@@ -931,13 +931,7 @@ def dashboard(request):
     #
     c['hosts'] = c['network_problems'] + c['host_problems']
     # Service problems
-    c['service_problems'] = utils.get_services(request,
-                                               state__isnot="0",
-                                               acknowledged="0",
-                                               scheduled_downtime_depth="0",
-                                               host_state="0",
-                                               **request.GET
-                                               )
+    c['service_problems'] = utils.get_services(request, unhandled='', **request.GET)
     # Sort problems by state and last_check as secondary sort field
     c['service_problems'].sort(
         reverse=True, cmp=lambda a, b: cmp(a['last_check'], b['last_check']))
