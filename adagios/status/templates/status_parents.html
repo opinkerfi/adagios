@@ -1,7 +1,7 @@
 {% extends "base_status.html" %}
 
 {% block title %}Network Parents{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_parents %}">Network Parents</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.network_parents %}">Network Parents</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}
 Network Parents
@@ -74,8 +74,9 @@ Network Parents
 
 
 {% else %}
-    No Network parents configured
+    No Network parents found.
 {% endif %}
+
 {% endblock %}
 
 

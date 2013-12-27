@@ -52,17 +52,24 @@ from adagios.views import error_handler, error_page
 
 @error_handler
 def status_parents(request):
+    """ Here for backwards compatibility """
+    return network_parents(request)
+
+@error_handler
+def network_parents(request):
+    """ List of hosts that are network parents """
     c = {}
     c['messages'] = []
     authuser = request.GET.get('contact_name', None)
     livestatus = utils.livestatus(request)
-    all_hosts = livestatus.get_hosts()
+    fields = "name childs state scheduled_downtime_depth acknowledged downtimes services services_with_info".split()
+    hosts = utils.get_hosts(request, 'Filter: childs !=', fields=fields, **request.GET)
     host_dict = {}
-    map(lambda x: host_dict.__setitem__(x['name'], x), all_hosts)
+    map(lambda x: host_dict.__setitem__(x['name'], x), hosts)
     c['hosts'] = []
 
-    for i in all_hosts:
-        if len(i['childs']) > 0:
+    for i in hosts:
+        if i['childs']:
             c['hosts'].append(i)
             ok = 0
             crit = 0
@@ -593,12 +600,19 @@ def status_tiles(request, object_type="host"):
 
 @error_handler
 def status_host(request):
+    """ Here for backwards compatibility """
+    return hosts(request)
+
+
+@error_handler
+def hosts(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
     c['hosts'] = utils.get_hosts(request, **request.GET)
     c['host_name'] = request.GET.get('detail', None)
     return render_to_response('status_host.html', c, context_instance=RequestContext(request))
+
 
 @error_handler
 def problems(request):

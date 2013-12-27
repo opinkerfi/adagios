@@ -21,12 +21,12 @@
                 <tbody>
                 <tr>
                     <td>Network Parents</td>
-                    <td><a href="{% url status.views.status_parents %}">{{ total_network_parents }}</a></td>
+                    <td><a href="{% url status.views.network_parents %}">{{ total_network_parents }}</a></td>
                     <td>
                         {% if  total_unhandled_network_problems == 0 %}
                         {% else %}
 
-                                <a href="{%  url status.views.status_parents %}?unhandled">
+                                <a href="{%  url status.views.network_parents %}?unhandled">
                                     {{ total_unhandled_network_problems }}
                                 </a>
 
@@ -35,11 +35,11 @@
                 </tr>
                 <tr>
                     <td>Hosts</td>
-                    <td><a href="{% url status.views.status_host %}">{{ total_hosts }}</a></td>
+                    <td><a href="{% url status.views.hosts %}">{{ total_hosts }}</a></td>
                     <td>
                         {% if  unhandled_hosts == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.status_host %}?unhandled">
+                            <a href="{%  url status.views.hosts %}?unhandled">
                                 {{ unhandled_hosts }}
                             </a>
                         {% endif %}

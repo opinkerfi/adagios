@@ -22,7 +22,7 @@
 {% block content %}
 
     <ul class="nav nav-tabs" id="objecttabs">
-        <li ><a href="{% url status.views.status_host %}" data-toggle="tabs">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
+        <li ><a href="{% url status.views.hosts %}" data-toggle="tabs">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
         <li class=active><a href="#hostgroups" data-toggle="tabs">Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
     </ul>
     <div class="tab-content">

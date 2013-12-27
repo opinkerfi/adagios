@@ -134,10 +134,10 @@
                 <li >
                     <a {% if num_problems %}{% endif %} href="{% url status.views.problems %}?unhandled">Problems {% if num_problems %}<span>({{ num_problems }})</span>{% endif %}</a>
                 </li>
-                <li><a href="{% url status.views.status_host %}">Hosts</a></li>
+                <li><a href="{% url status.views.hosts %}">Hosts</a></li>
                 <li><a href="{% url status.views.services %}">Services </a></li>
                 <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
-                <li><a href="{% url status.views.status_parents %}">Network Parents </a></li>
+                <li><a href="{% url status.views.network_parents %}">Network Parents </a></li>
                 <li><a href="{% url objectbrowser.views.list_object_types %}">Configuration</a></li>
             </ul>
 
@@ -622,22 +622,15 @@
                     "persistent":"0",
                     "notify":"1"
                 }
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url rest/status %}json/acknowledge',
-                    data: my_data,
-                    async: false,
-                    success: function(data) {
-                        objects_done++;
-                        $("#acknowledge_text").html(objects_done + "/" + selected_objects.length + " done");
-                        if (objects_done >= selected_objects.length) {
-                            $("#acknowledge_text").html('All Done. Reloading page.');
-                            location.reload();
-                        }
-                    },
-                    contentType: "application/json",
-                    dataType: 'json'
-                });
+                adagios.rest.status.acknowledge(my_data)
+                        .done(function(data) {
+                            objects_done++;
+                            $("#acknowledge_text").html(objects_done + "/" + selected_objects.length + " done");
+                            if (objects_done >= selected_objects.length) {
+                                $("#acknowledge_text").html('All Done. Reloading page.');
+                                location.reload();
+                            }
+                        });
             });
         }
 
@@ -669,23 +662,16 @@
                     "all_services_on_host":recursive,
                     "start_time":start_time,
                     "end_time":end_time
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url rest/status %}json/downtime',
-                    data: my_data,
-                    async: false,
-                    success: function(data) {
-                        services_done++;
-                        $("#downtime_text").html(services_done + "/" + selected_objects.length + " done");
-                        if (services_done >= selected_objects.length) {
-                            $("#downtime_text").html('All Done. Reloading page.');
-                            location.reload();
-                        }
-                    },
-                    contentType: "application/json",
-                    dataType: 'json'
-                });
+                };
+                adagios.rest.status.downtime(my_data)
+                        .done(function(data) {
+                            services_done++;
+                            $("#downtime_text").html(services_done + "/" + selected_objects.length + " done");
+                            if (services_done >= selected_objects.length) {
+                                $("#downtime_text").html('All Done. Reloading page.');
+                                location.reload();
+                            }
+                        });
             });
         }
 
