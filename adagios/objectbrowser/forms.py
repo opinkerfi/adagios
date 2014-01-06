@@ -268,7 +268,7 @@ class PynagForm(AdagiosForm):
                 command_name__contains='')
             choices = [('', '')] + map(
                 lambda x: (x.command_name, x.command_name), all_objects)
-            field = forms.ChoiceField(choices=sorted(choices))
+            field = PynagChoiceField(choices=sorted(choices))
         # elif field_name == 'check_command':
         #    all_objects = Model.Command.objects.all
         #    choices = [('','')] + map(lambda x: (x.command_name, x.command_name), all_objects)
