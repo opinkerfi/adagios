@@ -1181,7 +1181,7 @@ def perfdata(request):
     c['messages'] = []
     c['errors'] = []
     fields = "host_name description perf_data state host_state scheduled_downtime_depth host_scheduled_downtime_depth host_acknowledged acknowledged downtimes host_downtimes".split()
-    perfdata = utils.get_services(None, fields=fields, **request.GET)
+    perfdata = utils.get_services(request, fields=fields, **request.GET)
     for i in perfdata:
         metrics = pynag.Utils.PerfData(i['perf_data']).metrics
         metrics = filter(lambda x: x.is_valid(), metrics)
