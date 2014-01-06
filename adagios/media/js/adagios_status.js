@@ -307,3 +307,12 @@ adagios.objectbrowser.check_nagios_needs_reload = function() {
 };
 
 
+
+adagios.objectbrowser.reload_nagios = function() {
+    $("#nagios_is_reloading").show();
+    adagios.rest.pynag.reload_nagios()
+        .done(function(data) {
+            $('#nagios_is_reloading').hide();
+            $("#nagios_needs_reload_button").hide();
+        });
+};
