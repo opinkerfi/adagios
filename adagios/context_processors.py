@@ -25,8 +25,6 @@ def on_page_load(request):
         results[k] = v
     for k,v in check_nagios_running(request).items():
         results[k] = v
-    for k,v in check_nagios_needs_reload(request).items():
-        results[k] = v
     for k,v in get_notifications(request).items():
         results[k] = v
     for k,v in get_unhandled_problems(request).items():
@@ -199,9 +197,6 @@ def check_nagios_running(request):
     except Exception:
         return {}
 
-def check_nagios_needs_reload(request):
-    """ Notify user if nagios needs a reload """
-    return { "needs_reload": pynag.Model.config.needs_reload() }
 
 def check_selinux(request):
     """ Check if selinux is enabled and notify user """
