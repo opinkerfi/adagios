@@ -30,7 +30,7 @@
             {% if row.members|length > 0 %}
                 <tr >
                     <td class="selectable small">
-                        <input class="chkbox"  type="checkbox" name="hostgroup" data-hostgroup_name="{{ row.name }}" value="{{ row.name }}" style="margin: -1px; padding: 0px;">
+                        <input class="chkbox"  type="checkbox" name="hostgroup" data-hostgroup_name="{{ row.name }}" value="{{ row.name }}" style="margin: -1px; padding: 0px;" data-hostgroup_name="{{ row.name }}" data-object_type="hostgroup">
                     </td>
 
                     <td onclick='$(".subrow_{{ forloop.counter }}").toggle();'>

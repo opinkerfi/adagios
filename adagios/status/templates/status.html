@@ -55,7 +55,7 @@
                         {% for service in host.services %}
                             <tr class="mainrow">
                             <td class="selectable">
-                                <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox">
+                                <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" data-host_name="{{ host.name }}" data-service_description="{{ service.description }}" data-object_type="service">
                                 <input type="hidden" class="input_hostname" name="host_name" value="{{ host.name }}">
                                 <input type="hidden" class="input_service_description" name="service_description" value="{{ service.description }}">
                             </td>

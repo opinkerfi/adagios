@@ -27,7 +27,7 @@
         {% if service.metrics|length == metrics|length %}
             <tr class=mainrow>
                 <td class="selectable small">
-                    <input type=checkbox class="chkbox" name="graph" value="{{ service.host_name }},{{ service.description }},{{ i.label }}">
+                    <input type=checkbox class="chkbox" name="graph" value="{{ service.host_name }},{{ service.description }},{{ i.label }}" data-host_name="{{ service.host_name }}" data-service_description="{{ service.description }}" data-object_type="perfdata">
                 </td>
 
                 <td>

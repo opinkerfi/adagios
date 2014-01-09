@@ -142,7 +142,7 @@
                 <tbody>
                 <tr>
                     <td class="selectable">
-                        <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="{{ my_object.object_type }}" value="{{ my_object.short_name }}">
+                        <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="{{ my_object.object_type }}" value="{{ my_object.short_name }}" data-host_name="{{ host_name }}" data-service_description="{{ service_description }}" data-object_type={{ my_object.object_type }}>
                         <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
                         <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
 
