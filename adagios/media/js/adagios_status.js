@@ -4,7 +4,28 @@ adagios.status = adagios.status || {};
 adagios.objectbrowser = adagios.objectbrowser || {};
 
 
+adagios.status.service_detail_update_servicestate_icon = function(host_name, params) {
+    var results = {results: []};
 
+    adagios.rest.status.services({
+       'host_name': 'tandoori', 
+       'fields': 'acknowledged description state last_check'
+    }).done( function(data) {
+        var name, item, i;
+        var host_services = $("div#host_services");
+        for (i in data) {
+            var service = data[i];
+            var div = {};
+            var circle_div = host_services.find("a").filter(function(i) {
+                return $(this).text().trim() === service.description;
+            }).find("div");
+            if (service.last_check != 0) {
+                circle_div.removeClass("state_pending");
+                circle_div.addClass("state_" + service.state);
+            }
+        }
+    });
+};
 
 
 adagios.objectbrowser.CheckCommandEditor = function(parameters) {

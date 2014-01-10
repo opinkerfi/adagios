@@ -77,7 +77,7 @@ body {
 }
 .state_pending {
     color: #468847;
-    background-color: #d9edf7; /* DFF0D8 */
+    background-color: #eeeeee; /* DFF0D8 */
 }
 .state_0 {
     color: #468847;

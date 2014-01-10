@@ -426,17 +426,19 @@
 </div>
 <div class="span3" id="maincontent_right_side">
     {% if host.services_with_info %}
+     <div id="host_services">
         <h5>Services on this host</h5>
         <ul class="nav nav-list">
             {% for i in host.services_with_info %}
                 <li >
                     <a title="{{ i.3 }}" href="{% url status.views.status_detail %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
-                        <div class="circle state_{{ i.1 }}"></div> {{ i.0 }}
+                        <div class="circle state_pending"></div> {{ i.0 }}
                     </a>
                 </li>
 
             {% endfor %}
         </ul>
+      </div>
     {% endif %}
 
     <h5>External Links</h5>
@@ -550,6 +552,7 @@
 
         // Treat acknowledge button depending on if acknowledgements are needed
         $(document).ready(function() {
+            adagios.status.service_detail_update_servicestate_icon("{{ host_name }}");
             {% if my_object.state == 0 %}
             $('#acknowledge_button').attr('disabled', 'disabled');
             {% endif %}
