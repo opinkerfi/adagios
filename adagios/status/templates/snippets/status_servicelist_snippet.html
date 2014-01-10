@@ -60,10 +60,16 @@
                     {% endif %}
                 </td>
                 <td style="white-space: nowrap; font-size: 80%;">
+                    {% if service.last_check != 0 %}
                     {{ service.last_state_change|timestamp|timesince }}
+                    {% endif %}
                 </td>
                 <td style="white-space: nowrap; font-size: 80%;">
+                    {% if service.last_check != 0 %}
                     {{ service.last_check|timestamp|date:'Y-m-d H:i' }}
+                    {% else %}
+                    never
+                    {% endif %}
                 </td>
                 <!-- <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td> -->
             </tr>
