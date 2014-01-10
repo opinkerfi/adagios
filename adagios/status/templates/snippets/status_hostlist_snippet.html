@@ -45,15 +45,17 @@
             </td>
             <td>{{ row.address }}</td>
             <td>
+            {% if row.last_check != 0 %}
                 {{ row.last_check|timestamp|timesince }} ago
+            {% else %}
+                never
+            {% endif %}
             </td>
             {% if row.last_check == 0 %}
                 <td class="alert alert-info">Pending</td>
-            {% endif %}
-            {% if row.last_check != 0 and row.state  == 0 %}
+            {% elif row.state  == 0 %}
                 <td class="alert alert-success">Host UP</td>
-            {% endif %}
-            {% if row.last_check != 0 and row.state  > 0 %}
+            {% else %}
                 <td class="alert alert-danger">{% if row.childs %}Network outage {% else %}Host Down {% endif %}</td>
             {% endif %}
             <td>
