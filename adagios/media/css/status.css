@@ -75,6 +75,10 @@ body {
 .status_critical, .status_2 {
     color: #cc3300;
 }
+.state_pending {
+    color: #468847;
+    background-color: #d9edf7; /* DFF0D8 */
+}
 .state_0 {
     color: #468847;
     background-color: #90ee90; /* DFF0D8 */
