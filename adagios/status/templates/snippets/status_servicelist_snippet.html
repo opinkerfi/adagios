@@ -1,13 +1,13 @@
 <!-- snippet status_servicelist_snippet.html starts -->
 {% load adagiostags %}
 
-<table class="table table-condensed well searchtable" id="datatable" style="font-size:12px;">
+<table class="statustable table table-condensed well searchtable" id="datatable">
     <thead>
     <tr>
         <th class="small">
             <div class="btn-group" id="select_bar">
                 <a class="" data-toggle="dropdown" href="#">
-                    <input style="margin-left: -2px; padding: 0px;" type="checkbox" id="select_many">
+                    <input type="checkbox" id="select_many">
                 </a>
                 <ul class="dropdown-menu">
                     <li><a id="select_all"> All</a></li>
@@ -28,12 +28,12 @@
         {% for service in services %}
             <tr class="mainrow">
                 <td class="selectable">
-                    <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" name="service" value="{{ service.host_name }}/{{ service.description }}" data-host_name="{{ service.host_name }}" data-object_type="service" data-service_description="{{ service.description }}">
+                    <input class="chkbox {{ service.tags }}"  type="checkbox" name="service" value="{{ service.host_name }}/{{ service.description }}" data-host_name="{{ service.host_name }}" data-object_type="service" data-service_description="{{ service.description }}">
                     <input type="hidden" class="input_hostname" name="host_name" value="{{ service.host_name }}">
                     <input type="hidden" class="input_service_description" name="service_description" value="{{ service.description }}">
                 </td>
 
-                <td style="white-space: nowrap;">
+                <td class="host">
                     {% ifchanged service.host_name %}
                         <div title="{{ service.host_plugin_output }}" class="circle  state_{{ service.host_state }}"></div>
                         <a href="{% url status.views.status_detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
@@ -44,14 +44,13 @@
                         </div>
                     {% endifchanged %}
                 </td>
-                <td  colspan=1 style="word-wrap: break-word;">
+                <td class="service">
                     <a href="{% url status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
                         <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}</a>
                     <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
-                                <span title="{{ service.plugin_output }}" class="service_description_short" style="font-size: 80%; color: #808080; font-weight: normal;">
+                                <span title="{{ service.plugin_output }}" class="service_description_short plugin_output">
                                          {{ service.plugin_output|slice:"70" }}
                                  </span>
-
 
                 </td>
                 <td>
@@ -59,12 +58,12 @@
                         <i class="glyph-chat glyph-grey" data-placement=left rel=tooltip title="Comments" data-content="{% for i in service.comments_with_info %}<div class='alert alert-info'><b>{{ i.1 }}:</b> {{ i.2 }}</div>{% endfor %}"></i>
                     {% endif %}
                 </td>
-                <td style="white-space: nowrap; font-size: 80%;">
+                <td class="service_small">
                     {% if service.last_check != 0 %}
                     {{ service.last_state_change|timestamp|timesince }}
                     {% endif %}
                 </td>
-                <td style="white-space: nowrap; font-size: 80%;">
+                <td class="service_small">
                     {% if service.last_check != 0 %}
                     {{ service.last_check|timestamp|date:'Y-m-d H:i' }}
                     {% else %}

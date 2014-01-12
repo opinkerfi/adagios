@@ -236,3 +236,30 @@ textarea#id_filecontent {
 table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
     background-color: transparent;
 }
+
+
+.statustable input[type='checkbox'] {
+    margin-left: -2px;
+    padding: 0px;
+}
+
+.statustable td {
+    white-space: nowrap;
+}
+
+.statustable td.host {
+    white-space: nowrap;
+}
+.statustable td.service {
+    word-wrap: break-word;
+}
+.statustable td.service span.plugin_output {
+    font-size: 80%;
+    color: #808080;
+    font-weight: normal
+}
+
+.statustable td.service_small {
+    white-space: nowrap;
+    font-size: 80%
+}
