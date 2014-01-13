@@ -1,3 +1,9 @@
+adagios (1.2.7) unstable; urgency=low
+
+  * Upstream version updated 
+
+ -- Pall Sigurdsson <palli@opensource.is>  Mon, 13 Jan 2014 21:54:00 +0000
+
 adagios (1.2.3) unstable; urgency=low
 
   * Initial packaging. 
