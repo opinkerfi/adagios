@@ -1,4 +1,4 @@
-VERSION		= 1.2.3
+VERSION		= 1.2.7
 RELEASE		= 1
 DATE		= $(shell date)
 NEWRELEASE	= $(shell echo $$(($(RELEASE) + 1)))
@@ -92,7 +92,6 @@ debs: build sdist
 	cp -r debian.upstream deb-build/debian
 	cd deb-build/ ; \
 	  tar -zxvf adagios_${VERSION}.orig.tar.gz ; \
-	  ln -s adagios-git-latest adagios-${VERSION} ; \
 	  cd adagios-${VERSION} ;\
 	  cp -r ../debian debian ;\
-	  debuild
+	  debuild -i -us -uc -b
