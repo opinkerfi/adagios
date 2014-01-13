@@ -8,7 +8,7 @@ adagios.status.service_detail_update_servicestate_icon = function(host_name, par
     var results = {results: []};
 
     adagios.rest.status.services({
-       'host_name': 'tandoori', 
+       'host_name': host_name, 
        'fields': 'acknowledged description state last_check'
     }).done( function(data) {
         var name, item, i;
