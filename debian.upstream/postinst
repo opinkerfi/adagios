@@ -1,0 +1,2 @@
+chown -R nagios:nagios /etc/adagios/
+service apache2 reload
