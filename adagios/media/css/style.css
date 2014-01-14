@@ -245,6 +245,7 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 
 .statustable td {
     white-space: nowrap;
+    font-size: 94%;
 }
 
 .statustable td.host {

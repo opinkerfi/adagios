@@ -76,11 +76,13 @@
                 <td>
                     {% if my_object.last_check == 0 %}
                     <div class="alert alert-info">Has not run yet.</div>
-                    {% elif my_object.long_plugin_output %}
-                    <pre id="plugin_output">{{ my_object.plugin_output }}
-{{ my_object.long_plugin_output }}</pre>
                     {% else %}
-                    <pre id="plugin_output">{{ my_object.plugin_output }}</pre>
+                        {% if my_object.long_plugin_output %}
+                        <pre id="plugin_output">{{ my_object.plugin_output }}
+{{ my_object.long_plugin_output }}</pre>
+                        {% else %}
+                        <pre id="plugin_output">{{ my_object.plugin_output }}</pre>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>

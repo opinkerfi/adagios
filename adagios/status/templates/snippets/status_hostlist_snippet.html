@@ -53,10 +53,12 @@
             </td>
             {% if row.last_check == 0 %}
                 <td class="alert alert-info">Pending</td>
-            {% elif row.state  == 0 %}
-                <td class="alert alert-success">Host UP</td>
             {% else %}
-                <td class="alert alert-danger">{% if row.childs %}Network outage {% else %}Host Down {% endif %}</td>
+                {% if row.state  == 0 %}
+                    <td class="alert alert-success">Host UP</td>
+                {% else %}
+                    <td class="alert alert-danger">{% if row.childs %}Network outage {% else %}Host Down {% endif %}</td>
+                {% endif %}
             {% endif %}
             <td>
                 <div class="progress" >
