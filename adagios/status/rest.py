@@ -46,6 +46,11 @@ def services(fields=None, *args, **kwargs):
     """
     return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
 
+def services_dt(fields=None, *args, **kwargs):
+    """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
+    """
+    return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
+
 
 def contacts(fields=None, *args, **kwargs):
     """ Wrapper around pynag.Parsers.mk_livestatus.get_contacts()

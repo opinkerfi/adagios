@@ -1,0 +1,91 @@
+{% extends "base_status.html" %}
+
+{% block title %}Status Overview{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block adagios_hausinn %}
+{% endblock %}
+{% block largeheader %}Service Overview
+{% endblock %}
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.services %}">Services</a>{% endblock %}
+{% load adagiostags %}
+
+{% block sidebar_outer %}
+{% endblock %}
+
+{% block content %}
+    {% include "snippets/status_servicelist_snippet_js.html" %}
+{% endblock %}
+
+
+
+{% block footer %}
+    {{ block.super }}
+
+    <script>
+        function timedRefresh(timeoutPeriod) {
+            var interval = setInterval(refreshPage, timeoutPeriod);
+        }
+
+        function refreshPage() {
+            checked_boxes = $( ".selectable :checked" );
+            shown_modals = $("div .modal.in");
+            if (checked_boxes.length + shown_modals.length == 0) {
+                console.log("Refreshing page...");
+                location.reload(true);
+            }
+            else {
+                console.log("Canceled auto-refresh of page because input boxes or modals have been edited");
+                clearInterval(1);
+            }
+        }
+
+        $(document).ready(function() {
+            timedRefresh(30000);
+            var statustable_body = $("table.statustable tbody");
+	    var last_host = "";
+	    for (var i = 0;i < 100; i++) {
+		var service = services[i];
+		var tr = '<tr class="mainrow"><td class="selectable">' +
+			'<input class="chkbox ' + service.tags + '"  type="checkbox" name="service" value="[[ service.host_name }}/[[ service.description }}" data-host_name="[[ service.host_name }}" data-object_type="service" data-service_description="[[ service.description }}">' +
+			'<input type="hidden" class="input_hostname" name="host_name" value="[[ service.host_name }}">' +
+			'<input type="hidden" class="input_service_description" name="service_description" value="[[ service.description ]]">' +
+			'</td>' +
+			'<td class="host">';
+			if (service.host_name !== last_host) {
+			  tr += '<div title="' + service.host_plugin_output + '" class="circle  state_' + service.host_state + '"></div>' +
+			'<a href="{% url status.views.status_detail %}?host_name=[[ service.host_name ]]" title="Details for host [[ service.host_name ]]"> ' + service.host_name + '</a>';
+			last_host = service.host_name;
+			}
+			tr += '</td>' +
+                	'<td class="service">' +
+                    	'<a href="{% url status.views.status_detail %}?host_name=' + service.host_name + '&service_description=' + service.description + '" title="' + service.status + ' for the past ' + service.last_state_change + '">' +
+                        '<div class="circle circle_' + service.unhandled + '  state_' + service.state + (service.unhandled && service.unhandled || "") + '"> </div> ' + service.description + '</a>' +
+                        '<span title="' + service.plugin_output + '" class="service_description_short plugin_output">' +
+                                          service.plugin_output +
+                                 '</span>' +
+
+                '</td>' +
+                '<td>';
+		if (service.comments_with_info.length) {
+                        tr += '<i class="glyph-chat glyph-grey" data-placement=left rel=tooltip title="Comments" data-content="';
+			for (var x = 0;x < service.comments_with_info.length; x++) {
+			tr += '<div class="alert alert-info"><b>' + service.comments_with_info[0] + ':</b> ' + service.comments_with_info[1] +
+				'</div>';
+			}
+		}
+		tr += '</td>' +
+                '<td class="service_small">' + (service.last_state_change != 0 && service.last_state_change) +
+                '</td>' +
+                '<td class="service_small">' +
+                    (service.last_state_change != 0 && service.last_state_change || "never") +
+                '</td>';
+
+
+
+		statustable_body.append(tr);
+            }
+        });
+
+    </script>
+{% endblock %}

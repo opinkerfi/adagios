@@ -1,0 +1,36 @@
+{% extends "base_status.html" %}
+
+{% block title %}Datatable status{% endblock %}
+{% block nav2 %}
+{% endblock %}
+{% block smallheader %}
+{% endblock %}
+{% block largeheader %}
+    Datatable status
+{% endblock %}
+
+{% block content %}
+
+<table id="status_dt">
+  <thead>
+  </thead>
+  <tbody>
+  <tbody>
+</table>
+</table>
+{% endblock %}
+
+{% block header %} {{ block.super }}
+{% endblock %}
+
+$(document).ready(function() {
+    $('#status_dt').dataTable( {
+        "bProcessing": true,
+        "bServerSide": true,
+        "sAjaxSource": "/status/rest/json/dt"
+    } );
+} );
+
+
+{% block head %}
+{% endblock %}

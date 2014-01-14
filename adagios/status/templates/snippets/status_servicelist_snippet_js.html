@@ -1,0 +1,35 @@
+<!-- snippet status_servicelist_snippet.html starts -->
+{% load adagiostags %}
+
+<table class="statustable table table-condensed well searchtable" id="datatable">
+    <thead>
+    <tr>
+        <th class="small">
+            <div class="btn-group" id="select_bar">
+                <a class="" data-toggle="dropdown" href="#">
+                    <input type="checkbox" id="select_many">
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a id="select_all"> All</a></li>
+                    <li><a id="select_none"> None</a></li>
+                    <li><a id="select_unhandled_problems" > Unhandled Problems</a></li>
+                    <li><a id="select_problems"> All Problems</a></li>
+                </ul>
+            </div>
+        </th>
+        <th>Host</th>
+        <th>Service Check</th>
+        <td></td>
+        <th>Duration</th>
+        <th>Last Check</th>
+    </tr>
+    </thead>
+    <tbody class="">
+        <script>
+	{% autoescape off %}var services = {{services}};{% endautoescape %}
+
+        </script>
+    </tbody>
+</table>
+[[ services|length ]] objects found.
+<!-- snippet status_servicelist_snippet.html ends -->
