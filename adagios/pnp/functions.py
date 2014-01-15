@@ -23,20 +23,20 @@ def run_pnp(pnp_command, **kwargs):
     """
     try:
         pnp_path = settings.pnp_path
-    except Exception, e:
+    except Exception, e1:
         pnp_path = find_pnp_path()
     # Cleanup kwargs
     pnp_arguments = {}
     for k, v in kwargs.items():
         k = str(k)
-        if type(v) == type([]):
+        if isinstance(v, list):
             v = v[0]
         v = str(v)
         pnp_arguments[k] = v
     querystring = '&'.join(map(lambda x: "%s=%s" % x, pnp_arguments.items()))
     pnp_parameters = pnp_command + "?" + querystring
-    command = ['php',pnp_path, pnp_parameters]
-    proc = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE,stderr=subprocess.PIPE,)
+    command = ['php', pnp_path, pnp_parameters]
+    proc = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
     stdout, stderr = proc.communicate('through stdin to stdout')
     result = proc.returncode, stdout, stderr
     return result[1]
