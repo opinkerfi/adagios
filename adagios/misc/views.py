@@ -43,12 +43,14 @@ from adagios import __version__
 import adagios.status.utils
 
 from collections import defaultdict
+from adagios.views import error_handler, error_page
+
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
-
+@error_handler
 def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file
@@ -372,10 +374,23 @@ def mail(request):
     for i in services:
         try:
             host_name, service_description = i.split('/', 1)
-            service = adagios.status.utils.get_services(request,
-                                                        host_name=host_name,
-                                                        service_description=service_description
-                                                        )
+            # Ugly hack, the underlying template only supports services, but client
+            # might be sending a host status instead of a service. If that is the case
+            # We will modify the host so it looks like a service
+            if service_description == 'undefined':
+                service = adagios.status.utils.get_hosts(request, host_name=host_name)
+                if not service:
+                    c['errors'].append(
+                        "Host %s not found. Maybe a typo or you do not have access to it." % host_name
+                    )
+                    continue
+                service[0]['description'] = 'Host Status'
+                service[0]['host_name'] = service[0].get('name')
+            else:
+                service = adagios.status.utils.get_services(request,
+                                                            host_name=host_name,
+                                                            service_description=service_description
+                                                            )
             if len(service) == 0:
                 c['errors'].append(
                     'Service "%s"" not found. Maybe a typo or you do not have access to it ?' % i)

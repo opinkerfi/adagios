@@ -556,15 +556,14 @@
 
         // When somebody clicks the notification button, lets load contact email addresses
         $('#mail_modal').on('shown', function () {
-            var url = '{% url rest/status %}json/emails?fields=email';
-            document.getElementById('id_mail_to').focus();
-            $.getJSON(url, function(data) {
-                $("#id_mail_to").select2({
-                    tags:data,
-                    tokenSeparators: [","],
-                    placeholder:"Comma seperated list of email addresses to send to"
-                });
-            });
+            adagios.rest.status.emails()
+                    .done(function(data) {
+                        $("#id_mail_to").select2({
+                            tags:data,
+                            tokenSeparators: [","],
+                            placeholder:"Comma seperated list of email addresses to send to"
+                        });
+                    });
         });
 
 
@@ -688,9 +687,9 @@
                 "service": []
             }
 
-            var my_services = get_selected_services();
-            for (i=0;i<my_services.length;i++){
-                shortname = my_services[i]["host_name"] + "/" + my_services[i]["service_description"];
+            var selected_objects = get_selected_objects();
+            for (i=0;i<selected_objects.length;i++){
+                shortname = selected_objects[i]["host_name"] + "/" + selected_objects[i]["service_description"];
                 my_data['service'].push( shortname);
             }
             jQuery.param( my_data["service"], true);
