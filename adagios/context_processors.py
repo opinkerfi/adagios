@@ -35,8 +35,6 @@ def on_page_load(request):
         results[k] = v
     for k,v in activate_plugins(request).items():
         results[k] = v
-    for k,v in check_git(request).items():
-        results[k] = v
     for k,v in check_destination_directory(request).items():
         results[k] = v
     for k,v in check_nagios_cfg(request).items():
