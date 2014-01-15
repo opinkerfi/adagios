@@ -20,9 +20,6 @@ import adagios.settings
 
 #_config = Parsers.config(adagios.settings.nagios_config)
 #_config.parse()
-Model.Timeperiod.objects.all
-maincfg_values = Model.config.maincfg_values
-cfg_file = Model.config.cfg_file
 version = __version__
 
 
