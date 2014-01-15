@@ -11,7 +11,7 @@
         <form method="post" class="form-horizontal">{% csrf_token %}
             <button id="zesubmit" class="btn btn-success" type="submit">Send mail</button>
             {% include "bootstrap_fields.html" with fields=form %}
-            {% include "snippets/misc_mail_servicelist.html" %}
+            {% include "snippets/misc_mail_objectlist.html" %}
             <hr>
             <button class="btn btn-success" type="submit">Send mail</button>
         </form>

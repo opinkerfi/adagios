@@ -507,6 +507,8 @@ class SendEmailForm(forms.Form):
         #self.contact_email = contact_email
         self.html_content = "There is now HTML content with this message."
         self.services = []
+        self.hosts = []
+        self.status_objects = []
         self._resolve_remote_user(self.remote_user)
         super(self.__class__, self).__init__(*args, **kwargs)
 
@@ -526,6 +528,7 @@ class SendEmailForm(forms.Form):
         if self.cleaned_data['acknowledge_all_problems']:
             comment = "Sent mail to %s" % self.cleaned_data['to']
             self.acknowledge_all_services(comment)
+            self.acknowledge_all_hosts(comment)
         # Here we actually send some email:
         text_content = text_content.replace('\n','\r\n')
         msg = EmailMultiAlternatives(
@@ -533,11 +536,26 @@ class SendEmailForm(forms.Form):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+    def acknowledge_all_hosts(self, comment):
+        """ Acknowledge all problems in self.hosts
+        """
+        for i in self.hosts:
+            host_name = i.get('host_name')
+            sticky = "1"
+            persistent = "0"
+            notify = "0"
+            author = self.remote_user
+
+            pynag.Control.Command.acknowledge_host_problem(host_name=host_name,
+                                                          sticky=sticky,
+                                                          persistent=persistent,
+                                                          notify=notify,
+                                                          author=author,
+                                                          comment=comment)
     def acknowledge_all_services(self, comment):
-        """ Acknowledge all problems in self.services()
+        """ Acknowledge all problems in self.services
         """
         for i in self.services:
-            print "ack for %s" % i.get('description')
             host_name = i.get('host_name')
             service_description = i.get('description')
             sticky = "1"

@@ -575,7 +575,6 @@
             $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'] || '';
-                console.log('Rescheduling ' + host_name + ' ' + service_description);
                 var url = '{% url rest/status %}json/reschedule?wait=1&host_name='+host_name+'&service_description='+service_description;
                 $.getJSON(url, function(data) {
                     objects_done++;
@@ -684,16 +683,21 @@
                 "add_myself_to_cc": document.getElementById("id_add_myself_to_cc").checked,
                 "acknowledge_all_problems": document.getElementById("id_acknowledge_all_problems").checked,
                 "message":document.getElementById("id_mail_message").value,
-                "service": []
-            }
+                "service": [],
+                "host": []
+            };
 
             var selected_objects = get_selected_objects();
             for (i=0;i<selected_objects.length;i++){
-                shortname = selected_objects[i]["host_name"] + "/" + selected_objects[i]["service_description"];
-                my_data['service'].push( shortname);
+                if (selected_objects[i]['object_type'] == 'service') {
+                    shortname = selected_objects[i]["host_name"] + "/" + selected_objects[i]["service_description"];
+                    my_data['service'].push( shortname);
+                }
+                if (selected_objects[i]['object_type'] == 'host') {
+                    my_data['host'].push(selected_objects[i]["host_name"]);
+                }
             }
             jQuery.param( my_data["service"], true);
-            console.log(my_data['service']);
             $.ajax({
                 type: 'POST',
                 url: '{% url misc.views.mail %}',
@@ -709,7 +713,6 @@
         }
 
         function comment(comment,host_name, service_description, persistent ) {
-            console.log("Writing Comment: " + comment);
             if (comment == '') {
                 comment = "No comment was entered...";
             }
