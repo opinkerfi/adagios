@@ -35,6 +35,9 @@ install:
   - python manage.py test
   - echo "success"
 
+script:
+  - python manage.py test
+
 before_script:
   - env
   - git config --global user.email "noreply@travis-ci.org"
