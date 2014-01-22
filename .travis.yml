@@ -21,6 +21,7 @@ install:
   - git init
   - git add .
   - git commit -a -m "Initial commit"
+  - sudo service nagios3 reload
   - cd -
   - cd adagios
   - python manage.py test
