@@ -29,7 +29,7 @@ install:
   - git commit -a -m "Initial commit"
   - sudo service nagios3 reload
   - sudo service npcd start
-  - sudo chmod -R 777 /var/lib/nagios3/rw
+  - sudo chmod -R 777 /var/lib/nagios3
   - cd -
   - cd adagios
   - python manage.py test
