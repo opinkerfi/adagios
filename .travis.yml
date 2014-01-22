@@ -8,17 +8,17 @@ install:
   - pip install -r requirements.txt
   - python setup.py build
   - python setup.py install
-  - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
-  - mkdir -p /etc/nagios3/adagios
-  - pynag config --append cfg_dir=/etc/nagios3/adagios
+  - sudo pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
+  - sudo mkdir -p /etc/nagios3/adagios
+  - sudo pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
-  - git init
-  - git add .
-  - git commit -a -m "Initial commit"
-  - chown -R nagios /etc/nagios3 /etc/adagios
+  - sudo git init
+  - sudo git add .
+  - sudo git commit -a -m "Initial commit"
+  - sudo chown -R nagios /etc/nagios3 /etc/adagios
   - cd -
   - cd adagios
-  - python manage.py test
+  - sudo python manage.py test
   - echo "success"
 
 before_script:
