@@ -6,7 +6,7 @@ install:
   - whoami
   - sudo apt-get update
   - sudo apt-get install nagios3 check-mk-livestatus pnp4nagios python-simplejson python-django -y
-  - pip install -r requirements.txt
+  - sudo pip install -r requirements.txt
   - sudo python setup.py build
   - sudo python setup.py install
   - sudo pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
