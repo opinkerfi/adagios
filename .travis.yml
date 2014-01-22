@@ -16,6 +16,8 @@ install:
   - mkdir -p /etc/nagios3/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
+  - git config --global user.email "adagios@example.com"
+  - git config --global user.name "Adagios buildbot running inside travis"
   - git init
   - git add .
   - git commit -a -m "Initial commit"
