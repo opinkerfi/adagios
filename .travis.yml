@@ -3,7 +3,7 @@ python:
   - "2.6"
   - "2.7"
 install:
-  - apt-get install nagios3 check-mk-livestatus pnp4nagios
+  - sudo apt-get install nagios3 check-mk-livestatus pnp4nagios -y
   - pip install -r requirements.txt
   - python setup.py build
   - python setup.py install
