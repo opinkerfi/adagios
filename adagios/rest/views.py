@@ -59,6 +59,11 @@ def handle_request(request, module_name, module_path, attribute, format):
             arguments = {}  # request.POST.items()
             for k, v in request.POST.items():
                 arguments[k.encode('utf-8')] = v.encode('utf-8')
+            # Here is a special hack, if the method we are calling has an argument
+            # called "request" we will not let the remote user ship it in.
+            # instead we give it a django request object
+            if 'request' in inspect.getargspec(item)[0]:
+                arguments['request'] = request
             result = item(**arguments)
     else:
         raise BaseException("Unsupported operation: %s" % (request.method))
@@ -176,6 +181,11 @@ class CallFunctionForm(forms.Form):
         # Generate fields which resemble our functions default arguments
         argspec = inspect.getargspec(function)
         args, varargs, varkw, defaults = argspec
+        self.show_kwargs = varkw is not None
+        # We treat the argument 'request' as special. Django request object is going to be
+        # passed instead of whatever the user wanted
+        if "request" in args:
+            args.remove('request')
         if defaults is None:
             defaults = []
         else:
