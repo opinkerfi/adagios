@@ -76,7 +76,6 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         arguments.append('Filter: address ~~ %s' % i)
         arguments.append('Filter: plugin_output ~~ %s' % i)
         arguments.append('Or: 3')
-    print fields
     if fields is None:
         fields = [
             'name', 'plugin_output', 'last_check', 'state', 'services', 'services_with_info', 'services_with_state',

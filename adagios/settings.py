@@ -193,7 +193,7 @@ if not django_secret_key:
             % SECRET_KEY)
         fh.close()
     except Exception, e:
-        raise Exception("Unable to save generated django_secret_key: " % e)
+                raise Exception("Unable to save generated django_secret_key: " % e)
 else:
     SECRET_KEY = django_secret_key
 

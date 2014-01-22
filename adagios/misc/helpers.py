@@ -350,7 +350,6 @@ def verify_configuration():
         if line.lower().startswith('warning'):
             tags.append('warning')
             total_warnings += 1
-            print line
         if line.lower().startswith('error'):
             tags.append('error')
             total_errors += 1

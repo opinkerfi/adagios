@@ -461,9 +461,7 @@ def get(object_type, *args, **kwargs):
     livestatus_arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     if not object_type.endswith('s'):
         object_type = object_type + 's'
-    print kwargs
     if 'name__contains' in kwargs and object_type == 'services':
-        print "ok fixing service"
         name = str(kwargs['name__contains'])
         livestatus_arguments = filter(
             lambda x: x.startswith('name'), livestatus_arguments)
@@ -471,7 +469,6 @@ def get(object_type, *args, **kwargs):
         livestatus_arguments.append('Filter: description ~ %s' % name)
         livestatus_arguments.append('Or: 2')
     livestatus = pynag.Parsers.mk_livestatus()
-    print livestatus_arguments
     results = livestatus.query('GET %s' % object_type, *livestatus_arguments)
 
     if object_type == 'service':
@@ -486,13 +483,10 @@ def get_business_process(process_name=None, process_type=None):
     If process_name is specified, return all sub processes.
     """
     import adagios.bi
-    print str(process_name) == "blabla"
-    print repr(process_name)
     if not process_name:
         processes = adagios.bi.get_all_processes()
     else:
         process = adagios.bi.get_business_process(str(process_name), process_type)
-        print process
         processes = process.get_processes()
     result = []
     # Turn processes into nice json
@@ -536,7 +530,6 @@ def remove_downtime(host_name, service_description=None, downtime_id=None):
 
 def remove_acknowledgement(host_name, service_description=None):
     """ Remove downtime for one specific host or service """
-    print "running", locals()
     if not service_description:
         pynag.Control.Command.remove_host_acknowledgement(host_name=host_name)
     else:

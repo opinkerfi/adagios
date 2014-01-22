@@ -624,5 +624,4 @@ class PasteForm(forms.Form):
                     i['meta']['object_type'])
                 my_object = Class(item=i)
                 all_objects.append(my_object)
-                print my_object._inherited_attributes
         self.objects = all_objects
