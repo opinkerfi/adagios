@@ -18,6 +18,7 @@ install:
   - cd -
   - cd adagios
   - python manage.py test
+  - echo "success"
 
 before_script:
   - env
