@@ -17,7 +17,7 @@ import collections
 from pynag.Utils import PynagError
 
 
-def hosts(fields=None, *args, **kwargs):
+def hosts(request, fields=None, *args, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
 
         Arguments:
@@ -26,25 +26,13 @@ def hosts(fields=None, *args, **kwargs):
             Any *args will be passed to livestatus directly
             Any **kwargs will be treated as a pynag.Utils.grep()-style filter
     """
-    query = list(args)
-    if not fields is None:
-        # fields should be a list, lets create a Column: query for livestatus
-        if isinstance(fields, (str, unicode)):
-            fields = fields.split(',')
-        if len(fields) > 0:
-            argument = 'Columns: %s' % (' '.join(fields))
-            query.append(argument)
-    livestatus_arguments = pynag.Utils.grep_to_livestatus(*query, **kwargs)
-
-    livestatus = pynag.Parsers.mk_livestatus()
-    hosts = livestatus.get_hosts(*livestatus_arguments)
-    return hosts
+    return adagios.status.utils.get_hosts(request=request, fields=fields, *args, **kwargs)
 
 
-def services(fields=None, *args, **kwargs):
+def services(request, fields=None, *args, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
     """
-    return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
+    return adagios.status.utils.get_services(request=request, fields=fields, *args, **kwargs)
 
 
 def contacts(fields=None, *args, **kwargs):
