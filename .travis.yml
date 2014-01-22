@@ -1,0 +1,39 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+script:
+  - cd -
+  - cd adagios
+  - python manage.py test
+install:
+  - whoami
+  - sudo apt-get update
+  - sudo apt-get install nagios3 check-mk-livestatus pnp4nagios python-simplejson python-django -y
+  - sudo usermod travis -G nagios -a
+  - sudo chown -R nagios:nagios /etc/nagios3
+  - sudo chmod -R 777 /etc/nagios3
+  - sudo mkdir -p /etc/adagios/
+  - sudo chown -R travis /etc/adagios/
+  - sudo usermod -G www-data nagios
+  - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
+  - pip install -r requirements.txt
+  - python setup.py build
+  - python setup.py install
+  - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
+  - pynag config --set "process_performance_data=1"
+  - pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+  - mkdir -p /etc/nagios3/adagios
+  - pynag config --append cfg_dir=/etc/nagios3/adagios
+  - cd /etc/nagios3/
+  - git config --global user.email "noreply@travis-ci.org"
+  - git config --global user.name "Adagios buildbot running inside travis"
+  - git init
+  - git add .
+  - git commit -a -m "Initial commit"
+  - sudo service nagios3 reload
+  - sudo service npcd start
+  - sudo chmod -R 777 /var/lib/nagios3
+notifications:
+  email: false
+
