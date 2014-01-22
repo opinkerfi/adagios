@@ -535,3 +535,39 @@ def remove_acknowledgement(host_name, service_description=None):
     else:
         pynag.Control.Command.remove_svc_acknowledgement(host_name=host_name, service_description=service_description)
     return "ok"
+
+
+def submit_check_result(request, host_name, service_description=None, autocreate=False, status_code=3, plugin_output="No message was entered", performance_data=""):
+    """ Submit a passive check_result for a given host or a service
+
+    Arguments:
+        host_name           -- Name of the host you want to submit check results for
+        service_description -- If provided, submit a result for service this service instead of a host
+        autocreate          -- If this is set to True, and host/service does not exist. It will be created
+        status_code              -- Nagios style status for the check (0,1,2,3 which means ok,warning,critical, etc)
+        plugin_output       -- The text output of the check to display in a web interface
+        performance_data    -- Optional, If there are any performance metrics to display
+    """
+    livestatus = adagios.status.utils.livestatus(request)
+    result = {}
+    output = plugin_output + " | " + performance_data
+    if not service_description:
+        object_type = 'host'
+        args = pynag.Utils.grep_to_livestatus(host_name=host_name)
+        objects = livestatus.get_hosts(*args)
+    else:
+        object_type = 'service'
+        args = pynag.Utils.grep_to_livestatus(host_name=host_name, service_description=service_description)
+        objects = livestatus.get_services(*args)
+
+    if not objects and autocreate is True:
+        raise Exception("Autocreate not implemented yet")
+    elif not objects:
+        result['error'] = 'No %s with that name' % object_type
+    else:
+        if object_type == 'host':
+            pynag.Control.Command.process_host_check_result(host_name, status_code, output)
+        else:
+            pynag.Control.Command.process_service_check_result(host_name, service_description, status_code, output)
+        result['message'] = "Command has been submitted."
+    return result
