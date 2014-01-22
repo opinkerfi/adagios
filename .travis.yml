@@ -9,10 +9,15 @@ install:
   - sudo usermod travis -G nagios -a
   - sudo chown -R nagios:nagios /etc/nagios3
   - sudo chmod -R 777 /etc/nagios3
+  - sudo chown -R travis /etc/adagios/
+  - sudo usermod -G www-data nagios
+  - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - pip install -r requirements.txt
   - python setup.py build
   - python setup.py install
   - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
+  - pynag config --set "process_performance_data=1"
+  - pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
   - mkdir -p /etc/nagios3/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
@@ -22,6 +27,7 @@ install:
   - git add .
   - git commit -a -m "Initial commit"
   - sudo service nagios3 reload
+  - sudo service npcd start
   - cd -
   - cd adagios
   - python manage.py test
