@@ -3,6 +3,7 @@ python:
   - "2.6"
   - "2.7"
 script:
+  - cd -
   - cd adagios
   - python manage.py test
 install:
