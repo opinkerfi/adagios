@@ -3,6 +3,7 @@ python:
   - "2.6"
   - "2.7"
 install:
+  - whoami
   - sudo apt-get update
   - sudo apt-get install nagios3 check-mk-livestatus pnp4nagios python-simplejson python-django -y
   - pip install -r requirements.txt
