@@ -123,6 +123,16 @@ class TestBusinessProcess(TestCase):
         self.assertEqual(macros_for_nonempty_process, bp.resolve_all_macros())
 
     def testPageLoad(self):
-        c = Client()
-        response = c.get('/bi/')
-        self.assertEqual(response.status_code, 200)
+        self.loadPage('/bi')
+        self.loadPage('/bi/add')
+        self.loadPage('/bi/add/subprocess')
+        self.loadPage('/bi/add/graph')
+
+    def loadPage(self, url):
+        """ Load one specific page, and assert if return code is not 200 """
+        try:
+            c = Client()
+            response = c.get(url)
+            self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
+        except Exception, e:
+            self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
