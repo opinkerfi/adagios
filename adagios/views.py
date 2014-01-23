@@ -1,6 +1,8 @@
 import traceback
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+import time
+import logging
 
 
 def error_handler(fn):
@@ -11,8 +13,19 @@ def error_handler(fn):
      Kind of what the django exception page does when debug mode is on.
     """
     def wrapper(*args, **kwargs):
+        start_time = time.time()
         try:
-            return fn(*args, **kwargs)
+            result = fn(*args, **kwargs)
+            end_time = time.time()
+            time_now = time.ctime()
+            duration = end_time - start_time
+            try:
+                with open('/var/log/adagios.log', 'a') as f:
+                    message = "%s %s.%s %s seconds\n" % (time_now, fn.__module__, fn.__name__, duration)
+                    f.write(message)
+            except IOError:
+                pass
+            return result
         except Exception, e:
             c = {}
             c['exception'] = e
