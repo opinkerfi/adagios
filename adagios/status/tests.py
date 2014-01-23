@@ -39,11 +39,39 @@ class LiveStatusTestCase(unittest.TestCase):
             False, 'Nagios Broker module not found. Is livestatus installed and configured?')
 
     def testPageLoad(self):
-        c = Client()
-        response = c.get('/status/')
-        self.assertEqual(response.status_code, 200)
+        """ Loads a bunch of status pages, looking for a crash """
+        self.loadPage('/status/')
+        self.loadPage('/status/hosts')
+        self.loadPage('/status/services')
+        self.loadPage('/status/contacts')
+        self.loadPage('/status/parents')
+        self.loadPage('/status/state_history')
+        self.loadPage('/status/log')
+        self.loadPage('/status/comments')
+        self.loadPage('/status/downtimes')
+        self.loadPage('/status/hostgroups')
+        self.loadPage('/status/servicegroups')
+        self.loadPage('/misc/map')
+        self.loadPage('/status/dashboard')
 
-    def testPageLoadServices(self):
+    def loadPage(self, url):
+        """ Load one specific page, and assert if return code is not 200 """
+        try:
+            c = Client()
+            response = c.get(url)
+            self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
+        except Exception, e:
+            self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
+
+    def testSubmitCommand(self):
+        """ Test adagios.rest.status.submit_check_results
+        """
         c = Client()
-        response = c.get('/status/services')
-        self.assertEqual(response.status_code, 200)
+        data = {}
+        data['host_name'] = 'adagios test host'
+        data['service_description'] = 'nonexistant'
+        data['status_code'] = "0"
+        data['plugin_output'] = 'test message'
+        data['performance_data'] = ''
+        response = c.post('/rest/status/json/submit_check_result', data=data)
+        self.assertEqual(200, response.status_code)

@@ -220,7 +220,6 @@ class EditTemplateForm(AdagiosForm):
             if field_name == 'register':
                 data = int(data)
             self.service[field_name] = data
-            print field_name, data
         self.service.save()
         self.service.reload_object()
         # Lets also update commandline because form is being returned to the

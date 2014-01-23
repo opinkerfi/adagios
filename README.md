@@ -37,104 +37,10 @@ Components
 Install Instructions
 ====================
 
-### RPM Installation
-These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.
+Adagios has packages for most recent versions of redhat/fedora and debian/ubuntu.
 
-	# For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):
-	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-8.noarch.rpm
-	
-	# Next step is to install OK yum repository:
-	rpm -Uhv http://opensource.is/repo/ok-release-10-1.el6.noarch.rpm
-	
-	# Install needed packages:
-	yum --enablerepo=ok-testing install -y nagios git adagios
+Install takes about 5 minutes following our [Install Guide](https://github.com/opinkerfi/adagios/wiki/Install-guide)
 
-Install okconfig (optional). Okconfig is a collection of plugins and templates for monitoring enterprise equipment. If installed Adagios will have options such as network scan and remote installation of clients.
-
-	yum --enablerepo=ok-testing install -y okconfig
-
-
-After packages are in, a little bit of configuration is required:
-
-	# If you don't know how to configure SElinux, put it in permissive mode:
-	
-	sed -i "s/SELINUX=enforcing/SELINUX=permissive/" /etc/sysconfig/selinux
-	setenforce 0
-	
-	# If you plan to access adagios through apache, make sure it is started:
-	service httpd restart
-	chkconfig httpd on
-
-
-	# Same goes for nagios, it needs to be running
-	service nagios restart
-	chkconfig nagios on
-
-### Installing on debian-based systems
-Debian based platforms are known to work, but installation is a little more cumbersome.
-
-If you want to experiment with adagios on debian/ubuntu, read the instructions on the [wiki](https://github.com/opinkerfi/adagios/wiki/Install-guide)
-
-### Source Installation
-
-
-    git clone https://github.com/opinkerfi/adagios.git
-    cd adagios
-    python setup.py
-    sudo mkdir /etc/adagios
-    sudo cp adagios/etc/adagios.conf /etc/adagios/
-
-#### Requirements
-If you have pip installed
-
-    pip install -r requirements.txt
-
-Otherwise please read [requirements.txt](https://github.com/opinkerfi/adagios/blob/master/requirements.txt) for the list of python prerequisites.
-
-
-### Nagios Configuration
-
-#### Git Repo
-It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
-everything in /etc/nagios to the nagios user.
-
-    cd /etc/nagios/
-    git init
-    git add .
-    git commit -a -m "Initial commit"
-    # Make sure nagios group will always have write access to the configuration files:
-    chown -R nagios /etc/nagios/* /etc/nagios/.git
-    setfacl -R -m group:nagios:rwx /etc/nagios/
-    setfacl -R -m d:group:nagios:rwx /etc/nagios/
-
-#### Adagios destination
-By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and
-nagios.cfg contains a reference to this directory.
-
-	mkdir -p /etc/nagios/adagios
-	pynag config --append cfg_dir=/etc/nagios/adagios
-
-Congratulations! You are now ready to browse through adagios through http://$servername/adagios/. By default it
-will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
-changed in /etc/nagios/passwd)
-
-Using the Status view
-=====================
-Adagios has an experimental status view intended to partially replace the classical nagios web interface. If you want to try it out hen you need mk_livestatus and pnp4nagios broker modules installed:
-	
-	yum install -y pnp4nagios mk-livestatus --enablerepo=ok-testing
-	pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
-	pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
-	pynag config --set "process_performance_data=1"
-	
-	# Add nagios to apache group so it has permissions to pnp4nagios's session files
-	usermod -G apache nagios
-	
-	# We need to restart both apache and nagios so new changes take effect
-	service nagios restart
-	service httpd restart
-	service npcd restart
-	chkconfig npcd on
 
 Support us
 ===================

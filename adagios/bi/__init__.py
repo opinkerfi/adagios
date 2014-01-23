@@ -290,6 +290,7 @@ class BusinessProcess(object):
         if 'processes' not in self.data:
             self.data['processes'] = []
         self.data['processes'].append(new_process)
+        self._macro_cache = {}
 
     def remove_process(self, process_name, process_type=None):
         """ Remove one specific subprocess from this process.

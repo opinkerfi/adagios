@@ -83,12 +83,7 @@ class TestBusinessProcess(TestCase):
         get_all_processes()
 
     def test_macros(self):
-        bp = get_business_process('uniq test case')
-        sub1 = get_business_process('sub1')
-        sub2 = get_business_process('sub2')
-
-        sub1.status_method = 'always_ok'
-        sub2.status_method = 'always_critical'
+        bp = get_business_process('uniq test case', status_method="use_worst_state")
 
         macros_for_empty_process = {
             'num_problems': 0,
@@ -96,44 +91,48 @@ class TestBusinessProcess(TestCase):
             'num_state_1': 0,
             'num_state_2': 0,
             'num_state_3': 0,
-            'current_state': 0,
-            'friendly_state': 'normal',
+            'current_state': 3,
+            'friendly_state': 'unknown',
             'percent_problems': 0,
             'percent_state_3': 0,
             'percent_state_2': 0,
             'percent_state_1': 0,
             'percent_state_0': 0
         }
-
+        self.assertEqual(3, bp.get_status())
         self.assertEqual(macros_for_empty_process, bp.resolve_all_macros())
 
-        bp.processes = [
-            {
-                'process_name': 'sub1',
-                'status_method': 'always_ok',
-            },
-            {
-                'process_name': 'sub1',
-                'status_method': 'always_critical',
-            },
-        ]
+        bp.add_process("always_ok", status_method="always_ok")
+        bp.add_process("always_major", status_method="always_major")
+
         macros_for_nonempty_process = {
             'num_problems': 1,
             'num_state_0': 1,
             'num_state_1': 0,
-            'num_state_2': 0,
-            'num_state_3': 1,
-            'current_state': 0,
-            'friendly_state': 'normal',
+            'num_state_2': 1,
+            'num_state_3': 0,
+            'current_state': 2,
+            'friendly_state': 'major problems',
             'percent_problems': 50.0,
-            'percent_state_3': 50.0,
-            'percent_state_2': 0.0,
+            'percent_state_3': 0.0,
+            'percent_state_2': 50.0,
             'percent_state_1': 0.0,
             'percent_state_0': 50.0
         }
+        self.assertEqual(2, bp.get_status())
         self.assertEqual(macros_for_nonempty_process, bp.resolve_all_macros())
 
     def testPageLoad(self):
-        c = Client()
-        response = c.get('/bi/')
-        self.assertEqual(response.status_code, 200)
+        self.loadPage('/bi')
+        self.loadPage('/bi/add')
+        self.loadPage('/bi/add/subprocess')
+        self.loadPage('/bi/add/graph')
+
+    def loadPage(self, url):
+        """ Load one specific page, and assert if return code is not 200 """
+        try:
+            c = Client()
+            response = c.get(url)
+            self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
+        except Exception, e:
+            self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))

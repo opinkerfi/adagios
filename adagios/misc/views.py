@@ -43,12 +43,14 @@ from adagios import __version__
 import adagios.status.utils
 
 from collections import defaultdict
+from adagios.views import error_handler, error_page
+
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
-
+@error_handler
 def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file
@@ -357,17 +359,33 @@ def mail(request):
     c['http_referer'] = request.META.get("HTTP_REFERER")
     c['http_origin'] = request.META.get("HTTP_ORIGIN")
     remote_user = request.META.get('REMOTE_USER', 'anonymous adagios user')
+    hosts = []
+    services = []
     if request.method == 'GET':
         c['form'] = forms.SendEmailForm(remote_user, initial=request.GET)
+        hosts = request.GET.getlist('host') or request.GET.getlist('host[]')
         services = request.GET.getlist(
             'service') or request.GET.getlist('service[]')
-        if services == []:
+        if not services and not hosts:
             c['form'].services = adagios.status.utils.get_services(
                 request, host_name='localhost')
     elif request.method == 'POST':
         c['form'] = forms.SendEmailForm(remote_user, data=request.POST)
-        services = request.POST.getlist(
-            'service') or request.POST.getlist('service[]')
+        services = request.POST.getlist('service') or request.POST.getlist('service[]')
+        hosts = request.POST.getlist('host') or request.POST.getlist('host[]')
+
+    for host_name in hosts:
+        host_object = adagios.status.utils.get_hosts(request, host_name=host_name)
+        if not host_object:
+            c['errors'].append(
+                "Host %s not found. Maybe a typo or you do not have access to it." % host_name
+            )
+            continue
+        for item in host_object:
+            item['host_name'] = item['name']
+            item['description'] = "Host Status"
+            c['form'].status_objects.append(item)
+            c['form'].hosts.append(item)
 
     for i in services:
         try:
@@ -376,20 +394,22 @@ def mail(request):
                                                         host_name=host_name,
                                                         service_description=service_description
                                                         )
-            if len(service) == 0:
+            if not service:
                 c['errors'].append(
                     'Service "%s"" not found. Maybe a typo or you do not have access to it ?' % i)
             for x in service:
+                c['form'].status_objects.append(x)
                 c['form'].services.append(x)
-                #c['messages'].append( x )
         except AttributeError, e:
             c['errors'].append("AttributeError for '%s': %s" % (i, e))
         except KeyError, e:
             c['errors'].append("Error adding service '%s': %s" % (i, e))
 
     c['services'] = c['form'].services
+    c['hosts'] = c['form'].hosts
+    c['status_objects'] = c['form'].status_objects
     c['form'].html_content = render(
-        request, "snippets/misc_mail_servicelist.html", c).content
+        request, "snippets/misc_mail_objectlist.html", c).content
     if request.method == 'POST' and c['form'].is_valid():
         c['form'].save()
     return render_to_response('misc_mail.html', c, context_instance=RequestContext(request))

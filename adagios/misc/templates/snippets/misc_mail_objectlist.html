@@ -18,7 +18,7 @@ For more information, click <a href="{{ http_referer }}" style="color: #08c;text
         <th style="padding: 4px 5px;line-height: 18px;text-align: left;vertical-align: top;border-top: 1px solid #ddd;font-weight: bold;">Duration</th>
         <th style="padding: 4px 5px;line-height: 18px;text-align: left;vertical-align: top;border-top: 1px solid #ddd;font-weight: bold;">Last Check</th>
     </tr>
-    {% for i in services %}
+    {% for i in status_objects %}
         {% if i.state == 0 %}<tr class="alert alert-success" style="padding: 8px 35px 8px 14px;margin-bottom: 18px;color: #468847;text-shadow: 0 1px 0 rgba(255,255,255,0.5);background-color: #dff0d8;border: 1px solid #fbeed5;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;border-color: #d6e9c6;">{% endif %}
         {% if i.state == 1 %}</tr><tr class="alert alert-warning" style="padding: 8px 35px 8px 14px;margin-bottom: 18px;color: #c09853;text-shadow: 0 1px 0 rgba(255,255,255,0.5);background-color: #fcf8e3;border: 1px solid #fbeed5;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;">{% endif %}
         {% if i.state == 2 %}</tr><tr class="alert alert-danger" style="padding: 8px 35px 8px 14px;margin-bottom: 18px;color: #b94a48;text-shadow: 0 1px 0 rgba(255,255,255,0.5);background-color: #f2dede;border: 1px solid #fbeed5;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;border-color: #eed3d7;">{% endif %}

@@ -556,15 +556,14 @@
 
         // When somebody clicks the notification button, lets load contact email addresses
         $('#mail_modal').on('shown', function () {
-            var url = '{% url rest/status %}json/emails?fields=email';
-            document.getElementById('id_mail_to').focus();
-            $.getJSON(url, function(data) {
-                $("#id_mail_to").select2({
-                    tags:data,
-                    tokenSeparators: [","],
-                    placeholder:"Comma seperated list of email addresses to send to"
-                });
-            });
+            adagios.rest.status.emails()
+                    .done(function(data) {
+                        $("#id_mail_to").select2({
+                            tags:data,
+                            tokenSeparators: [","],
+                            placeholder:"Comma seperated list of email addresses to send to"
+                        });
+                    });
         });
 
 
@@ -576,7 +575,6 @@
             $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'] || '';
-                console.log('Rescheduling ' + host_name + ' ' + service_description);
                 var url = '{% url rest/status %}json/reschedule?wait=1&host_name='+host_name+'&service_description='+service_description;
                 $.getJSON(url, function(data) {
                     objects_done++;
@@ -685,16 +683,21 @@
                 "add_myself_to_cc": document.getElementById("id_add_myself_to_cc").checked,
                 "acknowledge_all_problems": document.getElementById("id_acknowledge_all_problems").checked,
                 "message":document.getElementById("id_mail_message").value,
-                "service": []
-            }
+                "service": [],
+                "host": []
+            };
 
-            var my_services = get_selected_services();
-            for (i=0;i<my_services.length;i++){
-                shortname = my_services[i]["host_name"] + "/" + my_services[i]["service_description"];
-                my_data['service'].push( shortname);
+            var selected_objects = get_selected_objects();
+            for (i=0;i<selected_objects.length;i++){
+                if (selected_objects[i]['object_type'] == 'service') {
+                    shortname = selected_objects[i]["host_name"] + "/" + selected_objects[i]["service_description"];
+                    my_data['service'].push( shortname);
+                }
+                if (selected_objects[i]['object_type'] == 'host') {
+                    my_data['host'].push(selected_objects[i]["host_name"]);
+                }
             }
             jQuery.param( my_data["service"], true);
-            console.log(my_data['service']);
             $.ajax({
                 type: 'POST',
                 url: '{% url misc.views.mail %}',
@@ -710,7 +713,6 @@
         }
 
         function comment(comment,host_name, service_description, persistent ) {
-            console.log("Writing Comment: " + comment);
             if (comment == '') {
                 comment = "No comment was entered...";
             }

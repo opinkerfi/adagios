@@ -25,7 +25,6 @@ override_dh_auto_install:
 	sed -i 's|nagios"|nagios3"|g' debian/adagios/etc/adagios/adagios.conf
 	sed -i 's|destination_directory.*|destination_directory="/etc/nagios3/adagios/"|g' debian/adagios/etc/adagios/adagios.conf
 	sed -i 's|pnp_filepath.*|pnp_filepath="/usr/share/pnp4nagios/html/index.php"|g' debian/adagios/etc/adagios/adagios.conf
-	chown -R nagios:nagios debian/adagios/etc/adagios/*
 	
 	# copy sudoers.d file and modify paths
 	mkdir -p debian/adagios/etc/sudoers.d

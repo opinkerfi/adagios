@@ -17,7 +17,7 @@ import collections
 from pynag.Utils import PynagError
 
 
-def hosts(fields=None, *args, **kwargs):
+def hosts(request, fields=None, *args, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
 
         Arguments:
@@ -26,25 +26,13 @@ def hosts(fields=None, *args, **kwargs):
             Any *args will be passed to livestatus directly
             Any **kwargs will be treated as a pynag.Utils.grep()-style filter
     """
-    query = list(args)
-    if not fields is None:
-        # fields should be a list, lets create a Column: query for livestatus
-        if isinstance(fields, (str, unicode)):
-            fields = fields.split(',')
-        if len(fields) > 0:
-            argument = 'Columns: %s' % (' '.join(fields))
-            query.append(argument)
-    livestatus_arguments = pynag.Utils.grep_to_livestatus(*query, **kwargs)
-
-    livestatus = pynag.Parsers.mk_livestatus()
-    hosts = livestatus.get_hosts(*livestatus_arguments)
-    return hosts
+    return adagios.status.utils.get_hosts(request=request, fields=fields, *args, **kwargs)
 
 
-def services(fields=None, *args, **kwargs):
+def services(request, fields=None, *args, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
     """
-    return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
+    return adagios.status.utils.get_services(request=request, fields=fields, *args, **kwargs)
 
 def services_dt(fields=None, *args, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
@@ -478,9 +466,7 @@ def get(object_type, *args, **kwargs):
     livestatus_arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     if not object_type.endswith('s'):
         object_type = object_type + 's'
-    print kwargs
     if 'name__contains' in kwargs and object_type == 'services':
-        print "ok fixing service"
         name = str(kwargs['name__contains'])
         livestatus_arguments = filter(
             lambda x: x.startswith('name'), livestatus_arguments)
@@ -488,7 +474,6 @@ def get(object_type, *args, **kwargs):
         livestatus_arguments.append('Filter: description ~ %s' % name)
         livestatus_arguments.append('Or: 2')
     livestatus = pynag.Parsers.mk_livestatus()
-    print livestatus_arguments
     results = livestatus.query('GET %s' % object_type, *livestatus_arguments)
 
     if object_type == 'service':
@@ -503,13 +488,10 @@ def get_business_process(process_name=None, process_type=None):
     If process_name is specified, return all sub processes.
     """
     import adagios.bi
-    print str(process_name) == "blabla"
-    print repr(process_name)
     if not process_name:
         processes = adagios.bi.get_all_processes()
     else:
         process = adagios.bi.get_business_process(str(process_name), process_type)
-        print process
         processes = process.get_processes()
     result = []
     # Turn processes into nice json
@@ -553,9 +535,44 @@ def remove_downtime(host_name, service_description=None, downtime_id=None):
 
 def remove_acknowledgement(host_name, service_description=None):
     """ Remove downtime for one specific host or service """
-    print "running", locals()
     if not service_description:
         pynag.Control.Command.remove_host_acknowledgement(host_name=host_name)
     else:
         pynag.Control.Command.remove_svc_acknowledgement(host_name=host_name, service_description=service_description)
     return "ok"
+
+
+def submit_check_result(request, host_name, service_description=None, autocreate=False, status_code=3, plugin_output="No message was entered", performance_data=""):
+    """ Submit a passive check_result for a given host or a service
+
+    Arguments:
+        host_name           -- Name of the host you want to submit check results for
+        service_description -- If provided, submit a result for service this service instead of a host
+        autocreate          -- If this is set to True, and host/service does not exist. It will be created
+        status_code              -- Nagios style status for the check (0,1,2,3 which means ok,warning,critical, etc)
+        plugin_output       -- The text output of the check to display in a web interface
+        performance_data    -- Optional, If there are any performance metrics to display
+    """
+    livestatus = adagios.status.utils.livestatus(request)
+    result = {}
+    output = plugin_output + " | " + performance_data
+    if not service_description:
+        object_type = 'host'
+        args = pynag.Utils.grep_to_livestatus(host_name=host_name)
+        objects = livestatus.get_hosts(*args)
+    else:
+        object_type = 'service'
+        args = pynag.Utils.grep_to_livestatus(host_name=host_name, service_description=service_description)
+        objects = livestatus.get_services(*args)
+
+    if not objects and autocreate is True:
+        raise Exception("Autocreate not implemented yet")
+    elif not objects:
+        result['error'] = 'No %s with that name' % object_type
+    else:
+        if object_type == 'host':
+            pynag.Control.Command.process_host_check_result(host_name, status_code, output)
+        else:
+            pynag.Control.Command.process_service_check_result(host_name, service_description, status_code, output)
+        result['message'] = "Command has been submitted."
+    return result
