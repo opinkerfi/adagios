@@ -578,9 +578,10 @@
                         console.log(data);
                     });
 
+            {% if not settings.escape_html_tags %}
             // If there happens to be any html in the plugin output, lets render it
             $("#plugin_output").html($("#plugin_output").text());
-
+            {% endif %}
 
         });
         // When graphs link is clicked, simulate a click on 25hours tab as well

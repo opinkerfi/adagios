@@ -132,6 +132,7 @@ enable_authorization = False
 enable_status_view = True
 enable_pages_view = True
 enable_bi = True
+escape_html_tags = True
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
 administrators="nagiosadmin,@users"
