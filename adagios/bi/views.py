@@ -242,10 +242,10 @@ def index(request):
     return render_to_response('business_process_list.html', locals(), context_instance=RequestContext(request))
 
 
-def delete(request, process_name):
+def delete(request, process_name, process_type):
     """ Delete one specific business process """
     import adagios.businessprocess
-    bp = adagios.bi.get_business_process(process_name)
+    bp = adagios.bi.get_business_process(process_name=process_name, process_type=process_type)
     if request.method == 'POST':
         form = adagios.bi.forms.BusinessProcessForm(
             instance=bp, data=request.POST)
