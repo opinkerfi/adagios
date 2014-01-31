@@ -164,7 +164,7 @@ class BusinessProcess(object):
             states = filter(lambda x: x > 0, states)
             if not states:  # Nothing more to do
                 continue
-            if len(states) > num_problems:
+            if len(states) >= num_problems:
                 status = self.get_computer_friendly_status(return_status)
                 worst_status = max(status, worst_status)
         return worst_status
