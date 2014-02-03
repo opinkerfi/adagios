@@ -1,0 +1,18 @@
+<!-- We want to look like the status view,
+If you like the base objectbrowser view,
+
+If you so desire you can also inherit from base_status.html or base_okconfig.html
+
+You probably want at some point to create your own base_myapp.html
+ 
+-->
+{% extends "base_status.html" %}
+
+
+{%block content %}
+	Insert your content in this box.
+{% endblock %}
+
+
+{% block smallheader %} hello {% endblock %}
+{% block largeheader %} world :) {% endblock %}
