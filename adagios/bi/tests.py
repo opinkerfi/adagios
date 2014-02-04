@@ -11,14 +11,6 @@ from django.test.client import Client
 from adagios.bi import *
 
 
-class TestGraphs(TestCase):
-
-    def testPNP4NagiosGraph_get_image_url(self):
-
-        pnp = PNP4NagiosGraph('apc01.acme.com', 'Ping', 'rta')
-        # pnp.get_image_url()
-
-
 class TestBusinessProcess(TestCase):
 
     def test_save_and_load(self):
@@ -136,3 +128,39 @@ class TestBusinessProcess(TestCase):
             self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
         except Exception, e:
             self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
+
+
+class TestBusinessProcessLogic(TestCase):
+    """ This class responsible for testing business classes logic """
+    def testBestAndWorstState(self):
+        s = BusinessProcess("example process")
+        s.status_method = 'use_worst_state'
+        self.assertEqual(3, s.get_status(), "Empty bi process should have status unknown")
+
+        s.add_process(process_name="always_ok", process_type="businessprocess", status_method='always_ok')
+        self.assertEqual(0, s.get_status(), "BI process with one ok subitem, should have state OK")
+
+        s.add_process("fail subprocess", status_method="always_major")
+        self.assertEqual(2, s.get_status(), "BI process with one failed item should have a critical state")
+
+        s.status_method = 'use_best_state'
+        self.assertEqual(0, s.get_status(), "BI process using use_best_state should be returning OK")
+
+    def testBusinessRules(self):
+        s = BusinessProcess("example process")
+        self.assertEqual(3, s.get_status(), "Empty bi process should have status unknown")
+
+        s.add_process(process_name="always_ok", process_type="businessprocess", status_method='always_ok')
+        self.assertEqual(0, s.get_status(), "BI process with one ok subitem, should have state OK")
+
+        s.add_process("untagged process", status_method="always_major")
+        self.assertEqual(0, s.get_status(), "BI subprocess that is untagged should yield an ok state")
+
+        s.add_process("not critical process", status_method="always_major", tags="not critical")
+        self.assertEqual(1, s.get_status(), "A Non critical subprocess should yield 'minor problem'")
+
+        s.add_process("critical process", status_method="always_major", tags="mission critical")
+        self.assertEqual(2, s.get_status(), "A critical process in failed state should yield major problem")
+
+        s.add_process("another noncritical process", status_method="always_major", tags="not critical")
+        self.assertEqual(2, s.get_status(), "Adding another non critical subprocess should still yield a critical state")

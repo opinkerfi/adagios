@@ -127,6 +127,15 @@ class BusinessProcess(object):
             self.errors.append(e)
             return 3
 
+    def get_best_state(self):
+        """ Returns the best state of any sub items
+        """
+        try:
+            return int(min(self.get_all_states()))
+        except Exception, e:
+            self.errors.append(e)
+            return 3
+
     def run_business_rules(self):
         """ Iterate through the business rules in self.data['rules'] and returns
          the calculated status
