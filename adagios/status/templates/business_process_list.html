@@ -10,26 +10,12 @@
 {% load adagiostags %}
 
 {% block content %}
-    <style>
-    .table tbody tr .businessprocess-subrow {
-        padding-top: 0px;
-        padding: 0px;
-        border-top: 0px;
-    }
-    .nomargin {
-        margin: 0px;
-    }
-    #processes, #processes li ul {
-        list-style-type: none;
-        margin-top: 5px;
-    }
-    </style>
-        <ul class="nav nav-tabs" id="objecttab">
+    <ul class="nav nav-tabs" id="objecttab">
         <li><a href="#bp" class="active" data-toggle="tab">Business Processes</a></li>
         <li><a href="#thruk" class="" data-toggle="tab">Thruk Processes</a></li>
     </ul>
-    <div class="tab-content">
 
+    <div class="tab-content">
         <div class="tab-pane active" id="bp">
             <ul id="processes"></ul>
         </div>
@@ -38,19 +24,6 @@
         </div>
     </div>
 
-    <table class="hide" id="bi_table" class="table well">
-    <thead id="thead-master">
-        <tr>
-            <th class="small">
-            </th>
-
-            <th class="small nowrap">Name</th>
-            <th></th>
-            <th><button name="remove_process" class="close pull-right status_ok" type="submit">×</button></th>
-        </tr>
-    </thead>
-    <tbody id="processes_"></tbody>
-    </table>
 
     <div id="total_count">You have 0 total business processes</div>
 
@@ -58,7 +31,8 @@
     <div class="hide" id="business-process-li-element">
 
         <!-- Start of process -->
-        <li class="hoverable" id="__ID__">
+        <li id="__ID__">
+            <div class="hoverable">
                 <a onclick='toggle_businessprocess($(this));' href="#" data-name="__NAME__" data-for="__ID__-subprocesses" data-count="__LENGTH__">&#x25b7;</a>
 
                 <div title="State is __STATE__" class="circle state___STATE__"></div>
@@ -70,7 +44,7 @@
 
                 <a href="__LOCATION__/delete/__PROCESS_TYPE__/__NAME__">delete</a>
             </span>
-
+            </div>
             <ul id="__ID__-subprocesses"></ul>
 
         </li>
@@ -78,47 +52,6 @@
 
     </div>
 
-    <!-- Alternative way -->
-    <table class="hide">
-
-    <tbody class="hide" id="business-process-table-element">
-
-        <!-- Start of process -->
-        <tr >
-            <td class="small">
-                <a onclick='toggle_businessprocess($(this));' href="#" id="__ID__" data-name="__NAME__" data-for="__ID__-subprocesses" data-count="__LENGTH__">&#x25b7;</a>
-            </td>
-            <td class="small nowrap">
-                <div title="State is __STATE__" class="circle state___STATE__"></div>
-                <a href="{% url adagios.bi.views.edit '__NAME__' '__PROCESS_TYPE__' %} ">__NAME__</a>
-                <span>__PROCESS_TYPE__ with __LENGTH__ sub processes.</span>
-
-            </td>
-            <td>
-            </td>
-            <td>
-                <form class="pull-right nomargin" action="" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="process_name" value="__NAME__">
-                    <input type="hidden" name="process_type" value="__PROCESS_TYPE__">
-                    <button name="remove_process" title="Remove group from this business process" class="close status_critical" >×</button>
-                </form>
-        </tr>
-
-        <!-- Sub items go here -->
-        <tr >
-            <td class="businessprocess-subrow"></td>
-            <td colspan="6" class="businessprocess-subrow" style="width: 100%;">
-
-                <table class="table table-condensed well" >
-                    <thead id="thead-__ID__-subprocesses"></thead>
-                    <tbody id="__ID__-subprocesses" style="margin-top: 20px;"></tbody>
-                </table>
-            </td>
-        </tr>
-        <!-- End of process !-->
-    </tbody>
-    </table>
 
 {% endblock %}
 

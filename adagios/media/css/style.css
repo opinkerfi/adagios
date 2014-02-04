@@ -240,12 +240,14 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 
 .statustable input[type='checkbox'] {
     margin-left: -2px;
-    padding: 0px;
+    padding: 0;
 }
 
 .statustable td {
     white-space: nowrap;
     font-size: 94%;
+    padding-bottom: 2px;
+    padding-top: 2px;
 }
 
 .statustable td.host {
@@ -257,10 +259,29 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 .statustable td.service span.plugin_output {
     font-size: 80%;
     color: #808080;
-    font-weight: normal
+    font-weight: normal;
+
 }
 
 .statustable td.service_small {
     white-space: nowrap;
     font-size: 80%
+}
+
+
+
+.table tbody tr .businessprocess-subrow {
+    padding-top: 0px;
+    padding: 0px;
+    border-top: 0px;
+}
+.nomargin {
+    margin: 0px;
+}
+#processes, #processes li ul {
+    list-style-type: none;
+    margin-top: 5px;
+}
+.hoverable:hover {
+    background-color: #f6f6f6;
 }
