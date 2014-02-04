@@ -19,7 +19,7 @@ echo "${new_version}-${current_release} /" > rel-eng/packages/adagios
 dch -v "${new_version}" --distribution unstable "New Upstream release"
 
 echo "### commiting and tagging current git repo"
-git commit adagios/__init__.py rel-eng/packages/adagios adagios.spec debian/changelog -m "Bumped version number to $new_version" > /dev/null
+git commit adagios/__init__.py rel-eng/packages/adagios adagios.spec debian.upstream/changelog -m "Bumped version number to $new_version" > /dev/null
 git tag adagios-${new_version}-${current_release} -a -m "Bumped version number to $new_version" 
 
 # The following 2 require access to git repositories and pypi
