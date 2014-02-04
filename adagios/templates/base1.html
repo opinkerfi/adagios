@@ -580,36 +580,36 @@
         } );
 
         // Select all/none/problems button in top-left of the table
-        $('#select_all').click(function(e) {
+        $('.select_all').click(function(e) {
             $( ".chkbox").each( function() {
                 this.checked = true;
             });
-            $('#select_many').prop('checked',true);
-            $('#select_many').prop('indeterminate',false);
+            $('.select_many').prop('checked',true);
+            $('.select_many').prop('indeterminate',false);
             update_selected_rows();
         });
-        $('#select_none').click(function(e) {
+        $('.select_none').click(function(e) {
             $( ".chkbox").each( function() {
                 this.checked = false;
             });
-            $('#select_many').prop('checked',false);
-            $('#select_many').prop('indeterminate',false);
+            $('.select_many').prop('checked',false);
+            $('.select_many').prop('indeterminate',false);
             update_selected_rows();
         });
-        $('#select_problems').click(function(e) {
+        $('.select_problems').click(function(e) {
             $( "input.problem ").each( function() {
                 this.checked = true;
             });
-            $('#select_many').prop('checked',false);
-            $('#select_many').prop('indeterminate',true);
+            $('.select_many').prop('checked',false);
+            $('.select_many').prop('indeterminate',true);
             update_selected_rows();
         });
-        $('#select_unhandled_problems').click(function(e) {
+        $('.select_unhandled_problems').click(function(e) {
             $( "input.unhandled ").each( function() {
                 this.checked = true;
             });
-            $('#select_many').prop('checked',false);
-            $('#select_many').prop('indeterminate',true);
+            $('.select_many').prop('checked',false);
+            $('.select_many').prop('indeterminate',true);
             update_selected_rows();
         });
 
