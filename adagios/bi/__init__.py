@@ -226,6 +226,7 @@ class BusinessProcess(object):
         >>> bp = get_business_process('test business process')
         >>> bp.resolve_macrostring("number of problems: {num_problems}")
         'number of problems: 0'
+
         For a list of supported macros, call self.resolve_all_macros()
         """
         if '{' not in string:
@@ -729,7 +730,7 @@ def get_class(process_type, default=BusinessProcess):
 
      Example:
      >>> get_class('hostgroup')
-     Hostgroup
+     <class '__init__.Hostgroup'>
     """
     dictionary = {}
     dictionary['hostgroup'] = Hostgroup
