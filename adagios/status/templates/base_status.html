@@ -214,7 +214,7 @@
 
                 </div>
 
-                    <div class="btn-group pull-left">
+                    <div class="btn-group pull-left" id="action_buttons_more">
                         <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" style="margin-left: 4px; padding-bottom: 3px; font-weight: normal">
                             More <span class="caret"></span>
                         </a>
@@ -844,6 +844,21 @@
             return result;
 
         }
+
+	// Disable a links as well as buttons using the disabled class since disabling links is not
+        // supported by default.
+	jQuery.fn.extend({
+    	    disable: function(state) {
+        	return this.each(function() {
+            	    var $this = $(this);
+            	    $this.toggleClass('disabled', state);
+        	});
+    	    }
+	});
+	// Disable clicking on disabled links
+        $('body').on('click', 'a.disabled', function(event) {
+            event.preventDefault();
+        });
         // update_selected_rows()
         // highlights all rows that are selected in a table. Also shows/hides toolbar buttons if applicable.
         function update_selected_rows() {
@@ -854,21 +869,20 @@
             // Treat acknowledge button depending on if acknowledgements are needed
 
             if (checked_boxes.length > 0) {
+                $('#action_buttons button.adagios_service_multi').attr('disabled', null);
                 if (checked_boxes.length > 1) {
                     $('#action_buttons button.adagios_service_single').attr('disabled', 'disabled');
-                    $('#action_buttons button.adagios_service_multi').attr('disabled', null);
-                    //adagios_service_single
                 } else {
                     $('#action_buttons button.adagios_service_single').attr('disabled', null);
-                    $('#action_buttons button.adagios_service_multi').attr('disabled', null);
                 }
                 $('.enable_on_select').attr('disabled', null);
                 $('#action_buttons').attr('title',null);
+                $('#action_buttons_more a').disable(false);
             }
             else {
                 $('#action_buttons button').attr('disabled', 'disabled');
                 $('.enable_on_select').attr('disabled', 'disabled');
-                //$('#action_buttons').attr('title','Select some items below to active toolbar buttons');
+                $('#action_buttons_more a').disable(true);
             }
         }
 
