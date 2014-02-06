@@ -609,7 +609,7 @@ class BulkCopyForm(BaseBulkForm):
 class BulkDeleteForm(BaseBulkForm):
 
     """ Form used to delete multiple objects at once """
-    yes_i_am_sure = forms.BooleanField(label="Yes, i am sure")
+    yes_i_am_sure = forms.BooleanField(label="Yes, I am sure")
 
     def delete(self):
         """ Deletes every object in the form """
