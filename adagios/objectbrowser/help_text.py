@@ -162,7 +162,7 @@ object_definitions["servicegroup"]["notes"][
 object_definitions["servicegroup"]["notes_url"][
     "help_text"] = "Arbitrary url to a site of your choice"
 object_definitions["servicegroup"]["action_url"][
-    "help_text"] = "Arvitrary url to a site of your choice"
+    "help_text"] = "Arbitrary url to a site of your choice"
 object_definitions["contact"]["contact_name"][
     "help_text"] = "Unique name for this contact (e.g. username@domain.com)"
 object_definitions["contact"]["alias"][
