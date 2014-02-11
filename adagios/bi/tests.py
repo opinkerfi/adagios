@@ -4,6 +4,12 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import tempfile
+import os
+
+
+
+
 
 from django.test import TestCase
 from django.test.client import Client
@@ -12,6 +18,12 @@ from adagios.bi import *
 
 
 class TestBusinessProcess(TestCase):
+    def setUp(self):
+        fd, filename = tempfile.mkstemp()
+        BusinessProcess._default_filename = filename
+
+    def tearDown(self):
+        os.remove(BusinessProcess._default_filename)
 
     def test_save_and_load(self):
         """ This test will test load/save of a business process.
@@ -132,6 +144,13 @@ class TestBusinessProcess(TestCase):
 
 class TestBusinessProcessLogic(TestCase):
     """ This class responsible for testing business classes logic """
+    def setUp(self):
+        fd, filename = tempfile.mkstemp()
+        BusinessProcess._default_filename = filename
+
+    def tearDown(self):
+        os.remove(BusinessProcess._default_filename)
+
     def testBestAndWorstState(self):
         s = BusinessProcess("example process")
         s.status_method = 'use_worst_state'
@@ -164,3 +183,111 @@ class TestBusinessProcessLogic(TestCase):
 
         s.add_process("another noncritical process", status_method="always_major", tags="not critical")
         self.assertEqual(2, s.get_status(), "Adding another non critical subprocess should still yield a critical state")
+
+
+class TestDomainProcess(TestCase):
+    """ Test the Domain business process type
+    """
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def testHost(self):
+        domain = get_business_process(process_name='ok.is', process_type='domain')
+
+        # We don't exactly know the status of the domain, but lets run it anyway
+        # for smoketesting
+        domain.get_status()
+
+
+import pynag.Model
+import pynag.Utils
+
+
+class TestHostProcess(TestCase):
+    """ Test the Host business process type
+    """
+    def setUp(self):
+        self.createNagiosEnvironment()
+        self.livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+    def tearDown(self):
+        self.stopNagiosEnvironment()
+    def createNagiosEnvironment(self):
+        """ Starts a nagios server with empty config in an isolated environment """
+        self.tempdir = t = tempfile.mkdtemp('nagios-unittests') + "/"
+        cfg_file = t + "/nagios.cfg"
+        open(cfg_file, 'w').write('')
+
+        objects_dir = t + "/conf.d"
+        os.mkdir(objects_dir)
+
+        minimal_objects_file = os.path.dirname(adagios.__file__) + "/../tests/config/conf.d/minimal_config.cfg"
+        command = ['cp', minimal_objects_file, objects_dir]
+        pynag.Utils.runCommand(command=command, shell=False)
+
+
+
+
+        config = pynag.Parsers.config(cfg_file=cfg_file)
+        config.parse()
+        config._edit_static_file(attribute='illegal_macro_output_chars', new_value='''`~$&|'"<>''')
+        config._edit_static_file(attribute='log_file', new_value=t + "/nagios.log")
+        config._edit_static_file(attribute='object_cache_file', new_value=t + "objects.cache")
+        config._edit_static_file(attribute='precached_object_file', new_value=t + "/objects.precache")
+        config._edit_static_file(attribute='lock_file', new_value=t + "nagios.pid")
+        config._edit_static_file(attribute='command_file', new_value=t + "nagios.cmd")
+        config._edit_static_file(attribute='state_retention_file', new_value=t + "retention.dat")
+        config._edit_static_file(attribute='cfg_dir', new_value=objects_dir)
+        config._edit_static_file(attribute='p1_file', new_value=cfg_file)
+        config._edit_static_file(attribute='enable_embedded_perl', new_value='0')
+        config._edit_static_file(attribute='event_broker_options', new_value='-1')
+
+        # Find mk_livestatus broker module
+        global_config = pynag.Parsers.config(cfg_file=adagios.settings.nagios_config)
+        global_config.parse_maincfg()
+        for k, v in global_config.maincfg_values:
+            if k == 'broker_module' and 'livestatus' in v:
+                livestatus_module = v.split()[0]
+                line = "%s %s" % (livestatus_module, t + "/livestatus.socket")
+                config._edit_static_file('broker_module', new_value=line)
+
+
+        self.original_objects_dir = pynag.Model.pynag_directory
+        self.original_cfg_file = pynag.Model.cfg_file
+
+        pynag.Model.config = config
+        pynag.Model.cfg_file = cfg_file
+        pynag.Model.pynag_directory = objects_dir
+        pynag.Model.eventhandlers = []
+
+        command = "%s "
+        pynag.Utils.runCommand(command=[adagios.settings.nagios_binary, '-d', cfg_file], shell=False)[1]
+
+    def stopNagiosEnvironment(self):
+        # Stop nagios service
+        pid = open(self.tempdir + "nagios.pid").read()
+        pynag.Utils.runCommand(command=['kill', pid], shell=False)
+
+        # Clean up temp directory
+        command = 'rm','-rf', self.tempdir
+        pynag.Utils.runCommand(command=command, shell=False)
+        pynag.Model.config = None
+        pynag.Model.cfg_file = self.original_cfg_file
+        pynag.Model.pynag_directory = self.original_objects_dir
+
+    def testNonExistingHost(self):
+        host = get_business_process('non-existant host', process_type='host')
+        self.assertEqual(3, host.get_status(), "non existant host processes should have unknown status")
+
+    def testExistingHost(self):
+        #localhost = self.livestatus.get_hosts('Filter: host_name = ok_host')
+        host = get_business_process('ok_host', process_type='host')
+        self.assertEqual(0, host.get_status(), "the host ok_host should always has status ok")
+
+    def testDomainProcess(self):
+        domain = get_business_process(process_name='oksad.is', process_type='domain')
+        # We don't exactly know the status of the domain, but lets run it anyway
+        # for smoketesting
+        print domain.get_status()
