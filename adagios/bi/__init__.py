@@ -4,10 +4,9 @@ __author__ = 'palli'
 import simplejson as json
 import pynag.Model
 import pynag.Parsers
-import unittest
 import adagios.pnp.functions
 import adagios.settings
-
+import time
 
 class BusinessProcess(object):
 
@@ -357,7 +356,7 @@ class BusinessProcess(object):
     def get_pnp_last_value(self, host_name, service_description, metric_name):
         """ Looks up current nagios perfdata via mk-livestatus and returns the last value for a specific metric (str)
         """
-        l = pynag.Parsers.mk_livestatus()
+        l = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
         try:
             service = l.get_service(host_name, service_description)
         except Exception:
@@ -509,7 +508,7 @@ class Hostgroup(BusinessProcess):
     subitem_method = 'host'
 
     def load(self):
-        self._livestatus = pynag.Parsers.mk_livestatus()
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
         self.display_name = self._hostgroup.get('alias')
         self.notes = self._hostgroup.get(
@@ -577,16 +576,15 @@ class Servicegroup(BusinessProcess):
     _default_status_calculation_method = 'worst_service_state'
 
     def __init__(self, name):
-        self._livestatus = pynag.Parsers.mk_livestatus(
-            nagios_cfg_file=adagios.settings.nagios_config)
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+
         self._servicegroup = self._livestatus.get_servicegroup(name)
         self.servicegroup_name = name
         self.notes = self.servicegroup.get('notes')
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(
             name)
-        if not display_name:
-            display_name = self._servicegroup.get('alias')
-        self.display_name = display_name
+        if not self.display_name:
+            self.display_name = self._servicegroup.get('alias')
         # Get information about child servicegroups
         subgroups = self._pynag_object.servicegroup_members or ''
         subgroups = subgroups.split(',')
@@ -626,7 +624,7 @@ class Service(BusinessProcess):
                 return
             host_name = tmp[0]
             service_description = tmp[1]
-            self._livestatus = pynag.Parsers.mk_livestatus()
+            self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
             self._service = self._livestatus.get_service(
                 host_name, service_description)
             self.notes = self._service.get('plugin_output', '')
@@ -640,6 +638,8 @@ class Service(BusinessProcess):
     def get_status(self):
         try:
             self.load()
+            if self._service.get('last_check') == 0:
+                self._service['state'] = 3
             return self._service.get('state', 3)
         except Exception, e:
             self.errors.append(e)
@@ -652,7 +652,7 @@ class Host(BusinessProcess):
     process_type = 'host'
 
     def load(self):
-            self._livestatus = pynag.Parsers.mk_livestatus()
+            self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
             self._host = self._livestatus.get_host(self.name)
             self.display_name = self._host.get('display_name') or self.name
             self.notes = self._host.get(
@@ -696,15 +696,25 @@ class Domain(Host):
     _livestatus = None
 
     def load(self):
-        self._livestatus = pynag.Parsers.mk_livestatus()
+        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
         try:
-            self._host = self._livestatus.get_hostgroup(self.name)
+            self._host = self._livestatus.get_host(self.name)
         except IndexError:
             self.create_host()
-            self._host = self._livestatus.get_hostgroup(self.name)
+            self._host = self._livestatus.get_host(self.name)
+
         self.display_name = self._host.get('display_name') or self.name
-        self.notes = self._host.get(
-            'notes') or 'You are looking at the host %s' % self.name
+        self.notes = self._host.get('notes') or 'You are looking at the host %s' % self.name
+        self.graphs = []
+        self._services = self._livestatus.get_services('Filter: host_name = %s' % self.name)
+        for service in self._services:
+            perfdata = pynag.Utils.PerfData(service.get('perf_data', ''))
+            print perfdata
+            service_description = service.get('description')
+            host_name = service.get('host_name')
+            for i in perfdata.metrics:
+                notes = '%s %s' % (service_description, i.label)
+                self.add_pnp_graph(host_name=host_name, service_description=service_description, metric_name=i.label, notes=notes)
 
     def create_host(self):
         """ Create a new Host object in nagios config and reload nagios  """
@@ -715,15 +725,42 @@ class Domain(Host):
             socket.gethostbyname(self.name)
         except Exception:
             self.host_not_found = True
+            self.errors.append("Host not found: " % self.name)
         all_hosts = pynag.Model.Host.objects.all
         all_hosts = map(lambda x: x.host_name, all_hosts)
         if self.name not in all_hosts:
-            host = pynag.Model.Host(use="generic-domain", host_name=self.name)
+            host = pynag.Model.Host(use="generic-domain", host_name=self.name, address=self.name)
+            host.action_url = "http://%s" % self.name
+            #host.hostgroups = 'domains,nameservers,mailservers,http-servers,https-servers'
             host.save()
-            host.action_url = "http://%s" % i
-            host.hostgroups = 'domains,nameservers,mailservers,http-servers,https-servers'
-        pynag.Control.daemon.reload()
 
+            daemon = pynag.Control.daemon(
+                nagios_bin=adagios.settings.nagios_binary,
+                nagios_cfg=adagios.settings.nagios_config,
+                nagios_init=adagios.settings.nagios_init_script,
+            )
+
+            result = daemon.reload()
+            time.sleep(1)
+            return result
+    def get_processes(self):
+        self.load()
+        services = self._livestatus.get_services('Filter: host_name = %s' % self.name)
+        result = []
+        for i in services:
+            if i.get('last_check') == 0:
+                i['state'] = 3
+            process_name = "%s/%s" % (self.name, i.get('description'))
+            process = Service(process_name)
+            process.display_name = i.get('description')
+            #process.get_status = lambda: min(e,3)
+            result.append(process)
+        self.graphs = []
+        for i in result:
+            for graph in i.graphs or []:
+                self.graphs.append(graph)
+                print graph
+        return result
 
 def get_class(process_type, default=BusinessProcess):
     """ Looks up process_type and return apropriate BusinessProcess Class
