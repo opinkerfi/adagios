@@ -55,9 +55,11 @@ def contrib(request, arg1, arg2=None, arg3=None, arg4=None):
         content = f.read()
 
     # Lets populate local namespace with convenient data
-    services = lambda: adagios.status.utils.get_services(request)
-    hosts = lambda: adagios.status.utils.get_hosts(request)
-    service_problems = lambda: adagios.status.utils.get_hosts(request, state__isnot='0')
+    services = lambda: locals().get('services', adagios.status.utils.get_services(request))
+    hosts = lambda: locals().get('hosts', adagios.status.utils.get_hosts(request))
+    service_problems = lambda: locals().get('service_problems', adagios.status.utils.get_hosts(request, state__isnot='0'))
+    host_problems = lambda: locals().get('host_problems', adagios.status.utils.get_hosts(request, state__isnot='0'))
+    statistics = lambda: locals().get('statistics', adagios.status.utils.get_statistics(request))
 
     t = template.Template(content)
     c = template.Context(locals())
