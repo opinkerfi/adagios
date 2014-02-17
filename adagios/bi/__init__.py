@@ -4,6 +4,7 @@ __author__ = 'palli'
 import simplejson as json
 import pynag.Model
 import pynag.Parsers
+import pynag.Control
 import adagios.pnp.functions
 import adagios.settings
 import time
@@ -701,7 +702,10 @@ class Domain(Host):
             self._host = self._livestatus.get_host(self.name)
         except IndexError:
             self.create_host()
-            self._host = self._livestatus.get_host(self.name)
+            try:
+                self._host = self._livestatus.get_host(self.name)
+            except IndexError:
+                raise Exception("Failed to create host %s" % self.name)
 
         self.display_name = self._host.get('display_name') or self.name
         self.notes = self._host.get('notes') or 'You are looking at the host %s' % self.name
@@ -709,9 +713,9 @@ class Domain(Host):
         self._services = self._livestatus.get_services('Filter: host_name = %s' % self.name)
         for service in self._services:
             perfdata = pynag.Utils.PerfData(service.get('perf_data', ''))
-            print perfdata
             service_description = service.get('description')
             host_name = service.get('host_name')
+            self.add_process('%s/%s' % (host_name, service_description), 'service')
             for i in perfdata.metrics:
                 notes = '%s %s' % (service_description, i.label)
                 self.add_pnp_graph(host_name=host_name, service_description=service_description, metric_name=i.label, notes=notes)
@@ -743,6 +747,21 @@ class Domain(Host):
             result = daemon.reload()
             time.sleep(1)
             return result
+
+    def reschedule_unchecked_services(self, services):
+        """ Iterate through all services, if any of them have not been scheduled, schedule a check
+
+            returns: all services after they have successfully run
+        """
+        now = str(int(time.now()))
+        for i in services:
+            if i.get('last_check') == 0:
+                pynag.Control.Command.schedule_svc_check(
+                    host_name=i.get('host_name'),
+                    service_description=i.get('description'),
+                    check_time=now,
+                )
+
     def get_processes(self):
         self.load()
         services = self._livestatus.get_services('Filter: host_name = %s' % self.name)
@@ -759,7 +778,6 @@ class Domain(Host):
         for i in result:
             for graph in i.graphs or []:
                 self.graphs.append(graph)
-                print graph
         return result
 
 def get_class(process_type, default=BusinessProcess):
