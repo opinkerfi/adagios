@@ -255,6 +255,12 @@ $.extend $.fn.dataTableExt.oStdClasses,
           $("[rel=tooltip]").tooltip()
           $this.data "dtData", $this.dtData
           $this.adagios_ob_dtPopulate()
+          checked = $("input#ob_mass_select:checked").length
+          $("#bulkselected").html checked
+          if checked > 0
+            $("#actions #modify a").removeClass('disabled')
+          else
+            $("#actions #modify a").addClass('disabled')
       ).error (jqXHR) ->
 
 
@@ -300,9 +306,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
           checked = $("input#ob_mass_select:checked").length
           $("#bulkselected").html checked
           if checked > 0
-            $("#actions #modify").show()
+            $("#actions #modify a").removeClass('disabled')
           else
-            $("#actions #modify").hide()
+            $("#actions #modify a").addClass('disabled')
     )
 
     dt.ob_check_datatable_column_visibility()
@@ -331,7 +337,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
               <li class="nav-header">Add</li>
             </ul>
           </div>
-          <div id="modify" class="btn-group pull-right hide">
+          <div id="modify" class="btn-group pull-right">
             <a rel="tooltip" id="copy" title="Copy" class="btn btn-important" data-target-bulk="bulk_copy" data-target="copy"><i class="icon-copy"></i></a>
             <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit_object"><i class="glyph-pencil"></i></a>
             <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete_object"><i class="glyph-bin"></i></a>
@@ -354,7 +360,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
           ).appendTo $form
 
         $form.submit()
-      else
+      else if checked > 0
         where = $(this).attr('data-target')
         id = $("table tbody input:checked").attr('name')
         window.location.href = window.location.href.split("#")[0] + "#{where}/id=#{id}"
@@ -400,9 +406,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
       checked = $("input#ob_mass_select:checked").length
       $("#bulkselected").html checked
       if checked > 0
-        $("#actions #modify").show()
+        $("#actions #modify a").removeClass('disabled')
       else
-        $("#actions #modify").hide()
+        $("#actions #modify a").addClass('disabled')
 
     # When inputs are selected in toolbar, we call redraw on the datatable which calls the filtering routing
     #        above 
@@ -576,6 +582,13 @@ $(document).ready ->
     placeholder: "Select an item",
     containerCssClass: "select2field"
   })
+
+  # Disable clicking on disabled links
+  $("body").on "click", "a.disabled", (event) ->
+     event.preventDefault()
+     return
+
+
 
   $('div.modal#notifications div.alert').bind 'close', (e) ->
     $this = $(this)
