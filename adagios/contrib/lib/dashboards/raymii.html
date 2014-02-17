@@ -108,7 +108,7 @@
         <div id="list_of_minor_issues">
             {% for i in services %}
 
-                {% if i.state != 0 and i.acknowledged != 0  %}
+                {% if i.state == 1 and i.acknowledged != 1  %}
                     <div class="alert alert-warning">
                         <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.description }}">
                             # <b>{{ i.description }}</b> on <i>{{ i.host_name }}</i> </a>
@@ -119,18 +119,6 @@
         </div>
         <div id="no_minor_issues" class="is_hidden alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Unhandled Minor Issues!</div>
 
-        <h3>Acknowledged Minor Issues</h3>
-        <div id="list_of_acknowledged_minor_issues">
-                    {% for i in services %}
-                    {% if i.state == 1 and i.acknowledged == 1 %}
-                        <div class="alert alert-info">
-                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.description }}">
-                                # <b>{{ i.description }}</b> on <i>{{ i.host_name }}</i> </a>{{ i.plugin_output }}
-                        </div>
-                   {% endif %}
-                {% endfor %}
-        </div>
-        <div id="no_acknowledged_minor_issues" class="alert alert-success is_hidden"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Acknowledged Minor Issues!</div>
 
 
         <h3>Acknowledged Criticals</h3>
@@ -145,6 +133,19 @@
                 {% endfor %}
         </div>
         <div id="no_acknowledged_critical_issues" class="is_hidden alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Acknowledged Critical Issues!</div>
+
+        <h3>Acknowledged Minor Issues</h3>
+        <div id="list_of_acknowledged_minor_issues">
+                    {% for i in services %}
+                    {% if i.state == 1 and i.acknowledged == 1 %}
+                        <div class="alert alert-info">
+                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.description }}">
+                                # <b>{{ i.description }}</b> on <i>{{ i.host_name }}</i> </a>{{ i.plugin_output }}
+                        </div>
+                   {% endif %}
+                {% endfor %}
+        </div>
+        <div id="no_acknowledged_minor_issues" class="alert alert-success is_hidden"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Acknowledged Minor Issues!</div>
 
     </div>
 </div>
