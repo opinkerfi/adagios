@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     (r'^pages', include('adagios.pages.urls')),
     (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
     (r'^rest', include('adagios.rest.urls')),
+    (r'^contrib', include('adagios.contrib.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

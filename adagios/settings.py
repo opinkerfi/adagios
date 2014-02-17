@@ -107,6 +107,8 @@ INSTALLED_APPS = [
     'adagios.rest',
     'adagios.misc',
     'adagios.pnp',
+    'adagios.contrib',
+    'adagios.contrib2',
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
@@ -132,6 +134,7 @@ enable_authorization = False
 enable_status_view = True
 enable_pages_view = True
 enable_bi = True
+contrib_dir = "/var/lib/adagios/contrib/"
 escape_html_tags = True
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"

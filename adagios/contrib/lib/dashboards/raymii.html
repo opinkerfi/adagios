@@ -1,0 +1,78 @@
+<html><head> 
+    <title>Service Status Dashboard - My Company</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Remy van Elst">
+    <meta http-equiv="refresh" content="30">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.2/united/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        a {
+            color: #333 !important;
+        }
+        .alert { 
+            padding:5px 13px !important;
+            border-radius: 0px !important;
+            margin-bottom: 2px !important;
+        }
+    </style>
+<style type="text/css"></style></head>
+<body>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Service Status Dashboard - My Company</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <span id="number_of_hosts">XXX</span> Hosts<br>
+            <span id="number_of_services">XXX</span> Services<br>
+            <div class="alert alert-danger">
+                <h2>
+                    <span id="number_of_critical_issues">XXX</span> Critical Issues.
+                    <span id="number_of_hosts_down">XXX</span> Hosts Down!
+                </h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+
+
+
+        <h3>Hosts Down</h3><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=&amp;host=down02.example.com">#1 <b>down02.example.com</b></a> CRITICAL - Host Unreachable (11.11.111.11).</div><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=&amp;host=my.router">#2 <b>my.router</b></a> CRITICAL - Host Unreachable (192.168.1.1).</div><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=&amp;host=skeljungur.is">#3 <b>skeljungur.is</b></a> (Host Check Timed Out).</div>
+
+
+<h3>Critical Issues</h3><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=localhost&amp;service=Reverse+Lookup">#1 <b>Reverse Lookup</b> on <i>localhost</i> </a>DNS CRITICAL - expected 'localhost.' but got 'dsldevice.lan.'.</div><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=my.router&amp;service=Ping">#2 <b>Ping</b> on <i>my.router</i> </a>CRITICAL - Host Unreachable (192.168.1.1).</div><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=skeljungur.is&amp;service=Ping">#3 <b>Ping</b> on <i>skeljungur.is</i> </a>PING CRITICAL - Packet loss = 100%.</div><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=www.ok.is&amp;service=Ping">#4 <b>Ping</b> on <i>www.ok.is</i> </a>PING CRITICAL - Packet loss = 0%, RTA = 1013.54 ms.</div><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=www.okbeint.is&amp;service=HTTPS+SSL+Certificate+www.okbeint.is">#5 <b>HTTPS SSL Certificate www.okbeint.is</b> on <i>www.okbeint.is</i> </a>CRITICAL - Socket timeout after 10 seconds.</div><div class="alert alert-danger"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=www.okbeint.is&amp;service=HTTPS+www.okbeint.is">#6 <b>HTTPS www.okbeint.is</b> on <i>www.okbeint.is</i> </a>CRITICAL - Socket timeout after 10 seconds.</div>
+
+
+<h3>Hosts Acknowledged Down</h3><div class="alert alert-info"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=&amp;host=localhost">#1 <b>localhost</b></a> Warning: This plugin must be either run as root or setuid root..</div>    </div>
+    <div class="col-md-6">
+
+<h3>Minor Issues </h3>
+
+<div class="alert alert-warning"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=apc01.belgium.wolfram-hart.com&amp;service=Disk+Usage">#1 <b>Disk Usage</b> on <i>apc01.belgium.wolfram-hart.com</i> </a>DISK WARNING   / ....</div><div class="alert alert-warning"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=apc01.belgium.wolfram-hart.com&amp;service=Uptime">#2 <b>Uptime</b> on <i>apc01.belgium.wolfram-hart.com</i> </a>DISK WARNING   / ...  [/ 10.4G (7% free) :warning=10% critical=5% ] [/dev 2.8G (99% free) :warning=10% critical=5% ] [/sys/fs/cgroup 2.8G (100% free) :warning=10% critical=5% ] [/run 1.1G (99% free) :warning=10% critical=5% ].</div>
+
+
+
+
+<h3>Acknowledged Minor Issues</h3>
+<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Acknowledged Minor Issues!</div>
+
+<h3>Acknowledged Criticals</h3>
+<div class="alert alert-info"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=down02.example.com&amp;service=Ping">#1 <b>Ping</b> on <i>down02.example.com</i> </a>PING CRITICAL - Packet loss = 100%.</div><div class="alert alert-info"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=localhost&amp;service=Mount+options+of+/">#2 <b>Mount options of /</b> on <i>localhost</i> </a>CRIT - mount options are data=ordered,discard,errors=remount-ro,relatime,rw, expected are acl,barrier=1,data=ordered,discard,errors=remount-ro,relatime,rw,user_xattr.</div><div class="alert alert-info"><a href="https://monitoring.mycompany.org/cgi-bin/nagios3/extinfo.cgi?type=2&amp;host=localhost&amp;service=fs_/">#3 <b>fs_/</b> on <i>localhost</i> </a>CRIT - 92.6% used (130.22 of 140.6 GB), (levels at 80.0/90.0%), trend: +120.64MB / 24 hours.</div>    </div>
+    <div class="col-md-6">
+            </div>
+</div>
+<br>
+<div class="row">
+    <div class="container text-center">
+    <span>Simple Nagios Dashboard by <a href="https://raymii.org">Remy van Elst (code)</a> and <a href="https://github.com/JobV">Job van der Voort (design)</a>.</span>
+    </div>
+</div>
+
+
+
+
+</body></html>
