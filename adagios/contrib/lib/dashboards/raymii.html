@@ -212,7 +212,7 @@
             var parameters = {};
             parameters['fields'] = "host_name state description plugin_output scheduled_downtime_depth acknowledged";
             parameters['state__isnot'] = "0";
-            parameters['host_state__isnot'] = "0";
+            parameters['host_state'] = "0";
             var services_all = adagios.rest.status.services(parameters)
                 .fail(function(data) {
                         error_message(data);
@@ -223,11 +223,10 @@
                         var services_major_handled = [];
                         var services_major_unhandled = [];
                         var tmp;
-                        var state, host_state, ack, downtime;
+                        var state, ack, downtime;
                         for (var i=0;i < services_all.length; i = i + 1) {
                             tmp = services_all[i];
                             state = tmp['state'];
-                            host_state = tmp['host_state'];
                             ack = tmp['acknowledged'];
                             downtime = tmp['scheduled_downtime_depth'];
 
@@ -236,8 +235,7 @@
                             }
 
                             // Skip ok services
-                            // Skip services if the host is also down
-                            if (state === 0 || host_state > 0) {
+                            if (state === 0) {
                                 // Do nothing.
                             }
                             else if (ack === 0 && downtime === 0 && state === 1) {
