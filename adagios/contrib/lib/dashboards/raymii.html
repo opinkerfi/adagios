@@ -19,84 +19,45 @@
         }
 
     </style>
-<style type="text/css"></style></head>
+<style type="text/css"></style>
+</head>
+
 <body>
 
+
+
     <div class="row">
         <div class="col-md-12">
-            <h1>Service Status Dashboard - My Company</h1>
+            <h1>Status Dashboard</h1>
         </div>
     </div>
 
-    <div id="debug_statistics" class="is_hidden">
-        <pre>
-            {% for k,v in statistics.items %}{{ k }} = {{ v }}
-            {% endfor %}
-        </pre>
-    </div>
-
     <div class="row">
         <div class="col-md-12">
-            <span id="number_of_hosts">{{ statistics.total_hosts }}</span> Hosts<br>
-            <span id="number_of_services">{{ statistics.total_services }}</span> Services<br>
-            <div class="alert {% if statistics.unhandled_services == 0 and  statistics.unhandled_hosts == 0 %}alert-success{% else %}alert-danger{% endif %}">
+            <span id="total_hosts" class="dynamic">...</span> Hosts.
+            <span id="total_services" class="dynamic">...</span> Services.
+            <div id="summary" class="alert">
                 <h2>
-                    <span id="number_of_critical_issues">{{ statistics.unhandled_services }}</span> Unhandled Service problems.
-                    <span id="number_of_hosts_down">{{ statistics.unhandled_hosts }}</span> Unhandled Host Problems!
+                    <span id="unhandled_services" class="dynamic">...</span> Unhandled Service problems.
+                    <span id="unhandled_hosts" class="dynamic">...</span> Unhandled Host Problems!
                 </h2>
+            </div>
         </div>
     </div>
-</div>
 
 <div class="row">
     <div class="col-md-6">
 
         <h3>Hosts Down</h3>
-        <div id="list_of_hosts_down">
-            {% for i in hosts %}
-                {% if i.state != 0 and i.acknowledged != 1 %}
-                    <div class="alert alert-danger">
-                        <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.name }}"># <b>{{ i.name }}</b></a>
-                        {{ i.plugin_output }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id="no_hosts_down" class="is_hidden alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Unhandled Host Problems!</div>
+        <div id="hosts_down_unhandled" class="dynamic"></div>
 
 
         <h3>Critical Issues</h3>
-        <div id="list_of_critical_issues">
-                {% for i in services %}
-                    {% if i.state == 2 and i.acknowledged != 1 %}
-
-                        <div class="alert alert-danger">
-                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.description }}">
-                                # <b>{{ i.description }}</b> on <i>{{ i.host_name }}</i> </a>{{ i.plugin_output }}
-                        </div>
-
-                   {% endif %}
-                {% endfor %}
-        </div>
-        <div id="no_critical_issues" class="is_hidden alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Critical Issues!</div>
+        <div id="services_major_unhandled"  class="dynamic"></div>
 
 
         <h3>Hosts Acknowledged Down</h3>
-        <div id="list_of_hosts_acknowledged">
-            {% for i in hosts %}
-                {% if i.state != 0 %}
-                    {% if i.acknowledged == 1 or i.downtime_depth != 0  %}
-                        <div class="alert alert-info">
-                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.name }}">
-                                # <b>{{ i.name }}</b>
-                            </a>
-                            {{ i.plugin_output }}
-                        </div>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id="no_hosts_acknowledged" class="is_hidden alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Acknowledged host problems!</div>
+        <div id="hosts_down_handled"  class="dynamic"></div>
 
 
 
@@ -105,47 +66,13 @@
     <div class="col-md-6">
 
         <h3>Minor Issues </h3>
-        <div id="list_of_minor_issues">
-            {% for i in services %}
-
-                {% if i.state == 1 and i.acknowledged != 1  %}
-                    <div class="alert alert-warning">
-                        <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.description }}">
-                            # <b>{{ i.description }}</b> on <i>{{ i.host_name }}</i> </a>
-                        {{ i.plugin_output }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id="no_minor_issues" class="is_hidden alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Unhandled Minor Issues!</div>
-
-
+        <div id="services_minor_unhandled"  class="dynamic"></div>
 
         <h3>Acknowledged Criticals</h3>
-        <div id="list_of_acknowledged_critical_issues">
-                    {% for i in services %}
-                    {% if i.state == 2 and i.acknowledged == 1 %}
-                        <div class="alert alert-info">
-                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.description }}">
-                                # <b>{{ i.description }}</b> on <i>{{ i.host_name }}</i> </a>{{ i.plugin_output }}
-                        </div>
-                   {% endif %}
-                {% endfor %}
-        </div>
-        <div id="no_acknowledged_critical_issues" class="is_hidden alert alert-success"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Acknowledged Critical Issues!</div>
+        <div id="services_major_handled"  class="dynamic"></div>
 
         <h3>Acknowledged Minor Issues</h3>
-        <div id="list_of_acknowledged_minor_issues">
-                    {% for i in services %}
-                    {% if i.state == 1 and i.acknowledged == 1 %}
-                        <div class="alert alert-info">
-                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ i.host_name }}&service_description={{ i.description }}">
-                                # <b>{{ i.description }}</b> on <i>{{ i.host_name }}</i> </a>{{ i.plugin_output }}
-                        </div>
-                   {% endif %}
-                {% endfor %}
-        </div>
-        <div id="no_acknowledged_minor_issues" class="alert alert-success is_hidden"><span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; No Acknowledged Minor Issues!</div>
+        <div id="services_minor_handled"  class="dynamic"></div>
 
     </div>
 </div>
@@ -154,8 +81,39 @@
 
 <div class="row">
     <div class="container text-center">
-    <span>Based on php dashboard by <a href="https://raymii.org">Remy van Elst (code)</a> and <a href="https://github.com/JobV">Job van der Voort (design)</a>.</span>
+    <span>Based on a dashboard by <a href="https://raymii.org">Remy van Elst (code)</a> and <a href="https://github.com/JobV">Job van der Voort (design)</a>.</span>
     </div>
+</div>
+
+
+
+<!-- This is a container for how to display a typical service problem -->
+<div class="hide" id="service_prototype">
+    <div class="alert CSSHINT">
+        <a href="{% url adagios.status.views.status_detail %}?host_name=HOST&service_description=SERVICE">
+        #NUMBER <b>SERVICE</b> on <i>HOST</i></a> OUTPUT
+    </div>
+</div>
+
+<!-- The javascript below uses this div to populate an "ok" part of the dashboard -->
+<div class="hide" id="everything_is_ok_template">
+    <div class="alert alert-success">
+        <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; Everything is looking good!
+    </div>
+</div>
+
+
+<!-- This is a container for how to display a typical host problem -->
+<div class="hide" id="host_prototype">
+    <div class="alert CSSHINT">
+        <a href="{% url adagios.status.views.status_detail %}?host_name=HOST">
+            #NUMBER <b>HOST</b>
+        </a> OUTPUT
+    </div>
+</div>
+
+<div class="hide" id="loading_dialog">
+    Loading...
 </div>
 
 
@@ -179,37 +137,197 @@
 <script src="{% url media path="slider/js/bootstrap-slider.js" %}"></script>
 
 
-<script>
-    var BASE_URL = "{% url home %}";
-    var MEDIA_URL = "{% url media path="" %}";
-</script>
 
 
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         $(document).ready(function() {
-            // Make sure that for each "problem" box that is empty, we will show a corresponding "ok" box.
-            if ($("#list_of_hosts_down div").length == 0) {
-                $("#no_hosts_down").show();
-            }
-            if ($("#list_of_acknowledged_minor_issues div").length == 0) {
-                $("#no_acknowledged_minor_issues").show();
-            }
-            if ($("#list_of_critical_issues div").length == 0) {
-                $("#no_critical_issues").show();
-            }
-            if ($("#list_of_minor_issues div").length == 0) {
-                $("#no_minor_issues").show();
-            }
-            if ($("#list_of_hosts_acknowledged div").length == 0) {
-                $("#no_hosts_acknowledged").show();
-            }
-            if ($("#list_of_acknowledged_critical_issues div").length == 0) {
-                $("#no_acknowledged_critical_issues").show();
-            }
-            if ($("#list_of_acknowledged_minor_issues div").length == 0) {
-                $("#no_acknowledged_minor_issues").show();
-            }
+            var loading_dialog = $("#loading_dialog").html();
+            $('.dynamic').html(loading_dialog);
+            initilize_dashboard();
         });
+        function error_message(message) {
+            console.error(message);
+        }
+        // Collect all service and host problems, gather needed statistics
+        // To populate problem boxes
+        function initilize_dashboard() {
+            update_statistics();
+            update_all_services();
+            update_all_hosts();
+
+        }
+        // Updates dialogs like total number of hosts and services
+        function update_statistics() {
+            var statistics = adagios.rest.status.statistics()
+                    .fail(function(data) {
+                            error_message(data);
+                    })
+                    .done(function(data) {
+                        var total_services = data['total_services'];
+                        var total_hosts = data['total_hosts'];
+                        $("#total_hosts").text(total_hosts);
+                        $("#total_services").text(total_services);
+                        $('#unhandled_hosts').text(data['unhandled_hosts']);
+                        $('#unhandled_services').text(data['unhandled_services']);
+
+                        if (data['unhandled_hosts'] === 0 && data['unhandled_services'] === 0) {
+                            $("#summary").addClass('alert-success');
+                        }
+                        else {
+                            $("#summary").addClass('alert-danger');
+                        }
+
+                    });
+        }
+        // Downloads all service problems and updates relevant parts on the dashboard.
+        function update_all_hosts() {
+            var all_hosts = adagios.rest.status.hosts()
+                    .fail(function(data) {
+                            error_message(data);
+                    })
+                    .done(function(data) {
+                        var hosts_down_handled = [];
+                        var hosts_down_unhandled = [];
+                        var current_host;
+                        for (var i=0;i < data.length; i = i + 1) {
+                            current_host = data[i];
+                            if (current_host['state'] == 0) {
+                                continue;
+                            }
+                            if (current_host['acknowledged'] == 0 && current_host['scheduled_downtime_depth'] == 0) {
+                                hosts_down_unhandled.push(current_host);
+                            }
+                            else {
+                                hosts_down_handled.push(current_host);
+                            }
+                        }
+                        fill_a_div_with_hosts("hosts_down_handled", hosts_down_handled, 'alert-info' );
+                        fill_a_div_with_hosts("hosts_down_unhandled", hosts_down_unhandled, 'alert-danger' );
+
+                    });
+        }
+
+        // Downloads all service problems and updates relevant parts on the dashboard.
+        function update_all_services() {
+            var services_all = adagios.rest.status.services()
+                .fail(function(data) {
+                        error_message(data);
+                    })
+                .done(function(services_all) {
+                        var services_minor_handled = [];
+                        var services_minor_unhandled = [];
+                        var services_major_handled = [];
+                        var services_major_unhandled = [];
+                        var tmp = undefined;
+                        for (var i=0;i < services_all.length; i = i + 1) {
+                            tmp = services_all[i];
+                            if (tmp['state'] == 0 || tmp['host_state'] == 0) {
+                                continue;
+                            }
+                            // Problem is considered unhandled if
+                            // * Its not acknowledged
+                            // * It is not in downtime
+                            if (tmp['acknowledged'] == 0 && tmp['scheduled_downtime_depth']) {
+                                if (tmp['state'] == 1) {
+                                    services_minor_unhandled.push(tmp);
+                                }
+                                else {
+                                    services_major_unhandled.push(tmp);
+                                }
+                            }
+                            else {
+                                // If we get here we consider the problem to be a handled one
+                                if (tmp['state'] == 1) {
+                                    services_minor_handled.push(tmp);
+                                    tmp['number'] = services_minor_handled.length;
+                                    tmp['css_hint'] = 'alert-info';
+
+                                }
+                                else {
+                                    services_major_handled.push(tmp);
+                                    tmp['number'] = services_major_handled.length;
+                                    tmp['css_hint'] = 'alert-info';
+                                }
+                            }
+
+                        }
+
+
+                        fill_a_div_with_services("services_major_handled", services_major_handled, 'alert-info');
+                        fill_a_div_with_services("services_major_unhandled", services_major_unhandled, 'alert-danger');
+
+                        fill_a_div_with_services("services_minor_handled", services_minor_handled, 'alert-info');
+                        fill_a_div_with_services("services_minor_unhandled", services_minor_unhandled, 'alert-warning');
+            });
+        }
+
+        // Fills #div_id with a service_list, with bootstrap "alert" lists.
+        function fill_a_div_with_services(div_id, service_list, alert_type) {
+            // This div is our template div, all style is configured in there.
+            var destination_div = $("#" + div_id);
+            var prototype_html = $("#service_prototype").html();
+            var html = '';
+            var i;
+
+            if (destination_div.length == 0) {
+                console.error("no element found with id=" + div_id );
+                return destination_div;
+            }
+
+            for (var k=0; k< service_list.length; k += 1) {
+                i = service_list[k];
+                // html is the variable where our markup is stored.
+                html += prototype_html
+                        .replace(/HOST/g, i['host_name'])
+                        .replace(/SERVICE/g, i['description'])
+                        .replace(/CSSHINT/g, alert_type)
+                        .replace(/OUTPUT/g, i['plugin_output'])
+                        .replace(/NUMBER/g, k);
+            }
+
+            // If there are no services, lets display a nice green box
+            if (html == '') {
+                html = $("#everything_is_ok_template").html();
+            }
+
+            // Here we update the html of our destination div
+            destination_div.html(html);
+            return destination_div;
+
+        }
+
+        // Fills div_id with nice looking markup for host problems. If host_list is empty,
+        // Put a nice green dialog in there saying everything is ok.
+        function fill_a_div_with_hosts(div_id, host_list, alert_type) {
+            var destination_div = $("#" + div_id);
+            var prototype_html = $("#host_prototype").html();
+            var html = '';
+            var i;
+
+            if (destination_div.length == 0) {
+                console.error("no element found with id=" + div_id );
+                return destination_div;
+            }
+
+            for (var k=0; k< host_list.length; k += 1) {
+                i = host_list[k];
+                // html is the variable where our markup is stored.
+                html += prototype_html
+                        .replace(/HOST/g, i['name'])
+                        .replace(/CSSHINT/g, alert_type)
+                        .replace(/OUTPUT/g, i['plugin_output'])
+                        .replace(/NUMBER/g, k);
+            }
+
+            // If there are no hosts, lets display a nice green box
+            if (html == '') {
+                html = $("#everything_is_ok_template").html();
+            }
+
+            // Here we update the html of our destination div
+            destination_div.html(html);
+            return destination_div;
+        }
 
 
 </script>
