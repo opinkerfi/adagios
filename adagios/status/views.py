@@ -918,7 +918,7 @@ def dashboard(request):
     c['errors'] = []
 
     all_down_hosts = utils.get_hosts(request, state__isnot='0', **request.GET)
-    hostnames_that_are_down = map(lambda x: x.get('name'), all_down_hosts)
+    hostnames_that_are_down = map(lambda x: x['name'], all_down_hosts)
     # Discover network outages,
 
     # Remove acknowledgements and also all hosts where all parent hosts are
@@ -926,13 +926,13 @@ def dashboard(request):
     c['host_problems'] = []  # Unhandled host problems
     c['network_problems'] = []  # Network outages
     for i in all_down_hosts:
-        if i.get('acknowledged') != 0:
+        if i['acknowledged'] != 0:
             continue
-        if i.get('scheduled_downtime_depth') != 0:
+        if i['scheduled_downtime_depth'] != 0:
             continue
 
         # Do nothing if parent of this host is also down
-        for parent in i.get('parents'):
+        for parent in i['parents']:
             if parent in hostnames_that_are_down:
                 parent_is_down = True
                 break
@@ -943,14 +943,15 @@ def dashboard(request):
             continue
 
         # If host has network childs, put them in the network outages box
-        if i.get('childs') == []:
+        if i['childs'] == []:
             c['host_problems'].append(i)
         else:
             c['network_problems'].append(i)
     #
     c['hosts'] = c['network_problems'] + c['host_problems']
     # Service problems
-    c['service_problems'] = utils.get_services(request, unhandled='', **request.GET)
+    c['service_problems'] = utils.get_services(request, host_state="0", unhandled='', **request.GET)
+
     # Sort problems by state and last_check as secondary sort field
     c['service_problems'].sort(
         reverse=True, cmp=lambda a, b: cmp(a['last_check'], b['last_check']))
