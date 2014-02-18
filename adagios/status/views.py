@@ -1333,7 +1333,7 @@ def perfdata2(request):
     if not interesting_metrics and services:
         metric_set = set()
         for i in services:
-            perfdata = pynag.Utils.PerfData(i.get('perf_data',''))
+            perfdata = pynag.Utils.PerfData(i.get('perf_data', ''))
             map(lambda x: metric_set.add(x.label), perfdata.metrics)
         interesting_metrics = sorted(list(metric_set))
     else:
