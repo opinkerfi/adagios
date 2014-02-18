@@ -27,8 +27,9 @@ from adagios.views import error_handler, error_page
 from django.template import RequestContext
 from adagios.contrib import get_template_name
 from django import template
-from django.utils.safestring import mark_safe
 
+
+@error_handler
 def index(request, contrib_dir=None):
     """ List all available user contributed views in adagios.settings.contrib_dir """
     messages = []
@@ -43,6 +44,7 @@ def index(request, contrib_dir=None):
     return render_to_response("contrib_index.html", locals(), context_instance=RequestContext(request))
 
 
+@error_handler
 def contrib(request, arg1, arg2=None, arg3=None, arg4=None):
     messages = []
     errors = []
@@ -65,4 +67,3 @@ def contrib(request, arg1, arg2=None, arg3=None, arg4=None):
     c = template.Context(locals())
     html = t.render(c)
     return HttpResponse(html)
-
