@@ -181,7 +181,10 @@
         }
         // Downloads all service problems and updates relevant parts on the dashboard.
         function update_all_hosts() {
-            var all_hosts = adagios.rest.status.hosts()
+            var parameters = [];
+            parameters['fields'] = "name state description plugin_output scheduled_downtime_depth acknowledged";
+            parameters['state__isnot'] = "0";
+            var all_hosts = adagios.rest.status.hosts(parameters)
                     .fail(function(data) {
                             error_message(data);
                     })
@@ -209,7 +212,11 @@
 
         // Downloads all service problems and updates relevant parts on the dashboard.
         function update_all_services() {
-            var services_all = adagios.rest.status.services()
+            var parameters = [];
+            parameters['fields'] = "host_name state description plugin_output scheduled_downtime_depth acknowledged";
+            parameters['state__isnot'] = "0";
+            parameters['host_state__isnot'] = "0";
+            var services_all = adagios.rest.status.services(parameters)
                 .fail(function(data) {
                         error_message(data);
                     })
@@ -218,39 +225,44 @@
                         var services_minor_unhandled = [];
                         var services_major_handled = [];
                         var services_major_unhandled = [];
-                        var tmp = undefined;
+                        var tmp;
+                        var state, host_state, ack, downtime;
                         for (var i=0;i < services_all.length; i = i + 1) {
                             tmp = services_all[i];
-                            if (tmp['state'] == 0 || tmp['host_state'] == 0) {
-                                continue;
+                            state = tmp['state'];
+                            host_state = tmp['host_state'];
+                            ack = tmp['acknowledged'];
+                            downtime = tmp['scheduled_downtime_depth'];
+
+                            if (tmp['description'] == 'Disk Usage') {
+                                console.log(downtime);
                             }
-                            // Problem is considered unhandled if
-                            // * Its not acknowledged
-                            // * It is not in downtime
-                            if (tmp['acknowledged'] == 0 && tmp['scheduled_downtime_depth']) {
-                                if (tmp['state'] == 1) {
-                                    services_minor_unhandled.push(tmp);
-                                }
-                                else {
-                                    services_major_unhandled.push(tmp);
-                                }
+
+                            // Skip ok services
+                            // Skip services if the host is also down
+                            if (state === 0 || host_state > 0) {
+                                // Do nothing.
+                            }
+                            else if (ack === 0 && downtime === 0 && state === 1) {
+                                services_minor_unhandled.push(tmp);
+                            }
+                            else if (ack === 0 && downtime === 0 && state > 1) {
+                                services_major_unhandled.push(tmp);
+                            }
+                            else if (state === 1) {
+                                services_minor_handled.push(tmp);
+                            }
+                            else if (state > 1) {
+                                services_major_handled.push(tmp);
                             }
                             else {
-                                // If we get here we consider the problem to be a handled one
-                                if (tmp['state'] == 1) {
-                                    services_minor_handled.push(tmp);
-                                    tmp['number'] = services_minor_handled.length;
-                                    tmp['css_hint'] = 'alert-info';
-
-                                }
-                                else {
-                                    services_major_handled.push(tmp);
-                                    tmp['number'] = services_major_handled.length;
-                                    tmp['css_hint'] = 'alert-info';
-                                }
+                                error_message("There is a problem with classifying the following service problem:");
+                                error_message(tmp);
                             }
 
+
                         }
+
 
 
                         fill_a_div_with_services("services_major_handled", services_major_handled, 'alert-info');
@@ -282,7 +294,7 @@
                         .replace(/SERVICE/g, i['description'])
                         .replace(/CSSHINT/g, alert_type)
                         .replace(/OUTPUT/g, i['plugin_output'])
-                        .replace(/NUMBER/g, k);
+                        .replace(/NUMBER/g, k+1);
             }
 
             // If there are no services, lets display a nice green box
@@ -316,7 +328,7 @@
                         .replace(/HOST/g, i['name'])
                         .replace(/CSSHINT/g, alert_type)
                         .replace(/OUTPUT/g, i['plugin_output'])
-                        .replace(/NUMBER/g, k);
+                        .replace(/NUMBER/g, k+1);
             }
 
             // If there are no hosts, lets display a nice green box
