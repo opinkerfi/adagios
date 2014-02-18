@@ -576,3 +576,8 @@ def submit_check_result(request, host_name, service_description=None, autocreate
             pynag.Control.Command.process_service_check_result(host_name, service_description, status_code, output)
         result['message'] = "Command has been submitted."
     return result
+
+
+def statistics(request):
+    """ Returns a dict with various statistics on status data. """
+    return adagios.status.utils.get_statistics(request)
