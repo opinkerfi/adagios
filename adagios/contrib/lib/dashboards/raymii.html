@@ -19,13 +19,9 @@
         }
 
     </style>
-<style type="text/css"></style>
 </head>
 
 <body>
-
-
-
     <div class="row">
         <div class="col-md-12">
             <h1>Status Dashboard</h1>
@@ -146,6 +142,7 @@
             initilize_dashboard();
         });
         function error_message(message) {
+            $("body").html("<h1>Oh no, there was an error loading the page :/</h1>" + message.responseText);
             console.error(message);
         }
         // Collect all service and host problems, gather needed statistics
@@ -181,8 +178,8 @@
         }
         // Downloads all service problems and updates relevant parts on the dashboard.
         function update_all_hosts() {
-            var parameters = [];
-            parameters['fields'] = "name state description plugin_output scheduled_downtime_depth acknowledged";
+            var parameters = {};
+            parameters['fields'] = "name state plugin_output scheduled_downtime_depth acknowledged";
             parameters['state__isnot'] = "0";
             var all_hosts = adagios.rest.status.hosts(parameters)
                     .fail(function(data) {
@@ -212,7 +209,7 @@
 
         // Downloads all service problems and updates relevant parts on the dashboard.
         function update_all_services() {
-            var parameters = [];
+            var parameters = {};
             parameters['fields'] = "host_name state description plugin_output scheduled_downtime_depth acknowledged";
             parameters['state__isnot'] = "0";
             parameters['host_state__isnot'] = "0";
