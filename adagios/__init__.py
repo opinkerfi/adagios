@@ -1,6 +1,6 @@
 import os.path
 
-__version__='1.3.0'
+__version__='1.3.1'
 
 notifications = {}
 active_plugins = {}
