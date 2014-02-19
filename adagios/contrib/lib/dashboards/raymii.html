@@ -2,8 +2,9 @@
     <title>Service Status Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Remy van Elst">
+    <meta name="author" content="Pall Sigurdsson">
     <meta http-equiv="refresh" content="30">
-    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.2/united/bootstrap.min.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
         a {
             color: #333 !important;
@@ -14,17 +15,16 @@
             margin-bottom: 2px !important;
         }
 
-        .is_hidden {
-          display: none;
-        }
-
     </style>
 </head>
 
 <body>
     <div class="row">
         <div class="col-md-12">
-            <h1>Status Dashboard</h1>
+            <h1 class="pull-left">Status Dashboard</h1>
+        <div id="information_dialog" class="pull-right dynamic">
+            Test
+        </div>
         </div>
     </div>
 
@@ -133,208 +133,246 @@
 <script src="{% url media path="slider/js/bootstrap-slider.js" %}"></script>
 
 
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    var last_load;
 
-
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-        $(document).ready(function() {
-            var loading_dialog = $("#loading_dialog").html();
-            $('.dynamic').html(loading_dialog);
+    $(document).ready(function() {
             initilize_dashboard();
-        });
-        function error_message(message) {
-            $("body").html("<h1>Oh no, there was an error loading the page :/</h1>" + message.responseText);
-            console.error(message);
-        }
-        // Collect all service and host problems, gather needed statistics
-        // To populate problem boxes
-        function initilize_dashboard() {
-            update_statistics();
-            update_all_services();
-            update_all_hosts();
+            setInterval(update_last_loaded, 1000);
+    });
 
-        }
-        // Updates dialogs like total number of hosts and services
-        function update_statistics() {
-            var statistics = adagios.rest.status.statistics()
-                    .fail(function(data) {
-                            error_message(data);
-                    })
-                    .done(function(data) {
-                        var total_services = data['total_services'];
-                        var total_hosts = data['total_hosts'];
-                        $("#total_hosts").text(total_hosts);
-                        $("#total_services").text(total_services);
-                        $('#unhandled_hosts').text(data['unhandled_hosts']);
-                        $('#unhandled_services').text(data['unhandled_services']);
+    // Collect all service and host problems, gather needed statistics
+    // To populate problem boxes
+    function initilize_dashboard() {
+        var loading_dialog = $("#loading_dialog").html();
+        $('.dynamic').html(loading_dialog);
+        update_statistics();
+        update_all_services();
+        update_all_hosts();
+    }
 
-                        if (data['unhandled_hosts'] === 0 && data['unhandled_services'] === 0) {
-                            $("#summary").addClass('alert-success');
-                        }
-                        else {
-                            $("#summary").addClass('alert-danger');
-                        }
+    // Update the dialog which says how many seconds ago last load was.
+    function update_last_loaded() {
+        $("#information_dialog").text("Last update " + timeSince(last_load) + " ago.");
+    }
 
-                    });
-        }
-        // Downloads all service problems and updates relevant parts on the dashboard.
-        function update_all_hosts() {
-            var parameters = {};
-            parameters['fields'] = "name state plugin_output scheduled_downtime_depth acknowledged";
-            parameters['state__isnot'] = "0";
-            var all_hosts = adagios.rest.status.hosts(parameters)
-                    .fail(function(data) {
-                            error_message(data);
-                    })
-                    .done(function(data) {
-                        var hosts_down_handled = [];
-                        var hosts_down_unhandled = [];
-                        var current_host;
-                        for (var i=0;i < data.length; i = i + 1) {
-                            current_host = data[i];
-                            if (current_host['state'] == 0) {
-                                continue;
-                            }
-                            if (current_host['acknowledged'] == 0 && current_host['scheduled_downtime_depth'] == 0) {
-                                hosts_down_unhandled.push(current_host);
-                            }
-                            else {
-                                hosts_down_handled.push(current_host);
-                            }
-                        }
-                        fill_a_div_with_hosts("hosts_down_handled", hosts_down_handled, 'alert-info' );
-                        fill_a_div_with_hosts("hosts_down_unhandled", hosts_down_unhandled, 'alert-danger' );
+    function error_message(message) {
+        $("body").html("<h1>Oh no, there was an error loading the page :/</h1>" + message.responseText);
+        console.error(message);
+    }
 
-                    });
-        }
-
-        // Downloads all service problems and updates relevant parts on the dashboard.
-        function update_all_services() {
-            var parameters = {};
-            parameters['fields'] = "host_name state description plugin_output scheduled_downtime_depth acknowledged";
-            parameters['state__isnot'] = "0";
-            parameters['host_state'] = "0";
-            var services_all = adagios.rest.status.services(parameters)
+    // Updates dialogs like total number of hosts and services
+    function update_statistics() {
+        var statistics = adagios.rest.status.statistics()
                 .fail(function(data) {
                         error_message(data);
-                    })
-                .done(function(services_all) {
-                        var services_minor_handled = [];
-                        var services_minor_unhandled = [];
-                        var services_major_handled = [];
-                        var services_major_unhandled = [];
-                        var tmp;
-                        var state, ack, downtime;
-                        for (var i=0;i < services_all.length; i = i + 1) {
-                            tmp = services_all[i];
-                            state = tmp['state'];
-                            ack = tmp['acknowledged'];
-                            downtime = tmp['scheduled_downtime_depth'];
+                })
+                .done(function(data) {
+                    var total_services = data['total_services'];
+                    var total_hosts = data['total_hosts'];
+                    $("#total_hosts").text(total_hosts);
+                    $("#total_services").text(total_services);
+                    $('#unhandled_hosts').text(data['unhandled_hosts']);
+                    $('#unhandled_services').text(data['unhandled_services']);
 
-                            if (tmp['description'] == 'Disk Usage') {
-                                console.log(downtime);
-                            }
+                    if (data['unhandled_hosts'] === 0 && data['unhandled_services'] === 0) {
+                        $("#summary").addClass('alert-success');
+                    }
+                    else {
+                        $("#summary").addClass('alert-danger');
+                    }
 
-                            // Skip ok services
-                            if (state === 0) {
-                                // Do nothing.
-                            }
-                            else if (ack === 0 && downtime === 0 && state === 1) {
-                                services_minor_unhandled.push(tmp);
-                            }
-                            else if (ack === 0 && downtime === 0 && state > 1) {
-                                services_major_unhandled.push(tmp);
-                            }
-                            else if (state === 1) {
-                                services_minor_handled.push(tmp);
-                            }
-                            else if (state > 1) {
-                                services_major_handled.push(tmp);
-                            }
-                            else {
-                                error_message("There is a problem with classifying the following service problem:");
-                                error_message(tmp);
-                            }
+                });
+    }
+    // Downloads all service problems and updates relevant parts on the dashboard.
+    function update_all_hosts() {
+        var parameters = {};
+        parameters['fields'] = "name state plugin_output scheduled_downtime_depth acknowledged";
+        parameters['state__isnot'] = "0";
+        var all_hosts = adagios.rest.status.hosts(parameters)
+                .fail(function(data) {
+                        error_message(data);
+                })
+                .done(function(data) {
+                    var hosts_down_handled = [];
+                    var hosts_down_unhandled = [];
+                    var current_host;
+                    for (var i=0;i < data.length; i = i + 1) {
+                        current_host = data[i];
+                        if (current_host['state'] == 0) {
+                            continue;
+                        }
+                        if (current_host['acknowledged'] == 0 && current_host['scheduled_downtime_depth'] == 0) {
+                            hosts_down_unhandled.push(current_host);
+                        }
+                        else {
+                            hosts_down_handled.push(current_host);
+                        }
+                    }
+                    fill_a_div_with_hosts("hosts_down_handled", hosts_down_handled, 'alert-info' );
+                    fill_a_div_with_hosts("hosts_down_unhandled", hosts_down_unhandled, 'alert-danger' );
 
+                });
+    }
 
+    // Downloads all service problems and updates relevant parts on the dashboard.
+    function update_all_services() {
+        var parameters = {};
+        parameters['fields'] = "host_name state description plugin_output scheduled_downtime_depth acknowledged";
+        parameters['state__isnot'] = "0";
+        parameters['host_state'] = "0";
+        var services_all = adagios.rest.status.services(parameters)
+            .fail(function(data) {
+                    error_message(data);
+                })
+            .done(function(services_all) {
+                    var services_minor_handled = [];
+                    var services_minor_unhandled = [];
+                    var services_major_handled = [];
+                    var services_major_unhandled = [];
+                    var tmp;
+                    var state, ack, downtime;
+                    for (var i=0;i < services_all.length; i = i + 1) {
+                        tmp = services_all[i];
+                        state = tmp['state'];
+                        ack = tmp['acknowledged'];
+                        downtime = tmp['scheduled_downtime_depth'];
+
+                        if (tmp['description'] == 'Disk Usage') {
+                            console.log(downtime);
+                        }
+
+                        // Skip ok services
+                        if (state === 0) {
+                            // Do nothing.
+                        }
+                        else if (ack === 0 && downtime === 0 && state === 1) {
+                            services_minor_unhandled.push(tmp);
+                        }
+                        else if (ack === 0 && downtime === 0 && state > 1) {
+                            services_major_unhandled.push(tmp);
+                        }
+                        else if (state === 1) {
+                            services_minor_handled.push(tmp);
+                        }
+                        else if (state > 1) {
+                            services_major_handled.push(tmp);
+                        }
+                        else {
+                            error_message("There is a problem with classifying the following service problem:");
+                            error_message(tmp);
                         }
 
 
+                    }
 
-                        fill_a_div_with_services("services_major_handled", services_major_handled, 'alert-info');
-                        fill_a_div_with_services("services_major_unhandled", services_major_unhandled, 'alert-danger');
 
-                        fill_a_div_with_services("services_minor_handled", services_minor_handled, 'alert-info');
-                        fill_a_div_with_services("services_minor_unhandled", services_minor_unhandled, 'alert-warning');
-            });
-        }
 
-        // Fills #div_id with a service_list, with bootstrap "alert" lists.
-        function fill_a_div_with_services(div_id, service_list, alert_type) {
-            // This div is our template div, all style is configured in there.
-            var destination_div = $("#" + div_id);
-            var prototype_html = $("#service_prototype").html();
-            var html = '';
-            var i;
+                    fill_a_div_with_services("services_major_handled", services_major_handled, 'alert-info');
+                    fill_a_div_with_services("services_major_unhandled", services_major_unhandled, 'alert-danger');
 
-            if (destination_div.length == 0) {
-                console.error("no element found with id=" + div_id );
-                return destination_div;
-            }
+                    fill_a_div_with_services("services_minor_handled", services_minor_handled, 'alert-info');
+                    fill_a_div_with_services("services_minor_unhandled", services_minor_unhandled, 'alert-warning');
 
-            for (var k=0; k< service_list.length; k += 1) {
-                i = service_list[k];
-                // html is the variable where our markup is stored.
-                html += prototype_html
-                        .replace(/HOST/g, i['host_name'])
-                        .replace(/SERVICE/g, i['description'])
-                        .replace(/CSSHINT/g, alert_type)
-                        .replace(/OUTPUT/g, i['plugin_output'])
-                        .replace(/NUMBER/g, k+1);
-            }
+                    last_load = new Date();
+        });
+    }
 
-            // If there are no services, lets display a nice green box
-            if (html == '') {
-                html = $("#everything_is_ok_template").html();
-            }
+    // Fills #div_id with a service_list, with bootstrap "alert" lists.
+    function fill_a_div_with_services(div_id, service_list, alert_type) {
+        // This div is our template div, all style is configured in there.
+        var destination_div = $("#" + div_id);
+        var prototype_html = $("#service_prototype").html();
+        var html = '';
+        var i;
 
-            // Here we update the html of our destination div
-            destination_div.html(html);
-            return destination_div;
-
-        }
-
-        // Fills div_id with nice looking markup for host problems. If host_list is empty,
-        // Put a nice green dialog in there saying everything is ok.
-        function fill_a_div_with_hosts(div_id, host_list, alert_type) {
-            var destination_div = $("#" + div_id);
-            var prototype_html = $("#host_prototype").html();
-            var html = '';
-            var i;
-
-            if (destination_div.length == 0) {
-                console.error("no element found with id=" + div_id );
-                return destination_div;
-            }
-
-            for (var k=0; k< host_list.length; k += 1) {
-                i = host_list[k];
-                // html is the variable where our markup is stored.
-                html += prototype_html
-                        .replace(/HOST/g, i['name'])
-                        .replace(/CSSHINT/g, alert_type)
-                        .replace(/OUTPUT/g, i['plugin_output'])
-                        .replace(/NUMBER/g, k+1);
-            }
-
-            // If there are no hosts, lets display a nice green box
-            if (html == '') {
-                html = $("#everything_is_ok_template").html();
-            }
-
-            // Here we update the html of our destination div
-            destination_div.html(html);
+        if (destination_div.length == 0) {
+            console.error("no element found with id=" + div_id );
             return destination_div;
         }
+
+        for (var k=0; k< service_list.length; k += 1) {
+            i = service_list[k];
+            // html is the variable where our markup is stored.
+            html += prototype_html
+                    .replace(/HOST/g, i['host_name'])
+                    .replace(/SERVICE/g, i['description'])
+                    .replace(/CSSHINT/g, alert_type)
+                    .replace(/OUTPUT/g, i['plugin_output'])
+                    .replace(/NUMBER/g, k+1);
+        }
+
+        // If there are no services, lets display a nice green box
+        if (html == '') {
+            html = $("#everything_is_ok_template").html();
+        }
+
+        // Here we update the html of our destination div
+        destination_div.html(html);
+        return destination_div;
+
+    }
+
+    // Fills div_id with nice looking markup for host problems. If host_list is empty,
+    // Put a nice green dialog in there saying everything is ok.
+    function fill_a_div_with_hosts(div_id, host_list, alert_type) {
+        var destination_div = $("#" + div_id);
+        var prototype_html = $("#host_prototype").html();
+        var html = '';
+        var i;
+
+        if (destination_div.length == 0) {
+            console.error("no element found with id=" + div_id );
+            return destination_div;
+        }
+
+        for (var k=0; k< host_list.length; k += 1) {
+            i = host_list[k];
+            // html is the variable where our markup is stored.
+            html += prototype_html
+                    .replace(/HOST/g, i['name'])
+                    .replace(/CSSHINT/g, alert_type)
+                    .replace(/OUTPUT/g, i['plugin_output'])
+                    .replace(/NUMBER/g, k+1);
+        }
+
+        // If there are no hosts, lets display a nice green box
+        if (html == '') {
+            html = $("#everything_is_ok_template").html();
+        }
+
+        // Here we update the html of our destination div
+        destination_div.html(html);
+        return destination_div;
+    }
+
+    // Return a human friendly version of how long since a specific date.
+    function timeSince(date) {
+        var seconds = Math.floor((new Date() - date) / 1000);
+
+        var interval = Math.floor(seconds / 31536000);
+
+        if (interval > 1) {
+            return interval + " years";
+        }
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+            return interval + " months";
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+            return interval + " days";
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+            return interval + " hours";
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+            return interval + " minutes";
+        }
+        return Math.floor(seconds) + " seconds";
+    }
 
 
 </script>
