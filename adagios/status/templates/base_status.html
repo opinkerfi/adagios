@@ -118,7 +118,7 @@
                     </div>
                 {%  endfor %}
             {% endif %}
-            <div id="nagios_is_reloading" class="hide alert alert-success"><img src="/{{ MEDIA_URL  }}select2/spinner.gif"> Nagios is reloading...</div>
+            <div id="nagios_is_reloading" class="hide alert alert-success"><img src="{% url media path="select2/spinner.gif" %}"> Nagios is reloading...</div>
         </div>
     </div>
 </div>
@@ -514,7 +514,6 @@
 
 <script>
     var BASE_URL = "{% url home %}";
-    var MEDIA_URL = "{% url media path="" %}";
 </script>
 
 <!-- block footer starts -->
