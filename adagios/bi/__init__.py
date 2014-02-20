@@ -718,6 +718,7 @@ class Domain(Host):
             self.add_process('%s/%s' % (host_name, service_description), 'service')
             for i in perfdata.metrics:
                 notes = '%s %s' % (service_description, i.label)
+                print notes
                 self.add_pnp_graph(host_name=host_name, service_description=service_description, metric_name=i.label, notes=notes)
 
     def create_host(self):
@@ -774,10 +775,7 @@ class Domain(Host):
             process.display_name = i.get('description')
             #process.get_status = lambda: min(e,3)
             result.append(process)
-        self.graphs = []
-        for i in result:
-            for graph in i.graphs or []:
-                self.graphs.append(graph)
+
         return result
 
 def get_class(process_type, default=BusinessProcess):
