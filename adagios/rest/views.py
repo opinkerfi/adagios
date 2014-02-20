@@ -50,6 +50,11 @@ def handle_request(request, module_name, module_path, attribute, format):
                 # TODO: Is it safe to turn all digits to int ?
                 #if str(v).isdigit(): v = int(float(v))
                 arguments[k.encode('utf-8')] = v.encode('utf-8')
+            # Here is a special hack, if the method we are calling has an argument
+            # called "request" we will not let the remote user ship it in.
+            # instead we give it a django request object
+            if 'request' in inspect.getargspec(item)[0]:
+                arguments['request'] = request
             result = item(**arguments)
     elif request.method == 'POST':
         item = members[attribute]

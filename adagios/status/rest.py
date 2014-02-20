@@ -17,22 +17,21 @@ import collections
 from pynag.Utils import PynagError
 
 
-def hosts(request, fields=None, *args, **kwargs):
+def hosts(request, fields=None, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
 
         Arguments:
             fields -- If specified, a list of attributes to return. If unspecified, all fields are returned.
 
-            Any *args will be passed to livestatus directly
             Any **kwargs will be treated as a pynag.Utils.grep()-style filter
     """
-    return adagios.status.utils.get_hosts(request=request, fields=fields, *args, **kwargs)
+    return adagios.status.utils.get_hosts(request=request, fields=fields, **kwargs)
 
 
-def services(request, fields=None, *args, **kwargs):
+def services(request, fields=None, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
     """
-    return adagios.status.utils.get_services(request=request, fields=fields, *args, **kwargs)
+    return adagios.status.utils.get_services(request=request, fields=fields, **kwargs)
 
 def services_dt(fields=None, *args, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
@@ -578,6 +577,6 @@ def submit_check_result(request, host_name, service_description=None, autocreate
     return result
 
 
-def statistics(request):
+def statistics(request, **kwargs):
     """ Returns a dict with various statistics on status data. """
-    return adagios.status.utils.get_statistics(request)
+    return adagios.status.utils.get_statistics(request, **kwargs)
