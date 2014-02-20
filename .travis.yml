@@ -23,6 +23,9 @@ install:
   - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
   - pynag config --set "process_performance_data=1"
   - pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+  - pynag config --set "nagios_binary=/usr/sbin/nagios3" --filename /etc/adagios/adagios.conf
+  - pynag config --set "nagios_init=/etc/init.d/nagios3" --filename /etc/adagios/adagios.conf
+  - pynag config --set "nagios_config=/etc/nagios3/nagios.cfg" --filename /etc/adagios/adagios.conf
   - mkdir -p /etc/nagios3/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
