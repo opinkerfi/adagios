@@ -4,7 +4,7 @@
     <meta name="author" content="Remy van Elst">
     <meta name="author" content="Pall Sigurdsson">
     <meta http-equiv="refresh" content="30">
-    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
         a {
             color: #333 !important;
@@ -163,7 +163,8 @@
 
     // Updates dialogs like total number of hosts and services
     function update_statistics() {
-        var statistics = adagios.rest.status.statistics()
+        var parameters = get_querystring_dict();
+        var statistics = adagios.rest.status.statistics(parameters)
                 .fail(function(data) {
                         error_message(data);
                 })
@@ -186,7 +187,7 @@
     }
     // Downloads all service problems and updates relevant parts on the dashboard.
     function update_all_hosts() {
-        var parameters = {};
+        var parameters = get_querystring_dict();
         parameters['fields'] = "name state plugin_output scheduled_downtime_depth acknowledged";
         parameters['state__isnot'] = "0";
         var all_hosts = adagios.rest.status.hosts(parameters)
@@ -217,7 +218,7 @@
 
     // Downloads all service problems and updates relevant parts on the dashboard.
     function update_all_services() {
-        var parameters = {};
+        var parameters = get_querystring_dict();
         parameters['fields'] = "host_name state description plugin_output scheduled_downtime_depth acknowledged";
         parameters['state__isnot'] = "0";
         parameters['host_state'] = "0";
@@ -372,6 +373,12 @@
             return interval + " minutes";
         }
         return Math.floor(seconds) + " seconds";
+    }
+    // Return current querystring parameters as key-value pairs
+    function get_querystring_dict() {
+        var queryDict = {};
+        location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
+        return queryDict;
     }
 
 
