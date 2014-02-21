@@ -572,27 +572,48 @@
             var selected_objects = get_selected_objects();
             var objects_done = 0;
             var total = selected_objects.length;
+            var info_div = $("#reschedule_text");
+            var hostlist = '';
+            var servicelist = '';
+            var host_name, service_description, object_type;
             $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'] || '';
-                var url = '{% url rest/status %}json/reschedule?wait=1&host_name='+host_name+'&service_description='+service_description;
-                $.getJSON(url, function(data) {
-                    objects_done++;
-                    $("#reschedule_text").html(objects_done + "/" + total + " done");
-                    if (objects_done >= total) {
-                        $("#reschedule_text").html('All Done. Reloading page.');
-                        location.reload();
-                    }
-                });
-                if (total > i && objects_done == 0) {
-                    $("#reschedule_text").html(i+1 + "/" + total + " rescheduled");
+                object_type = item['object_type']
+                if (object_type == 'host') {
+                    hostlist = hostlist + ';' + host_name;
                 }
-                else {
-                    $("#reschedule_text").html("0/" + total + " done");
+                else if (object_type == 'service') {
+                    servicelist = servicelist + ';' + host_name + ',' + service_description;
                 }
-
-
             });
+
+            var parameters = {};
+            parameters['hostlist'] = hostlist;
+            parameters['servicelist'] = servicelist;
+            if (selected_objects.length == 1) {
+                parameters['wait'] = "1";
+            }
+            else {
+                parameters['wait'] = "0";
+            }
+            info_div.html("Rescheduling " + selected_objects.length + " items");
+            adagios.rest.status.reschedule_many(parameters)
+                    .done(function(data) {
+                        info_div.html("All Done.");
+                        if (parameters['wait'] == "1") {
+                            info_div.html("All Done. Reloading Page.");
+                            location.reload();
+                        }
+                    })
+                    .fail(function(data) {
+                       info_div.html("Error while rescheduling checks. Error output printed in javascript console.");
+                       console.error(data.responseText);
+                    })
+                    .always(function(data) {
+                        $("#reschedule_button").button('reset');
+                        location.reload();
+                    });
 
 
         }
@@ -608,20 +629,29 @@
             var selected_objects = get_selected_objects();
             var objects_done = 0;
             var my_data;
+            var hostlist = '';
+            var servicelist = '';
             $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'];
+                object_type = item['object_type'];
+                if (object_type == 'host') {
+                    hostlist.push(';' + host_name);
+                }
+                else if (object_type == 'service') {
+                    servicelist.push(';' + host_name + ',' + service_description)
+                }
 
                 my_data = {
-                    "host_name":host_name,
-                    "service_description":service_description,
+                    "hostlist": hostlist,
+                    "servicelist": servicelist,
                     "comment":comment,
                     "author":"{{ remote_user }}",
                     "sticky":"1",
                     "persistent":"0",
                     "notify":"1"
                 }
-                adagios.rest.status.acknowledge(my_data)
+                adagios.rest.status.acknowledge_many(my_data)
                         .done(function(data) {
                             objects_done++;
                             $("#acknowledge_text").html(objects_done + "/" + selected_objects.length + " done");
@@ -642,36 +672,46 @@
             if (comment == '') { comment = "No comment was entered..."; }
             var start_time = $form_downtime.find("input[name='start_time']").val();
             var end_time = $form_downtime.find("input[name='end_time']").val();
-            var host_name, service_description, hostgroup_name;
+            var host_name, service_description, hostgroup_name, object_type;
             var my_data;
             $("#downtime_button").button('loading');
             var selected_objects = get_selected_objects();
             var services_done = 0;
+            var hostlist = '';
+            var hostgrouplist = '';
+            var servicelist = '';
             $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'];
                 hostgroup_name = item['hostgroup_name'];
+                object_type = item['object_type'];
+                if (object_type == 'host') {
+                    hostlist = hostlist + ';' + host_name;
+                }
+                else if (object_type == 'service') {
+                    servicelist = servicelist + ';' + host_name + ',' + service_description
+                }
+                else if (object_type == 'hostgroup') {
+                    hostgrouplist = hostgrouplist + ';' + hostgroup_name;
+                }
 
-                my_data = {
-                    "host_name":host_name,
-                    "service_description":service_description,
-                    "hostgroup_name":hostgroup_name,
-                    "comment":comment,
-                    "author":"{{ remote_user }}",
-                    "all_services_on_host":recursive,
-                    "start_time":start_time,
-                    "end_time":end_time
-                };
-                adagios.rest.status.downtime(my_data)
-                        .done(function(data) {
-                            services_done++;
-                            $("#downtime_text").html(services_done + "/" + selected_objects.length + " done");
-                            if (services_done >= selected_objects.length) {
-                                $("#downtime_text").html('All Done. Reloading page.');
-                                location.reload();
-                            }
-                        });
             });
+            my_data = {
+                "hostgrouplist":hostgrouplist,
+                "hostlist":hostlist,
+                "servicelist":servicelist,
+                "comment":comment,
+                "author":"{{ remote_user }}",
+                "all_services_on_host":recursive,
+                "start_time":start_time,
+                "end_time":end_time
+            };
+            adagios.rest.status.downtime_many(my_data)
+                    .done(function(data) {
+                        $("#downtime_text").html('All Done. Reloading page.');
+                        location.reload();
+                    });
+
         }
 
         // This function sends email to selected recipients for all selected rows

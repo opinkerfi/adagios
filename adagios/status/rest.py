@@ -55,10 +55,36 @@ def emails(*args, **kwargs):
     return map(lambda x: x['email'], l.get_contacts('Filter: email !='))
 
 
-def acknowledge(host_name, service_description=None, sticky=1, notify=1, persistent=0, author='adagios', comment='acknowledged by Adagios'):
-    """ Acknowledge one single host or service check
+def acknowledge_many(hostlist, servicelist, sticky=1, notify=1, persistent=0, author="adagios", comment="acknowledged by Adagios"):
+    """ Same as acknowledge, but for acknowledge on many hosts services at a time.
 
+     Arguments:
+        hostlist    -- string in the format of host1;host2;host3
+        servicelist -- string in the format of host1,service1;host2,service2
     """
+    items = []
+    for i in hostlist.split(';'):
+        if not i: continue
+        items.append((i, None))
+
+    for i in servicelist.split(';'):
+        if not i: continue
+        host_name,service_description = i.split(',')
+        items.append((host_name, service_description))
+    for i in items:
+        acknowledge(
+                host_name=i[0],
+                service_description=i[1],
+                sticky=sticky,
+                notify=notify,
+                persistent=persistent,
+                author=author,
+                comment=comment
+        )
+
+
+def acknowledge(host_name, service_description=None, sticky=1, notify=1, persistent=0, author='adagios', comment='acknowledged by Adagios'):
+    """ Acknowledge one single host or service check """
     if service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.acknowledge_host_problem(host_name=host_name,
                                                        sticky=sticky,
@@ -76,6 +102,45 @@ def acknowledge(host_name, service_description=None, sticky=1, notify=1, persist
                                                       author=author,
                                                       comment=comment,
                                                       )
+
+
+def downtime_many(hostlist, servicelist, hostgrouplist, start_time=None, end_time=None, fixed=1, trigger_id=0, duration=7200, author='adagios', comment='Downtime scheduled by adagios', all_services_on_host=False, hostgroup_name=None):
+    """ Same as downtime, but for acknowledge on many hosts services at a time.
+
+     Arguments:
+        hostlist    -- string in the format of host1;host2;host3
+        hostgrouplist -- string in the format of hostgroup1;hostgroup2;hostgroup3
+        servicelist -- string in the format of host1,service1;host2,service2
+    """
+    items = []
+    for i in hostlist.split(';'):
+        if not i: continue
+        items.append((i, None, None))
+    for i in hostgrouplist.split(';'):
+        if not i: continue
+        items.append((None, None, i))
+
+    for i in servicelist.split(';'):
+        if not i: continue
+        host_name, service_description = i.split(',')
+        items.append((host_name, service_description, None))
+    for i in items:
+        host_name = i[0]
+        service_description = i[1]
+        hostgroup_name = i[2]
+        downtime(
+            host_name=host_name,
+            service_description=service_description,
+            start_time=start_time,
+            end_time=end_time,
+            fixed=fixed,
+            trigger_id=trigger_id,
+            duration=duration,
+            author=author,
+            comment=comment,
+            all_services_on_host=all_services_on_host,
+            hostgroup_name=hostgroup_name
+        )
 
 
 def downtime(host_name=None, service_description=None, start_time=None, end_time=None, fixed=1, trigger_id=0, duration=7200, author='adagios', comment='Downtime scheduled by adagios', all_services_on_host=False, hostgroup_name=None):
@@ -162,15 +227,33 @@ def downtime(host_name=None, service_description=None, start_time=None, end_time
         )
 
 
-def reschedule(host_name, service_description=None, check_time=None, wait=0):
+def reschedule_many(hostlist, servicelist, check_time=None, wait=0):
+    """ Same as reschedule() but takes a list of hosts/services as input
+
+    Arguments:
+      hostlist    -- semicolon seperated list of hosts to schedule checks for. Same as multiple calls with host_name=
+      servicelist -- Same as hostlist but for services. Format is: host_name,service_description;host_name,service_description
+    """
+    for i in hostlist.split(';'):
+        if not i: continue
+        reschedule(host_name=i, service_description=None, check_time=check_time, wait=wait)
+    for i in servicelist.split(';'):
+        if not i: continue
+        host_name,service_description = i.split(',')
+        reschedule(host_name=host_name, service_description=service_description, check_time=check_time, wait=wait)
+    return "ok"
+
+
+def reschedule(host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
     """ Reschedule a check of this service/host
 
     Arguments:
       host_name -- Name of the host
       service_description -- Name of the service check. If left empty, host check will be rescheduled
       check_time -- timestamp of when to execute this check, if left empty, execute right now
-      wait -- If set to 1, function will not run until check has been rescheduled
+      wait -- If set to 1, function will not return until check has been rescheduled
     """
+
     if check_time is None or check_time is '':
         check_time = time.time()
     if service_description in (None, '', u'', '_HOST_', 'undefined'):
@@ -580,3 +663,7 @@ def submit_check_result(request, host_name, service_description=None, autocreate
 def statistics(request, **kwargs):
     """ Returns a dict with various statistics on status data. """
     return adagios.status.utils.get_statistics(request, **kwargs)
+
+
+def test(request, **kwargs):
+    print kwargs
