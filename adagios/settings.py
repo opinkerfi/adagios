@@ -144,6 +144,7 @@ include=""
 django_secret_key = ""
 map_center = "64.119595,-21.655426"
 map_zoom = "10"
+title_prefix = "Adagios - "
 
 # pages module, path to extra pages the user can upload
 extra_pages = "/etc/adagios/pages.d"
