@@ -450,12 +450,12 @@ def edit_check_command(request):
 
     hosts = pynag.Model.Host.objects.filter(host_name=c['host_name'])
     if len(hosts) == 0:
-        c['errors'].append("Host %s was not found " % (host_name))
+        c['errors'].append("Host %s was not found " % (c['host_name']))
     services = pynag.Model.Service.objects.filter(
         host_name=c['host_name'], service_description=c['service_description'])
     if len(services) == 0:
         c['errors'].append("Service %s/%s was not found " %
-                           (host_name, service_description))
+                           (c['host_name'], c['service_description']))
     command_names = map(
         lambda x: x.get("command_name", ''), pynag.Model.Command.objects.all)
     if c['check_command'] in (None, '', 'None'):
