@@ -26,14 +26,18 @@ from adagios.settings import plugins
 version = __version__
 
 
-def add_notification(level="info", message="message", notification_id=None):
+def add_notification(level="info", message="message", notification_id=None, notification_type=None, user=None):
     """ Add a new notification to adagios notification bar.
 
     Arguments:
-      level   -- pick "info" "success" "error" "danger"
-      message -- Arbitary text message,
+      level                      -- pick "info" "success" "error" "danger"
+      message                    -- Arbitary text message,
       notification_id (optional) -- Use this if you want to remote
-        remove this notification later via clear_notification()
+                                 -- remove this notification later via clear_notification()
+      notification_type          -- Valid options: "generic" and "show_once"
+
+      user                       -- If specified, only display notification for this specific user.
+
     Returns:
       None
 
@@ -42,7 +46,10 @@ def add_notification(level="info", message="message", notification_id=None):
     """
     if not notification_id:
         notification_id = str(message.__hash__())
-    notifications[notification_id] = {"level": level, "message": message}
+    if not notification_type:
+        notification_type = "generic"
+    notification = locals()
+    notifications[notification_id] = notification
 
 
 def clear_notification(notification_id):
@@ -53,9 +60,18 @@ def clear_notification(notification_id):
     return "not found"
 
 
-def get_notifications():
+def get_notifications(request):
     """ Shows all current notifications """
-    return notifications
+    result = []
+    for k in notifications.keys():
+        i = notifications[k]
+        if i.get('user') and i.get('user') != request.META.get('remote_user'):
+            continue # Skipt this message if it is meant for someone else
+        elif i.get('notification_type') == 'show_once':
+            #del notifications[k]
+            pass
+        result.append(i)
+    return result
 
 
 def clear_all_notifications():

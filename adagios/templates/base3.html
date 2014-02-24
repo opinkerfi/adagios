@@ -41,6 +41,11 @@
 
 
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% url home %}rest/pynag.js"></script>
+    <script src="{% url home %}rest/status.js"></script>
+    <script src="{% url home %}rest/okconfig.js"></script>
+    <script src="{% url home %}rest/adagios.js"></script>
+
     <script src="{% url media path="jquery/jquery-1.9.1.min.js" %}"></script>
     <script src="{% url media path="bootstrap/js/bootstrap.min.js" %}"></script>
 
@@ -60,6 +65,7 @@
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         $(document).ready(function() {
             adagios.objectbrowser.check_nagios_needs_reload();
+            adagios.misc.get_server_notifications();
         });
     </script>
 

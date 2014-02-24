@@ -23,6 +23,7 @@ from pynag.Utils import AttributeList
 from adagios.objectbrowser.help_text import object_definitions
 from pynag.Model import ObjectDefinition
 from adagios.forms import AdagiosForm
+import adagios.misc.rest
 
 
 # These fields are special, they are a comma seperated list, and may or
@@ -147,6 +148,7 @@ class PynagForm(AdagiosForm):
             self.fields[k] = self.get_pynagField(k, css_tag="defined")
             self.fields[k].value = value
         self.pynag_object.save()
+        adagios.misc.rest.add_notification(message="Object successfully saved", level="success", notification_type="show_once")
 
     def __init__(self, pynag_object, *args, **kwargs):
         self.pynag_object = pynag_object

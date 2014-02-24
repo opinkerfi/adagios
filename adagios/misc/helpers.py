@@ -224,10 +224,14 @@ def reload_nagios():
     """ Reloads nagios. Returns "Success" on Success """
     daemon = Control.daemon(nagios_cfg=Model.config.cfg_file,
                             nagios_init='/etc/init.d/nagios3', nagios_bin='/usr/sbin/nagios3')
+    result = {}
     if daemon.reload() == 0:
-        return "Success"
+        result['status'] = "success"
+        result['message'] = 'Nagios Successfully reloaded'
     else:
-        return "Failed to reload nagios (do you have enough permission?)"
+        result['status'] = "error"
+        result['message'] = "Failed to reload nagios (do you have enough permissions?)"
+    return result
 
 
 def needs_reload():

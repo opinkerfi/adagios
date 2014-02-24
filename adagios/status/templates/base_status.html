@@ -37,7 +37,8 @@
 </head>
 
 <body>
-
+<style>
+</style>
 
 <!-- block top_navigation starts -->
 {% block top_navigation %}
@@ -46,6 +47,35 @@
 <!-- block top_navigation ends -->
 
 <!-- Here we start the main view -->
+<div id="error_messages"  class="message_overlay">
+    {% if errors|length %}
+        {%  for error in errors %}
+            <div class="alert">
+                <button class="close" data-dismiss="alert">×</button>
+                <strong>Warning!</strong> {{ error }}
+            </div>
+        {%  endfor %}
+    {% endif %}
+    {% if messages|length %}
+        {%  for message in messages  %}
+            <div class="alert alert-success">
+                <button class="close" data-dismiss="alert">×</button>
+                <strong>Info!</strong> {{ message }}
+            </div>
+        {%  endfor %}
+    {% endif %}
+    <div id="nagios_is_reloading" class="hide alert alert-success"><img src="{% url media path="select2/spinner.gif" %}"> Nagios is reloading...</div>
+</div>
+
+<!-- This is a template markup for a typical notification -->
+<div id="typical_notification" class="hide fade">
+    <div id="NOTIFICATION_ID" class="notification alert alert-LEVEL">
+        <button id="NOTIFICATION_ID-close" class="close notification" data-dismiss="alert" onclick='adagios.rest.adagios.clear_notification({"notification_id": "NOTIFICATION_ID"});'>×</button>
+        MESSAGE
+    </div>
+</div>
+
+
 <div id="near_top" class="near_top">
     <div class="container-fluid content">
     <div class="row-fluid ">
@@ -100,25 +130,6 @@
                         </a>
                 </div>
                 <br>
-        </div>
-        <div id="error_messages"  class="pull-left">
-            {% if errors|length %}
-                {%  for error in errors %}
-                    <div class="alert">
-                        <button class="close" data-dismiss="alert">×</button>
-                        <strong>Warning!</strong> {{ error }}
-                    </div>
-                {%  endfor %}
-            {% endif %}
-            {% if messages|length %}
-                {%  for message in messages  %}
-                    <div class="alert alert-success">
-                        <button class="close" data-dismiss="alert">×</button>
-                        <strong>Info!</strong> {{ message }}
-                    </div>
-                {%  endfor %}
-            {% endif %}
-            <div id="nagios_is_reloading" class="hide alert alert-success"><img src="{% url media path="select2/spinner.gif" %}"> Nagios is reloading...</div>
         </div>
     </div>
 </div>
@@ -462,6 +473,25 @@
     </div>
     <!-- Mail modal ends -->
 
+    <!-- Misc - General purpose modal modal, originally destined to show error messages -->
+    <div class="modal hide fade" id="misc_modal">
+        <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="misc_modal_body">
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>Close</a>
+            </div>
+        </form>
+    </div>
+    <!-- Misc modal ends -->
+
     <!-- Wish modal -->
     <div class="modal hide fade" id="wish_modal">
         <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
@@ -492,6 +522,8 @@
     </div>
     <!-- Wish modal ends -->
 
+
+
 </div> <!-- /container -->
 
 <!-- Le javascript
@@ -500,6 +532,7 @@
 <script src="{% url home %}rest/pynag.js"></script>
 <script src="{% url home %}rest/status.js"></script>
 <script src="{% url home %}rest/okconfig.js"></script>
+<script src="{% url home %}rest/adagios.js"></script>
 
 <script src="{% url media path="jquery/jquery-1.9.1.min.js" %}"></script>
 <script src="{% url media path="bootstrap/js/bootstrap.min.js" %}"></script>
@@ -747,10 +780,12 @@
                 data: my_data,
                 async: true,
                 success: function(data) {
-                    $("#mail_button_text").html("Sent")
+                    adagios.misc.success("Mail has been sent", "mail_sent", 5000);
                 },
-                contentType: "application/json",
-                dataType: 'json'
+                error: function(data) {
+                  adagios.misc.error("Error sending mail", "mail_sent");
+                },
+                contentType: "application/json"
             });
 
         }
@@ -863,6 +898,7 @@
         $(document).ready(function() {
             update_selected_rows();
             adagios.objectbrowser.check_nagios_needs_reload();
+            adagios.misc.get_server_notifications();
         });
 
         // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.

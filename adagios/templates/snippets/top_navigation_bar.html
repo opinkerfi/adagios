@@ -48,14 +48,12 @@
                     </form>
                         </li>
                     {% endif %}
-                    <li>
-                        <div id="nagios_needs_reload">
-                            <form id="nagios_needs_reload_button" class="hide" action="{% url misc.views.nagios_service %}" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="reload" value="1" />
-                                <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-white glyph-refresh" alt="reload"/>
-                            </form>
-                        </div>
+                    <li class="nagios_needs_reload">
+                        <a  title="Nagios Service needs a reload for configuration changes to take effect." href="#">
+                            <span id="nagios_needs_reload_button" class="hide">
+                            <i  class="glyph-white glyph-refresh" onclick="adagios.misc.reload_nagios();"></i>
+                            </span>
+                        </a>
                     </li>
                     {% if num_problems and plugins.status  %}
                         <li style="color: red;">

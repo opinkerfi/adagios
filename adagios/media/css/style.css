@@ -285,3 +285,21 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 .hoverable:hover {
     background-color: #f6f6f6;
 }
+
+/*
+    Is used to show different messages to our end-user
+*/
+.message_overlay {
+    position:fixed;
+    top:40px;
+    left:250px;
+    z-index:900;
+    min-width: 500px;
+}
+.message_overlay div {
+    margin: 2px;
+    padding: 2px;
+}
+button.close.notification {
+    right: 2px;
+}

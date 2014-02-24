@@ -1353,3 +1353,19 @@ def perfdata2(request):
     c['services'] = services
 
     return render_to_response('status_perfdata2.html', c, context_instance=RequestContext(request))
+
+
+def acknowledge(request):
+    """ Acknowledge
+
+    """
+    if request.method != 'POST':
+        raise Exception("Only use POST to this url")
+
+    sticky = request.POST.get('sticky', 1)
+    persistent = request.POST.get('persistent', 0)
+    author = request.META.get('REMOTE_USER', 'anonymous')
+    comment = request.POST.get('comment', 'acknowledged by Adagios')
+
+    hostlist = request.POST.getlist('host', [])
+    servicelist = request.POST.getlist('service', [])

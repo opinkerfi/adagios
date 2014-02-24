@@ -2,6 +2,7 @@
 window.adagios = window.adagios || {};
 adagios.status = adagios.status || {};
 adagios.objectbrowser = adagios.objectbrowser || {};
+adagios.misc = adagios.misc || {};
 
 
 adagios.status.service_detail_update_servicestate_icon = function(host_name, params) {
@@ -329,11 +330,84 @@ adagios.objectbrowser.check_nagios_needs_reload = function() {
 
 
 
-adagios.objectbrowser.reload_nagios = function() {
+adagios.misc.reload_nagios = function() {
     $("#nagios_is_reloading").show();
     adagios.rest.pynag.reload_nagios()
         .done(function(data) {
+            if (data['status'] == "success") {
+                $("#nagios_needs_reload_button").hide();
+                adagios.misc.success("Nagios Successfully reloaded", undefined, 5000);
+            }
+            else {
+                var message = data['message'];
+                message += ' <a href="URLmisc/service">details</a>';
+                message = message.replace("URL", BASE_URL);
+                adagios.misc.error(message);
+
+            }
+        })
+        .fail(function(data) {
+                var message = data['message'];
+                message += ' <a href="URL">Go to Nagios Service page</a>';
+                message = message.replace("URL", BASE_URL);
+                adagios.misc.error(message);
+        })
+        .always(function(data) {
             $('#nagios_is_reloading').hide();
-            $("#nagios_needs_reload_button").hide();
         });
+};
+
+adagios.misc.__notification_id_counter = 0;
+
+// Get all serverside notifications and display them to our user.
+adagios.misc.get_server_notifications = function() {
+    var message_div = $("#error_messages");
+    adagios.rest.adagios.get_notifications()
+        .done(function(data) {
+            var timeout, i;
+            for (var k=0; k < data.length; k=k+1) {
+                i = data[k];
+                if (i['notification_type'] == 'show_once') {
+                    timeout = 5000;
+                }
+                else {
+                    timeout = undefined;
+                }
+                adagios.misc.add_notification(i['message'], i['level'], i['notification_id'], timeout);
+            }
+
+        });
+};
+
+adagios.misc.add_notification = function(message, level, notification_id, timeout) {
+    var notification = $("#typical_notification").html();
+    var message_div = $("#error_messages");
+    if (notification_id === undefined) {
+        adagios.misc.__notification_id_counter += 1;
+        notification_id = "notification_" + adagios.misc.__notification_id_counter;
+    }
+    if (timeout > 0) {
+        var div_id = notification_id + "-close";
+        setTimeout(function() { $("#" + div_id).click(); }, timeout);
+    }
+    var html = notification
+        .replace(/MESSAGE/g, message)
+        .replace(/NOTIFICATION_ID/g, notification_id)
+        .replace(/LEVEL/g, level);
+    return message_div.html(message_div.html() + html);
+};
+
+adagios.misc.info = function(message, notification_id, timeout) {
+    return adagios.misc.add_notification(message, 'info', notification_id, timeout);
+};
+
+adagios.misc.warning = function(message, notification_id, timeout) {
+    return adagios.misc.add_notification(message, 'warning', notification_id, timeout);
+};
+
+adagios.misc.success = function(message, notification_id, timeout) {
+    return adagios.misc.add_notification(message, 'success', notification_id, timeout);
+};
+adagios.misc.error = function(message, notification_id, timeout) {
+    return adagios.misc.add_notification(message, 'danger', notification_id, timeout);
 };

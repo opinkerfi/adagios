@@ -68,27 +68,37 @@
 
         <div class="span9">
             <div class="block">
-                {% if errors|length %}
-                    {%  for error in errors %}
-                        <div class="alert">
-                            <button class="close" data-dismiss="alert">×</button>
-                            <strong>Warning!</strong> {{ error }}
-                        </div>
-                    {%  endfor %}
-                {% endif %}
-                {% if messages|length %}
-                    {%  for message in messages  %}
-                        <div class="alert alert-success">
-                            <button class="close" data-dismiss="alert">×</button>
-                            <strong>Info!</strong> {{ message }}
-                        </div>
-                    {%  endfor %}
-                {% endif %}
+                <div class="message_overlay" id="error_messages">
+                    {% if errors|length %}
+                        {%  for error in errors %}
+                            <div class="alert">
+                                <button class="close" data-dismiss="alert">×</button>
+                                <strong>Warning!</strong> {{ error }}
+                            </div>
+                        {%  endfor %}
+                    {% endif %}
+                    {% if messages|length %}
+                        {%  for message in messages  %}
+                            <div class="alert alert-success">
+                                <button class="close" data-dismiss="alert">×</button>
+                                <strong>Info!</strong> {{ message }}
+                            </div>
+                        {%  endfor %}
+                    {% endif %}
+                </div>
 
                 <!-- block content starts -->
                 {% block content %}block=content{% endblock %}
                 <!-- block content ends -->
             </div>
+            <!-- This is a template markup for a typical notification -->
+            <div id="typical_notification" class="hide fade">
+                <div id="NOTIFICATION_ID" class="notification alert alert-LEVEL">
+                    <button id="NOTIFICATION_ID-close" class="close notification" data-dismiss="alert" onclick='adagios.rest.adagios.clear_notification({"notification_id": "NOTIFICATION_ID"});'>×</button>
+                    MESSAGE
+                </div>
+            </div>
+
         </div>
 
         <div class="span3">
@@ -112,6 +122,7 @@
 <script src="{% url home %}rest/pynag.js"></script>
 <script src="{% url home %}rest/status.js"></script>
 <script src="{% url home %}rest/okconfig.js"></script>
+<script src="{% url home %}rest/adagios.js"></script>
 
 
 <script src="{% url media path="jquery/jquery-1.9.1.min.js" %}"></script>
@@ -132,6 +143,8 @@
 <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
     $(document).ready(function() {
         adagios.objectbrowser.check_nagios_needs_reload();
+        adagios.misc.get_server_notifications();
+
     });
 </script>
 
