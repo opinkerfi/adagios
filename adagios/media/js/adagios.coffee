@@ -320,9 +320,6 @@ $.extend $.fn.dataTableExt.oStdClasses,
       <div class="span12"></div>
     </div>
     """
-    if object_type != "command" and object_type != "timeperiod"
-      $(".toolbar_#{ object_type } div.row-fluid div.span12").append """
-          <div id="view_filter" class="btn-group pull-left"></div>"""
 
     $(".toolbar_#{ object_type } div.row-fluid div.span12").append """
         <div class="pull-left" id="actions">
@@ -337,14 +334,18 @@ $.extend $.fn.dataTableExt.oStdClasses,
               <li class="nav-header">Add</li>
             </ul>
           </div>
-          <div id="modify" class="btn-group pull-right">
+          <div id="modify" class="btn-group pull-left">
             <a rel="tooltip" id="copy" title="Copy" class="btn btn-important" data-target-bulk="bulk_copy" data-target="copy"><i class="icon-copy"></i></a>
             <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit_object"><i class="glyph-pencil"></i></a>
             <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete_object"><i class="glyph-bin"></i></a>
           </div>
+          <div id="view_filter" class="btn-group pull-right"></div>
         </div>
 
         """
+    if object_type == "command" or object_type == "timeperiod"
+      $("#view_filter").hide();
+
     $("#actions #modify a").on "click", (e) ->
       checked = $("input#ob_mass_select:checked").length
       if checked > 1
