@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Adagios - {% block title %}block=title?{% endblock %}</title>
+    <title>{{ settings.title_prefix  }}{% block title %}block=title?{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Adagios - Nagios Configuration Made Easy">
     <meta name="author" content="Tomas Edwardsson, Pall Sigurdsson">
@@ -131,9 +131,12 @@
         <div class="span2"   id="left_sidebar">
             <h5>Shortcuts</h5>
             <ul class="nav nav-list">
-                <li><a href="{% url status.views.status_index %}">Overview </a></li>
+                <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
                 <li >
-                    <a {% if num_problems %}{% endif %} href="{% url status.views.problems %}?unhandled">Problems {% if num_problems %}<span>({{ num_problems }})</span>{% endif %}</a>
+                    <a {% if num_problems %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems %}<span>({{ num_problems }})</span>{% endif %}</a>
+                </li>
+                <li >
+                    <a href="{% url status.views.problems %}">All Problems</a>
                 </li>
                 <li><a href="{% url status.views.hosts %}">Hosts</a></li>
                 <li><a href="{% url status.views.services %}">Services </a></li>
@@ -928,9 +931,11 @@
 
         // A Primitive shift-click functionality. Also highlight selected rows
         $( function() {
-            var _last_selected = null, checkboxes = $( ".chkbox" );
-            checkboxes.click( function( e ) {
-                var ix = checkboxes.index( this ), checked = this.checked;
+            var _last_selected = null, rows = $( ".chkbox" );
+            var checkboxes = $(".chkbox");
+            $(".statustable").attr('unselectable', 'on');
+            rows.click( function( e ) {
+                var ix = rows.index( this ), checked = this.checked;
                 if ( e.shiftKey && ix != _last_selected ) {
                     checkboxes.slice( Math.min( _last_selected, ix ), Math.max( _last_selected, ix ) )
                             .each( function() {
