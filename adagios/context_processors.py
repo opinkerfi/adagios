@@ -145,6 +145,7 @@ def get_unhandled_problems(request):
                                         'Stats: state != 0',
                                         columns=False)
         results['num_problems'] = num_problems[0]
+        results['num_unhandled_problems'] = num_problems[0]
     except Exception:
         pass
     return results

@@ -194,6 +194,8 @@
                     <ul class="dropdown-menu">
                         <li><a href="?q={{ request.GET.q }}&unhandled"> Open Problems</a></li>
                         <li><a href="?q={{ request.GET.q }}&state__isnot=0"> All Problems</a></li>
+                        <li><a href="?q={{ request.GET.q }}&acknowledged=1"> All Acknowledged</a></li>
+                        <li><a href="?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> All in Downtime</a></li>
                         <li><a href="?q={{ request.GET.q }}&state=0"> All OK</a></li>
                         <li><a href="?q={{ request.GET.q }}"> Everything</a></li>
                     </ul>
@@ -555,7 +557,7 @@
 <!-- block footer starts -->
 {% block footer %}
     {{ block.super }}
-    
+
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
         $(document).ready(function() {

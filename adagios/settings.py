@@ -116,6 +116,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.static",
+    "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages")
 
  
