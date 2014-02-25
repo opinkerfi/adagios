@@ -554,6 +554,369 @@
 
 <!-- block footer starts -->
 {% block footer %}
+    {{ block.super }}
+    
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+        $(document).ready(function() {
+
+
+            // Disable all links that have the class 'disabled'
+            noclick_on_disabled_links();
+
+            // Put keyboard focus on the search box
+            enable_search_box();
+
+            // Configure what happens when user clicks a selectable row or checkbox
+            enable_row_clicks();
+
+            // Enable/disable toolbar and action buttons
+            count_selected_objects();
+
+
+            // Flash a warning if nagios needs a reload
+            adagios.objectbrowser.check_nagios_needs_reload();
+
+            // If there are any notifications from server, display them
+            adagios.misc.get_server_notifications();
+        });
+
+        // Puts keyboard focus on search box, and enables live filtering of
+        // objects in the status table.
+        function enable_search_box() {
+            var searchbox = $('#search_field');
+            searchbox.focus();
+
+            // When someone is typing in the searchbox, make sure searchtable is updated
+            var $rows;
+            searchbox.keyup(function() {
+                if ($rows === undefined) {
+                    $rows = $('.searchtable tbody .mainrow');
+                }
+
+                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+                $rows.show().filter(function() {
+                    var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+
+                    return !~text.indexOf(val);
+                }).hide();
+
+                // Some views like status view hide repeated occurances of host_names
+                // That does not work well if something is being filtered
+                if (val == '')
+                    $('.repeated_content').hide();
+                else
+                    $('.repeated_content').show();
+            });
+
+        }
+
+        // When row in datatable is clicked. Select it.
+        function enable_row_clicks() {
+            var _last_selected = 0;
+            var rows = $( ".mainrow" );
+            var all_checkboxes = $(".chkbox", rows);
+            rows.click(function(e) {
+                var checkbox = $(':checkbox', this);
+                var index = rows.index(this);
+
+                // If we clicked something else than a link or the checkbox,
+                // Trigger an actual click on the checkbox
+                if (e.target.type !== 'checkbox' && e.target.tagName != 'A') {
+                        checkbox.prop('checked', ! checkbox.prop('checked'));
+                }
+
+
+                // If shift is down while clicking a row, we select (or unselect)
+                // Everything from last row we clicked til here
+                if ( e.shiftKey && index != _last_selected ) {
+
+                    all_checkboxes
+                            .slice(Math.min( _last_selected, index ), Math.max( _last_selected, index )+1 )
+                            .each(function(i, e) {
+                                this.checked = checkbox.prop('checked') || false;
+                                update_row_color($(this));
+                            });
+                }
+                else {
+
+                }
+                update_row_color(checkbox);
+                checkbox.focus();
+                _last_selected = index;
+                count_selected_objects();
+            });
+        }
+
+        $(document).ready(function() {
+
+            // Javascript to enable link to specific tab
+            var hash = document.location.hash;
+            var prefix = "tab_";
+            if (hash) {
+                $('.nav-tabs a[href='+hash.replace(prefix,"")+']').tab('show');
+            }
+
+            // Change hash for page-reload
+            $('.nav-tabs a').on('shown', function (e) {
+                window.location.hash = e.target.hash.replace("#", "#" + prefix);
+            });
+
+            // Select all/none/problems button in top-left of the table
+            $('.select_all').click(function(e) {
+                $( ".chkbox").each( function() {
+                    this.checked = true;
+                });
+                $('.select_many').prop('checked',true);
+                $('.select_many').prop('indeterminate',false);
+                count_selected_objects();
+            });
+            $('.select_none').click(function(e) {
+                $( ".chkbox").each( function() {
+                    this.checked = false;
+                });
+                $('.select_many').prop('checked',false);
+                $('.select_many').prop('indeterminate',false);
+                count_selected_objects();
+            });
+            $('.select_problems').click(function(e) {
+                $( "input.problem ").each( function() {
+                    this.checked = true;
+                });
+                $('.select_many').prop('checked',false);
+                $('.select_many').prop('indeterminate',true);
+                count_selected_objects();
+            });
+            $('.select_unhandled_problems').click(function(e) {
+                $( "input.unhandled ").each( function() {
+                    this.checked = true;
+                });
+                $('.select_many').prop('checked',false);
+                $('.select_many').prop('indeterminate',true);
+                count_selected_objects();
+            });
+
+        });
+
+
+        // Given a checkbox, update the color of the selected row
+        function update_row_color(checkbox) {
+                    if (checkbox.prop('checked') == true) {
+                        checkbox.parent().parent().addClass('row_selected');
+                    }
+                    else {
+                        checkbox.parent().parent().removeClass('row_selected');
+                    }
+        }
+
+        // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
+        function get_selected_services() {
+            var result = [];
+            checked_boxes = $( ".selectable :checked" );
+            checked_boxes.each(function() {
+               var host_name = $(this).next('.input_hostname').val();
+               var service_description = $(this).next().next('.input_service_description').val();
+               result.push( {'host_name': host_name, 'service_description': service_description} )
+            });
+            return result;
+        }
+
+        // Return a list of all objects that have been checked and have the selectable class. This is used for
+        // Acknowledge, downtime, etc.
+        function get_selected_objects() {
+            var result = [];
+            checked_boxes = $( ".selectable :checked" );
+            checked_boxes.each(function() {
+                result.push($(this).data());
+            });
+            return result;
+
+        }
+
+
+        // Links that have the class 'disabled' should not be clickable by default
+        function noclick_on_disabled_links() {
+            // Disable a links as well as buttons using the disabled class since disabling links is not
+            // supported by default.
+            jQuery.fn.extend({
+                    disable: function(state) {
+                    return this.each(function() {
+                            var $this = $(this);
+                            $this.toggleClass('disabled', state);
+                    });
+                    }
+            });
+                // Disable clicking on disabled links
+                $('body').on('click', 'a.disabled', function(event) {
+                    event.preventDefault();
+                });
+        }
+
+
+
+
+
+
+
+
+        // Return a list of all checkboxes that are checked and have the class 'selectable'
+        function get_selected_checbox_names_and_values() {
+            var result = []
+            return $( ".selectable :checked" );
+            checked_boxes.each(function() {
+               var host_name = $(this).next('.input_hostname').val();
+               var service_description = $(this).next().next('.input_service_description').val();
+               result.push( {'host_name': host_name, 'service_description': service_description} )
+            });
+            return result;
+        }
+
+        // When this function is called. Gather all selected services and add them to a specific business process
+        function add_to_business_process() {
+            var object_type = [];
+            var value;
+            var querystring = "?";
+            var doing_graphs = false; /* special hack, change destination url if we are adding graphs */
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+                if (object_type == 'graph') {
+                    doing_graphs = true;
+                }
+            });
+            if (doing_graphs == true) {
+                window.location.href = "{% url bi.views.add_graph %}/?" + querystring;
+            }
+            else {
+                window.location.href = "{% url bi.views.add_subprocess %}/?" + querystring;
+            }
+
+
+            return false;
+        }
+
+        // When this function is called, gather all selected objects and add them to a specific group
+        function add_to_group(group_type) {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.add_to_group %}/" + group_type + "?" + querystring;
+        }
+
+        // When this function is called, delete all selected objects
+        function delete_selected_objects() {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.bulk_delete %}" + "?" + querystring;
+        }
+
+        // When this function is called, go to the edit page for all selected objects
+        function edit_selected_objects() {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.bulk_edit %}" + "?" + querystring;
+        }
+
+        // When this function is called. Go to the copy object page
+        function copy_selected_objects() {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.bulk_copy %}" + "?" + querystring;
+        }
+
+        // When a user clicks the remove acknowledgement button, this is called
+        // to remove acknowledgements of all "selected" objects
+        function remove_acknowledgements() {
+            var selected_objects = get_selected_objects();
+            var args;
+            var objects_done = 0;
+            $.each(selected_objects, function(i, item) {
+                args = {};
+                args['host_name'] = item['host_name'];
+                args['service_description'] = item['service_description'];
+                adagios.rest.status.remove_acknowledgement(args)
+                        .done(function() {
+                            objects_done += 1;
+                            if (objects_done == selected_objects.length) {
+                                location.reload();
+                            }
+                    })
+            });
+        }
+
+        // When a user clicks the remove downtimes button, this is called
+        // to remove downtimes of all "selected" objects
+        function remove_active_downtimes() {
+            var selected_objects = get_selected_objects();
+            var args;
+            var objects_done = 0;
+            $.each(selected_objects, function(i, item) {
+                args = {};
+                args['host_name'] = item['host_name'];
+                args['service_description'] = item['service_description'];
+                args['downtime_id'] = item['downtime_id'];
+                adagios.rest.status.remove_downtime(args)
+                        .done(function() {
+                            objects_done += 1;
+                            if (objects_done == selected_objects.length) {
+                                location.reload();
+                            }
+                        })
+            });
+
+
+        }
+
+            // count_selected_objects()
+        // Enables or disabled the action_buttons and toolbar buttons depending on if
+        // Any objects are selected or not
+        function count_selected_objects() {
+
+            var selected_objects = get_selected_objects();
+
+            // Treat acknowledge button depending on if acknowledgements are needed
+            if (selected_objects.length > 0) {
+                $('#action_buttons button.adagios_service_multi').attr('disabled', null);
+                if (selected_objects.length > 1) {
+                    $('#action_buttons button.adagios_service_single').attr('disabled', 'disabled');
+                } else {
+                    $('#action_buttons button.adagios_service_single').attr('disabled', null);
+                }
+                $('.enable_on_select').attr('disabled', null);
+                $('#action_buttons').attr('title',null);
+                $('#action_buttons_more a').disable(false);
+            }
+            else {
+                $('#action_buttons button').attr('disabled', 'disabled');
+                $('.enable_on_select').attr('disabled', 'disabled');
+                $('#action_buttons_more a').disable(true);
+            }
+        }
+
+
+
+    </script>
+
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         // Change our table into a jquery datatable
         $(function() {
@@ -668,7 +1031,7 @@
             var my_data;
             var hostlist = '';
             var servicelist = '';
-            
+
             $.each(selected_objects, function(i, item) {
                 host_name =  item['host_name'];
                 service_description = item['service_description'];
@@ -709,7 +1072,7 @@
                $('.chkbox').each( function(data) {
                    this.checked = false;
                    });
-                update_selected_rows();
+                count_selected_objects();
         }
 
         // This function responsible for downtime on all selected rows
@@ -860,305 +1223,6 @@
 
     </script>
 
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-
-        $(document).ready(function() {
-            // Set keyboard focus on the search box
-            var search_field = document.getElementById('search_field');
-            if (search_field != null) {
-                search_field.focus();
-            }
-
-            // When searchbox button is pressed, filter table
-            var $rows = $('.searchtable tbody .mainrow');
-            $('#search_field').keyup(function() {
-                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-                $rows.show().filter(function() {
-                    var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-
-                    return !~text.indexOf(val);
-                }).hide();
-
-                // Some views like status view hide repeated occurances of host_names
-                // That does not work well if something is being filtered
-                if (val == '')
-                    $('.repeated_content').hide();
-                else
-                    $('.repeated_content').show();
-            });
-
-            // When row in datatable is clicked. Select it.
-            $('.searchtable tr').click(function(e) {
-                if (e.target.type !== 'checkbox' && e.target.tagName != 'A') {
-                        $(':checkbox', this).trigger('click');
-                }
-                else {
-                }
-                update_selected_rows();
-            });
-
-            // Javascript to enable link to specific tab
-            var hash = document.location.hash;
-            var prefix = "tab_";
-            if (hash) {
-                $('.nav-tabs a[href='+hash.replace(prefix,"")+']').tab('show');
-            }
-
-            // Change hash for page-reload
-            $('.nav-tabs a').on('shown', function (e) {
-                window.location.hash = e.target.hash.replace("#", "#" + prefix);
-            });
-
-        });
-
-
-        $(document).ready(function() {
-            update_selected_rows();
-            adagios.objectbrowser.check_nagios_needs_reload();
-            adagios.misc.get_server_notifications();
-        });
-
-        // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
-        function get_selected_services() {
-            var result = [];
-            checked_boxes = $( ".selectable :checked" );
-            checked_boxes.each(function() {
-               var host_name = $(this).next('.input_hostname').val();
-               var service_description = $(this).next().next('.input_service_description').val();
-               result.push( {'host_name': host_name, 'service_description': service_description} )
-            });
-            return result;
-        }
-        // Return a list of all objects that have been checked and have the selectable class. This is used for
-        // Acknowledge, downtime, etc.
-        function get_selected_objects() {
-            var result = [];
-            checked_boxes = $( ".selectable :checked" );
-            checked_boxes.each(function() {
-                result.push($(this).data());
-            });
-            return result;
-
-        }
-
-	// Disable a links as well as buttons using the disabled class since disabling links is not
-        // supported by default.
-	jQuery.fn.extend({
-    	    disable: function(state) {
-        	return this.each(function() {
-            	    var $this = $(this);
-            	    $this.toggleClass('disabled', state);
-        	});
-    	    }
-	});
-	// Disable clicking on disabled links
-        $('body').on('click', 'a.disabled', function(event) {
-            event.preventDefault();
-        });
-        // update_selected_rows()
-        // highlights all rows that are selected in a table. Also shows/hides toolbar buttons if applicable.
-        function update_selected_rows() {
-            all_boxes = $( ".chkbox" );
-            checked_boxes = $( ".selectable :checked" );
-            all_boxes.parent().parent().removeClass('row_selected');
-            checked_boxes.parent().parent().addClass('row_selected');
-            // Treat acknowledge button depending on if acknowledgements are needed
-
-            if (checked_boxes.length > 0) {
-                $('#action_buttons button.adagios_service_multi').attr('disabled', null);
-                if (checked_boxes.length > 1) {
-                    $('#action_buttons button.adagios_service_single').attr('disabled', 'disabled');
-                } else {
-                    $('#action_buttons button.adagios_service_single').attr('disabled', null);
-                }
-                $('.enable_on_select').attr('disabled', null);
-                $('#action_buttons').attr('title',null);
-                $('#action_buttons_more a').disable(false);
-            }
-            else {
-                $('#action_buttons button').attr('disabled', 'disabled');
-                $('.enable_on_select').attr('disabled', 'disabled');
-                $('#action_buttons_more a').disable(true);
-            }
-        }
-
-        // A Primitive shift-click functionality. Also highlight selected rows
-        $( function() {
-            var _last_selected = null, rows = $( ".chkbox" );
-            var checkboxes = $(".chkbox");
-            $(".statustable").attr('unselectable', 'on');
-            rows.click( function( e ) {
-                var ix = rows.index( this ), checked = this.checked;
-                if ( e.shiftKey && ix != _last_selected ) {
-                    checkboxes.slice( Math.min( _last_selected, ix ), Math.max( _last_selected, ix ) )
-                            .each( function() {
-                                this.checked = checked
-                            });
-                    _last_selected = null;
-                } else { _last_selected = ix }
-                update_selected_rows();
-
-            })
-        } );
-
-        // Select all/none/problems button in top-left of the table
-        $('.select_all').click(function(e) {
-            $( ".chkbox").each( function() {
-                this.checked = true;
-            });
-            $('.select_many').prop('checked',true);
-            $('.select_many').prop('indeterminate',false);
-            update_selected_rows();
-        });
-        $('.select_none').click(function(e) {
-            $( ".chkbox").each( function() {
-                this.checked = false;
-            });
-            $('.select_many').prop('checked',false);
-            $('.select_many').prop('indeterminate',false);
-            update_selected_rows();
-        });
-        $('.select_problems').click(function(e) {
-            $( "input.problem ").each( function() {
-                this.checked = true;
-            });
-            $('.select_many').prop('checked',false);
-            $('.select_many').prop('indeterminate',true);
-            update_selected_rows();
-        });
-        $('.select_unhandled_problems').click(function(e) {
-            $( "input.unhandled ").each( function() {
-                this.checked = true;
-            });
-            $('.select_many').prop('checked',false);
-            $('.select_many').prop('indeterminate',true);
-            update_selected_rows();
-        });
-
-        // Return a list of all checkboxes that are checked and have the class 'selectable'
-        function get_selected_checbox_names_and_values() {
-            var result = []
-            return $( ".selectable :checked" );
-            checked_boxes.each(function() {
-               var host_name = $(this).next('.input_hostname').val();
-               var service_description = $(this).next().next('.input_service_description').val();
-               result.push( {'host_name': host_name, 'service_description': service_description} )
-            });
-            return result;
-        }
-        // When this function is called. Gather all selected services and add them to a specific business process
-        function add_to_business_process() {
-            var object_type = [];
-            var value;
-            var querystring = "?";
-            var doing_graphs = false; /* special hack, change destination url if we are adding graphs */
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-                if (object_type == 'graph') {
-                    doing_graphs = true;
-                }
-            });
-            if (doing_graphs == true) {
-                window.location.href = "{% url bi.views.add_graph %}/?" + querystring;
-            }
-            else {
-                window.location.href = "{% url bi.views.add_subprocess %}/?" + querystring;
-            }
-
-
-            return false;
-        }
-        // When this function is called, gather all selected objects and add them to a specific group
-        function add_to_group(group_type) {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.add_to_group %}/" + group_type + "?" + querystring;
-        }
-        function delete_selected_objects() {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.bulk_delete %}" + "?" + querystring;
-        }
-        function edit_selected_objects() {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.bulk_edit %}" + "?" + querystring;
-        }
-
-        function copy_selected_objects() {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.bulk_copy %}" + "?" + querystring;
-        }
-        // When a user clicks the remove acknowledgement button, this is called
-        // to remove acknowledgements of all "selected" objects
-        function remove_acknowledgements() {
-            var selected_objects = get_selected_objects();
-            var args;
-            var objects_done = 0;
-            $.each(selected_objects, function(i, item) {
-                args = {};
-                args['host_name'] = item['host_name'];
-                args['service_description'] = item['service_description'];
-                adagios.rest.status.remove_acknowledgement(args)
-                        .done(function() {
-                            objects_done += 1;
-                            if (objects_done == selected_objects.length) {
-                                location.reload();
-                            }
-                    })
-            });
-        }
-
-        // When a user clicks the remove downtimes button, this is called
-        // to remove downtimes of all "selected" objects
-        function remove_active_downtimes() {
-            var selected_objects = get_selected_objects();
-            var args;
-            var objects_done = 0;
-            $.each(selected_objects, function(i, item) {
-                args = {};
-                args['host_name'] = item['host_name'];
-                args['service_description'] = item['service_description'];
-                args['downtime_id'] = item['downtime_id'];
-                adagios.rest.status.remove_downtime(args)
-                        .done(function() {
-                            objects_done += 1;
-                            if (objects_done == selected_objects.length) {
-                                location.reload();
-                            }
-                        })
-            });
-
-
-        }
-
-
-
-
-    </script>
 {% endblock %}
 <!-- block footer ends -->
 
