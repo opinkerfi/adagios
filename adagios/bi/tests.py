@@ -290,4 +290,3 @@ class TestHostProcess(TestCase):
         domain = get_business_process(process_name='oksad.is', process_type='domain')
         # We don't exactly know the status of the domain, but lets run it anyway
         # for smoketesting
-        print domain.get_status()
