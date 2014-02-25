@@ -81,6 +81,8 @@ def acknowledge_many(hostlist, servicelist, sticky=1, notify=1, persistent=0, au
                 author=author,
                 comment=comment
         )
+    print "all done"
+    return "Success"
 
 
 def acknowledge(host_name, service_description=None, sticky=1, notify=1, persistent=0, author='adagios', comment='acknowledged by Adagios'):
