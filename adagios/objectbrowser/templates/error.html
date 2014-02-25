@@ -18,12 +18,21 @@
           <br/>
           <div class="alert alert-error">
             <h2>
-		{{ error_summary }}
+        		{{ error_summary }}
             </h2>
             <p>
                 {{ error }}
             </p>
           </div>
+           {% if error_type == "object not found" %}
+               <p>
+                   On rare occations this can happen if you just made changes to your object and its
+                   object id changed because it now looks differently in the config files.
+               </p>
+               <p>
+                   In any case, you can try browsing for your object in the <a href="{% url adagios.objectbrowser.views.list_object_types %}">objectbrowser</a>
+               </p>
+            {% endif %}
         </div>
     </div>
 </div>

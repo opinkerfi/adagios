@@ -37,43 +37,6 @@ def home(request):
     return redirect('adagios')
 
 
-def list_objects(request, object_type=None, display_these_objects=None):
-    """Finds Pynag objects and returns them in a pretty list. search filter can be applied via querystring
-
-    Arguments:
-        object_type(str) : Only find pynag object of this type
-        display_these_objects([ObjectDefinition]) : Instead of searching, simply return these objects
-
-    """
-    c = {'messages': [], 'objects': [],
-         'object_type': object_type}                      # This hash is sent to our template
-    # Validate any potential search terms sent via querystring
-    search = {}
-    for k, v in request.GET.items():
-        k, v = str(k), str(v)
-        if k == 'object_type':
-            object_type = v
-        if v == 'None':
-            search[k] = None
-        else:
-            search[k] = v
-
-    # If a non-existent object_type is requested, lets display a warning
-    # Model.string_to_class contains a hash map that convert string value to
-    # its respective class definition
-    Pynag = Model.string_to_class.get(object_type, Model.ObjectDefinition)
-
-    # Lets decide if we want to get everything or apply a filter
-    if display_these_objects is not None:
-        c['objects'] = display_these_objects
-    elif not len(search):
-        c['objects'] = Pynag.objects.all
-    else:
-        c['objects'] = Pynag.objects.filter(**search)
-
-    return render_to_response('list_objects.html', c, context_instance=RequestContext(request))
-
-
 def list_object_types(request):
     """ Collects statistics about pynag objects and returns to template """
     c = {}
@@ -166,6 +129,36 @@ def advanced_edit(request, object_id):
             return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
 
     return HttpResponseRedirect(reverse('edit_object', args=[o.get_id()]))
+
+
+def new_edit(request, object_id=None):
+    """ Brings up an edit dialog for one specific object.
+
+        If an object_id is specified, bring us to that exact object.
+
+        Otherwise we expect some search arguments to have been provided via querystring
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    my_object = None
+
+    # If object_id was not provided, lets see if anything was given to us in a querystring
+    if object_id:
+        try:
+            my_object = pynag.Model.ObjectDefinition.objects.get_by_id(object_id)
+        except KeyError:
+            c['error_summary'] = 'Could not find any object with id="%s" :/' % object_id
+            c['error_type'] = "object not found"
+            return render_to_response('error.html', c, context_instance=RequestContext(request))
+    else:
+        objects = pynag.Model.ObjectDefinition.objects.filter(**request.GET)
+        if len(objects) == 1:
+            my_object = objects[0]
+        else:
+            return search_objects(request)
+
+    return edit_object(request, object_id=my_object.get_id())
 
 
 def edit_object(request, object_id=None, object_type=None, shortname=None):
@@ -516,7 +509,7 @@ def config_health(request):
     s['Hosts without Service Checks'] = hosts_without_services
     if request.GET.has_key('show') and s.has_key(request.GET['show']):
         objects = s[request.GET['show']]
-        return list_objects(request, display_these_objects=objects)
+        return search_objects(request, objects=objects)
     else:
         return render_to_response('suggestions.html', c, context_instance=RequestContext(request))
 
@@ -887,4 +880,58 @@ def edit_all(request, object_type, attribute_name):
     objects = Model.string_to_class.get(object_type).objects.all
     objects = map(lambda x: (x.get_shortname, x.get(attribute_name)), objects)
     return render_to_response('edit_all.html', locals(), context_instance=RequestContext(request))
+
+
+
+def search_objects(request, objects=None):
+    """ Displays a list of pynag objects, search parameters can be entered via querystring
+
+        Arguments:
+            objects -- List of pynag objects to show. If it is not set,
+                    -- We will use querystring instead as search arguments
+        example:
+         /adagios/objectbrowser/search?object_type=host&host_name__startswith=foo
+
+
+    """
+    messages = []
+    errors = []
+    if not objects:
+        objects = pynag.Model.ObjectDefinition.objects.filter(**request.GET)
+
+    # A special case, if no object was found, lets check if user was looking for a service
+    # With its host_name / service_description pair, and the service is applied to hostgroup instead
+    if not objects and request.GET.get('object_type') == 'service':
+        host_name = request.GET.get('host_name')
+        service_description = request.GET.get('service_description')
+        shortname = request.GET.get('shortname')
+
+        # If shortname was provided instead of host_name / service_description
+        if not host_name and not service_description and shortname:
+            host_name, service_description = shortname.split('/')
+
+        # If at this point we have found some objects, then lets do a special workaround
+        services = pynag.Model.Service.objects.filter(service_description=service_description, hostgroup_name__exists=True)
+        errors.append('be careful')
+
+
+    return render_to_response('search_objects.html', locals(), context_instance=RequestContext(request))
+
+
+def copy_and_edit_object(request, object_id):
+    """ Create a new object, and open up an edit dialog for it.
+
+    If object_id is provided, that object will be copied into this one.
+    """
+    kwargs = {}
+    for k, v in request.GET.items():
+        if v in ('', None, 'None'):
+            v = None
+        kwargs[k] = v
+    o = pynag.Model.ObjectDefinition.objects.get_by_id(object_id)
+    o = o.copy(**kwargs)
+    o = pynag.Model.ObjectDefinition.objects.filter(shortname=o.get_shortname(), object_type=o.object_type)[0]
+
+    return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': o.get_id()}))
+
 

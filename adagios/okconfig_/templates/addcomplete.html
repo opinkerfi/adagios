@@ -26,7 +26,7 @@ Next Steps:
 <ul>
     {% if filelist %}
       {% for file in filelist %}
-       <li>See what was written to <a href="{% url objectbrowser.views.list_objects %}?filename={{file}}">{{file}}</a></li>
+       <li>See what was written to <a href="{% url objectbrowser.views.search_objects %}?filename={{file}}">{{file}}</a></li>
       {% endfor %}
     {% endif %}
 

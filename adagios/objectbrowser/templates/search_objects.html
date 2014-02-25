@@ -1,0 +1,97 @@
+{% extends "base_objectbrowser.html" %}
+{% block title %}List Objects{% endblock %}
+{% block smallheader %}ObjectBrowser{% endblock %}
+{% block largeheader %}Search results{% endblock %}
+{% block nav1 %}<a href="{% url objectbrowser %}">objectbrowser</a>{% endblock %}
+
+
+
+{% block footer %}
+{{ block.super }}
+<script>
+$(document).ready(function() {
+    $('table#objectsearch').dataTable();
+});
+</script>
+{% endblock %}
+{% block content %}
+
+    {% if objects %}
+        <h2>{{ objects|length }} potential matches to what you were looking for</h2>
+        <hr>
+        <div class="objectbrowser_list_objects ui-tabs ui-widget ui-widget-content ui-corner-all">
+
+            <table border=1 id="objectsearch">
+            <thead>
+            <tr>
+                <th>Short Name</th>
+                <th>Object Type</th>
+                <th>Object Name</th>
+                <th>Filename</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for o in objects %}
+                <tr class="{% cycle 'even' 'odd' %}">
+                    <td><a href="id={{ o.id }}">{{ o.description }}</a></td>
+                    <td><a href="{% url search %}?object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
+                    <td><a href="id={{ o.id }}">{{ o.name }} </a></td>
+                    <td><a href="{% url search %}?filename={{ o.filename }}">{{ o.filename }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        <br><br>
+        </div>
+    {% else %}
+        {% if services %}
+            <h1>You are editing a service that is applied to a hostgroup</h1>
+            The service you want to edit is applied to all hosts in a specific hostgroup. What do you want to do ?
+            <ul>
+                {% for i in services %}
+                    <li>
+                        <a href="{% url adagios.objectbrowser.views.edit_object object_id=i.id %}">
+                            Edit service for all hosts in hostgroup {{ i.hostgroup_name }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url adagios.objectbrowser.views.copy_and_edit_object object_id=i.id %}?host_name={{ host_name }}&hostgroup_name=None&service_description={{ service_description }}">
+                            Create '{{ host_name }}/{{ service_description }}' and edit that one.
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h2>Oh no! We couldn't find the objects you are looking for :/</h2>
+            Perhaps you try browsing for what you were looking for <a href="{% url adagios.objectbrowser.views.list_object_types %}">here</a>
+        {% endif %}
+    {% endif %}
+
+
+
+
+
+{% endblock %}
+
+
+
+{% block sidebar %}
+    {% if request.GET %}
+        You searched for the following:
+        <table class="" border=1>
+        <tr>
+            <th>Attribute</th>
+            <th>Value </th>
+        </tr>
+        {% for k,v in request.GET.items %}
+            <tr>
+                <td>{{ k }}</td>
+                <td>{{ v }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <p>No search parameters were used. Showing all items.</p>
+        <p>Try looking for all <a href="?object_type=host">hosts</a></p>
+    {%  endif %}
+{% endblock %}
