@@ -222,8 +222,11 @@ def set_maincfg_attribute(attribute, new_value, old_value='None', append=False):
 
 def reload_nagios():
     """ Reloads nagios. Returns "Success" on Success """
-    daemon = Control.daemon(nagios_cfg=Model.config.cfg_file,
-                            nagios_init='/etc/init.d/nagios3', nagios_bin='/usr/sbin/nagios3')
+    daemon = Control.daemon(
+        nagios_cfg=Model.config.cfg_file,
+        nagios_init=adagios.settings.nagios_init_script,
+        nagios_bin=adagios.settings.nagios_binary
+    )
     result = {}
     if daemon.reload() == 0:
         result['status'] = "success"
@@ -326,6 +329,18 @@ def check_command(host_name, service_description, name=None, check_command=None,
     macronames = regex.findall(command.command_line)
     for i in macronames:
         macros[i] = my_object.get_macro(i) or ''
+
+    # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
+    ARGs = my_object.check_command.split('!')
+    print ARGs
+    for i, arg in enumerate(ARGs):
+        if i == 0:
+            continue
+
+        macronames = regex.findall(arg)
+        for m in macronames:
+            macros[m] = my_object.get_macro(m) or ''
+        macros['$ARG{i}$'.format(i=i)] = arg
 
     return macros
 

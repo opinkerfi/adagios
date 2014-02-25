@@ -190,36 +190,70 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
     // Lets resolve all macros and put the result in #command_line_preview
     self.display_effective_command_line = function() {
         var macros = self.get_all_attributes();
-        macronames = self.original_command_line.match(/\$.*?\$/g);
-        effective_command_line = self.original_command_line;
-        for (var i in macronames) {
-            macroname = macronames[i];
-            macrovalue = macros[macroname];
-            effective_command_line = effective_command_line.replace(macroname,macrovalue);
-        }
+        var macronames = self.original_command_line.match(/\$.*?\$/g);
+        var effective_command_line = self.original_command_line;
+
+        effective_command_line = self.resolve_macros(effective_command_line, macros, true);
         $('#command_line_preview').html( effective_command_line );
 
     };
+
+    // Returns input_string with all macros defined in macros replaced
+    // If recursive=true, recursively resolve all macros starting with $ARG
+    // Example:
+    // input_string = "$USER1$/check_ping -H $HOSTNAME$"
+    // macros = {'$USER1$':'/bin', '$HOSTNAME$':'localhost'}
+    // resolve_macros(input_string, macros);
+    //
+    //
+    self.resolve_macros = function(input_string, macros, recursive) {
+        var macronames = input_string.match(/\$.*?\$/g);
+        var macrovalue;
+        for (var macroname in macros) {
+            macrovalue = macros[macroname];
+            if (macrovalue === undefined) {
+                macrovalue = '';
+            }
+
+            if (recursive == true && macroname.search("ARG") == 1)
+            {
+                macrovalue = self.resolve_macros(macrovalue, macros, false);
+            }
+
+            input_string = input_string.replace(macroname, macrovalue);
+        }
+        return input_string;
+    }
 
     // We have a div that contains the original command-line with all its macros.
     // Lets modify it so all macros are highlighted.
     // If it so happens that decorated command line is the same as effective one
     // Then we will hide this dialog
     self.decorate_original_command_line = function() {
+        var macroname, macrovalue;
         var data = self.get_all_attributes();
-        macronames = self.original_command_line.match(/\$.*?\$/g);
-        decorated_command_line =  self.original_command_line;
+
+        var macronames = self.original_command_line.match(/\$.*?\$/g);
+        var decorated_command_line =  self.original_command_line;
+
+        console.log(decorated_command_line);
         for (var i in macronames) {
             macroname = macronames[i];
             macrovalue = data[macroname];
+            if (macroname.search('ARG') == 1) {
+                macrovalue = self.resolve_macros(macrovalue, data);
+            }
+            macrovalue = macrovalue || '';
             new_str = "<a "
-                + "class='macro_in_a_text' title='value="
+                + "class='macro_in_a_text' title='"
                 + macrovalue
                 + "'>"
                 + macroname
                 + "</a>";
+            console.log(i + " replace" + macroname + " with " + macrovalue);
             decorated_command_line = decorated_command_line.replace(macroname,new_str);
         }
+        console.log(decorated_command_line);
         $('#original_command_line').html( decorated_command_line );
     }
 
