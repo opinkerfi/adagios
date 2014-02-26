@@ -2,7 +2,10 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 
-urlpatterns = []
+urlpatterns = [
+    url(r'^/?$', 'rest.views.list_modules'),
+]
+
 
 # Example:
 # rest_modules['module_name'] = 'module_path'
@@ -25,10 +28,7 @@ for module_name, module_path in rest_modules.items():
     base_pattern = r'^/%s' % module_name
     args = {'module_name': module_name, 'module_path': module_path}
     urlpatterns += patterns('adagios',
-                            url(base_pattern + '/$',   'rest.views.index',
-                                args, name="rest/%s" % module_name),
-                            url(base_pattern + '.js$',
-                                'rest.views.javascript', args, ),
-                           (base_pattern + '/(?P<format>.+?)/(?P<attribute>.+?)/?$',
-                            'rest.views.handle_request', args),
-                            )
+        url(base_pattern + '/$',   'rest.views.index', args, name="rest/%s" % module_name),
+        url(base_pattern + '.js$', 'rest.views.javascript', args, ),
+        url(base_pattern + '/(?P<format>.+?)/(?P<attribute>.+?)/?$', 'rest.views.handle_request', args),
+    )

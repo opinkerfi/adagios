@@ -13,7 +13,7 @@ import inspect
 from django import forms
 import os
 my_module = None
-
+import adagios.rest.urls
 
 def _load(module_path):
     #global my_module
@@ -42,6 +42,7 @@ def handle_request(request, module_name, module_path, attribute, format):
             c['function_name'] = attribute
             c['form'] = CallFunctionForm(function=item, initial=request.GET)
             c['docstring'] = docstring
+            c['module_name'] = module_name
             if not request.GET.items():
                 return render_to_response('function_form.html', c, context_instance=RequestContext(request))
             # Handle get parameters
@@ -93,7 +94,19 @@ def handle_request(request, module_name, module_path, attribute, format):
     return HttpResponse(result, mimetype=mimetype)
 
 
+def list_modules(request):
+    """ List all available modules and their basic info
+
+    """
+    rest_modules = adagios.rest.urls.rest_modules
+    for k, v in adagios.rest.urls.rest_modules.items():
+        print k, v
+    return render_to_response('list_modules.html', locals(), context_instance=RequestContext(request))
+
+
 def index(request, module_name, module_path):
+    """ This view is used to display the contents of a given python module
+    """
     m = _load(module_path)
     gets, puts = [], []
     blacklist = ('argv', 'environ', 'exit', 'path', 'putenv', 'getenv', )

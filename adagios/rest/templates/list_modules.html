@@ -1,0 +1,17 @@
+{% extends "base_misc.html" %}
+{% block title %}REST Interface{% endblock %}
+{% block nav1 %}rest{% endblock %}
+{% block smallheader %}rest{% endblock %}
+{% block largeheader %}{{ module_path }}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block content %}
+    {% if rest_modules %}
+        <p>The following rest modules have been loaded:</p>
+        <ul>
+            {% for k, v in rest_modules.items %}
+            <li>
+                <a href="{{  BASE_URL  }}/rest/{{ k }}">{{ k }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
