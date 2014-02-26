@@ -2,6 +2,7 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>{{ settings.title_prefix  }}{% block title %}block=title?{% endblock %}</title>
@@ -11,7 +12,6 @@
     <!-- Le styles -->
     <link href="{% url media path="css/style.css" %}" rel="stylesheet">
     <link href="{% url media path="css/status.css" %}" rel="stylesheet">
-
     <link href="{% url media path="datepicker/css/datepicker.css" %}" rel="stylesheet">
     <link href="{% url media path="slider/css/slider.css" %}" rel="stylesheet">
 
@@ -19,7 +19,7 @@
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="{% url media path="html5shim/html5.js" %}"></script>
     <![endif]-->
 
     <!-- Le fav and touch icons -->
@@ -37,8 +37,7 @@
 </head>
 
 <body>
-<style>
-</style>
+
 
 <!-- block top_navigation starts -->
 {% block top_navigation %}
@@ -46,41 +45,14 @@
 {% endblock %}
 <!-- block top_navigation ends -->
 
-<!-- Here we start the main view -->
-<div id="error_messages"  class="message_overlay">
-    {% if errors|length %}
-        {%  for error in errors %}
-            <div class="alert">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>Warning!</strong> {{ error }}
-            </div>
-        {%  endfor %}
-    {% endif %}
-    {% if messages|length %}
-        {%  for message in messages  %}
-            <div class="alert alert-success">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>Info!</strong> {{ message }}
-            </div>
-        {%  endfor %}
-    {% endif %}
-    <div id="nagios_is_reloading" class="hide alert alert-success"><img src="{% url media path="select2/spinner.gif" %}"> Nagios is reloading...</div>
-</div>
 
-<!-- This is a template markup for a typical notification -->
-<div id="typical_notification" class="hide fade">
-    <div id="NOTIFICATION_ID" class="notification alert alert-LEVEL">
-        <button id="NOTIFICATION_ID-close" class="close notification" data-dismiss="alert" onclick='adagios.rest.adagios.clear_notification({"notification_id": "NOTIFICATION_ID"});'>×</button>
-        MESSAGE
-    </div>
-</div>
-
-
+<!-- near_top contains stuff breadcrumbs and title of the current page -->
 <div id="near_top" class="near_top">
     <div class="container-fluid content">
     <div class="row-fluid ">
         <ul class="breadcrumb">
-            <li><i class="glyph-right-arrow"></i>
+            <li><!--suppress HtmlPresentationalElement -->
+                <i class="glyph-right-arrow"></i>
             </li>
             <li>
                 <a href="{% url home %}"> Home</a> <span class="divider">/</span>
@@ -137,8 +109,10 @@
 
 <hr id="seperate_top_and_content">
 
+<!-- Here we start the main view -->
 <div class="container-fluid content">
     <div class="row-fluid" id="container">
+
         <div class="span2"   id="left_sidebar">
             <h5>Shortcuts</h5>
             <ul class="nav nav-list">
@@ -182,11 +156,12 @@
             </ul>
         </div>
 
-
         <div class="span10" id="main_content">
+            <!-- block toolbar starts -->
             {% block toolbar %}
             <div id="toolbar">
 
+                <!-- block view_buttons starts -->
                 {% block view_buttons %}
                 <div class="btn-group pull-left" id="view_buttons">
                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
@@ -201,9 +176,11 @@
                     </ul>
                 </div>
                 {% endblock %}
+                <!-- block view_buttons ends -->
 
-                    {% block action_buttons %}
-                <div class="pull-left" id="action_buttons" >
+                <!-- block action_buttons starts -->
+                {% block action_buttons %}
+                    <div class="pull-left" id="action_buttons" >
 
                     <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="reschedule();">
                         <i class="glyph-refresh" > </i> <span id="reschedule_text">Recheck</span>
@@ -267,13 +244,11 @@
                 </div>
 
 
-                    {% endblock %}
+                {% endblock %}
+                <!-- block action_buttons ends -->
 
-
-
-
-
-
+                <!-- block search_box starts -->
+                {% block search_box %}
                 <div class=" pull-right" id="search_box">
                     <form action="{% url status.views.services %}" method="get" >
                         <div class="pull-left">
@@ -289,9 +264,13 @@
                         </div>
                     </form>
                 </div>
+                {% endblock search_box %}
+                <!-- block search_box ends -->
 
             </div>
             {% endblock %}
+            <!-- block toolbar ends -->
+
             <div id="block-content">
             <!-- block content starts -->
             {% block content %}block=content{% endblock %}
@@ -300,233 +279,270 @@
 
         </div>
 
-
-
     </div>
 
-            <div id="footers" class="row-fluid">
-            <hr>
-            <div class="pull-right" id="make_a_wish" >
-                <input type="text" class="input-medium"  placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");' />
-                <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
-            </div>
+    <div id="footers" class="row-fluid">
+        <hr>
+
+        <div class="pull-right" id="make_a_wish" >
+            <input type="text" class="input-medium"  placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");' />
+            <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
         </div>
-
-    <!-- Acknowledge modal -->
-    <div class="modal hide fade" id="acknowledge_modal">
-        <form class="form-horizontal" onsubmit='$("#acknowledge_modal").modal("hide");  acknowledge(); return false; return false;' >
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Acknowledge problem</h3>
-            </div>
-            <div class="modal-body">
-                <p>Acknowledge means that someone is handling this problem. It will no longer be marked as unhandled and Nagios will stop sending notifications about it until it goes back to OK status.</p>
-                <div class="control-group">
-                    <label class="control-label" for="id_acknowledgement_author">
-                        Author
-                    </label>
-                    <div class="controls" id="author_field">
-                        <input id="id_acknowledgement_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="id_comment">
-                        Comment
-                    </label>
-                    <div class="controls" id="host_name_field">
-                        <input id="id_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
-                        <label class="help-block">Other people looking at this service will see this comment.</label>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>Cancel</a>
-                <button type="submit" id="acknowledge_submit_button" class="btn btn-primary">Acknowledge Problem</button>
-            </div>
-        </form>
     </div>
-    <!-- Acknowledge modal ends -->
 
 
-    <!-- downtime modal -->
-    <div class="modal hide fade" id="downtime_modal">
-        <form name="downtime" class="form-horizontal">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Schedule Downtime</h3>
-            </div>
-            <div class="modal-body">
-                <p>Putting hosts and services into scheduled downtime means they are expected to fail during that period. Nagios will not send out any notifications during scheduled downtime and problems will not show up as unhandled problems.</p>
-                <div class="control-group">
-                    <label class="control-label" for="id_downtime_author">
-                        Author
-                    </label>
-                    <div class="controls" id="downtime_author_field">
-                        <input id="id_downtime_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="id_downtime_start_time">
-                        Start Time
-                    </label>
-                    <div class="controls" id="downtime_start_time_field">
-                        <div id="datepicker_start_time" class="date pull-left">
-                            <input name="start_time_picker" style="width: 70px" type="text">
-                        </div>
-                        <div class="control-group pull-left">
-                            <input name="start_hours" style="width: 40px" type="text">&nbsp;
-                        </div>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="id_downtime_end_time">
-                        End Time
-                    </label>
-                    <div class="controls" id="id_downtime_end_time_field">
-                        <div id="datepicker_end_time" class="date pull-left">
-                            <input name="end_time_picker" style="width: 70px" type="text">
-                        </div>
-                        <div class="control-group pull-left">
-                            <input name="end_hours" style="width: 40px" type="text">&nbsp;
-                        </div>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="id_downtime_comment">
-                        Comment
-                    </label>
-                    <div class="controls" id="downtime_comment_field">
-                        <input id="id_downtime_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
-                        <label class="help-block">Other people looking at this service will see this comment.</label>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="id_downtime_recursive">
-                    </label>
-                    <div class="controls" id="id_downtime_recursive_field">
-                        <input type="checkbox" name="recursive" id="id_downtime_recursive" />
-                        Apply to selected hosts and all their services
-                    </div>
-                </div>
 
-            </div>
-
-            <div class="modal-footer">
-                <a href="#" class="btn" onclick='$("#downtime_modal").modal("hide");'>Cancel</a>
-                <button type="submit" class="btn btn-primary">Schedule Downtime</button>
-            </div>
-        </form>
-    </div>
-    <!-- Downtime modal ends -->
-
-    <!-- Mail modal -->
-    <div class="modal hide fade" id="mail_modal">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Mail</h3>
-            </div>
-            <div class="modal-body">
-                <p>You can send manual e-mail notification to a specified email address.</p>
-
-                <div class="control-group">
-                    <label class="control-label" for="id_mail_to">
-                        To:
-                    </label>
-                    <div class="controls" id="mail_to_field">
-                        <input id="id_mail_to" type="text" class="required" value="" name="to" style="width: 100%" />
-                    </div>
-                </div>
-
-
-                <div class="control-group">
-                    <label class="control-label" for="id_mail_message">
-                        Message
-                    </label>
-                    <div class="controls" id="id_mail_message_field">
-                        <textarea id="id_mail_message" type="text" class="required" placeholder="Hey everyone, please check the link and services below." name="message" ></textarea>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label" for="id_add_myself_to_cc">
-                    </label>
-                    <div class="controls" id="id_add_myself_to_cc_field">
-                        <input type="checkbox" checked="checked" name="add_myself_to_cc" value="on" id="id_add_myself_to_cc" />
-                        Add myself to CC
-                    </div>
-                </div>
-
-
-                <div class="control-group">
-                    <label class="control-label" for="id_acknowledge_all_problems">
-                    </label>
-                    <div class="controls" id="id_acknowledge_all_problems_field">
-                        <input type="checkbox" checked="checked" name="acknowledge_all_problems" value="on" id="id_acknowledge_all_problems" />
-                        Acknowledge Unhandled Problems
-                    </div>
-                </div>
-
-
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>Cancel</a>
-                <button type="submit" class="btn btn-primary" onclick='$("#mail_modal").modal("hide"); send_mail();'>Send</button>
-            </div>
-    </div>
-    <!-- Mail modal ends -->
-
-    <!-- Misc - General purpose modal modal, originally destined to show error messages -->
-    <div class="modal hide fade" id="misc_modal">
-        <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="misc_modal_body">
-
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>Close</a>
-            </div>
-        </form>
-    </div>
-    <!-- Misc modal ends -->
-
-    <!-- Wish modal -->
-    <div class="modal hide fade" id="wish_modal">
-        <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Make a wish</h3>
-            </div>
-            <div class="modal-body">
-                <p>Anything cool you think Adagios could be doing for you?
-                </p>
-                <p>
-                Sweet! Ask for it here, and we'll see what we can do.
-                </p>
-                <p>We'd love to hear from you, but we cannot guarantee that your wish will come true.
-
-                </p>
-                <textarea style="width:100%;" cols="200" rows="10" name="wish" placeholder="I wish this page could..."></textarea>
-                <hr>
-                <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
-                <label class="pull-left" for="id_bribes">I'll back it up with bribes.</label>
-            </div>
-
-            <div class="modal-footer">
-                <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>Cancel</a>
-                <button type="submit" id="wish_submit_button" class="btn">Make a wish</button>
-            </div>
-        </form>
-    </div>
-    <!-- Wish modal ends -->
 
 
 
 </div> <!-- /container -->
+
+
+
+<!-- Miscellaneous stuff starts here -->
+
+
+<!-- Acknowledge modal -->
+<div class="modal hide fade" id="acknowledge_modal">
+    <form class="form-horizontal" onsubmit='$("#acknowledge_modal").modal("hide");  acknowledge(); return false; return false;' >
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Acknowledge problem</h3>
+        </div>
+        <div class="modal-body">
+            <p>Acknowledge means that someone is handling this problem. It will no longer be marked as unhandled and Nagios will stop sending notifications about it until it goes back to OK status.</p>
+            <div class="control-group">
+                <label class="control-label" for="id_acknowledgement_author">
+                    Author
+                </label>
+                <div class="controls" id="author_field">
+                    <input id="id_acknowledgement_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="id_comment">
+                    Comment
+                </label>
+                <div class="controls" id="host_name_field">
+                    <input id="id_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
+                    <label class="help-block">Other people looking at this service will see this comment.</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>Cancel</a>
+            <button type="submit" id="acknowledge_submit_button" class="btn btn-primary">Acknowledge Problem</button>
+        </div>
+    </form>
+</div>
+<!-- Acknowledge modal ends -->
+
+<!-- downtime modal -->
+<div class="modal hide fade" id="downtime_modal">
+    <form name="downtime" class="form-horizontal">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Schedule Downtime</h3>
+        </div>
+        <div class="modal-body">
+            <p>Putting hosts and services into scheduled downtime means they are expected to fail during that period. Nagios will not send out any notifications during scheduled downtime and problems will not show up as unhandled problems.</p>
+            <div class="control-group">
+                <label class="control-label" for="id_downtime_author">
+                    Author
+                </label>
+                <div class="controls" id="downtime_author_field">
+                    <input id="id_downtime_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="id_downtime_start_time">
+                    Start Time
+                </label>
+                <div class="controls" id="downtime_start_time_field">
+                    <div id="datepicker_start_time" class="date pull-left">
+                        <input name="start_time_picker" style="width: 70px" type="text">
+                    </div>
+                    <div class="control-group pull-left">
+                        <input name="start_hours" style="width: 40px" type="text">&nbsp;
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="id_downtime_end_time">
+                    End Time
+                </label>
+                <div class="controls" id="id_downtime_end_time_field">
+                    <div id="datepicker_end_time" class="date pull-left">
+                        <input name="end_time_picker" style="width: 70px" type="text">
+                    </div>
+                    <div class="control-group pull-left">
+                        <input name="end_hours" style="width: 40px" type="text">&nbsp;
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="id_downtime_comment">
+                    Comment
+                </label>
+                <div class="controls" id="downtime_comment_field">
+                    <input id="id_downtime_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
+                    <label class="help-block">Other people looking at this service will see this comment.</label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="id_downtime_recursive">
+                </label>
+                <div class="controls" id="id_downtime_recursive_field">
+                    <input type="checkbox" name="recursive" id="id_downtime_recursive" />
+                    Apply to selected hosts and all their services
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='$("#downtime_modal").modal("hide");'>Cancel</a>
+            <button type="submit" class="btn btn-primary">Schedule Downtime</button>
+        </div>
+    </form>
+</div>
+<!-- Downtime modal ends -->
+
+<!-- Mail modal -->
+<div class="modal hide fade" id="mail_modal">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Mail</h3>
+        </div>
+        <div class="modal-body">
+            <p>You can send manual e-mail notification to a specified email address.</p>
+
+            <div class="control-group">
+                <label class="control-label" for="id_mail_to">
+                    To:
+                </label>
+                <div class="controls" id="mail_to_field">
+                    <input id="id_mail_to" type="text" class="required" value="" name="to" style="width: 100%" />
+                </div>
+            </div>
+
+
+            <div class="control-group">
+                <label class="control-label" for="id_mail_message">
+                    Message
+                </label>
+                <div class="controls" id="id_mail_message_field">
+                    <textarea id="id_mail_message" type="text" class="required" placeholder="Hey everyone, please check the link and services below." name="message" ></textarea>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="id_add_myself_to_cc">
+                </label>
+                <div class="controls" id="id_add_myself_to_cc_field">
+                    <input type="checkbox" checked="checked" name="add_myself_to_cc" value="on" id="id_add_myself_to_cc" />
+                    Add myself to CC
+                </div>
+            </div>
+
+
+            <div class="control-group">
+                <label class="control-label" for="id_acknowledge_all_problems">
+                </label>
+                <div class="controls" id="id_acknowledge_all_problems_field">
+                    <input type="checkbox" checked="checked" name="acknowledge_all_problems" value="on" id="id_acknowledge_all_problems" />
+                    Acknowledge Unhandled Problems
+                </div>
+            </div>
+
+
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>Cancel</a>
+            <button type="submit" class="btn btn-primary" onclick='$("#mail_modal").modal("hide"); send_mail();'>Send</button>
+        </div>
+</div>
+<!-- Mail modal ends -->
+
+<!-- Misc - General purpose modal modal, originally destined to show error messages -->
+<div class="modal hide fade" id="misc_modal">
+    <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="misc_modal_body">
+
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>Close</a>
+        </div>
+    </form>
+</div>
+<!-- Misc modal ends -->
+
+<!-- Wish modal -->
+<div class="modal hide fade" id="wish_modal">
+    <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Make a wish</h3>
+        </div>
+        <div class="modal-body">
+            <p>Anything cool you think Adagios could be doing for you?
+            </p>
+            <p>
+            Sweet! Ask for it here, and we'll see what we can do.
+            </p>
+            <p>We'd love to hear from you, but we cannot guarantee that your wish will come true.
+
+            </p>
+            <textarea style="width:100%;" cols="200" rows="10" name="wish" placeholder="I wish this page could..."></textarea>
+            <hr>
+            <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
+            <label class="pull-left" for="id_bribes">I'll back it up with bribes.</label>
+        </div>
+
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>Cancel</a>
+            <button type="submit" id="wish_submit_button" class="btn">Make a wish</button>
+        </div>
+    </form>
+</div>
+<!-- Wish modal ends -->
+
+
+<!-- error_messages -->
+<div id="error_messages"  class="message_overlay">
+    {% if errors|length %}
+        {%  for error in errors %}
+            <div class="alert">
+                <button class="close" data-dismiss="alert">×</button>
+                <strong>Warning!</strong> {{ error }}
+            </div>
+        {%  endfor %}
+    {% endif %}
+    {% if messages|length %}
+        {%  for message in messages  %}
+            <div class="alert alert-success">
+                <button class="close" data-dismiss="alert">×</button>
+                <strong>Info!</strong> {{ message }}
+            </div>
+        {%  endfor %}
+    {% endif %}
+    <div id="nagios_is_reloading" class="hide alert alert-success"><img src="{% url media path="select2/spinner.gif" %}"> Nagios is reloading...</div>
+</div>
+
+
+<!-- This is a template markup for a typical notification -->
+<div id="typical_notification" class="hide fade">
+    <div id="NOTIFICATION_ID" class="notification alert alert-LEVEL">
+        <button id="NOTIFICATION_ID-close" class="close notification" data-dismiss="alert" onclick='adagios.rest.adagios.clear_notification({"notification_id": "NOTIFICATION_ID"});'>×</button>
+        MESSAGE
+    </div>
+</div>
 
 <!-- Le javascript
 ================================================== -->
@@ -556,12 +572,10 @@
 
 <!-- block footer starts -->
 {% block footer %}
-    {{ block.super }}
 
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
         $(document).ready(function() {
-
 
             // Disable all links that have the class 'disabled'
             noclick_on_disabled_links();
@@ -575,12 +589,12 @@
             // Enable/disable toolbar and action buttons
             count_selected_objects();
 
-
             // Flash a warning if nagios needs a reload
             adagios.objectbrowser.check_nagios_needs_reload();
 
             // If there are any notifications from server, display them
             adagios.misc.get_server_notifications();
+
         });
 
         // Puts keyboard focus on search box, and enables live filtering of
@@ -612,6 +626,7 @@
             });
 
         }
+
 
         // When row in datatable is clicked. Select it.
         function enable_row_clicks() {
@@ -650,7 +665,253 @@
             });
         }
 
+
+        // Given a checkbox, update the color of the selected row
+        function update_row_color(checkbox) {
+                    if (checkbox.prop('checked') == true) {
+                        checkbox.parent().parent().addClass('row_selected');
+                    }
+                    else {
+                        checkbox.parent().parent().removeClass('row_selected');
+                    }
+        }
+
+
+        // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
+        function get_selected_services() {
+            var result = [];
+            checked_boxes = $( ".selectable :checked" );
+            checked_boxes.each(function() {
+               var host_name = $(this).next('.input_hostname').val();
+               var service_description = $(this).next().next('.input_service_description').val();
+               result.push( {'host_name': host_name, 'service_description': service_description} )
+            });
+            return result;
+        }
+
+
+        // Return a list of all objects that have been checked and have the selectable class. This is used for
+        // Acknowledge, downtime, etc.
+        function get_selected_objects() {
+            var result = [];
+            checked_boxes = $( ".selectable :checked" );
+            checked_boxes.each(function() {
+                result.push($(this).data());
+            });
+            return result;
+
+        }
+
+
+        // Links that have the class 'disabled' should not be clickable by default
+        function noclick_on_disabled_links() {
+            // Disable a links as well as buttons using the disabled class since disabling links is not
+            // supported by default.
+            jQuery.fn.extend({
+                    disable: function(state) {
+                    return this.each(function() {
+                            var $this = $(this);
+                            $this.toggleClass('disabled', state);
+                    });
+                    }
+            });
+                // Disable clicking on disabled links
+                $('body').on('click', 'a.disabled', function(event) {
+                    event.preventDefault();
+                });
+        }
+
+
+        // Return a list of all checkboxes that are checked and have the class 'selectable'
+        function get_selected_checbox_names_and_values() {
+            var result = [];
+            return $( ".selectable :checked" );
+        }
+
+
+        // When this function is called. Gather all selected services and add them to a specific business process
+        function add_to_business_process() {
+            var object_type = [];
+            var value;
+            var querystring = "?";
+            var doing_graphs = false; /* special hack, change destination url if we are adding graphs */
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+                if (object_type == 'graph') {
+                    doing_graphs = true;
+                }
+            });
+            if (doing_graphs == true) {
+                window.location.href = "{% url bi.views.add_graph %}/?" + querystring;
+            }
+            else {
+                window.location.href = "{% url bi.views.add_subprocess %}/?" + querystring;
+            }
+
+
+            return false;
+        }
+
+
+        // When this function is called, gather all selected objects and add them to a specific group
+        function add_to_group(group_type) {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.add_to_group %}/" + group_type + "?" + querystring;
+        }
+
+
+        // When this function is called, delete all selected objects
+        function delete_selected_objects() {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.bulk_delete %}" + "?" + querystring;
+        }
+
+
+        // When this function is called, go to the edit page for all selected objects
+        function edit_selected_objects() {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.bulk_edit %}" + "?" + querystring;
+        }
+
+
+        // When this function is called. Go to the copy object page
+        function copy_selected_objects() {
+            var object_type, value;
+            var querystring = '';
+            $( ".selectable :checked").each(function() {
+                object_type = $(this).attr('name');
+                value = $(this).attr('value');
+                querystring += "&" + object_type + "=" + value;
+            });
+            window.location.href = "{% url objectbrowser.views.bulk_copy %}" + "?" + querystring;
+        }
+
+
+        // When a user clicks the remove acknowledgement button, this is called
+        // to remove acknowledgements of all "selected" objects
+        function remove_acknowledgements() {
+            var selected_objects = get_selected_objects();
+            var args;
+            var objects_done = 0;
+            $.each(selected_objects, function(i, item) {
+                args = {};
+                args['host_name'] = item['host_name'];
+                args['service_description'] = item['service_description'];
+                adagios.rest.status.remove_acknowledgement(args)
+                        .done(function() {
+                            objects_done += 1;
+                            if (objects_done == selected_objects.length) {
+                                location.reload();
+                            }
+                    })
+            });
+        }
+
+
+        // When a user clicks the remove downtimes button, this is called
+        // to remove downtimes of all "selected" objects
+        function remove_active_downtimes() {
+            var selected_objects = get_selected_objects();
+            var args;
+            var objects_done = 0;
+            $.each(selected_objects, function(i, item) {
+                args = {};
+                args['host_name'] = item['host_name'];
+                args['service_description'] = item['service_description'];
+                args['downtime_id'] = item['downtime_id'];
+                adagios.rest.status.remove_downtime(args)
+                        .done(function() {
+                            objects_done += 1;
+                            if (objects_done == selected_objects.length) {
+                                location.reload();
+                            }
+                        })
+            });
+
+
+        }
+
+        // count_selected_objects()
+        // Enables or disabled the action_buttons and toolbar buttons depending on if
+        // Any objects are selected or not
+        function count_selected_objects() {
+
+            var selected_objects = get_selected_objects();
+
+            // Treat acknowledge button depending on if acknowledgements are needed
+            if (selected_objects.length > 0) {
+                $('#action_buttons button.adagios_service_multi').attr('disabled', null);
+                if (selected_objects.length > 1) {
+                    $('#action_buttons button.adagios_service_single').attr('disabled', 'disabled');
+                } else {
+                    $('#action_buttons button.adagios_service_single').attr('disabled', null);
+                }
+                $('.enable_on_select').attr('disabled', null);
+                $('#action_buttons').attr('title',null);
+                $('#action_buttons_more a').disable(false);
+            }
+            else {
+                $('#action_buttons button').attr('disabled', 'disabled');
+                $('.enable_on_select').attr('disabled', 'disabled');
+                $('#action_buttons_more a').disable(true);
+            }
+        }
+
+
+    </script>
+
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
         $(document).ready(function() {
+
+            // change all table with class datatable into datatables
+            turn_tables_into_datatables();
+
+            // Prepare dates in the downtime modal
+            prepare_downtime_modal();
+
+            // When somebody clicks the acknowledge button, lets focus on the comment field
+            $('#acknowledge_modal').on('shown', function () {
+                document.getElementById('id_comment').focus()
+            });
+
+
+            // When somebody clicks the downtime button, lets focus on the comment field
+            $('#downtime_modal').on('shown', function () {
+                document.getElementById('id_downtime_comment').focus()
+            });
+
+            // When somebody clicks the notification button, lets load contact email addresses
+            $('#mail_modal').on('shown', function () {
+                adagios.rest.status.emails()
+                        .done(function(data) {
+                            $("#id_mail_to").select2({
+                                tags:data,
+                                tokenSeparators: [","],
+                                placeholder:"Comma seperated list of email addresses to send to"
+                            });
+                        });
+            });
 
             // Javascript to enable link to specific tab
             var hash = document.location.hash;
@@ -701,235 +962,19 @@
         });
 
 
-        // Given a checkbox, update the color of the selected row
-        function update_row_color(checkbox) {
-                    if (checkbox.prop('checked') == true) {
-                        checkbox.parent().parent().addClass('row_selected');
-                    }
-                    else {
-                        checkbox.parent().parent().removeClass('row_selected');
-                    }
-        }
-
-        // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
-        function get_selected_services() {
-            var result = [];
-            checked_boxes = $( ".selectable :checked" );
-            checked_boxes.each(function() {
-               var host_name = $(this).next('.input_hostname').val();
-               var service_description = $(this).next().next('.input_service_description').val();
-               result.push( {'host_name': host_name, 'service_description': service_description} )
-            });
-            return result;
-        }
-
-        // Return a list of all objects that have been checked and have the selectable class. This is used for
-        // Acknowledge, downtime, etc.
-        function get_selected_objects() {
-            var result = [];
-            checked_boxes = $( ".selectable :checked" );
-            checked_boxes.each(function() {
-                result.push($(this).data());
-            });
-            return result;
-
-        }
-
-
-        // Links that have the class 'disabled' should not be clickable by default
-        function noclick_on_disabled_links() {
-            // Disable a links as well as buttons using the disabled class since disabling links is not
-            // supported by default.
-            jQuery.fn.extend({
-                    disable: function(state) {
-                    return this.each(function() {
-                            var $this = $(this);
-                            $this.toggleClass('disabled', state);
-                    });
-                    }
-            });
-                // Disable clicking on disabled links
-                $('body').on('click', 'a.disabled', function(event) {
-                    event.preventDefault();
-                });
-        }
-
-
-
-
-
-
-
-
-        // Return a list of all checkboxes that are checked and have the class 'selectable'
-        function get_selected_checbox_names_and_values() {
-            var result = []
-            return $( ".selectable :checked" );
-            checked_boxes.each(function() {
-               var host_name = $(this).next('.input_hostname').val();
-               var service_description = $(this).next().next('.input_service_description').val();
-               result.push( {'host_name': host_name, 'service_description': service_description} )
-            });
-            return result;
-        }
-
-        // When this function is called. Gather all selected services and add them to a specific business process
-        function add_to_business_process() {
-            var object_type = [];
-            var value;
-            var querystring = "?";
-            var doing_graphs = false; /* special hack, change destination url if we are adding graphs */
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-                if (object_type == 'graph') {
-                    doing_graphs = true;
-                }
-            });
-            if (doing_graphs == true) {
-                window.location.href = "{% url bi.views.add_graph %}/?" + querystring;
-            }
-            else {
-                window.location.href = "{% url bi.views.add_subprocess %}/?" + querystring;
-            }
-
-
-            return false;
-        }
-
-        // When this function is called, gather all selected objects and add them to a specific group
-        function add_to_group(group_type) {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.add_to_group %}/" + group_type + "?" + querystring;
-        }
-
-        // When this function is called, delete all selected objects
-        function delete_selected_objects() {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.bulk_delete %}" + "?" + querystring;
-        }
-
-        // When this function is called, go to the edit page for all selected objects
-        function edit_selected_objects() {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.bulk_edit %}" + "?" + querystring;
-        }
-
-        // When this function is called. Go to the copy object page
-        function copy_selected_objects() {
-            var object_type, value;
-            var querystring = '';
-            $( ".selectable :checked").each(function() {
-                object_type = $(this).attr('name');
-                value = $(this).attr('value');
-                querystring += "&" + object_type + "=" + value;
-            });
-            window.location.href = "{% url objectbrowser.views.bulk_copy %}" + "?" + querystring;
-        }
-
-        // When a user clicks the remove acknowledgement button, this is called
-        // to remove acknowledgements of all "selected" objects
-        function remove_acknowledgements() {
-            var selected_objects = get_selected_objects();
-            var args;
-            var objects_done = 0;
-            $.each(selected_objects, function(i, item) {
-                args = {};
-                args['host_name'] = item['host_name'];
-                args['service_description'] = item['service_description'];
-                adagios.rest.status.remove_acknowledgement(args)
-                        .done(function() {
-                            objects_done += 1;
-                            if (objects_done == selected_objects.length) {
-                                location.reload();
-                            }
-                    })
-            });
-        }
-
-        // When a user clicks the remove downtimes button, this is called
-        // to remove downtimes of all "selected" objects
-        function remove_active_downtimes() {
-            var selected_objects = get_selected_objects();
-            var args;
-            var objects_done = 0;
-            $.each(selected_objects, function(i, item) {
-                args = {};
-                args['host_name'] = item['host_name'];
-                args['service_description'] = item['service_description'];
-                args['downtime_id'] = item['downtime_id'];
-                adagios.rest.status.remove_downtime(args)
-                        .done(function() {
-                            objects_done += 1;
-                            if (objects_done == selected_objects.length) {
-                                location.reload();
-                            }
-                        })
-            });
-
-
-        }
-
-            // count_selected_objects()
-        // Enables or disabled the action_buttons and toolbar buttons depending on if
-        // Any objects are selected or not
-        function count_selected_objects() {
-
-            var selected_objects = get_selected_objects();
-
-            // Treat acknowledge button depending on if acknowledgements are needed
-            if (selected_objects.length > 0) {
-                $('#action_buttons button.adagios_service_multi').attr('disabled', null);
-                if (selected_objects.length > 1) {
-                    $('#action_buttons button.adagios_service_single').attr('disabled', 'disabled');
-                } else {
-                    $('#action_buttons button.adagios_service_single').attr('disabled', null);
-                }
-                $('.enable_on_select').attr('disabled', null);
-                $('#action_buttons').attr('title',null);
-                $('#action_buttons_more a').disable(false);
-            }
-            else {
-                $('#action_buttons button').attr('disabled', 'disabled');
-                $('.enable_on_select').attr('disabled', 'disabled');
-                $('#action_buttons_more a').disable(true);
-            }
-        }
-
-
-
-    </script>
-
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-        // Change our table into a jquery datatable
-        $(function() {
-            oTable = $('.datatable').dataTable( {
+        // Change all tables with the class "datatable" into a datatable
+        function turn_tables_into_datatables() {
+            var oTable = $('.datatable').dataTable( {
                 "bPaginate": true,
                 "iDisplayLength": 100
             });
             $('.dataTables_length').hide();
 
-        });
-        $(document).ready(function() {
+        }
+
+
+        // Prepare dates and other stuff for the downtime modal
+        function prepare_downtime_modal() {
             var start_time = (new Date).valueOf() / 1000;
             var end_time = (new Date);
             end_time.setHours(end_time.getHours() + 2);
@@ -942,32 +987,10 @@
                 e.preventDefault();
                 return false;
             });
-        });
-
-        // When somebody clicks the acknowledge button, lets focus on the comment field
-        $('#acknowledge_modal').on('shown', function () {
-            document.getElementById('id_comment').focus()
-        });
+        }
 
 
-        // When somebody clicks the downtime button, lets focus on the comment field
-        $('#downtime_modal').on('shown', function () {
-            document.getElementById('id_downtime_comment').focus()
-        });
-
-        // When somebody clicks the notification button, lets load contact email addresses
-        $('#mail_modal').on('shown', function () {
-            adagios.rest.status.emails()
-                    .done(function(data) {
-                        $("#id_mail_to").select2({
-                            tags:data,
-                            tokenSeparators: [","],
-                            placeholder:"Comma seperated list of email addresses to send to"
-                        });
-                    });
-        });
-
-
+        // This event is fired when one or more objects have been rescheduled
         function reschedule() {
             $("#reschedule_button").button('loading');
             var selected_objects = get_selected_objects();
@@ -1020,6 +1043,7 @@
 
         }
 
+
         // This function responsible for acknowledge on all selected rows
         function acknowledge() {
             $('#acknowledge_modal').modal('hide');
@@ -1069,6 +1093,7 @@
 
         }
 
+
         // Clear all checked checkboxes
         function clear_all_selections() {
                $('.chkbox').each( function(data) {
@@ -1076,6 +1101,7 @@
                    });
                 count_selected_objects();
         }
+
 
         // This function responsible for downtime on all selected rows
         function downtime() {
@@ -1132,6 +1158,7 @@
 
         }
 
+
         // This function sends email to selected recipients for all selected rows
         function send_mail() {
             $('#mail_modal').modal('hide');
@@ -1172,6 +1199,8 @@
 
         }
 
+
+        // Send a comment about specific service to our monitoring engine
         function comment(comment,host_name, service_description, persistent ) {
             if (comment == '') {
                 comment = "No comment was entered...";
@@ -1184,20 +1213,19 @@
                 "comment":comment,
                 "author":"{{ remote_user }}",
                 "persistent":"1"
-            }
-            $.ajax({
-                type: 'POST',
-                url: '{% url rest/status %}json/comment',
-                data: my_data,
-                async: false,
-                success: function(data) {
-                    return data;
-                },
-                contentType: "application/json",
-                dataType: 'json'
-            });
+            };
+            return adagios.rest.status.comment(my_data)
+                    .done(function(data) {
+                        adagios.misc.success("Comment has been sent to server.");
+
+                    })
+                    .fail(function(data) {
+                        adagios.misc.error("Problem sending comment to server.")
+                    });
 
         }
+
+
         // Function to edit a single attribute of an object
         function change_attribute(object_type,short_name,attribute_name,new_value, success, error) {
             my_data  = {
@@ -1205,23 +1233,15 @@
                 "short_name": short_name,
                 "attribute_name":attribute_name,
                 "new_value":new_value
+            };
+            adagios.rest.status.edit(my_data)
+                    .done(function(data) {
+                        adagios.misc.success("Successfully saved. Changes take effect next time you reload the monitoring engine.")
+                    })
+                    .fail(function(data) {
+                        adagios.misc.error("Error saving data.")
+                    });
             }
-            $.ajax({
-                type: 'POST',
-                url: '{% url rest/status %}json/edit',
-                data: my_data,
-                async: true,
-                success: function(data) {
-                    success(data);
-                },
-                error: function(data) {
-                    error(data);
-                },
-                contentType: "application/json",
-                dataType: 'json'
-            });
-
-        }
 
     </script>
 
@@ -1236,5 +1256,7 @@ using Glyphicons.
 
 All logos and trademarks in social icons are the property of the respective trademark owners.®
 -->
+
 </body>
+
 </html>

@@ -639,8 +639,11 @@
                 my_comment = this.value;
                 if (my_comment == '')
                     return;
-                comment(my_comment,"{{ host_name }}", "{{ service_description }}");
-                location.reload();
+                comment(my_comment,"{{ host_name }}", "{{ service_description }}")
+                        .done(function(data) {
+                            location.reload();
+                        })
+
             }
         });
         // When an editable field is change, lets update configuration
