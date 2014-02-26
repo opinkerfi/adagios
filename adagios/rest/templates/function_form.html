@@ -34,7 +34,7 @@
 &lt;script&gt;
 parameters = {
 {% for i in form %}    "{{ i.name }}":"{{ i.value }}",
-{% endfor %}}
+{% endfor %}};
 
 adagios.rest.{{ module_name }}.{{ function_name }}(parameters)
     .done(function(data) {
