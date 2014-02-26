@@ -4,6 +4,7 @@ adagios.status = adagios.status || {};
 adagios.objectbrowser = adagios.objectbrowser || {};
 adagios.misc = adagios.misc || {};
 
+adagios.misc.__notification_id_counter = 0;
 
 adagios.status.service_detail_update_servicestate_icon = function(host_name, params) {
     var results = {results: []};
@@ -332,7 +333,6 @@ adagios.objectbrowser.select2_objects_query = function(object_type, query) {
 };
 
 
-
 adagios.objectbrowser.select2_business_process = function(query) {
     var results = {results: []};
 
@@ -363,7 +363,7 @@ adagios.objectbrowser.check_nagios_needs_reload = function() {
 };
 
 
-
+// Reload nagios and display a nice status message on top of screen
 adagios.misc.reload_nagios = function() {
     $("#nagios_is_reloading").show();
     adagios.rest.pynag.reload_nagios()
@@ -391,8 +391,6 @@ adagios.misc.reload_nagios = function() {
         });
 };
 
-adagios.misc.__notification_id_counter = 0;
-
 // Get all serverside notifications and display them to our user.
 adagios.misc.get_server_notifications = function() {
     var message_div = $("#error_messages");
@@ -413,6 +411,7 @@ adagios.misc.get_server_notifications = function() {
         });
 };
 
+// Display a notification in element "#error_messages"
 adagios.misc.add_notification = function(message, level, notification_id, timeout) {
     var notification = $("#typical_notification").html();
     var message_div = $("#error_messages");
@@ -431,17 +430,22 @@ adagios.misc.add_notification = function(message, level, notification_id, timeou
     return message_div.html(message_div.html() + html);
 };
 
+// Display an info message in #error_messages div
 adagios.misc.info = function(message, notification_id, timeout) {
     return adagios.misc.add_notification(message, 'info', notification_id, timeout);
 };
 
+// Display an info message in #error_messages div
 adagios.misc.warning = function(message, notification_id, timeout) {
     return adagios.misc.add_notification(message, 'warning', notification_id, timeout);
 };
 
+// Display an info message in #error_messages div
 adagios.misc.success = function(message, notification_id, timeout) {
     return adagios.misc.add_notification(message, 'success', notification_id, timeout);
 };
+
+// Display an info message in #error_messages div
 adagios.misc.error = function(message, notification_id, timeout) {
     return adagios.misc.add_notification(message, 'danger', notification_id, timeout);
 };
