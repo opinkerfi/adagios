@@ -1,9 +1,16 @@
 {% extends "base.html" %}
-
 {% block title %}{{ block.super }}{% endblock title %}
-
+{% block smallheader %}{{ block.super }}{% endblock smallheader %}
+{% block largeheader %}{{ block.super }}{% endblock largeheader %}
+{% block content %}{{ block.super }}{% endblock content %}
 {% block top_navigation %}{{ block.super }}{% endblock top_navigation %}
 {% block near_top %}{{ block.super }}{% endblock near_top %}
+{% block nav2 %}{{ block.super }}{% endblock nav2 %}
+{% block header %}{{ block.super }}{% endblock header %}
+{% block footer %}{{ block.super }}{% endblock footer %}
+
+
+
 
 {% block toolbar %}
     <div id="toolbar">
@@ -116,18 +123,10 @@
             </div>
 {% endblock toolbar %}
 
-{% block header %}{{ block.super }}{% endblock header %}
-{% block footer %}{{ block.super }}{% endblock footer %}
 
 {% block nav1 %}
     <a href="{% url adagios.status.views.status_index %}">Status</a>
 {% endblock nav1 %}
-{% block nav2 %}{{ block.super }}{% endblock nav2 %}
-
-{% block smallheader %}{{ block.super }}{% endblock smallheader %}
-{% block largeheader %}{{ block.super }}{% endblock largeheader %}
 
 
-<!-- Main contents go in here -->
-{% block content %}{{ block.super }}{% endblock content %}
 
