@@ -5,10 +5,13 @@
 
 {% block header %}
     {{ block.super }}
-    <link href="{% url media path="css/status.css" %}" rel="stylesheet">
     <meta http-equiv="refresh" content="60">
 {% endblock %}
-{% block titlebar %} {% endblock %}
+
+{% block toolbar %}{% endblock %}
+{% block page_header %}{% endblock %}
+{% block left_sidebar %}{% endblock %}
+
 {% block content %}
     <style>
         body {
@@ -19,7 +22,7 @@
             padding:  4px 4px 4px 14px;
         }
     </style>
-    <div class="container-fluid" style="margin: 20px;" >
+    <div class="container-fluid" >
     <div class="row-fluid row" >
 
         <!-- Tactical Overview -->
