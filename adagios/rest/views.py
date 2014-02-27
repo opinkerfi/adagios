@@ -99,8 +99,6 @@ def list_modules(request):
 
     """
     rest_modules = adagios.rest.urls.rest_modules
-    for k, v in adagios.rest.urls.rest_modules.items():
-        print k, v
     return render_to_response('list_modules.html', locals(), context_instance=RequestContext(request))
 
 

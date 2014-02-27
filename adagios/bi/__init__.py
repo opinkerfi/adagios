@@ -718,7 +718,6 @@ class Domain(Host):
             self.add_process('%s/%s' % (host_name, service_description), 'service')
             for i in perfdata.metrics:
                 notes = '%s %s' % (service_description, i.label)
-                print notes
                 self.add_pnp_graph(host_name=host_name, service_description=service_description, metric_name=i.label, notes=notes)
 
     def create_host(self):

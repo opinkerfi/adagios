@@ -332,7 +332,6 @@ def check_command(host_name, service_description, name=None, check_command=None,
 
     # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
     ARGs = my_object.check_command.split('!')
-    print ARGs
     for i, arg in enumerate(ARGs):
         if i == 0:
             continue

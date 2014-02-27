@@ -81,7 +81,6 @@ def acknowledge_many(hostlist, servicelist, sticky=1, notify=1, persistent=0, au
                 author=author,
                 comment=comment
         )
-    print "all done"
     return "Success"
 
 
@@ -667,5 +666,3 @@ def statistics(request, **kwargs):
     return adagios.status.utils.get_statistics(request, **kwargs)
 
 
-def test(request, **kwargs):
-    print kwargs
