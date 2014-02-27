@@ -57,6 +57,8 @@ adagios.rest.{{ module_name }}.{{ i }} = function(parameters) {
         url: '{{ v.url }}',
         data: parameters,
         async: true,
+        success: function(data) { console.debug("call to adagios.rest.{{ module_name }}.{{ i }}() was a success"); },
+        fail: function(data) { console.error("error while calling call to adagios.rest.{{ module_name }}.{{ i }}"); console.error(data); },
         contentType: "application/json",
         dataType: 'json'
     });
