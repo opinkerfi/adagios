@@ -239,10 +239,6 @@
                         ack = tmp['acknowledged'];
                         downtime = tmp['scheduled_downtime_depth'];
 
-                        if (tmp['description'] == 'Disk Usage') {
-                            console.log(downtime);
-                        }
-
                         // Skip ok services
                         if (state === 0) {
                             // Do nothing.
@@ -376,9 +372,16 @@
     }
     // Return current querystring parameters as key-value pairs
     function get_querystring_dict() {
-        var queryDict = {};
-        location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
-        return queryDict;
+        var result = {};
+        var tmp = location.search.substr(1).split("&");
+        var i, item, key, value;
+        for (i = 0; i<tmp.length; i += 1) {
+            item = tmp[i];
+            key = item.split("=")[0];
+            value =  item.split("=")[1];
+            result[key] = value;
+        }
+        return result;
     }
 
 
