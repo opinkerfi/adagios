@@ -44,45 +44,46 @@
 <!-- block top_navigation ends -->
 
 
-<!-- near_top contains stuff breadcrumbs and title of the current page -->
-{% block near_top %}
-<div id="near_top" class="near_top">
+<!-- page_header contains stuff breadcrumbs and title of the current page -->
+{% block page_header %}
+<div id="page_header" class="page_header">
+
     <div class="container-fluid content">
-    <div class="row-fluid ">
-        <ul class="breadcrumb">
-            <li>
-                <i class="glyph-right-arrow"></i>
-            </li>
-            <li>
-                <a href="{% url home %}"> Home</a> <span class="divider">/</span>
-            </li>
-            <li>
-                {% block nav1 %}
-                {% endblock %}
-                <span class="divider">/</span>
-            </li>
-            <li>
-                {% block nav2 %}
-                {% endblock %}
-            </li>
-        </ul>
-    </div>
 
-    <div class="row-fluid">
-        <div class="pull-left" id="titlebar">
-            <h2>
-                <small>{% block smallheader %}block=smallheader{% endblock %}</small>
-                {% block largeheader %}block=largeheader {% endblock %}
-            </h2>
+        <div class="row-fluid ">
+            <ul class="breadcrumb">
+                <li>
+                    <i class="glyph-right-arrow"></i>
+                </li>
+                <li>
+                    <a href="{% url home %}"> Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    {% block nav1 %}
+                    {% endblock %}
+                    <span class="divider">/</span>
+                </li>
+                <li>
+                    {% block nav2 %}
+                    {% endblock %}
+                </li>
+            </ul>
         </div>
-        <div id="right_of_title">
-            {% if okconfig %}
-                <div class="pull-right btn-group"><a class="btn " href="{% url okconfig_.views.addhost %}">Add Host
-            {% else %}
-                <div class="pull-right btn-group"><a class="btn " href="{% url adagios.objectbrowser.views.add_object 'host' %}">Add Host
-            {% endif %}
-                </a><a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
 
+        <div class="row-fluid">
+            <div class="pull-left" id="titlebar">
+                <h2>
+                    <small>{% block smallheader %}block=smallheader{% endblock %}</small>
+                    {% block largeheader %}block=largeheader {% endblock %}
+                </h2>
+            </div>
+
+            <div id="right_of_title">
+                <div class="pull-right btn-group">
+                    <a class="btn" {% if okconfig %}href="{% url okconfig_.views.addhost %}{% else %}href="{% url adagios.objectbrowser.views.add_object 'host' %}{% endif %}">
+                        Add Host
+                    </a>
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="{% url adagios.objectbrowser.views.add_object 'host' %}"> Host</a></li>
                                 <li><a href="{% url adagios.objectbrowser.views.add_object 'service' %}"> Service</a></li>
@@ -97,22 +98,19 @@
                                 <li class="divider"></li>
                                 <li><a href="{% url bi.views.add %}"> Business Process</a></li>
                             </ul>
-                        </a>
                 </div>
-                <br>
+            </div>
+        </div>
+
     </div>
-</div>
 </div>
 
 <hr id="seperate_top_and_content">
-{% endblock near_top %}
-<!-- block near_top ends -->
+{% endblock page_header %}
+<!-- block page_header ends -->
 
 <!-- Here we start the main view -->
-<div class="container-fluid content">
-    <div class="row-fluid" id="container">
-
-        <div class="span2"   id="left_sidebar">
+        <div class="pull-left container-fluid"   id="left_sidebar">
             <h5>Shortcuts</h5>
             <ul class="nav nav-list">
                 <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
@@ -155,7 +153,7 @@
             </ul>
         </div>
 
-        <div class="span10" id="main_content">
+        <div id="main_content">
             <!-- block toolbar starts -->
             {% block toolbar %}
                 block=toolbar
@@ -170,23 +168,15 @@
 
         </div>
 
-    </div>
-
-    <div id="footers" class="row-fluid">
-        <hr>
-
-        <div class="pull-right" id="make_a_wish" >
-            <input type="text" class="input-medium"  placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");' />
-            <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
-        </div>
-    </div>
-
-
-
-
-
-
-</div> <!-- /container -->
+        {% block page_footer %}
+            <div id="page_footer">
+                <hr>
+                <div class="pull-right" id="make_a_wish" >
+                    <input type="text" class="input-medium"  placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");' />
+                    <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
+                </div>
+            </div>
+        {% endblock page_footer %}
 
 
 

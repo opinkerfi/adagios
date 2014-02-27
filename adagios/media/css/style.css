@@ -303,3 +303,14 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 button.close.notification {
     right: 2px;
 }
+
+#main_content {
+    overflow: hidden;
+    padding-right: 20px;
+}
+
+#page_footer {
+    clear:both;
+    overflow: hidden;
+    padding-right: 20px;
+}

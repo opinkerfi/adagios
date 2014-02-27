@@ -1,14 +1,15 @@
-{% extends "base1.html" %}
+{% extends "base.html" %}
 
 {% load adagiostags %}
 {% block title %}Dashboard{% endblock %}
+
 {% block header %}
     {{ block.super }}
     <link href="{% url media path="css/status.css" %}" rel="stylesheet">
     <meta http-equiv="refresh" content="60">
 {% endblock %}
 {% block titlebar %} {% endblock %}
-{% block maincontent %}
+{% block content %}
     <style>
         body {
             background-color: #d5d8de;
