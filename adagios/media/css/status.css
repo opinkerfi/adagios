@@ -408,3 +408,15 @@ a {
     color: #3d3d3d;
     font-weight: normal;
 }
+#status_dashboard {
+    padding-top: 20px;
+    padding-left: 50px;
+    padding-bottom: 20px;
+    background-color: #d5d8de;
+
+}
+
+#status_dashboard .alert {
+    margin-bottom: 0;
+    padding:  4px 4px 4px 14px;
+}

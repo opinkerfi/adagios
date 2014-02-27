@@ -10,19 +10,12 @@
 
 {% block toolbar %}{% endblock %}
 {% block page_header %}{% endblock %}
+{% block page_footer %}{% endblock %}
 {% block left_sidebar %}{% endblock %}
 
-{% block content %}
-    <style>
-        body {
-            background-color: #d5d8de;
-        }
-        .alert {
-            margin-bottom: 0px;
-            padding:  4px 4px 4px 14px;
-        }
-    </style>
-    <div class="container-fluid" >
+{% block main_content %}
+
+    <div id="status_dashboard" >
         <div class="row-fluid row" >
 
             <!-- Tactical Overview -->
