@@ -485,3 +485,7 @@ def paste(request):
         c['form'] = forms.PasteForm(initial=request.GET)
 
     return render_to_response('test2.html', c, context_instance=RequestContext(request))
+
+
+def hello_world(request):
+    return render_to_response('hello_world.html', locals(), context_instance=RequestContext(request))
