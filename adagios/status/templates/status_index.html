@@ -277,7 +277,6 @@
                 cell2_html = '<a href="{% url status.views.status_detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
                 cell1.innerHTML=cell1_html;
                 cell2.innerHTML=cell2_html;
-                console.log(host_name);
             }
         })
         .fail( function(data) {
