@@ -1,6 +1,8 @@
+from django.http import HttpResponse
 import traceback
 from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from django.template import RequestContext, loader
+from django import template
 import time
 import logging
 
@@ -40,4 +42,10 @@ def error_page(request, context=None):
         context = {}
         context['errors'] = []
         context['errors'].append('Error occured, but no error messages provided, what happened?')
-    return render_to_response('status_error.html', context, context_instance=RequestContext(request))
+    t = loader.get_template('status_error.html')
+
+    c = template.Context(context)
+    t = t.render(c)
+    response = HttpResponse(t, content_type="text/html")
+    response.status_code = 500
+    return response
