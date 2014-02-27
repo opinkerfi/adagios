@@ -23,204 +23,175 @@
         }
     </style>
     <div class="container-fluid" >
-    <div class="row-fluid row" >
+        <div class="row-fluid row" >
 
-        <!-- Tactical Overview -->
-        <div class="span6">
-            <table class="table well table-condensed">
-                <thead>
-                <tr>
-                    <th>Tactical Overview</th>
-                    <th>Total</th>
-                    <th>Problems</th>
-                    <th>Unhandled</th>
-                    <!-- <th><i class="glyph-warning-sign" title="Unhandled Problems"></i></th>-->
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Network Parents</td>
-                    <td><a href="{% url status.views.network_parents %}">{{ total_network_parents }}</a></td>
-                    <td>
-                        <a href="{% url status.views.network_parents %}?state__isnot=0">
-                        <div class="alert alert-warning">{{ total_network_problems }}</div>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url status.views.network_parents %}?unhandled">
-                        {% if total_unhandled_network_problems == 0 %}
-                            <div class="alert alert-success">{{ total_unhandled_network_problems }}</div>
-                        {% else %}
-                            <div class="alert alert-danger">{{ total_unhandled_network_problems }}</div>
-                        {% endif %}
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Hosts</td>
-                    <td><a href="{% url status.views.hosts %}">{{ total_hosts }}</a></td>
-                    <td>
-                        <a href="{% url status.views.hosts %}?state__isnot=0">
-                        <div class="alert alert-warning">{{  total_host_problems }}</div>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url status.views.hosts %}?unhandled">
-                        {% if host_problems|length == 0 %}
-                            <div class="alert alert-success">{{ host_problems|length }}</div>
-                        {% else %}
-                            <div class="alert alert-danger">{{ host_problems|length }}</div>
-                        {% endif %}
-                        </a>
-                    </td>
+            <!-- Tactical Overview -->
+            <div class="span6" id="dashboard_tactical_overview">
 
-                </tr>
-                <tr>
-                    <td>Services</td>
-                    <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
-                    <td>
-                        <a href="{% url status.views.services %}?state__isnot=0">
-                        <div class="alert alert-warning">{{ total_service_problems }}</div>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url status.views.services %}?unhandled">
-                        {% if service_problems|length == 0 %}
-                            <div class="alert alert-success">{{ service_problems|length }}</div>
-                        {% else %}
-                            <div class="alert alert-danger">{{ service_problems|length }}</div>
-                        {% endif %}
-                        </a>
-                    </td>
-
-                </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-        <!-- Unused space -->
-        <div class="span2"> </div>
-
-        <!-- Current Health Percentage -->
-        <div class="span4" style="align: right;">
-            <table class="table well">
-                <tr>
-                    <th colspan="2"><h4>Current Health</h4></th>
-                </tr>
-                <tr>
-                    <td  style="white-space: nowrap" width=20px>All hosts</td>
-                    <th>
-                        <div class="progress">
-                            <div class="bar bar-success" style=" width: {{ host_totals_percent.0 }}%;">{{ host_totals_percent.0|floatformat }}%</div>
-                            <div class="bar bar-warning" style=" width: {{ host_totals_percent.1 }}%;"></div>
-                            <div class="bar bar-danger" style=" width: {{ host_totals_percent.2 }}%;"></div>
-                            <div class="bar bar-unknown" style=" width: {{ host_totals_percent.3 }}%;"></div>
-                        </div>
-
-                    </th>
-                </tr>
-                <tr>
-                    <td style="white-space: nowrap" width=20px>All services</td>
-                    <th>
-                        <div class="progress">
-                            <div class="bar bar-success" style=" width: {{ service_totals_percent.0 }}%;">{{ service_totals_percent.0|floatformat }}%</div>
-                            <div class="bar bar-warning" style=" width: {{ service_totals_percent.1 }}%;"></div>
-                            <div class="bar bar-danger" style=" width: {{ service_totals_percent.2 }}%;"></div>
-                            <div class="bar bar-unknown" style=" width: {{ service_totals_percent.3 }}%;"></div>
-                        </div>
-
-                    </th>
-                </tr>
-            </table>
-
-        </div>
-
-    </div>
-
-    <div class="row-fluid row" >
-        {% if host_problems %}
-            <h4>Unhandled Host Problems</h4>
-            <!-- Host Problems -->
-            {% include "snippets/status_hostlist_snippet.html" %}
-        {% else %}
-            <h4>There are no unhandled host problems.</h4>
-        {% endif %}
-
-    </div>
-
-    <div class="row row-fluid">
-
-
-
-        {% if service_problems%}
-        <div class="span12">
-            <h4>Unhandled Service Problems</h4>
-            <table class="table well table-condensed">
-                <tr>
-                    <th>Host</th>
-                    <th>Service</th>
-                    <th>Output</th>
-                    <th>Duration</th>
-                    <th>Last Check</th>
-                </tr>
-                {% for i in service_problems %}
-                    {% if i.state == 0 %}<tr class="dashboard alert alert-success">{% endif %}
-                    {% if i.state == 1 %}<tr class="dashboard alert alert-warning">{% endif %}
-                    {% if i.state == 2 %}<tr class="dashboard alert alert-danger">{% endif %}
-                    {% if i.state == 3 %}<tr class="dashboard alert alert-danger">{% endif %}
-                    <td>
-                        <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}">
-                            {{ i.host_name }}
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}&service_description={{ i.description }}">
-                        {{ i.description }}
-                        </a>
-                    </td>
-                    <!--
-                    <td>
-                    {% if i.state == 0 %}<div class="alert alert-success" style='margin: 0px'>OK</div>{% endif %}
-                    {% if i.state == 1 %}<div class="alert alert-warning" style='margin: 0px'>Warning</div>{% endif %}
-                    {% if i.state == 2 %}<div class="alert alert-danger" style='margin: 0px'>Critical</div>{% endif %}
-                    {% if i.state == 3 %}<div class="alert alert-danger" style='margin: 0px'>Unknown</div>{% endif %}
-                    </td>
-                    -->
-                    <td>
-                        <span title="{{ i.plugin_output }}" style="font-size: 100%; color: #3d3d3d; font-weight: normal;">
-                            {{ i.plugin_output|slice:"70" }}
-                        </span>
-                    </td>
-                    <td>{{ i.last_state_change|timestamp|timesince }}</td>
-                    <td>{{ i.last_check|timestamp|date:'Y-m-d H:i' }}</td>
+                <table class="table well table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Tactical Overview</th>
+                        <th>Total</th>
+                        <th>Problems</th>
+                        <th>Unhandled</th>
+                        <!-- <th><i class="glyph-warning-sign" title="Unhandled Problems"></i></th>-->
                     </tr>
-                {% endfor %}
-            </table>
-            {% if log %}
-                <h3>Last {{ log|length }} alerts:</h3>
-                <table style="font-size: 80%;" class="table table-condensed">
-                    {% for line in log %}
-                        <tr>
-                            <td width=20px style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
-                            <td width=20px><div>{{ line.host_name }}</div></td>
-                            <td width=200px><div>
-                                <a href=">{% url adagios.status.views.detail %}/?host_name={{ line.host_name }}&service_description={{ line.service_description }}">
-                                    {{ line.service_description }}
-                                </a>
-                            </div></td>
-                            <td width="20px"><div class="circle state_{{ line.state }}"></div></td>
-                            <td>
-                                <div>{{ line.plugin_output }}</div></td>
-                        </tr>
-                    {% endfor %}
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Network Parents</td>
+                        <td><a href="{% url status.views.network_parents %}">{{ total_network_parents }}</a></td>
+                        <td>
+                            <a href="{% url status.views.network_parents %}?state__isnot=0">
+                            <div class="alert alert-warning">{{ total_network_problems }}</div>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url status.views.network_parents %}?unhandled">
+                            {% if total_unhandled_network_problems == 0 %}
+                                <div class="alert alert-success">{{ total_unhandled_network_problems }}</div>
+                            {% else %}
+                                <div class="alert alert-danger">{{ total_unhandled_network_problems }}</div>
+                            {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Hosts</td>
+                        <td><a href="{% url status.views.hosts %}">{{ total_hosts }}</a></td>
+                        <td>
+                            <a href="{% url status.views.hosts %}?state__isnot=0">
+                            <div class="alert alert-warning">{{  total_host_problems }}</div>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url status.views.hosts %}?unhandled">
+                            {% if host_problems|length == 0 %}
+                                <div class="alert alert-success">{{ host_problems|length }}</div>
+                            {% else %}
+                                <div class="alert alert-danger">{{ host_problems|length }}</div>
+                            {% endif %}
+                            </a>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>Services</td>
+                        <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
+                        <td>
+                            <a href="{% url status.views.services %}?state__isnot=0">
+                            <div class="alert alert-warning">{{ total_service_problems }}</div>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url status.views.services %}?unhandled">
+                            {% if service_problems|length == 0 %}
+                                <div class="alert alert-success">{{ service_problems|length }}</div>
+                            {% else %}
+                                <div class="alert alert-danger">{{ service_problems|length }}</div>
+                            {% endif %}
+                            </a>
+                        </td>
+
+                    </tr>
+                    </tbody>
                 </table>
-            {% endif %}
+
+            </div>
+
+            <!-- Unused space -->
+            <div class="span2"> </div>
+
+            <!-- Current Health Percentage -->
+            <div class="span4" id="dashboard_health_percentage">
+                <table class="table well">
+                    <tr>
+                        <td colspan="2"><h4>Current Health</h4></td>
+                    </tr>
+                    <tr>
+                        <td  class="small nowrap" >All hosts</td>
+                        <th>
+                            <div class="progress">
+                                <div class="bar bar-success" style=" width: {{ host_totals_percent.0 }}%;">{{ host_totals_percent.0|floatformat }}%</div>
+                                <div class="bar bar-warning" style=" width: {{ host_totals_percent.1 }}%;"></div>
+                                <div class="bar bar-danger" style=" width: {{ host_totals_percent.2 }}%;"></div>
+                                <div class="bar bar-unknown" style=" width: {{ host_totals_percent.3 }}%;"></div>
+                            </div>
+
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="small nowrap">All services</td>
+                        <th>
+                            <div class="progress">
+                                <div class="bar bar-success" style=" width: {{ service_totals_percent.0 }}%;">{{ service_totals_percent.0|floatformat }}%</div>
+                                <div class="bar bar-warning" style=" width: {{ service_totals_percent.1 }}%;"></div>
+                                <div class="bar bar-danger" style=" width: {{ service_totals_percent.2 }}%;"></div>
+                                <div class="bar bar-unknown" style=" width: {{ service_totals_percent.3 }}%;"></div>
+                            </div>
+
+                        </th>
+                    </tr>
+                </table>
+
+            </div>
 
         </div>
-        {% else %}
-            <h4>There are no unhandled service problems</h4>
-        {% endif %}
+
+        <div class="row-fluid row" id="dashboard_host_problems">
+            {% if host_problems %}
+                <h4>Unhandled Host Problems</h4>
+                <!-- Host Problems -->
+                {% include "snippets/status_hostlist_snippet.html" %}
+            {% else %}
+                <h4>There are no unhandled host problems.</h4>
+            {% endif %}
+        </div>
+
+        <div class="row row-fluid" id="dashboard_service_problems">
+
+            {% if service_problems%}
+                <div class="span12">
+                    <h4>Unhandled Service Problems</h4>
+                    <table class="table well table-condensed">
+                        <tr>
+                            <th>Host</th>
+                            <th>Service</th>
+                            <th>Output</th>
+                            <th>Duration</th>
+                            <th>Last Check</th>
+                        </tr>
+                        {% for i in service_problems %}
+                            {% if i.state == 0 %}<tr class="dashboard alert alert-success">{% endif %}
+                            {% if i.state == 1 %}<tr class="dashboard alert alert-warning">{% endif %}
+                            {% if i.state == 2 %}<tr class="dashboard alert alert-danger">{% endif %}
+                            {% if i.state == 3 %}<tr class="dashboard alert alert-danger">{% endif %}
+                                <td>
+                                    <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}">
+                                        {{ i.host_name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}&service_description={{ i.description }}">
+                                    {{ i.description }}
+                                    </a>
+                                </td>
+
+                                <td>
+                                    <span class="dashboard_plugin_output" title="{{ i.plugin_output }}" >
+                                        {{ i.plugin_output|slice:"70" }}
+                                    </span>
+                                </td>
+                                <td>{{ i.last_state_change|timestamp|timesince }}</td>
+                                <td>{{ i.last_check|timestamp|date:'Y-m-d H:i' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% else %}
+                <h4>There are no unhandled service problems</h4>
+            {% endif %}
 
         </div>
 

@@ -402,3 +402,9 @@ a {
     padding-bottom: 3px;
     font-weight: normal;
 }
+
+.dashboard_plugin_output {
+    font-size: 100%;
+    color: #3d3d3d;
+    font-weight: normal;
+}
