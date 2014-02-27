@@ -32,6 +32,9 @@
     <!-- Block header starts -->
     {%  block header %}{% endblock %}
     <!-- Block header ends -->
+<script>
+    var BASE_URL = "{% url home %}";
+</script>
 </head>
 
 <body>
@@ -195,7 +198,7 @@
 <div class="modal hide fade" id="acknowledge_modal">
     <form class="form-horizontal" onsubmit='$("#acknowledge_modal").modal("hide");  acknowledge(); return false; return false;' >
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h3>Acknowledge problem</h3>
         </div>
         <div class="modal-body">
@@ -230,7 +233,7 @@
 <div class="modal hide fade" id="downtime_modal">
     <form name="downtime" class="form-horizontal">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h3>Schedule Downtime</h3>
         </div>
         <div class="modal-body">
@@ -300,7 +303,7 @@
 <!-- Mail modal -->
 <div class="modal hide fade" id="mail_modal">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h3>Mail</h3>
         </div>
         <div class="modal-body">
@@ -321,7 +324,7 @@
                     Message
                 </label>
                 <div class="controls" id="id_mail_message_field">
-                    <textarea id="id_mail_message" type="text" class="required" placeholder="Hey everyone, please check the link and services below." name="message" ></textarea>
+                    <textarea id="id_mail_message"  class="required" placeholder="Hey everyone, please check the link and services below." name="message" ></textarea>
                 </div>
             </div>
 
@@ -357,7 +360,7 @@
 <div class="modal hide fade" id="misc_modal">
     <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <div id="misc_modal_body">
@@ -376,7 +379,7 @@
 <div class="modal hide fade" id="wish_modal">
     <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h3>Make a wish</h3>
         </div>
         <div class="modal-body">
@@ -385,10 +388,11 @@
             <p>
             Sweet! Ask for it here, and we'll see what we can do.
             </p>
-            <p>We'd love to hear from you, but we cannot guarantee that your wish will come true.
-
+            <p>
+                    >We'd love to hear from you, but we cannot guarantee that your wish will come true.
             </p>
-            <textarea style="width:100%;" cols="200" rows="10" name="wish" placeholder="I wish this page could..."></textarea>
+            <label class="hide" for="wish_textarea"></label>
+            <textarea  id="wish_textarea" style="width:100%;" cols="200" rows="10" name="wish" placeholder="I wish this page could..."></textarea>
             <hr>
             <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
             <label class="pull-left" for="id_bribes">I'll back it up with bribes.</label>
@@ -453,9 +457,7 @@
 <script src="{% url media path="datepicker/js/bootstrap-datepicker.js" %}"></script>
 
 
-<script>
-    var BASE_URL = "{% url home %}";
-</script>
+
 
 <!-- block footer starts -->
 {% block footer %}
