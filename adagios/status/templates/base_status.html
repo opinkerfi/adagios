@@ -15,13 +15,13 @@
 
 
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="{% url media path="html5shim/html5.js" %}"></script>
     <![endif]-->
 
-    <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="{% url media path="ico/favicon.ico" %}">
+    <!-- fav and touch icons -->
+    <link rel="shortcut icon" href="{% url media path="img/favicon.ico" %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114"
           href="{% url media path="ico/apple-touch-icon-114-precomposed.png" %}">
     <link rel="apple-touch-icon-precomposed" sizes="72x72"
@@ -45,11 +45,12 @@
 
 
 <!-- near_top contains stuff breadcrumbs and title of the current page -->
+{% block near_top %}
 <div id="near_top" class="near_top">
     <div class="container-fluid content">
     <div class="row-fluid ">
         <ul class="breadcrumb">
-            <li><!--suppress HtmlPresentationalElement -->
+            <li>
                 <i class="glyph-right-arrow"></i>
             </li>
             <li>
@@ -57,7 +58,7 @@
             </li>
             <li>
                 {% block nav1 %}
-                    <a href="{% url status.views.services %}">Status</a>
+                    <a href="{% url adagios.status.views.status_index %}">Status</a>
                 {% endblock %}
                 <span class="divider">/</span>
             </li>
@@ -75,7 +76,7 @@
                 {% block largeheader %}block=largeheader {% endblock %}
             </h2>
         </div>
-        <div  class="" id="right_of_title">
+        <div id="right_of_title">
             {% if okconfig %}
                 <div class="pull-right btn-group"><a class="btn " href="{% url okconfig_.views.addhost %}">Add Host
             {% else %}
@@ -100,12 +101,15 @@
                         </a>
                 </div>
                 <br>
-        </div>
+    </div>
     </div>
 </div>
+<!-- TODO: what is this /div for ? -->
 </div>
 
 <hr id="seperate_top_and_content">
+{% endblock near_top %}
+<!-- block near_top ends -->
 
 <!-- Here we start the main view -->
 <div class="container-fluid content">
@@ -180,33 +184,33 @@
                 {% block action_buttons %}
                     <div class="pull-left" id="action_buttons" >
 
-                    <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="reschedule();">
-                        <i class="glyph-refresh" > </i> <span id="reschedule_text">Recheck</span>
-                    </button>
-                    <button class="btn btn-small adagios_service_multi" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
-                        <i class="glyph-check" > </i><span id="acknowledge_text"> Acknowledge</span>
-                    </button>
-                    <button class="btn btn-small adagios_service_multi" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="downtime_text"> Running...</span>'>
-                        <i class="glyph-clock" > </i> Downtime
-                    </button>
-                    <button class="btn btn-small adagios_service_multi" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
-                        <i class="glyph-envelope" > </i>
-                    </button>
+                        <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="reschedule();">
+                            <i class="glyph-refresh" > </i> <span id="reschedule_text">Recheck</span>
+                        </button>
+                        <button class="btn btn-small adagios_service_multi" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
+                            <i class="glyph-check" > </i><span id="acknowledge_text"> Acknowledge</span>
+                        </button>
+                        <button class="btn btn-small adagios_service_multi" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="downtime_text"> Running...</span>'>
+                            <i class="glyph-clock" > </i> Downtime
+                        </button>
+                        <button class="btn btn-small adagios_service_multi" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
+                            <i class="glyph-envelope" > </i>
+                        </button>
 
-                    <button class="btn btn-small adagios_service_multi" title="Copy {{ my_object.object_type }}" onclick="copy_selected_objects();">
-                        <i class="icon-copy"> </i>
-                    </button>
-                    <button class="btn btn-small adagios_service_multi" title="Edit {{ my_object.object_type }}" id="configure_button" onclick="edit_selected_objects();">
-                        <i class="glyph-edit" > </i>
-                    </button>
-                    <button class="btn btn-small adagios_service_multi" title="Delete {{ my_object.object_type }}" id="delete_button" onclick="delete_selected_objects();" >
-                        <i class="glyph-bin" > </i>
-                    </button>
+                        <button class="btn btn-small adagios_service_multi" title="Copy {{ my_object.object_type }}" onclick="copy_selected_objects();">
+                            <i class="icon-copy"> </i>
+                        </button>
+                        <button class="btn btn-small adagios_service_multi" title="Edit {{ my_object.object_type }}" id="configure_button" onclick="edit_selected_objects();">
+                            <i class="glyph-edit" > </i>
+                        </button>
+                        <button class="btn btn-small adagios_service_multi" title="Delete {{ my_object.object_type }}" id="delete_button" onclick="delete_selected_objects();" >
+                            <i class="glyph-bin" > </i>
+                        </button>
 
-                </div>
+                    </div>
 
                     <div class="btn-group pull-left" id="action_buttons_more">
-                        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" style="margin-left: 4px; padding-bottom: 3px; font-weight: normal">
+                        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" id="status_toolbar_more_button">
                             More <span class="caret"></span>
                         </a>
 
@@ -236,7 +240,6 @@
                                     Remove active downtimes
                                 </a>
                             </li>
-
                         </ul>
 
                 </div>

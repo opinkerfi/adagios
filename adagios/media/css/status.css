@@ -399,3 +399,9 @@ a {
   background-color: #eeeb5c;
   #border-color: #eed3d7;
 }
+
+#status_toolbar_more_button {
+    margin-left: 4px;
+    padding-bottom: 3px;
+    font-weight: normal;
+}
