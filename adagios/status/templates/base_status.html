@@ -545,8 +545,7 @@
     </div>
 </div>
 
-<!-- Le javascript
-================================================== -->
+<!--  javascripts start here -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="{% url home %}rest/pynag.js"></script>
 <script src="{% url home %}rest/status.js"></script>
@@ -734,7 +733,8 @@
             var object_type = [];
             var value;
             var querystring = "?";
-            var doing_graphs = false; /* special hack, change destination url if we are adding graphs */
+            // special hack, change destination url if we are adding graphs
+            var doing_graphs = false;
             $( ".selectable :checked").each(function() {
                 object_type = $(this).attr('name');
                 value = $(this).attr('value');
