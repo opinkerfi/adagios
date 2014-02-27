@@ -110,77 +110,81 @@
 {% endblock page_header %}
 <!-- block page_header ends -->
 
-        <!-- block left_sidebar starts -->
-        {% block left_sidebar %}
-        <div class="pull-left container-fluid" id="left_sidebar">
-            <h5>Shortcuts</h5>
-            <ul class="nav nav-list">
-                <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
-                <li >
-                    <a {% if num_problems %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems %}<span>({{ num_problems }})</span>{% endif %}</a>
-                </li>
-                <li >
-                    <a href="{% url status.views.problems %}">All Problems</a>
-                </li>
-                <li><a href="{% url status.views.hosts %}">Hosts</a></li>
-                <li><a href="{% url status.views.services %}">Services </a></li>
-                <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
-                <li><a href="{% url status.views.network_parents %}">Network Parents </a></li>
-                <li><a href="{% url objectbrowser.views.list_object_types %}">Configuration</a></li>
-            </ul>
+<!-- block left_sidebar starts -->
+{% block left_sidebar %}
+<div class="pull-left container-fluid" id="left_sidebar">
+    <h5>Shortcuts</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
+        <li >
+            <a {% if num_problems %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems %}<span>({{ num_problems }})</span>{% endif %}</a>
+        </li>
+        <li >
+            <a href="{% url status.views.problems %}">All Problems</a>
+        </li>
+        <li><a href="{% url status.views.hosts %}">Hosts</a></li>
+        <li><a href="{% url status.views.services %}">Services </a></li>
+        <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
+        <li><a href="{% url status.views.network_parents %}">Network Parents </a></li>
+        <li><a href="{% url objectbrowser.views.list_object_types %}">Configuration</a></li>
+    </ul>
 
-            <h5>Reports</h5>
-            <ul class="nav nav-list">
-                <li><a href="{% url status.views.state_history %}">State History </a></li>
-                <li><a href="{% url status.views.status_log %}">Log</a></li>
-                <li><a href="{% url status.views.comment_list %}">Comments</a></li>
-                <li><a href="{% url status.views.downtime_list %}">Downtimes</a></li>
-            </ul>
+    <h5>Reports</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url status.views.state_history %}">State History </a></li>
+        <li><a href="{% url status.views.status_log %}">Log</a></li>
+        <li><a href="{% url status.views.comment_list %}">Comments</a></li>
+        <li><a href="{% url status.views.downtime_list %}">Downtimes</a></li>
+    </ul>
 
-            <h5>Groups</h5>
-            <ul class="nav nav-list">
-                <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
-                <li><a href="{% url status.views.status_servicegroups %}">Servicegroups</a></li>
-                <li><a href="{% url status.views.contact_list %}#contactgroups">Contactgroups</a></li>
-            </ul>
+    <h5>Groups</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
+        <li><a href="{% url status.views.status_servicegroups %}">Servicegroups</a></li>
+        <li><a href="{% url status.views.contact_list %}#contactgroups">Contactgroups</a></li>
+    </ul>
 
-            <h5>Experimental</h5>
-            <ul class="nav nav-list">
-                <li><a href="{% url misc.views.map_view %}">Map</a></li>
-                <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
-                <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
-                <li><a href="{% url status.views.perfdata %}">Performance Data</a></li>
-                <li><a href="{% url bi.views.index %}">Business Intelligence</a></li>
-                <li><a href="{% url status.views.dashboard %}">Dashboard</a></li>
-            </ul>
+    <h5>Experimental</h5>
+    <ul class="nav nav-list">
+        <li><a href="{% url misc.views.map_view %}">Map</a></li>
+        <li><a href="{% url status.views.status_boxview %}">Box View </a></li>
+        <li><a href="{% url status.views.status_paneview %}">Pane View </a></li>
+        <li><a href="{% url status.views.perfdata %}">Performance Data</a></li>
+        <li><a href="{% url bi.views.index %}">Business Intelligence</a></li>
+        <li><a href="{% url status.views.dashboard %}">Dashboard</a></li>
+    </ul>
+</div>
+{% endblock left_sidebar %}
+<!-- block left_sidebar ends -->
+
+<!-- block main_body starts -->
+{% block main_content %}
+    <div id="main_content">
+        <!-- block toolbar starts -->
+        {% block toolbar %}
+            block=toolbar
+        {% endblock %}
+        <!-- block toolbar ends -->
+
+        <div id="block-content">
+        <!-- block content starts -->
+        {% block content %}block=content{% endblock %}
+        <!-- block content ends -->
         </div>
-        {% endblock left_sidebar %}
-        <!-- block left_sidebar ends -->
 
-        <div id="main_content">
-            <!-- block toolbar starts -->
-            {% block toolbar %}
-                block=toolbar
-            {% endblock %}
-            <!-- block toolbar ends -->
+    </div>
+{% endblock main_content %}
+<!-- block mainbody ends -->
 
-            <div id="block-content">
-            <!-- block content starts -->
-            {% block content %}block=content{% endblock %}
-            <!-- block content ends -->
-            </div>
-
+{% block page_footer %}
+    <div id="page_footer">
+        <hr>
+        <div class="pull-right" id="make_a_wish" >
+            <input type="text" class="input-medium"  placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");' />
+            <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
         </div>
-
-        {% block page_footer %}
-            <div id="page_footer">
-                <hr>
-                <div class="pull-right" id="make_a_wish" >
-                    <input type="text" class="input-medium"  placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");' />
-                    <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
-                </div>
-            </div>
-        {% endblock page_footer %}
+    </div>
+{% endblock page_footer %}
 
 
 
