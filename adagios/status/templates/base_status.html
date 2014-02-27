@@ -132,6 +132,225 @@
 
 {% block footer %}
     {{ block.super }}
+    <div id="modals">
+
+        <!-- Acknowledge modal -->
+        <div class="modal hide fade" id="acknowledge_modal">
+            <form class="form-horizontal" onsubmit='$("#acknowledge_modal").modal("hide");  acknowledge(); return false; return false;' >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3>Acknowledge problem</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Acknowledge means that someone is handling this problem. It will no longer be marked as unhandled and Nagios will stop sending notifications about it until it goes back to OK status.</p>
+                    <div class="control-group">
+                        <label class="control-label" for="id_acknowledgement_author">
+                            Author
+                        </label>
+                        <div class="controls" id="author_field">
+                            <input id="id_acknowledgement_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_comment">
+                            Comment
+                        </label>
+                        <div class="controls" id="host_name_field">
+                            <input id="id_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
+                            <label class="help-block">Other people looking at this service will see this comment.</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>Cancel</a>
+                    <button type="submit" id="acknowledge_submit_button" class="btn btn-primary">Acknowledge Problem</button>
+                </div>
+            </form>
+        </div>
+        <!-- Acknowledge modal ends -->
+
+        <!-- downtime modal -->
+        <div class="modal hide fade" id="downtime_modal">
+            <form name="downtime" class="form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3>Schedule Downtime</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Putting hosts and services into scheduled downtime means they are expected to fail during that period. Nagios will not send out any notifications during scheduled downtime and problems will not show up as unhandled problems.</p>
+                    <div class="control-group">
+                        <label class="control-label" for="id_downtime_author">
+                            Author
+                        </label>
+                        <div class="controls" id="downtime_author_field">
+                            <input id="id_downtime_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_downtime_start_time">
+                            Start Time
+                        </label>
+                        <div class="controls" id="downtime_start_time_field">
+                            <div id="datepicker_start_time" class="date pull-left">
+                                <label class="hide" for="id_start_time_picker"></label>
+                                <input id="id_start_time_picker" name="start_time_picker" style="width: 70px" type="text">
+                            </div>
+                            <div class="control-group pull-left">
+                                <label class="hide" for="id_input_start_hours"></label>
+                                <input id="id_input_start_hours" name="start_hours" style="width: 40px" type="text">&nbsp;
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_downtime_end_time">
+                            End Time
+                        </label>
+                        <div class="controls" id="id_downtime_end_time_field">
+                            <div id="datepicker_end_time" class="date pull-left">
+                                <label class="hide" for="id_end_time_picker"></label>
+                                <input id="id_end_time_picker" name="end_time_picker" style="width: 70px" type="text">
+                            </div>
+                            <div class="control-group pull-left">
+                                <label class="hide" for="id_end_hours"></label>
+                                <input id="id_end_hours" name="end_hours" style="width: 40px" type="text">&nbsp;
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_downtime_comment">
+                            Comment
+                        </label>
+                        <div class="controls" id="downtime_comment_field">
+                            <input id="id_downtime_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
+                            <label class="help-block">Other people looking at this service will see this comment.</label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="id_downtime_recursive">
+                        </label>
+                        <div class="controls" id="id_downtime_recursive_field">
+                            <input type="checkbox" name="recursive" id="id_downtime_recursive" />
+                            Apply to selected hosts and all their services
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#downtime_modal").modal("hide");'>Cancel</a>
+                    <button type="submit" class="btn btn-primary">Schedule Downtime</button>
+                </div>
+            </form>
+        </div>
+        <!-- Downtime modal ends -->
+
+        <!-- Mail modal -->
+        <div class="modal hide fade" id="mail_modal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3>Mail</h3>
+                </div>
+                <div class="modal-body">
+                    <p>You can send manual e-mail notification to a specified email address.</p>
+
+                    <div class="control-group">
+                        <label class="control-label" for="id_mail_to">
+                            To:
+                        </label>
+                        <div class="controls" id="mail_to_field">
+                            <input id="id_mail_to" type="text" class="required" value="" name="to" style="width: 100%" />
+                        </div>
+                    </div>
+
+
+                    <div class="control-group">
+                        <label class="control-label" for="id_mail_message">
+                            Message
+                        </label>
+                        <div class="controls" id="id_mail_message_field">
+                            <textarea id="id_mail_message"  class="required" placeholder="Hey everyone, please check the link and services below." name="message" ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="id_add_myself_to_cc">
+                        </label>
+                        <div class="controls" id="id_add_myself_to_cc_field">
+                            <input type="checkbox" checked="checked" name="add_myself_to_cc" value="on" id="id_add_myself_to_cc" />
+                            Add myself to CC
+                        </div>
+                    </div>
+
+
+                    <div class="control-group">
+                        <label class="control-label" for="id_acknowledge_all_problems">
+                        </label>
+                        <div class="controls" id="id_acknowledge_all_problems_field">
+                            <input type="checkbox" checked="checked" name="acknowledge_all_problems" value="on" id="id_acknowledge_all_problems" />
+                            Acknowledge Unhandled Problems
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>Cancel</a>
+                    <button type="submit" class="btn btn-primary" onclick='$("#mail_modal").modal("hide"); send_mail();'>Send</button>
+                </div>
+        </div>
+        <!-- Mail modal ends -->
+
+        <!-- Misc - General purpose modal modal, originally destined to show error messages -->
+        <div class="modal hide fade" id="misc_modal">
+            <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="misc_modal_body">
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>Close</a>
+                </div>
+            </form>
+        </div>
+        <!-- Misc modal ends -->
+
+        <!-- Wish modal -->
+        <div class="modal hide fade" id="wish_modal">
+            <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3>Make a wish</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Anything cool you think Adagios could be doing for you?
+                    </p>
+                    <p>
+                    Sweet! Ask for it here, and we'll see what we can do.
+                    </p>
+                    <p>
+                            >We'd love to hear from you, but we cannot guarantee that your wish will come true.
+                    </p>
+                    <label class="hide" for="wish_textarea"></label>
+                    <textarea  id="wish_textarea" style="width:100%;" cols="200" rows="10" name="wish" placeholder="I wish this page could..."></textarea>
+                    <hr>
+                    <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
+                    <label class="pull-left" for="id_bribes">I'll back it up with bribes.</label>
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>Cancel</a>
+                    <button type="submit" id="wish_submit_button" class="btn">Make a wish</button>
+                </div>
+            </form>
+        </div>
+        <!-- Wish modal ends -->
+
+    </div>
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
         $(document).ready(function() {
