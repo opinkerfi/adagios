@@ -12,7 +12,8 @@ Network Parents
 {% if hosts %}
 
     <table class="table table-condensed well" style="line-height:6px; font-size: 12px" >
-    <tr>
+    <thead>
+        <tr>
         <th>
             <div class="btn-group" class="select_bar">
                 <a class="" data-toggle="dropdown" href="#">
@@ -32,8 +33,9 @@ Network Parents
         <th>Children</th>
         <th>Child Host Health</th>
     </tr>
-
-    {% for row in hosts %}
+    </thead>
+    <tbody>
+        {% for row in hosts %}
         <tr onclick='$(".host_{{ forloop.counter }}").toggle();'>
             <td class=small >
                 <a href="#">
@@ -62,16 +64,15 @@ Network Parents
                 </div>
             </td>
         </tr>
-
-
-        {% for i in row.child_hosts %}
-            <tr style="background-color: #fafaff; font-size: 90%;" class="{{ row.name }} host_{{ forloop.parentloop.counter }} hide">
-                <td colspan=7><div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div> <a href="{% url status.views.status_detail  %}?host_name={{ i.name }}">{{ i.name }}</a></td>
-            </tr>
-        {% endfor %}
+            {% for i in row.child_hosts %}
+                <tr style="background-color: #fafaff; font-size: 90%;" class="{{ row.name }} host_{{ forloop.parentloop.counter }} hide">
+                    <td colspan=7><div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div> <a href="{% url status.views.status_detail  %}?host_name={{ i.name }}">{{ i.name }}</a></td>
+                </tr>
+            {% endfor %}
 
     {% endfor %}
-
+    </tbody>
+    </table>
 
 {% else %}
     No Network parents found.
