@@ -37,17 +37,16 @@
           href="{% url media path="ico/apple-touch-icon-57-precomposed.png" %}">
 
 
-    {%  block header %}{% endblock %}
 </head>
 
 <body>
 
 
-<!-- block header starts -->
-{% block header %}
+<!-- block top_navigation starts -->
+{% block top_navigation %}
     {%  include "snippets/top_navigation_bar.html" %}
 {% endblock %}
-<!-- block header ends -->
+<!-- block top_navigation ends -->
 
 <!-- Here we start the main view -->
 <div class="container-fluid content">
