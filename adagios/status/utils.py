@@ -59,11 +59,17 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     else:
         q = []
 
+    # Often search filters include description, which we will skip
+    kwargs.pop('description', None)
+
+    if 'host_state' in kwargs:
+        kwargs['state'] = kwargs.pop('host_state')
+
     # If keyword "unhandled" is in kwargs, then we will fetch unhandled
-    # services only
+    # hosts only
     if 'unhandled' in kwargs:
         del kwargs['unhandled']
-        kwargs['state__isnot'] = 0
+        kwargs['state'] = 1
         kwargs['acknowledged'] = 0
         kwargs['scheduled_downtime_depth'] = 0
         #kwargs['host_scheduled_downtime_depth'] = 0
@@ -121,7 +127,6 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
             except ZeroDivisionError:
                 host['health'] = 'n/a'
         except Exception:
-            host['num_problems'] = 'n/a'
             pass
 
     # Sort by host and service status
@@ -168,6 +173,7 @@ def get_services(request=None, tags=None, fields=None, *args, **kwargs):
         kwargs['scheduled_downtime_depth'] = 0
         kwargs['host_scheduled_downtime_depth'] = 0
         kwargs['host_acknowledged'] = 0
+        kwargs['host_state'] = 0
     arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
 
     # If q was added, it is a fuzzy filter on services
