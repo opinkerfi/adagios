@@ -32,9 +32,9 @@
     <!-- Block header starts -->
     {%  block header %}{% endblock %}
     <!-- Block header ends -->
-<script>
-    var BASE_URL = "{% url home %}";
-</script>
+    <script>
+        var BASE_URL = "{% url home %}";
+    </script>
 </head>
 
 <body>
@@ -47,71 +47,7 @@
 <!-- block top_navigation ends -->
 
 
-<!-- page_header contains stuff breadcrumbs and title of the current page -->
-{% block page_header %}
-    <div id="page_header" class="page_header">
 
-        <div class="container-fluid content">
-
-            <div class="row-fluid ">
-                <ul class="breadcrumb">
-                    <li>
-                        <i class="glyph-right-arrow"></i>
-                    </li>
-                    <li>
-                        <a href="{% url home %}"> Home</a> <span class="divider">/</span>
-                    </li>
-                    <li>
-                        {% block nav1 %}
-                        {% endblock %}
-                        <span class="divider">/</span>
-                    </li>
-                    <li>
-                        {% block nav2 %}
-                        {% endblock %}
-                    </li>
-                </ul>
-            </div>
-
-            <div class="row-fluid">
-                <div class="pull-left" id="titlebar">
-                    <h2>
-                        <small>{% block smallheader %}block=smallheader{% endblock %}</small>
-                        {% block largeheader %}block=largeheader {% endblock %}
-                    </h2>
-                </div>
-
-                <div id="right_of_title">
-                    <div class="pull-right btn-group">
-                        <a class="btn" {% if okconfig %}href="{% url okconfig_.views.addhost %}"{% else %}href="{% url adagios.objectbrowser.views.add_object 'host' %}"{% endif %}>
-                            Add Host
-                        </a>
-                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'host' %}"> Host</a></li>
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'service' %}"> Service</a></li>
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'contact' %}"> Contact</a></li>
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'timeperiod' %}"> Timeperiod</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'hostgroup' %}"> Hostgroup</a></li>
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'servicegroup' %}"> Servicegroup</a></li>
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'contactgroup' %}"> Contactgroup</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="{% url adagios.objectbrowser.views.add_object 'template' %}"> Template</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="{% url bi.views.add %}"> Business Process</a></li>
-                                </ul>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <hr id="seperate_top_and_content">
-
-    </div>
-{% endblock page_header %}
-<!-- block page_header ends -->
 
 
 <!-- block page_content starts -->
@@ -165,6 +101,43 @@
     <!-- block left_sidebar ends -->
 
     <div id="main_content">
+
+            <!-- page_header contains stuff breadcrumbs and title of the current page -->
+        {% block page_header %}
+            <div id="page_header" class="page_header">
+
+                <div class=" content">
+
+                    <div class="row-fluid margin-bottom-20">
+                            <h2 class="pull-left">
+                                {% block smallheader %}block=smallheader{% endblock %}
+                                {% block largeheader %}block=largeheader {% endblock %}
+                            </h2>
+                        <ul class="pull-right breadcrumb">
+                            <li>
+                                <i class="glyph-right-arrow"></i>
+                            </li>
+                            <li>
+                                <a href="{% url home %}"> Home</a> <span class="divider">/</span>
+                            </li>
+                            <li>
+                                {% block nav1 %}
+                                {% endblock %}
+                                <span class="divider">/</span>
+                            </li>
+                            <li>
+                            </li>
+                        </ul>
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+        {% endblock page_header %}
+        <!-- block page_header ends -->
 
         <!-- block toolbar starts -->
         {% block toolbar %}block=toolbar{% endblock %}
@@ -250,8 +223,6 @@
 
 <!-- block footer starts -->
 {% block footer %}
-
-
 {% endblock %}
 <!-- block footer ends -->
 

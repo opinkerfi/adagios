@@ -692,18 +692,6 @@
                         });
             });
 
-            // Javascript to enable link to specific tab
-            var hash = document.location.hash;
-            var prefix = "tab_";
-            if (hash) {
-                $('.nav-tabs a[href='+hash.replace(prefix,"")+']').tab('show');
-            }
-
-            // Change hash for page-reload
-            $('.nav-tabs a').on('shown', function (e) {
-                window.location.hash = e.target.hash.replace("#", "#" + prefix);
-            });
-
             // Select all/none/problems button in top-left of the table
             $('.select_all').click(function(e) {
                 $( ".chkbox").each( function() {

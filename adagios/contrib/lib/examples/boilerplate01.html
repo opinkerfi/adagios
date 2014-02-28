@@ -5,7 +5,7 @@
 {% block top_navigation %}{{ block.super }}{% endblock top_navigation %}
 {% block page_header %}{{ block.super }}{% endblock page_header %}
 
-{% block toolbar %}{{ block.super }}{% endblock toolbar %}
+
 
 {% block header %}{{ block.super }}{% endblock header %}
 {% block footer %}{{ block.super }}{% endblock footer %}
@@ -18,5 +18,10 @@
 
 
 <!-- Main contents go in here -->
-{% block content %}{{ block.super }}{% endblock content %}
+{% block content %}
+    <p>
+    Stuff the main content of your view in here. Your main content should go in here.
+    </p>
+{% endblock content %}
 
+{% block toolbar %}<div class="alert alert-info">Toolbar goes here</div>{% endblock toolbar %}

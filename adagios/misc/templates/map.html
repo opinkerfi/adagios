@@ -1,20 +1,10 @@
-{% extends "base_misc.html" %}
+{% extends "base.html" %}
 {% block title %}Map{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Map{% endblock %}
+{% block toolbar %}{% endblock %}
 
-{% block header %}
-{{ block.super }}
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-    <!-- This little hack makes sure that bootstrap does mess with the width
-    of images on infowindow overlays in google maps
-    -->
-    <style>
-        #map img {
-            max-width: none;
-        }
-    </style>
-{% endblock %}
+
 
 {% block action_buttons %}
     <button  class="button btn-small refreshmap" >
@@ -25,12 +15,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="map" style="width: 100%; height: 630px;"></div>
-
-
-
-
-
+    <div id="map" style="width: 100%; height: 580px;"></div>
 
     <!-- place new host modal -->
     <div class="modal hide fade" id="addhost_modal">
@@ -82,7 +67,6 @@
     </div>
     <!-- addhost modal ends -->
 
-
 {% endblock %}
 
 
@@ -98,18 +82,20 @@
 
 
 {% block footer %}
+    {{ block.super }}
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         // Updates coordinates on one specific host
         function change_host_coordinates(map) {
-            host_name = $('#id_host_name').val();
-            latitude = $('#id_latitude').val();
-            longitute = $('#id_longitude').val();
+            var host_name = $('#id_host_name').val();
+            var latitude = $('#id_latitude').val();
+            var longitute = $('#id_longitude').val();
 
-            my_data = {
+            var my_data = {
                 "host_name":host_name,
                 "latitude":latitude,
                 "longitude":longitute
-            }
+            };
             $.ajax({
                 type: 'POST',
                 url: '{% url rest/status %}json/change_host_coordinates',
@@ -125,13 +111,12 @@
         }
         // Returns a new marker that is used for adding a new host
         function newHostMarker(map, location) {
-            var marker = new google.maps.Marker({
+            return new google.maps.Marker({
                 position: location,
                 map: map,
                 title: "Place a new host here",
                 visible: false
             });
-            return marker;
 
         }
         // Place a specific host on the map
@@ -164,8 +149,7 @@
             html = html + " (" + host.address +")";
             html = html + "<hr>";
             // Do the services on this host
-            var x = 0
-            for (x = 0; x < host.services_with_state.length; x++) {
+            for (var i = 0; i < host.services_with_state.length; i++) {
                 service = host.services_with_state[x];
                 service_url = host_url + "&service_description=" +  service[0];
                 html = html + '<br> <div class="circle state_' + service[1] +'"> </div> ';
@@ -200,7 +184,7 @@
 
             // Create an invisble marker that you can place down for new hosts
             new_host_marker = newHostMarker(map, new google.maps.LatLng(0,0))
-            map.markers.push(new_host_marker);1
+            map.markers.push(new_host_marker);
 
 
             var infowindow = new google.maps.InfoWindow();
@@ -307,7 +291,7 @@
             });
             $("#change_host_coordinates").click( function() {
                 change_host_coordinates(map);
-            })
+            });
 
             // Call refresh so markers are put in place
             refresh(map);
