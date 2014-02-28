@@ -487,5 +487,3 @@ def paste(request):
     return render_to_response('test2.html', c, context_instance=RequestContext(request))
 
 
-def hello_world(request):
-    return render_to_response('hello_world.html', locals(), context_instance=RequestContext(request))
