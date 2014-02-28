@@ -1,4 +1,4 @@
-{% extends "base_misc.html" %}
+{% extends "base.html" %}
 {% block title %}PNP4nagios integration{% endblock %}
 {% block nav1 %}PNP4Nagios{% endblock %}
 {% block smallheader %}Configuring{% endblock %}
@@ -86,9 +86,6 @@
 {% endblock %}
 
 
-{% block sidebar %}
-    <h5>Actions</h5>
-    <ul class="nav nav-list">
-    <li><a href="{%  url misc.views.edit_nagios_cfg  %}" >Edit nagios.cfg</a></li>
-    </ul>
+{% block toolbar %}
+    <a class="btn btn-small" href="{%  url misc.views.edit_nagios_cfg  %}" >Edit nagios.cfg</a>
 {% endblock %}

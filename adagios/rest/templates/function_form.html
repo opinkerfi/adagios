@@ -1,24 +1,23 @@
-{% extends "base_misc.html" %}
+{% extends "base.html" %}
 
-
+{% block toolbar %}{% endblock %}
 {% block content %}
 
-    <h1>{{ function_name }}()</h1>
-    <pre>{{ docstring }}</pre>
-
+<pre class="alert alert-info">{{ docstring.strip }}</pre>
     <div class="row" style="padding-left: 40px">
 
-        <div id="function_form" class="span6">
+        <div id="function_form" class="container-fluid pull-left">
+            <h2>{{ function_name }}()</h2>
             <form action="{{function_name}}" method="post">
             <table>
             {{ form }}
             </table>
-            <INPUT id="zesubmit" type="submit" value="Call {{ function_name }}()">
+            <INPUT id="zesubmit" type="submit" class="btn" value="Call {{ function_name }}()">
             </form>
         </div>
-
-        <div class="span6">
-            Example usage from shell:
+        <div class="container-fluid pull-left">
+            <h2>Examples:</h2>
+            Using curl:
             <div class="well">
                 curl -X POST \<br>
                 {% for i in form %}
@@ -26,7 +25,7 @@
                 {% endfor %}
                 <a href="" id="current_url"></a>
             </div>
-            Example usage from javascript:
+            Using javascript:
 
 <pre class="well">
 &lt;script src=&quot;<a href="{{ BASE_URL }}/rest/{{ module_name }}.js">{{ BASE_URL }}/rest/{{ module_name }}.js</a>&quot;&gt;&lt;/script&gt;
