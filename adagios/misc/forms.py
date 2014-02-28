@@ -443,7 +443,7 @@ class NagiosServiceForm(forms.Form):
         self.command = command
         nagios_init = settings.nagios_init_script
         nagios_binary = settings.nagios_binary
-        nagios_config = settings.nagios_config
+        nagios_config = settings.nagios_config or pynag.Model.config.cfg_file
         if command == "verify":
             command = "%s -v '%s'" % (nagios_binary, nagios_config)
         else:
