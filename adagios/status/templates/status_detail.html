@@ -19,337 +19,309 @@
 {% block view_buttons %}{% endblock %}
 
 {% block content %}
+    <div class="nowrap row-fluid">
     <div class="span9" id="maincontent_left_side">
+        <ul class="nav nav-tabs" id="objecttab">
+            <li><a href="#general" data-toggle="tab">General</a></li>
+            <li><a href="#information" data-toggle="tab">Information</a></li>
+            <li><a href="#events" data-toggle="tab" id="history_link">History</a></li>
+            <li><a href="#graphs" data-toggle="tab" id="graphs_link">Graphs</a></li>
+            <li><a href="#custom_variables" data-toggle="tab">Custom Variables</a></li>
+            <li><a href="#other" data-toggle="tab">Debug</a></li>
+        </ul>
+        <div class="tab-content">
 
-    <ul class="nav nav-tabs" id="objecttab">
-        <li><a href="#general" data-toggle="tab">General</a></li>
-        <li><a href="#information" data-toggle="tab">Information</a></li>
-        <li><a href="#events" data-toggle="tab" id="history_link">History</a></li>
-        <li><a href="#graphs" data-toggle="tab" id="graphs_link">Graphs</a></li>
-        <li><a href="#custom_variables" data-toggle="tab">Custom Variables</a></li>
-        <li><a href="#other" data-toggle="tab">Debug</a></li>
-    </ul>
-    <div class="tab-content">
-
-    <div class="tab-pane active" id="general">
-    {% if my_object %}
-        <table class="table">
-            <tr>
-                <td>Status</td>
-                <td>
-                    {% if my_object.last_check != 0 %}
-                    <div class="circle state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}
-                      {% if my_object.state != 0 %}
-                        {% if my_object.acknowledged == 1 %}(has been acknowledged)
-                        {% else %}(not acknowledged)
-                        {% endif %}
-                      {% endif %}
-                    {% else %}
-                    <div class="circle state_pending"></div> Pending
-                    {% endif %}
-                </td>
-            </tr>
-            <tr >
-                <td>Host Name</td>
-                <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
-                    {% if my_object.last_check != 0 %}
-                    <div class="circle state_{{ host.state }}"></div>
-                    {% else %}
-                    <div class="circle state_pending"></div>
-                    {% endif %}
-                    {{ host.display_name }}
-                </a>
-                </td>
-            </tr>
-            <tr >
-                <td>Host Address</td>
-                <td>{{ host.address }}</td>
-            </tr>
-            <tr>
-                <td>Host Alias</td>
-                <td>{{ host.alias }}</td>
-            </tr>
-            {% if service %}
-            <tr >
-                <td>Service Name</td>
-                <td>{{ service.display_name }}</td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>Check output</td>
-                <td>
-                    {% if my_object.last_check == 0 %}
-                    <div class="alert alert-info">Has not run yet.</div>
-                    {% else %}
-                        {% if my_object.long_plugin_output %}
-                        <pre id="plugin_output">{{ my_object.plugin_output }}
-{{ my_object.long_plugin_output }}</pre>
-                        {% else %}
-                        <pre id="plugin_output">{{ my_object.plugin_output }}</pre>
-                        {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Performance  Metrics</td>
-                <td >
-                    {% if perfdata %}
-                        <table border=1 class=table style="border-color: #ffffff;" >
-                            <tr>
-                                <th></th>
-                                <th>label</th>
-                                <th>value</th>
-                                <th>warn</th>
-                                <th>crit</th>
-                                <th>unit</th>
-                                <th>min</th>
-                                <th>max</th>
-                                <th>pnp</th>
-                            </tr>
-                            {% for i in perfdata %}
-                                <tr>
-                                    <td class="nowrap"><div class="circle state_{{ i.get_status }}"> </div></td>
-                                    <td>{{ i.label }}</td>
-                                    <td>{{ i.value }} </td>
-                                    <td>{{ i.warn }}  </td>
-                                    <td>{{ i.crit }}  </td>
-                                    <td> {{ i.uom }}</td>
-                                    <td>{{ i.min }}   </td>
-                                    <td>{{ i.max }}   </td>
-                                    <td>
-                                        <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    {% else %}
-                        No Perfdata available.
-                    {% endif %}
-
-                </td>
-            </tr>
-
-
-        </table>
-    {% endif %}
-    </div>
-
-    <div class="tab-pane" id="other">
-        <h4>Information available via livestatus:</h4>
-        <table class="table-condensed table">
-            {% for k,v in my_object.items %}
-            <tr>
-                <td>                {{ k }}
-                </td>
-                <td>
-                {{ v }}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-
-        <!-- servicestatus has to be here for the action buttons to work -->
-        <div  id="servicestatus">
-            <table>
-                <tbody>
+        <div class="tab-pane active" id="general">
+        {% if my_object %}
+            <table class="table">
                 <tr>
-                    <td class="selectable">
-                        <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="{{ my_object.object_type }}" value="{{ my_object.short_name }}" data-host_name="{{ host_name }}" data-service_description="{{ service_description }}" data-object_type={{ my_object.object_type }}>
-                        <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
-                        <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
+                    <td>Status</td>
+                    <td>
+                        {% if my_object.last_check != 0 %}
+                        <div class="circle state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}
+                          {% if my_object.state != 0 %}
+                            {% if my_object.acknowledged == 1 %}(has been acknowledged)
+                            {% else %}(not acknowledged)
+                            {% endif %}
+                          {% endif %}
+                        {% else %}
+                        <div class="circle state_pending"></div> Pending
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr >
+                    <td>Host Name</td>
+                    <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
+                        {% if my_object.last_check != 0 %}
+                        <div class="circle state_{{ host.state }}"></div>
+                        {% else %}
+                        <div class="circle state_pending"></div>
+                        {% endif %}
+                        {{ host.display_name }}
+                    </a>
+                    </td>
+                </tr>
+                <tr >
+                    <td>Host Address</td>
+                    <td>{{ host.address }}</td>
+                </tr>
+                <tr>
+                    <td>Host Alias</td>
+                    <td>{{ host.alias }}</td>
+                </tr>
+                {% if service %}
+                <tr >
+                    <td>Service Name</td>
+                    <td>{{ service.display_name }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>Check output</td>
+                    <td>
+                        {% if my_object.last_check == 0 %}
+                        <div class="alert alert-info">Has not run yet.</div>
+                        {% else %}
+                            {% if my_object.long_plugin_output %}
+                            <pre id="plugin_output">{{ my_object.plugin_output }}
+    {{ my_object.long_plugin_output }}</pre>
+                            {% else %}
+                            <pre id="plugin_output">{{ my_object.plugin_output }}</pre>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Performance  Metrics</td>
+                    <td >
+                        {% if perfdata %}
+                            <table border=1 class="small" style="font-size: 90%; border-color: #ffffff;" >
+                                <tr>
+                                    <th></th>
+                                    <th>label</th>
+                                    <th>value</th>
+                                    <th>warn</th>
+                                    <th>crit</th>
+                                    <th>unit</th>
+                                    <th>min</th>
+                                    <th>max</th>
+                                    <th>pnp</th>
+                                </tr>
+                                {% for i in perfdata %}
+                                    <tr>
+                                        <td class="nowrap"><div class="circle state_{{ i.get_status }}"> </div></td>
+                                        <td>{{ i.label }}</td>
+                                        <td>{{ i.value }} </td>
+                                        <td>{{ i.warn }}  </td>
+                                        <td>{{ i.crit }}  </td>
+                                        <td> {{ i.uom }}</td>
+                                        <td>{{ i.min }}   </td>
+                                        <td>{{ i.max }}   </td>
+                                        <td>
+                                            <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% else %}
+                            No Perfdata available.
+                        {% endif %}
 
                     </td>
                 </tr>
-                </tbody>
+
+
+            </table>
+        {% endif %}
+        </div>
+
+        <div class="tab-pane" id="other">
+            <h4>Information available via livestatus:</h4>
+            <table class="table-condensed table">
+                {% for k,v in my_object.items %}
+                <tr>
+                    <td>                {{ k }}
+                    </td>
+                    <td>
+                    {{ v }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <!-- servicestatus has to be here for the action buttons to work -->
+            <div  id="servicestatus">
+                <table>
+                    <tbody>
+                    <tr>
+                        <td class="selectable">
+                            <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="{{ my_object.object_type }}" value="{{ my_object.short_name }}" data-host_name="{{ host_name }}" data-service_description="{{ service_description }}" data-object_type={{ my_object.object_type }}>
+                            <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
+                            <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="tab-pane" id="information">
+            <p>
+                This {{ my_object.object_type }} is checked every <a href="#">{{ my_object.check_interval }}</a> minutes.
+
+                When a problem occurs it will be checked <a href="#">{{ my_object.max_check_attempts }}</a> times
+
+                every <a href="#">{{ my_object.retry_interval }}</a> minutes before going to
+                hard state and start sending out notifications.
+            </p>
+
+            {% if my_object.notes %}
+            <p>
+                <b>Notes:</b> {{ my_object.notes }}
+            </p>
+            {% endif %}
+
+            <table class=table>
+                <tr>
+                    <td>Last Check</td>
+                    <td>
+                        {% if my_object.last_check %}
+                            {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
+                             <span class="pull-right">({{ my_object.last_check|timestamp|timesince  }} ago)</span>
+                        {% else %}
+                            check has never been executed.
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Next Check</td>
+                    <td>
+                        {% if my_object.next_check %}
+                            {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
+                            <span class="pull-right">({{ my_object.next_check|timestamp|timeuntil }} from now)</span>
+                        {% else %}
+                            Check is not scheduled to be executed.
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Check Period</td>
+                    <td>
+                        {% if my_object.check_period %}
+                        <a href="{% url edit_by_shortname "timeperiod" my_object.check_period %}">{{ my_object.check_period }}</a>
+                        {% else %}
+                        Unknown
+                        {% endif %}
+                        <span class="pull-right">
+                            (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Notification Period</td>
+                    <td>
+                        {% if my_object.notification_period %}
+                        <a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a>
+                        {% else %}
+                        Unknown
+                        {% endif %}
+                        <span class="pull-right">
+                            (currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period)
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Check command
+                    </td>
+                    <td id="effective_check_command"> Loading...</td>
+                </tr>
+                <tr></tr>
+                <tr>
+                    <td>
+                        Downtimes:
+                    </td>
+                    <td>
+                        {% if my_object.downtimes_with_info %}
+                            <div id="comments">
+                                {% for i in my_object.downtimes_with_info %}
+                                    <div class="alert alert-info">
+                                        <button class="close delete_downtime" data-dismiss="alert" title="Delete Downtime {{ i.0 }}"
+                                                onclick="$.getJSON('{% url rest/status %}json/delete_downtime?downtime_id={{ i.0 }}{% if object_type == 'host' %}&is_service=False{% endif %}');">
+                                            <i class="glyph-bin"></i></button>
+                                        <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            No Downtimes are scheduled.
+                        {% endif %}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Comments:
+                    </td>
+                    <td>
+                        <div id="downtimes">
+                            {% if my_object.comments_with_info %}
+                                {% for i in my_object.comments_with_info %}
+                                    <div class="alert alert-info">
+                                        <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
+                                            <i class="glyph-bin"></i></button>
+                                        <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>This {{ my_object.object_type }} has no comments.</p>
+                            {% endif %}
+                            <div id="div_add_comment" class="alert alert-info">
+                                        <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
+                                        <input type="hidden" name="host_name" id="id_host_name" value="{{ host_name }}"/>
+                                        {% if my_object.object_type == 'service' %}
+                                            <input type="hidden" name="service_description" id="id_service_description" value='{{ service_description }}'/>
+                                        {% endif %}
+                                        <input type="hidden" name="persistent" value="0" id="id_persistent" />
+                                        <i class="glyph-user"></i> <a href="">{{ remote_user }}</a>: <input name=comment id="write_a_comment" placeholder="Write a comment...">
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>Network Parents</td>
+                    <td>
+                        {% if network_parents %}
+                            <table>
+                                <tbody>
+                                {% for parent_level in network_parents %}
+                                    <tr>
+                                        {% for parent in parent_level %}
+                                            <td>
+                                                <div class="alert state_{{ parent.state }}">
+                                                    <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
+                                                </div>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            This {{ my_object.object_type }} has no configured network parents.
+                        {% endif %}
+                </tr>
             </table>
         </div>
 
-    </div>
-
-    <div class="tab-pane" id="information">
-        <p>
-            This {{ my_object.object_type }} is checked every <a href="#">{{ my_object.check_interval }}</a> minutes.
-
-            When a problem occurs it will be checked <a href="#">{{ my_object.max_check_attempts }}</a> times
-
-            every <a href="#">{{ my_object.retry_interval }}</a> minutes before going to
-            hard state and start sending out notifications.
-        </p>
-
-        {% if my_object.notes %}
-        <p>
-            <b>Notes:</b> {{ my_object.notes }}
-        </p>
-        {% endif %}
-
-        <table class=table>
-            <tr>
-                <td>Last Check</td>
-                <td>
-                    {% if my_object.last_check %}
-                        {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
-                         <span class="pull-right">({{ my_object.last_check|timestamp|timesince  }} ago)</span>
-                    {% else %}
-                        check has never been executed.
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Next Check</td>
-                <td>
-                    {% if my_object.next_check %}
-                        {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
-                        <span class="pull-right">({{ my_object.next_check|timestamp|timeuntil }} from now)</span>
-                    {% else %}
-                        Check is not scheduled to be executed.
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Check Period</td>
-                <td>
-                    {% if my_object.check_period %}
-                    <a href="{% url edit_by_shortname "timeperiod" my_object.check_period %}">{{ my_object.check_period }}</a>
-                    {% else %}
-                    Unknown
-                    {% endif %}
-                    <span class="pull-right">
-                        (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td>Notification Period</td>
-                <td>
-                    {% if my_object.notification_period %}
-                    <a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a>
-                    {% else %}
-                    Unknown
-                    {% endif %}
-                    <span class="pull-right">
-                        (currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period)
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Check command
-                </td>
-                <td id="effective_check_command"> Loading...</td>
-            </tr>
-            <tr></tr>
-            <tr>
-                <td>
-                    Downtimes:
-                </td>
-                <td>
-                    {% if my_object.downtimes_with_info %}
-                        <div id="comments">
-                            {% for i in my_object.downtimes_with_info %}
-                                <div class="alert alert-info">
-                                    <button class="close delete_downtime" data-dismiss="alert" title="Delete Downtime {{ i.0 }}"
-                                            onclick="$.getJSON('{% url rest/status %}json/delete_downtime?downtime_id={{ i.0 }}{% if object_type == 'host' %}&is_service=False{% endif %}');">
-                                        <i class="glyph-bin"></i></button>
-                                    <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        No Downtimes are scheduled.
-                    {% endif %}
-
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Comments:
-                </td>
-                <td>
-                    <div id="downtimes">
-                        {% if my_object.comments_with_info %}
-                            {% for i in my_object.comments_with_info %}
-                                <div class="alert alert-info">
-                                    <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
-                                        <i class="glyph-bin"></i></button>
-                                    <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <p>This {{ my_object.object_type }} has no comments.</p>
-                        {% endif %}
-                        <div id="div_add_comment" class="alert alert-info">
-                                    <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
-                                    <input type="hidden" name="host_name" id="id_host_name" value="{{ host_name }}"/>
-                                    {% if my_object.object_type == 'service' %}
-                                        <input type="hidden" name="service_description" id="id_service_description" value='{{ service_description }}'/>
-                                    {% endif %}
-                                    <input type="hidden" name="persistent" value="0" id="id_persistent" />
-                                    <i class="glyph-user"></i> <a href="">{{ remote_user }}</a>: <input name=comment id="write_a_comment" placeholder="Write a comment...">
-                        </div>
-                    </div>
-
-                </td>
-            </tr>
-            <tr>
-                <td>Network Parents</td>
-                <td>
-                    {% if network_parents %}
-                        <table>
-                            <tbody>
-                            {% for parent_level in network_parents %}
-                                <tr>
-                                    {% for parent in parent_level %}
-                                        <td>
-                                            <div class="alert state_{{ parent.state }}">
-                                                <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
-                                            </div>
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        This {{ my_object.object_type }} has no configured network parents.
-                    {% endif %}
-            </tr>
-        </table>
-    </div>
-
-    <div class="tab-pane" id="custom_variables">
-        Some checks have custom variables defined. These can be defined for example to define warning/critical thresholds
-        for custom plugins.
-        <p>
-        </p>
-        {% if my_object.custom_variables %}
-        <table class="table table-condensed">
-            <tr>
-                <th>
-                    Variable Name
-                </th>
-                <th>
-                    Value
-                </th>
-            </tr>
-            {% for k,v in my_object.custom_variables.items %}
-                <tr>
-                <td>{{ k }}</td>
-                <td>
-                    <div class="pull-left">
-                        <input class="editable_field" name="_{{ k }}" value="{{ v }}"/>
-                    </div>
-                    <div id="_{{ k }}_status"></div>
-
-                </td>
-                </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-        This check has no custom variables defined.
-        {% endif %}
-        <p></p>
-        {% if my_object.host_custom_variables %}
-            Host <a href="{% url status.views.status_detail %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
+        <div class="tab-pane" id="custom_variables">
+            Some checks have custom variables defined. These can be defined for example to define warning/critical thresholds
+            for custom plugins.
+            <p>
+            </p>
+            {% if my_object.custom_variables %}
             <table class="table table-condensed">
                 <tr>
                     <th>
@@ -359,78 +331,107 @@
                         Value
                     </th>
                 </tr>
-                {% for k,v in my_object.host_custom_variables.items %}
+                {% for k,v in my_object.custom_variables.items %}
                     <tr>
-                        <td>{{ k }}</td>
-                        <td>{{ v }}
+                    <td>{{ k }}</td>
+                    <td>
+                        <div class="pull-left">
+                            <input class="editable_field" name="_{{ k }}" value="{{ v }}"/>
+                        </div>
+                        <div id="_{{ k }}_status"></div>
+
+                    </td>
                     </tr>
                 {% endfor %}
             </table>
-        {% else %}
-        {% endif %}
-        See also <a href="{% url adagios.misc.views.edit_check_command %}?host_name={{ host_name }}&service_description={{ service_description }}&check_command={{ my_object.check_command }}">Configure check command</a>
-
-
-    </div>
-    <div class="tab-pane" id="events">
-        <div id="logdiv">This tab should update when the tab is clicked</div>
-    </div>
-
-
-    <div class="tab-pane" id="graphs">
-            {% if graph_urls %}
-                <div id="graphs_tab" class="tabbable"> <!-- Only required for left/right tabs -->
-                    <ul  class="nav nav-pills" id="graphs_ul">
-                        <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
-                        <li><a href="#day" data-toggle="tab" id="25hours">25 Hours</a></li>
-                        <li><a href="#week" data-toggle="tab">One Week</a></li>
-                        <li><a href="#month" data-toggle="tab">One Month</a></li>
-                        <li><a href="#year" data-toggle="tab">One Year</a></li>
-                    </ul>
-
-                    <div class="tab-content" id="graphs_content">
-
-                        <div class="tab-pane graph-pane" id="hours">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane active" id="day">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane" id="week">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane" id="month">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                        <div class="tab-pane" id="year">
-                            <!-- Javascript will put images here if applicable -->
-                        </div>
-
-                    </div>
-                </div>
             {% else %}
-                {% if pnp4nagios_error %}
-                    <div class="alert alert-warning">
-                        We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}
-                    </div>
-                    Please check that:
-                    <ul>
-                    <li><a href="{{ pnp_url }}">pnp4nagios</a> is installed and working</li>
-                    <li><i>PNP Filepath</i> is correctly configured under <a href="{% url misc.views.settings %}">settings</a></li>
-                    <li>User running nagios is a member of the unix groups apache or www-data</li>
-                    <li>Click <a href="{% url pnp.views.pnp "json" %}">here</a> to see pnp4nagios output</li>
-                    </ul>
-                {% endif %}
-                No Performance data is available for this {{ my_object.object_type }}.
+            This check has no custom variables defined.
             {% endif %}
+            <p></p>
+            {% if my_object.host_custom_variables %}
+                Host <a href="{% url status.views.status_detail %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
+                <table class="table table-condensed">
+                    <tr>
+                        <th>
+                            Variable Name
+                        </th>
+                        <th>
+                            Value
+                        </th>
+                    </tr>
+                    {% for k,v in my_object.host_custom_variables.items %}
+                        <tr>
+                            <td>{{ k }}</td>
+                            <td>{{ v }}
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+            {% endif %}
+            See also <a href="{% url adagios.misc.views.edit_check_command %}?host_name={{ host_name }}&service_description={{ service_description }}&check_command={{ my_object.check_command }}">Configure check command</a>
+
+
+        </div>
+        <div class="tab-pane" id="events">
+            <div id="logdiv">This tab should update when the tab is clicked</div>
+        </div>
+
+
+        <div class="tab-pane" id="graphs">
+                {% if graph_urls %}
+                    <div id="graphs_tab" class="tabbable"> <!-- Only required for left/right tabs -->
+                        <ul  class="nav nav-pills" id="graphs_ul">
+                            <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
+                            <li><a href="#day" data-toggle="tab" id="25hours">25 Hours</a></li>
+                            <li><a href="#week" data-toggle="tab">One Week</a></li>
+                            <li><a href="#month" data-toggle="tab">One Month</a></li>
+                            <li><a href="#year" data-toggle="tab">One Year</a></li>
+                        </ul>
+
+                        <div class="tab-content" id="graphs_content">
+
+                            <div class="tab-pane graph-pane" id="hours">
+                                <!-- Javascript will put images here if applicable -->
+                            </div>
+
+                            <div class="tab-pane active" id="day">
+                                <!-- Javascript will put images here if applicable -->
+                            </div>
+
+                            <div class="tab-pane" id="week">
+                                <!-- Javascript will put images here if applicable -->
+                            </div>
+
+                            <div class="tab-pane" id="month">
+                                <!-- Javascript will put images here if applicable -->
+                            </div>
+
+                            <div class="tab-pane" id="year">
+                                <!-- Javascript will put images here if applicable -->
+                            </div>
+
+                        </div>
+                    </div>
+                {% else %}
+                    {% if pnp4nagios_error %}
+                        <div class="alert alert-warning">
+                            We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}
+                        </div>
+                        Please check that:
+                        <ul>
+                        <li><a href="{{ pnp_url }}">pnp4nagios</a> is installed and working</li>
+                        <li><i>PNP Filepath</i> is correctly configured under <a href="{% url misc.views.settings %}">settings</a></li>
+                        <li>User running nagios is a member of the unix groups apache or www-data</li>
+                        <li>Click <a href="{% url pnp.views.pnp "json" %}">here</a> to see pnp4nagios output</li>
+                        </ul>
+                    {% endif %}
+                    No Performance data is available for this {{ my_object.object_type }}.
+                {% endif %}
+        </div>
+        </div>
     </div>
-    </div>
-</div>
-<div class="span3" id="maincontent_right_side">
+
+    <div class="span3" id="maincontent_right_side">
     {% if host.services_with_info %}
      <div id="host_services">
         <h5>Services on this host</h5>
@@ -514,6 +515,8 @@
     {% endif %}
 
 </div>
+
+    </div>
 
 
 {% endblock %}
