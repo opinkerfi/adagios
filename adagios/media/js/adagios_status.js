@@ -449,3 +449,32 @@ adagios.misc.success = function(message, notification_id, timeout) {
 adagios.misc.error = function(message, notification_id, timeout) {
     return adagios.misc.add_notification(message, 'danger', notification_id, timeout);
 };
+
+
+// Initilize all bootstrap tabs, so that
+// By default it is possible to link to a specific tab
+// Also show first tab by default.
+adagios.misc.init_tab_selection = function() {
+
+    var tabs = $('ul.nav.nav-tabs');
+    var anchor = document.location.href.split('#')[1] || '';
+    anchor = anchor.split('-tab')[0];
+    var current_tab = tabs.find('a[href="#' + anchor + '"]');
+    if (current_tab.length === 0) {
+        current_tab = tabs.find('a:first');
+    }
+    current_tab.tab('show');
+
+    $('a[data-toggle="tab"]').on('shown', function (e) {
+        var currenttab = $(e.target).attr('href');
+        var id = $(e.target).attr('href').split("-")[0];
+        var currenttable = 'table' + id + "-table";
+        document.location.hash = id + "-tab";
+    });
+
+};
+
+
+$(document).ready(function() {
+    adagios.misc.init_tab_selection();
+});
