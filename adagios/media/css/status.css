@@ -75,12 +75,13 @@ body {
 }
 .state_0 {
     color: #468847;
-    background-color: #468847;
+    /* background-color: #468847; */
     background-color: #90ee90; /* DFF0D8 */
     background-image: -moz-radial-gradient(10px 10px, circle cover, green, white);
     background-image: -webkit-radial-gradient(10px 10px, circle cover, green, white);
     background-image: radial-gradient(10px 10px, circle cover, green, white);
 }
+
 .state_1 {
     color: orange; /* yellow or orange */
     background-color: #FCEFB0; /* yellow or orange */
@@ -122,9 +123,33 @@ body {
     background-image: -moz-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
     background-image: -webkit-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
     background-image: radial-gradient(10px 10px, circle cover, #d3d3d3, white);
-
 }
 
+.circle.host.state_1.unhandled {
+    color: #B94A48;
+    background-color:  #F2DEDE; /* pink */
+    background-image: -moz-radial-gradient(10px 10px, circle cover, red, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, red, white);
+    background-image: radial-gradient(10px 10px, circle cover, red, white);
+}
+
+.circle.host.state_1 {
+    color: #B94A48;
+    background-color:  #F2DEDE; /* pink */
+}
+
+.circle.host.state_2.unhandled {
+    color: #d3d3d3;
+    background-color: #d3d3d3;
+    background-image: -moz-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+    background-image: radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+}
+
+.circle.host.state_2 {
+    color: #d3d3d3;
+    background-color: #d3d3d3;
+}
 
 .table td {
     line-height: 10px;
