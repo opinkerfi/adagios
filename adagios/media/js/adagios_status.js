@@ -361,6 +361,7 @@ adagios.objectbrowser.check_nagios_needs_reload = function() {
         .done(function(data) {
             if (data === true) {
                 $("#nagios_needs_reload_button").show();
+                adagios.misc.warning("Configs have changed. You need to reload for changes to take effect.", 'nagios_reload')
             }
 
         });
@@ -374,13 +375,13 @@ adagios.misc.reload_nagios = function() {
         .done(function(data) {
             if (data['status'] == "success") {
                 $("#nagios_needs_reload_button").hide();
-                adagios.misc.success("Nagios Successfully reloaded", undefined, 5000);
+                adagios.misc.success("Nagios Successfully reloaded", 'nagios_reload', 5000);
             }
             else {
                 var message = data['message'];
                 message += ' <a href="URLmisc/service">details</a>';
                 message = message.replace("URL", BASE_URL);
-                adagios.misc.error(message);
+                adagios.misc.error(message, 'nagios_reload');
 
             }
         })
@@ -388,7 +389,7 @@ adagios.misc.reload_nagios = function() {
                 var message = data['message'];
                 message += ' <a href="URL">Go to Nagios Service page</a>';
                 message = message.replace("URL", BASE_URL);
-                adagios.misc.error(message);
+                adagios.misc.error(message, 'nagios_reload');
         })
         .always(function(data) {
             $('#nagios_is_reloading').hide();
