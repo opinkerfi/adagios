@@ -413,7 +413,7 @@ a {
 
 }
 
-.low_padding.alert {
+#status_dashboard .alert {
     margin-bottom: 0;
     padding:  4px 4px 4px 14px;
 }
