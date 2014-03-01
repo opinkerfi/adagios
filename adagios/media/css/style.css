@@ -291,8 +291,8 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 */
 .message_overlay {
     position:fixed;
-    top:40px;
-    left:250px;
+    top:42px;
+    right: 2px;
     z-index:900;
     min-width: 500px;
 }
