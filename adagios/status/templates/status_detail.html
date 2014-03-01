@@ -12,7 +12,7 @@
 
     host
 
-    <div class="circle state_{{ host.state }}"></div>
+    <div class="circle host state_{{ host.state }}"></div>
     <a href="{% url status.views.status_detail %}?host_name={{ host.name }}">
         <small>{{ host.display_name }}</small>
     </a>
@@ -43,7 +43,7 @@
                     <td>Status</td>
                     <td>
                         {% if my_object.last_check != 0 %}
-                        <div class="circle state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}
+                        <div class="circle {{ object_type }} state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}
                           {% if my_object.state != 0 %}
                             {% if my_object.acknowledged == 1 %}(has been acknowledged)
                             {% else %}(not acknowledged)
@@ -58,9 +58,9 @@
                     <td>Host Name</td>
                     <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
                         {% if my_object.last_check != 0 %}
-                        <div class="circle state_{{ host.state }}"></div>
+                        <div class="circle host state_{{ host.state }}"></div>
                         {% else %}
-                        <div class="circle state_pending"></div>
+                        <div class="circle host state_pending"></div>
                         {% endif %}
                         {{ host.display_name }}
                     </a>
@@ -305,7 +305,7 @@
                                     <tr>
                                         {% for parent in parent_level %}
                                             <td>
-                                                <div class="alert state_{{ parent.state }}">
+                                                <div class="alert host state_{{ parent.state }}">
                                                     <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
                                                 </div>
                                             </td>
