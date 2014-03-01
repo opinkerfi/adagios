@@ -12,7 +12,7 @@ import adagios.status.utils
 from pynag import Model
 import time
 import datetime
-
+from adagios import __version__
 
 def on_page_load(request):
     """ Collection of actions that take place every page load """
@@ -51,6 +51,8 @@ def on_page_load(request):
         results[k] = v
     for k, v in get_plugins(request).items():
         results[k] = v
+    for k, v in get_current_version(request).items():
+        results[k] = v
 
     return results
 
@@ -81,6 +83,10 @@ def get_local_user(request):
     user = getpass.getuser()
     return {'local_user': user}
 
+
+def get_current_version(request):
+    """ Returns current adagios version """
+    return {'adagios_version': __version__}
 
 def get_current_settings(request):
     """ Return a copy of adagios.settings
@@ -143,9 +149,46 @@ def get_unhandled_problems(request):
                                         'Filter: scheduled_downtime_depth = 0',
                                         'Filter: host_scheduled_downtime_depth = 0',
                                         'Stats: state != 0',
+                                        'Stats: host_state != 0',
                                         columns=False)
-        results['num_problems'] = num_problems[0]
-        results['num_unhandled_problems'] = num_problems[0]
+        results['num_problems'] = num_problems[0] + num_problems[1]
+        results['num_unhandled_problems'] = num_problems[0] + num_problems[1]
+
+        result = livestatus.query('GET services',
+                                        'Stats: state != 0',
+                                        'Stats: state != 0',
+                                        'Stats: acknowledged = 0',
+                                        'Stats: scheduled_downtime_depth = 0',
+                                        'Stats: host_state = 0',
+                                        'StatsAnd: 4',
+                                        columns=False
+                                        )
+        num_service_problems_all = result[0]
+        num_service_problems_unhandled = result[1]
+
+
+        result = livestatus.query('GET hosts',
+                                        'Stats: state != 0',
+                                        'Stats: state != 0',
+                                        'Stats: acknowledged = 0',
+                                        'Stats: scheduled_downtime_depth = 0',
+                                        'Stats: host_state = 1',
+                                        'StatsAnd: 4',
+                                        columns=False
+                                        )
+        num_host_problems_all = result[0]
+        num_host_problems_unhandled = result[1]
+
+        num_problems_all = num_service_problems_all + num_host_problems_all
+        num_problems_unhandled = num_service_problems_unhandled + num_host_problems_unhandled
+
+        num_problems = num_problems_unhandled
+
+        results = locals()
+        del results['livestatus']
+        del results['result']
+        del results['request']
+
     except Exception:
         pass
     return results

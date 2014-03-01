@@ -6,6 +6,11 @@
 {% block header %}
     {{ block.super }}
     <meta http-equiv="refresh" content="60">
+    <style>
+    body {
+        background-color: #d5d8de;
+    }
+    </style>
 {% endblock %}
 
 {% block toolbar %}{% endblock %}
@@ -136,7 +141,7 @@
             {% if host_problems %}
                 <h4>Unhandled Host Problems</h4>
                 <!-- Host Problems -->
-                {% include "snippets/status_hostlist_snippet.html" %}
+                {% include "snippets/status_hostlist_snippet.html" with hosts=host_problems%}
             {% else %}
                 <h4>There are no unhandled host problems.</h4>
             {% endif %}

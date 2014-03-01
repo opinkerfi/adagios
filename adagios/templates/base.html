@@ -60,10 +60,10 @@
         <ul class="nav nav-list">
             <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
             <li >
-                <a {% if num_problems %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems %}<span>({{ num_problems }})</span>{% endif %}</a>
+                <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems_unhandled %}<span>({{ num_problems_unhandled }})</span>{% endif %}</a>
             </li>
             <li >
-                <a href="{% url status.views.problems %}">All Problems</a>
+                <a href="{% url status.views.problems %}">All Problems  {% if num_problems_all %}<span>({{ num_problems_all }})</span>{% endif %}</a>
             </li>
             <li><a href="{% url status.views.hosts %}">Hosts</a></li>
             <li><a href="{% url status.views.services %}">Services </a></li>
@@ -104,7 +104,11 @@
 
             <!-- page_header contains stuff breadcrumbs and title of the current page -->
         {% block page_header %}
-            <div class="pull-right">
+            <div class="pull-right" id="top_right">
+                <div id="updates_avail">
+                    Adagios version: {{ adagios_version }}. Latest: <span id="latest_version">...</span>
+                </div>
+
             </div>
             <div id="page_header" class="page_header" >
                 <h3 >

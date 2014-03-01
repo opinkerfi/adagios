@@ -75,7 +75,11 @@ body {
 }
 .state_0 {
     color: #468847;
+    background-color: #468847;
     background-color: #90ee90; /* DFF0D8 */
+    background-image: -moz-radial-gradient(10px 10px, circle cover, green, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, green, white);
+    background-image: radial-gradient(10px 10px, circle cover, green, white);
 }
 .state_1 {
     color: orange; /* yellow or orange */
@@ -384,14 +388,12 @@ a {
 
 .dashboard.alert.alert-danger {
   color: black;
-  background-color: #ff8e89;
-  #border-color: #eed3d7;
+  background-color: red;
 }
 
 .dashboard.alert.alert-warning {
   color: black;
-  background-color: #eeeb5c;
-  #border-color: #eed3d7;
+    background-color: #ffff00;
 }
 
 #status_toolbar_more_button {
@@ -410,7 +412,6 @@ a {
     padding-left: 50px;
     padding-bottom: 20px;
     background-color: #d5d8de;
-
 }
 
 #status_dashboard .alert {

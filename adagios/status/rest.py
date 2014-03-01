@@ -508,16 +508,28 @@ def _get_service_model(host_name, service_description=None):
 
 
 def command_line(host_name, service_description=None):
-    """ Returns effective command line for a host or a service (i.e. resolves check_command)
-    """
+    """ Returns effective command line for a host or a service (i.e. resolves check_command) """
     try:
-        if service_description in (None, '', '_HOST_'):
-            obj = pynag.Model.Host.objects.get_by_shortname(host_name)
-        else:
-            obj = _get_service_model(host_name, service_description)
+        obj = _get_host_or_service(host_name, service_description)
         return obj.get_effective_command_line(host_name=host_name)
     except KeyError:
         return "Could not resolve commandline. Object not found"
+
+
+def _get_host_or_service(host_name, service_description=None):
+    """ Return a pynag.Model.Host or pynag.Model.Service or raise exception if none are found """
+    host = pynag.Model.Host.objects.get_by_shortname(host_name)
+    if not service_description:
+        return host
+    else:
+        search_result = pynag.Model.Service.objects.filter(host_name=host_name, service_description=service_description)
+        if search_result:
+            return search_result[0]
+        # If no services were found, the service might be applied to a hostgroup
+        for service in host.get_effective_services():
+            if service.service_description == service_description:
+                return service
+    raise KeyError("Object not found")
 
 
 def update_check_command(host_name, service_description=None, **kwargs):
@@ -530,7 +542,7 @@ def update_check_command(host_name, service_description=None, **kwargs):
             else:
                 obj = pynag.Model.Service.objects.get_by_shortname(
                     "%s/%s" % (host_name, service_description))
-            if k.startswith("$_SERVICE") or k.startswith('$ARG'):
+            if k.startswith("$_SERVICE") or k.startswith('$ARG') or k.startswith('$_HOST'):
                 obj.set_macro(k, v)
                 obj.save()
         return "Object saved"

@@ -5,6 +5,8 @@
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Status Overview{% endblock %}
 
+{% block toolbar %}{{ block.super }}{% endblock %}
+
 
 {% block content %}
         <div class="row-fluid" style="margin-top: 40px;"> &nbsp;</div>
@@ -291,6 +293,7 @@
     </script>
 
     <script>
+        $('#latest_version').adagios_version();
         function timedRefresh(timeoutPeriod) {
             var interval = setInterval(refreshPage, timeoutPeriod);
         }

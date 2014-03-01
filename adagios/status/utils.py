@@ -273,7 +273,7 @@ def get_statistics(request, *args, **kwargs):
     c['unhandled_hosts'] = l.query('GET hosts',
                                    'Filter: acknowledged = 0',
                                    'Filter: scheduled_downtime_depth = 0',
-                                   'Stats: state > 0',
+                                   'Stats: state = 1',
                                    *arguments,
                                    columns=False
                                    )[0]
@@ -282,7 +282,7 @@ def get_statistics(request, *args, **kwargs):
                                                     'Filter: acknowledged = 0',
                                                     'Filter: scheduled_downtime_depth = 0',
                                                     'Filter: childs != ',
-                                                    'Stats: state > 0',
+                                                    'Stats: state = 1',
                                                     *arguments,
                                                     columns=False
                                                     )[0]

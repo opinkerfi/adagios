@@ -321,6 +321,8 @@ button.close.notification {
 #left_sidebar {
    padding-bottom: 0;
    padding-right: 5px;
+   padding-top: 0;
+    margin-top: 20px;
 }
 .well {
         background: url('../img/bak.jpg')
