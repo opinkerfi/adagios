@@ -55,7 +55,7 @@
 
     <!-- block left_sidebar starts -->
     {% block left_sidebar %}
-    <div class="pull-left container-fluid" id="left_sidebar">
+    <div class="pull-left container-fluid well" id="left_sidebar">
         <h5>Shortcuts</h5>
         <ul class="nav nav-list">
             <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
@@ -104,38 +104,21 @@
 
             <!-- page_header contains stuff breadcrumbs and title of the current page -->
         {% block page_header %}
-            <div id="page_header" class="page_header">
+            <div class="pull-right">
+            </div>
+            <div id="page_header" class="page_header" >
+                <h3 >
+                    {% block smallheader %}block=smallheader{% endblock %}
+                    {% block largeheader %}block=largeheader {% endblock %}
+                </h3>
 
-                <div class=" content">
-
-                    <div class="row-fluid margin-bottom-20">
-                            <h2 class="pull-left">
-                                {% block smallheader %}block=smallheader{% endblock %}
-                                {% block largeheader %}block=largeheader {% endblock %}
-                            </h2>
-                        <ul class="pull-right breadcrumb">
-                            <li>
-                                <i class="glyph-right-arrow"></i>
-                            </li>
-                            <li>
-                                <a href="{% url home %}"> Home</a> <span class="divider">/</span>
-                            </li>
-                            <li>
-                                {% block nav1 %}
-                                {% endblock %}
-                                <span class="divider">/</span>
-                            </li>
-                            <li>
-                            </li>
-                        </ul>
-                    </div>
 
 
 
                 </div>
 
 
-            </div>
+
         {% endblock page_header %}
         <!-- block page_header ends -->
 

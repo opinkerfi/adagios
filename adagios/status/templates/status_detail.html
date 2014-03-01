@@ -2,15 +2,20 @@
 {% load adagiostags %}
 {% block title %}{{ my_object.display_name }}{% endblock %}
 {% block smallheader %}
+{% endblock %}
+{% block largeheader %}
+    {% if object_type == 'service' %}
+    Service
+            <div class="circle state_{{ my_object.state }}"></div>
+            <small>{{ service.display_name }}</small> on
+    {% endif %}
+
+    host
+
+    <div class="circle state_{{ host.state }}"></div>
     <a href="{% url status.views.status_detail %}?host_name={{ host.name }}">
         <small>{{ host.display_name }}</small>
     </a>
-{% endblock %}
-{% block largeheader %}
-    {{ service.display_name }}
-    <!--
-    <span class="state_{{ my_object.state }}">{{ my_object.status }}</span>
-    -->
 {% endblock %}
 {% block nav1 %}<a href="{% url status.views.services %}">status</a>{% endblock %}
 {% block nav2 %}{{ host_name }} {% if primary_object.object_type == 'service' %}- {{ service_description }}{% endif %}{% endblock %}
@@ -591,8 +596,8 @@
         $('#graphs_link').click(function(event) {
             $('#25hours').click();
 
-
         });
+
         // When history link is clicked, load the log history for this object
         $('#history_link').click(function(event) {
             // Load log history in its own tab

@@ -305,6 +305,7 @@ button.close.notification {
 }
 
 #main_content {
+    min-height: 450px;
     overflow: hidden;
     padding-right: 20px;
     padding-left: 20px;
@@ -313,4 +314,15 @@ button.close.notification {
 #page_footer {
     clear:both;
     overflow: hidden;
+}
+#page_header {
+    margin-top: 20px;
+}
+#left_sidebar {
+   padding-bottom: 0;
+   padding-right: 5px;
+}
+.well {
+        background: url('../img/bak.jpg')
+
 }
