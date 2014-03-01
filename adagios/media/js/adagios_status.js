@@ -11,7 +11,7 @@ adagios.status.service_detail_update_servicestate_icon = function(host_name, par
 
     adagios.rest.status.services({
        'host_name': host_name, 
-       'fields': 'acknowledged description state last_check'
+       'fields': 'acknowledged description state last_check host_state scheduled_downtime_depth acknowledged'
     }).done( function(data) {
         var name, item, i;
         var host_services = $("div#host_services");
@@ -24,6 +24,10 @@ adagios.status.service_detail_update_servicestate_icon = function(host_name, par
             if (service.last_check != 0) {
                 circle_div.removeClass("state_pending");
                 circle_div.addClass("state_" + service.state);
+                if (service['host_state'] === 0 && service['scheduled_downtime_depth'] === 0 && service['acknowledged'] === 0) {
+                    circle_div.addClass("unhandled");
+                }
+                console.log(service)
             }
         }
     });
