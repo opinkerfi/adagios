@@ -212,6 +212,16 @@ class TestHostProcess(TestCase):
     def setUp(self):
         self.createNagiosEnvironment()
         self.livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        try:
+            self.livestatus.query('GET timeperiods')
+        except Exception, e:
+            print "%s while trying to read livestatus: %s" % (type(e), e)
+            print os.listdir(self.tempdir)
+            print os.listdir(self.tempdir + "conf.d")
+            if os.path.exists(self.tempdir + "nagios.log"):
+                print open(self.tempdir + "nagios.log").read()
+
+
 
     def tearDown(self):
         self.stopNagiosEnvironment()
@@ -227,7 +237,7 @@ class TestHostProcess(TestCase):
 
         minimal_objects_file = os.path.dirname(adagios.__file__) + "/../tests/config/conf.d/minimal_config.cfg"
         command = ['cp', minimal_objects_file, objects_dir]
-        pynag.Utils.runCommand(command=command, shell=False)
+        print pynag.Utils.runCommand(command=command, shell=False)
 
 
 
@@ -274,8 +284,6 @@ class TestHostProcess(TestCase):
 
     def stopNagiosEnvironment(self):
         # Stop nagios service
-        if os.path.exists(self.tempdir + "nagios.log"):
-            print open(self.tempdir + "nagios.log").read()
         pid = open(self.tempdir + "nagios.pid").read()
         pynag.Utils.runCommand(command=['kill', pid], shell=False)
 
