@@ -268,9 +268,8 @@ class TestHostProcess(TestCase):
         command = [adagios.settings.nagios_binary, '-d', cfg_file]
         result = pynag.Utils.runCommand(command=command, shell=False)
         code, stdout, stderr = result
-        if result[0] != 0:
+        if result[0] != 254:
             command_string = ' '.join(command)
-            print result
             raise Exception("Error running %s\n%s\n%s" % (command_string, result[1], result[2]))
 
     def stopNagiosEnvironment(self):
