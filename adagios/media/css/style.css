@@ -328,3 +328,7 @@ button.close.notification {
         background: url('../img/bak.jpg')
 
 }
+
+.errorlist {
+    color: red;
+}
