@@ -28,7 +28,6 @@ class TestObjectBrowser(unittest.TestCase):
         self.loadPage('/objectbrowser/')
         self.loadPage('/objectbrowser/new_edit', 301)
         self.loadPage('/objectbrowser/copy', 404)
-        self.loadPage('/objectbrowser/add', 404)
         self.loadPage('/objectbrowser/search')
         self.loadPage('/objectbrowser/delete', 404)
         self.loadPage('/objectbrowser/bulk_edit')
@@ -45,6 +44,16 @@ class TestObjectBrowser(unittest.TestCase):
         self.loadPage('/objectbrowser/advanced_edit', 404)
 
         #self.loadPage('/objectbrowser/add_to_group')
+        self.loadPage('/objectbrowser/add/host', 200)
+        self.loadPage('/objectbrowser/add/hostgroup', 200)
+        self.loadPage('/objectbrowser/add/service', 200)
+        self.loadPage('/objectbrowser/add/servicegroup', 200)
+        self.loadPage('/objectbrowser/add/contact', 200)
+        self.loadPage('/objectbrowser/add/contactgroup', 200)
+        self.loadPage('/objectbrowser/add/timeperiod', 200)
+        self.loadPage('/objectbrowser/add/command', 200)
+        self.loadPage('/objectbrowser/add/template', 200)
+
     def loadPage(self, url, expected_code=200):
         """ Load one specific page, and assert if return code is not 200 """
         try:
