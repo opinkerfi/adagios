@@ -2,9 +2,10 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 
-urlpatterns = [
-    url(r'^/?$', 'rest.views.list_modules'),
-]
+urlpatterns = patterns('adagios',
+                       url(r'^/?$', 'rest.views.list_modules'),
+                       )
+
 
 
 # Example:
