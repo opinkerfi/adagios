@@ -10,15 +10,15 @@ from django.views.static import serve
 
 urlpatterns = patterns('',
     # Example:
-    url(r'^$', 'adagios.misc.views.index', name="home"),
+    url(r'^$', 'adagios.views.index', name="home"),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name="media"),
-    (r'^objectbrowser', include('adagios.objectbrowser.urls')),
-    (r'^misc', include('adagios.misc.urls')),
-    (r'^pnp', include('adagios.pnp.urls')),
-    (r'^pages', include('adagios.pages.urls')),
-    (r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
-    (r'^rest', include('adagios.rest.urls')),
-    (r'^contrib', include('adagios.contrib.urls')),
+    url(r'^objectbrowser', include('adagios.objectbrowser.urls')),
+    url(r'^misc', include('adagios.misc.urls')),
+    url(r'^pnp', include('adagios.pnp.urls')),
+    url(r'^pages', include('adagios.pages.urls')),
+    url(r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
+    url(r'^rest', include('adagios.rest.urls')),
+    url(r'^contrib', include('adagios.contrib.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

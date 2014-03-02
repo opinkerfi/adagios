@@ -5,7 +5,7 @@ from django.template import RequestContext, loader
 from django import template
 import time
 import logging
-
+import adagios.settings
 
 def error_handler(fn):
     """ This is a python decorator intented for all views in the status module.
@@ -49,3 +49,12 @@ def error_page(request, context=None):
     response = HttpResponse(t, content_type="text/html")
     response.status_code = 500
     return response
+
+
+def index(request):
+    """ This view is our frontpage """
+    # If status view is enabled, redirect to frontpage of the status page:
+    if adagios.settings.enable_status_view:
+        return redirect('status_index', permanent=True)
+    else:
+        return redirect('objectbrowser', permanent=True)

@@ -240,14 +240,11 @@
 {% endblock %}
 
 
-{% block header %} {{ block.super }}
-{% endblock %}
-
-{% block top_right %}
+{% block bottom_left %}
     <div id="updates_avail">
         Adagios version: {{ adagios_version }}. Latest: <span id="latest_version">...</span>
     </div>
-{% endblock top_right %}
+{% endblock bottom_left %}
 
 
 {% block footer %}

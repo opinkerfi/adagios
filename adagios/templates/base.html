@@ -140,6 +140,10 @@
 {% block page_footer %}
     <div id="page_footer">
         <hr>
+        <div class="pull-left" id="bottom_left">
+            {% block bottom_left %}
+            {% endblock bottom_left %}
+        </div>
         <div class="pull-right" id="make_a_wish" >
             <label class=hide for="id_wish_input"></label>
             <input id=id_wish_input type="text" class="input-medium" placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");'/>
