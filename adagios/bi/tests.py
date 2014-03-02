@@ -236,7 +236,6 @@ class TestHostProcess(TestCase):
 
         config = pynag.Parsers.config(cfg_file=cfg_file)
         config.parse()
-        config._edit_static_file(attribute='illegal_macro_output_chars', new_value='''`~$&|'"<>''')
         config._edit_static_file(attribute='log_file', new_value=t + "/nagios.log")
         config._edit_static_file(attribute='object_cache_file', new_value=t + "objects.cache")
         config._edit_static_file(attribute='precached_object_file', new_value=t + "/objects.precache")
@@ -244,9 +243,9 @@ class TestHostProcess(TestCase):
         config._edit_static_file(attribute='command_file', new_value=t + "nagios.cmd")
         config._edit_static_file(attribute='state_retention_file', new_value=t + "retention.dat")
         config._edit_static_file(attribute='cfg_dir', new_value=objects_dir)
-        config._edit_static_file(attribute='p1_file', new_value=cfg_file)
         config._edit_static_file(attribute='enable_embedded_perl', new_value='0')
         config._edit_static_file(attribute='event_broker_options', new_value='-1')
+        config._edit_static_file(attribute='illegal_macro_output_chars', new_value='''~$&|<>''')
 
         # Find mk_livestatus broker module
         global_config = pynag.Parsers.config(cfg_file=adagios.settings.nagios_config)
@@ -256,6 +255,8 @@ class TestHostProcess(TestCase):
                 livestatus_module = v.split()[0]
                 line = "%s %s" % (livestatus_module, t + "/livestatus.socket")
                 config._edit_static_file('broker_module', new_value=line)
+            elif k == 'p1_file':
+                config._edit_static_file(attribute='p1_file', new_value=v)
 
 
         self.original_objects_dir = pynag.Model.pynag_directory
@@ -266,8 +267,11 @@ class TestHostProcess(TestCase):
         pynag.Model.pynag_directory = objects_dir
         pynag.Model.eventhandlers = []
 
-        command = "%s "
-        pynag.Utils.runCommand(command=[adagios.settings.nagios_binary, '-d', cfg_file], shell=False)[1]
+        command = [adagios.settings.nagios_binary, '-d', cfg_file]
+        result = pynag.Utils.runCommand(command=command, shell=False)
+        if result[0] != 0:
+            print result[2]
+            raise Exception("Error running %s\n%s\n%s" % (' '.join(command), result[1], result[2]))
 
     def stopNagiosEnvironment(self):
         # Stop nagios service
