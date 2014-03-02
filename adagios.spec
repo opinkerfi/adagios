@@ -62,6 +62,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc README.md 
 %{python_sitelib}/*
+%{_localstatedir}/lib/adagios/
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 %attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios
 %attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios/conf.d
