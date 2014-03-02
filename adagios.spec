@@ -52,7 +52,7 @@ install %{buildroot}%{python_sitelib}/adagios/etc/adagios/conf.d/okconfig.conf %
 mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d/
 install %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
 
-mkdir -p "%{buildroot}%{_localstatedir}/lib/adagios/contrib"
+mkdir -p "%{buildroot}%{_localstatedir}/lib/adagios/"
 cp -r "%{buildroot}%{python_sitelib}/adagios/contrib/lib"  "%{buildroot}%{_localstatedir}/lib/adagios/contrib"
 
 %clean
