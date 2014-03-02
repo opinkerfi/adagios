@@ -65,9 +65,6 @@ class LiveStatusTestCase(unittest.TestCase):
         try:
             c = Client()
             response = c.get(url)
-            if response.status_code != 200:
-                print response.content
-                print response.status_code
             self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
         except Exception, e:
             self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
