@@ -248,6 +248,7 @@ class TestHostProcess(TestCase):
         config._edit_static_file(attribute='command_file', new_value=t + "nagios.cmd")
         config._edit_static_file(attribute='state_retention_file', new_value=t + "retention.dat")
         config._edit_static_file(attribute='cfg_dir', new_value=objects_dir)
+        config._edit_static_file(attribute='log_initial_states', new_value="1")
         config._edit_static_file(attribute='enable_embedded_perl', new_value='0')
         config._edit_static_file(attribute='event_broker_options', new_value='-1')
         config._edit_static_file(attribute='illegal_macro_output_chars', new_value='''~$&|<>''')

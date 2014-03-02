@@ -15,11 +15,9 @@ class LiveStatusTestCase(unittest.TestCase):
         """ Smoke Test for various rest modules """
         self.loadPage('/rest')
         self.loadPage('/rest/status/')
-        self.loadPage('/rest/okconfig/')
         self.loadPage('/rest/pynag/')
         self.loadPage('/rest/adagios/')
         self.loadPage('/rest/status.js')
-        self.loadPage('/rest/okconfig.js')
         self.loadPage('/rest/pynag.js')
         self.loadPage('/rest/adagios.js')
 
