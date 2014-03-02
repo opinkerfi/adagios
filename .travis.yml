@@ -13,6 +13,7 @@ install:
   - sudo usermod travis -G nagios -a
   - sudo chown -R nagios:nagios /etc/nagios3
   - sudo chmod -R 777 /etc/nagios3
+  - sudo chmod -R a+rx /var/log/nagios3/
   - sudo mkdir -p /etc/adagios/
   - sudo chown -R travis /etc/adagios/
   - sudo usermod -G www-data nagios
