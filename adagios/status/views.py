@@ -70,6 +70,7 @@ def network_parents(request):
 
     for i in hosts:
         if i['childs']:
+
             c['hosts'].append(i)
             ok = 0
             crit = 0

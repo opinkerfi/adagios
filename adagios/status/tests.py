@@ -5,13 +5,15 @@ from django.test.client import Client
 
 import pynag.Parsers
 import os
-
+from django.test.client import RequestFactory
+import adagios.status
 
 class LiveStatusTestCase(unittest.TestCase):
 
     def setUp(self):
         from adagios.settings import nagios_config
         self.nagios_config = nagios_config
+        self.factory = RequestFactory()
 
     def testLivestatusConnectivity(self):
         livestatus = pynag.Parsers.mk_livestatus(
@@ -53,6 +55,10 @@ class LiveStatusTestCase(unittest.TestCase):
         self.loadPage('/status/servicegroups')
         self.loadPage('/misc/map')
         self.loadPage('/status/dashboard')
+
+    def testStateHistory(self):
+        request = self.factory.get('/status/state_history')
+        adagios.status.views.state_history(request)
 
     def loadPage(self, url):
         """ Load one specific page, and assert if return code is not 200 """
