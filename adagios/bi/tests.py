@@ -6,7 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 import tempfile
 import os
-
+import time
 
 
 
@@ -213,7 +213,11 @@ class TestHostProcess(TestCase):
         self.createNagiosEnvironment()
         self.livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
     def tearDown(self):
-        self.stopNagiosEnvironment()
+        try:
+            self.stopNagiosEnvironment()
+        except Exception,e :
+            print e
+            print os.listdir(self.tempdir)
     def createNagiosEnvironment(self):
         """ Starts a nagios server with empty config in an isolated environment """
         self.tempdir = t = tempfile.mkdtemp('nagios-unittests') + "/"
