@@ -274,6 +274,8 @@ class TestHostProcess(TestCase):
 
     def stopNagiosEnvironment(self):
         # Stop nagios service
+        if os.path.exists(self.tempdir + "nagios.log"):
+            print open(self.tempdir + "nagios.log").read()
         pid = open(self.tempdir + "nagios.pid").read()
         pynag.Utils.runCommand(command=['kill', pid], shell=False)
 
