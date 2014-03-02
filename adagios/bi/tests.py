@@ -221,8 +221,6 @@ class TestHostProcess(TestCase):
             if os.path.exists(self.tempdir + "nagios.log"):
                 print open(self.tempdir + "nagios.log").read()
 
-
-
     def tearDown(self):
         self.stopNagiosEnvironment()
 
@@ -235,7 +233,7 @@ class TestHostProcess(TestCase):
         objects_dir = t + "/conf.d"
         os.mkdir(objects_dir)
 
-        minimal_objects_file = os.path.dirname(adagios.__file__) + "/../tests/config/conf.d/minimal_config.cfg"
+        minimal_objects_file = "../tests/config/conf.d/minimal_config.cfg"
         command = ['cp', minimal_objects_file, objects_dir]
         print pynag.Utils.runCommand(command=command, shell=False)
 
@@ -278,9 +276,9 @@ class TestHostProcess(TestCase):
         command = [adagios.settings.nagios_binary, '-d', cfg_file]
         result = pynag.Utils.runCommand(command=command, shell=False)
         code, stdout, stderr = result
-        if result[0] != 254:
+        if result[0] != 0:
             command_string = ' '.join(command)
-            raise Exception("Error running %s\n%s\n%s" % (command_string, result[1], result[2]))
+            raise Exception("Error running %s\ncode=%s\nstdout=%s\nstderr=%s" % (command_string, result[0], result[1], result[2]))
 
     def stopNagiosEnvironment(self):
         # Stop nagios service
