@@ -212,8 +212,10 @@ class TestHostProcess(TestCase):
     def setUp(self):
         self.createNagiosEnvironment()
         self.livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+
     def tearDown(self):
         self.stopNagiosEnvironment()
+
     def createNagiosEnvironment(self):
         """ Starts a nagios server with empty config in an isolated environment """
         self.tempdir = t = tempfile.mkdtemp('nagios-unittests') + "/"
@@ -265,9 +267,11 @@ class TestHostProcess(TestCase):
 
         command = [adagios.settings.nagios_binary, '-d', cfg_file]
         result = pynag.Utils.runCommand(command=command, shell=False)
+        code, stdout, stderr = result
         if result[0] != 0:
-            print result[2]
-            raise Exception("Error running %s\n%s\n%s" % (' '.join(command), result[1], result[2]))
+            command_string = ' '.join(command)
+            print result
+            raise Exception("Error running %s\n%s\n%s" % (command_string, result[1], result[2]))
 
     def stopNagiosEnvironment(self):
         # Stop nagios service
