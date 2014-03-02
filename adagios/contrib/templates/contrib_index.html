@@ -1,8 +1,8 @@
-{% extends "base_status.html" %}
+{% extends "base.html" %}
 {% block title %}User Contributed views{% endblock %}
-{% block smallheader %}list of {% endblock %}
-{% block largeheader %}user contributed views{% endblock %}
-
+{% block smallheader %}{% endblock %}
+{% block largeheader %}User Contributed Views{% endblock %}
+{% block toolbar %}{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
 {% block nav2 %}<a href="{% url contrib.views.index %}">contrib</a>{% endblock %}
 
@@ -10,14 +10,17 @@
 
 
 {% block content %}
+    <div class="alert alert-info">
     <p>
         Here you can see a list of user contributed views for Adagios. You can make your own
         from <i>{{ settings.contrib_dir }}</i>.
     </p>
-
     <p>
         Please see the examples below for assistance on creating your own custom views.
     </p>
+
+    </div>
+
 
     <ul>
         {% for i in views %}
