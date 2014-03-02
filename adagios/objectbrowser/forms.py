@@ -235,7 +235,7 @@ class PynagForm(AdagiosForm):
                 lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
             field = PynagChoiceField(
                 choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
-        elif field_name in ('hostgroups', 'hostgroup_members'):
+        elif field_name in ('hostgroups', 'hostgroup_members', 'hostgroup_name'):
             all_groups = Model.Hostgroup.objects.filter(
                 hostgroup_name__contains='')
             choices = map(
@@ -680,27 +680,34 @@ class AddObjectForm(PynagForm):
         if object_type in ('host', 'contact', 'service'):
             self.fields['use'] = self.get_pynagField('use')
             self.fields['use'].initial = str('generic-%s' % object_type)
-            self.fields[
-                'use'].help_text = "Inherit attributes from this template"
+            self.fields['use'].help_text = "Inherit attributes from this template"
         if object_type == 'host':
-            self.fields['host_name'] = self.get_pynagField(
-                'host_name', required=True)
-            self.fields['address'] = self.get_pynagField(
-                'address', required=True)
+            self.fields['host_name'] = self.get_pynagField('host_name', required=True)
+            self.fields['address'] = self.get_pynagField('address', required=True)
             self.fields['alias'] = self.get_pynagField('alias', required=False)
         elif object_type == 'service':
-            self.fields['service_description'] = self.get_pynagField(
-                'service_description', required=True)
-            self.fields['host_name'] = self.get_pynagField(
-                'host_name', required=True)
-            self.fields[
-                'host_name'].help_text = 'Tell us which host this service check will be applied to'
-            #self.fields['hostgroup_name'] = self.get_pynagField('hostgroup_name', required=False)
-            #self.fields['hostgroup_name'].help_text = "If you specify any hostgroups, this service will be applied to all hosts in that hostgroup"
+            self.fields['service_description'] = self.get_pynagField('service_description', required=True)
+            self.fields['host_name'] = self.get_pynagField('host_name', required=False)
+            self.fields['host_name'].help_text = 'Tell us which host this service check will be applied to'
+            self.fields['hostgroup_name'] = self.get_pynagField('hostgroup_name', required=False)
+            self.fields['hostgroup_name'].help_text = "If you specify any hostgroups, this service will be applied to all hosts in that hostgroup"
         else:
             field_name = "%s_name" % object_type
             self.fields[field_name] = self.get_pynagField(
                 field_name, required=True)
+
+    def clean(self):
+        cleaned_data = super(AddObjectForm, self).clean()
+        print self.pynag_object.object_type
+        if self.pynag_object.object_type == 'service':
+            host_name = cleaned_data.get('host_name')
+            hostgroup_name = cleaned_data.get('hostgroup_name')
+            print type(host_name), type(hostgroup_name)
+            if host_name in (None, 'None', '') and hostgroup_name in (None, 'None', ''):
+                raise forms.ValidationError("Please specify either hostgroup_name or host_name")
+            else:
+                print "everything is A OK"
+        return cleaned_data
 
     def clean_timeperiod_name(self):
         return self._clean_shortname()
@@ -709,9 +716,6 @@ class AddObjectForm(PynagForm):
         return self._clean_shortname()
 
     def clean_contactgroup_name(self):
-        return self._clean_shortname()
-
-    def clean_hostgroup_name(self):
         return self._clean_shortname()
 
     def clean_servicegroup_name(self):
@@ -723,6 +727,8 @@ class AddObjectForm(PynagForm):
     def clean_host_name(self):
         if self.pynag_object.object_type == 'service':
             value = self.cleaned_data['host_name']
+            if not value:
+                return None
             hosts = value.split(',')
             for i in hosts:
                 existing_hosts = Model.Host.objects.filter(host_name=i)
@@ -730,6 +736,20 @@ class AddObjectForm(PynagForm):
                     raise forms.ValidationError(
                         "Could not find host called '%s'" % (i))
                 return smart_str(self.cleaned_data['host_name'])
+        return self._clean_shortname()
+
+    def clean_hostgroup_name(self):
+        if self.pynag_object.object_type == 'service':
+            value = self.cleaned_data['hostgroup_name']
+            if not value:
+                return None
+            groups = value.split(',')
+            for i in groups:
+                existing_hostgroups = Model.Hostgroup.objects.filter(hostgroup_name=i)
+                if not existing_hostgroups:
+                    raise forms.ValidationError(
+                        "Could not find hostgroup called '%s'" % (i))
+                return smart_str(self.cleaned_data['hostgroup_name'])
         return self._clean_shortname()
 
     def _clean_shortname(self):

@@ -11,6 +11,12 @@
     <p>
     Alright, before adding a new {{  object_type }} we need some basic info:
     </p>
+    {% if object_type != "template" %}
+    <div class="alert alert-info">
+    If you are looking to add a {{ object_type }} template, instead you should be adding a
+        <a href="{% url objectbrowser.views.add_object "template" %}?object_type={{ object_type }}">{{ object_type }} template.</a>
+    </div>
+    {% endif %}
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
