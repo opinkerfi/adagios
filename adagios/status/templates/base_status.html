@@ -1001,9 +1001,9 @@
                 "attribute_name":attribute_name,
                 "new_value":new_value
             };
-            adagios.rest.status.edit(my_data)
+            return adagios.rest.status.edit(my_data)
                     .done(function(data) {
-                        adagios.misc.success("Successfully saved. Changes take effect next time you reload the monitoring engine.")
+                        adagios.objectbrowser.check_nagios_needs_reload();
                     })
                     .fail(function(data) {
                         adagios.misc.error("Error saving data.")
