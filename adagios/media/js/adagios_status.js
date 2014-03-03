@@ -422,8 +422,13 @@ adagios.misc.add_notification = function(message, level, notification_id, timeou
     var message_div = $("#error_messages");
     if (notification_id === undefined) {
         adagios.misc.__notification_id_counter += 1;
-        notification_id = "notification_" + adagios.misc.__notification_id_counter;
+        notification_id = adagios.misc.__notification_id_counter;
     }
+    notification_id = "notification_" + notification_id;
+
+    // If notification with same ID already exists. Remove the old one.
+    $("#" + notification_id).remove();
+
     if (timeout > 0) {
         var div_id = notification_id + "-close";
         setTimeout(function() { $("#" + div_id).click(); }, timeout);
