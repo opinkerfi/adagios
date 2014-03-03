@@ -298,10 +298,10 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 }
 .message_overlay div {
     margin: 2px;
-    padding: 2px;
+    /*padding: 2px;*/
 }
 button.close.notification {
-    right: 2px;
+   /* right: 2px; */
 }
 
 #main_content {
@@ -326,7 +326,6 @@ button.close.notification {
 }
 .well {
         background: url('../img/bak.jpg')
-
 }
 
 .errorlist {
