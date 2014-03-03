@@ -330,18 +330,20 @@ def check_command(host_name, service_description, name=None, check_command=None,
     for i in macronames:
         macros[i] = my_object.get_macro(i) or ''
 
-    # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
-    ARGs = my_object.check_command.split('!')
-    for i, arg in enumerate(ARGs):
-        if i == 0:
-            continue
+    if not check_command:
+        # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
+        ARGs = my_object.check_command.split('!')
+        for i, arg in enumerate(ARGs):
+            if i == 0:
+                continue
 
-        macronames = regex.findall(arg)
-        for m in macronames:
-            macros[m] = my_object.get_macro(m) or ''
-        macros['$ARG{i}$'.format(i=i)] = arg
+            macronames = regex.findall(arg)
+            for m in macronames:
+                macros[m] = my_object.get_macro(m) or ''
+            macros['$ARG{i}$'.format(i=i)] = arg
 
     return macros
+
 
 def verify_configuration():
     """ Verifies nagios configuration and returns the output of nagios -v nagios.cfg
