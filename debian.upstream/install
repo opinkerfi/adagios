@@ -1,0 +1,2 @@
+debian/adagios/usr/lib/python*/dist-packages/adagios/etc/adagios etc/
+debian/adagios/usr/lib/python*/dist-packages/adagios/etc/sudoers.d/adagios etc/sudoers.d/
