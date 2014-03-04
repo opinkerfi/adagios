@@ -19,7 +19,7 @@ Features
   - Rest interface for viewing and modifying configuration
   - Full audit of any changes made
 
-Design principals
+Design principles
 ==================
   - Useful for both novices and nagios experts
   - No database backend
