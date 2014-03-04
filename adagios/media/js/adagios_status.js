@@ -88,7 +88,8 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             '<pre  id="original_command_line"></pre>' +
             '';
         $(destination_div).html(html);
-    }
+    };
+
     // Go through all the relevant input values, and return respective macros
     self.get_all_attributes = function() {
         var my_data = {};
@@ -262,7 +263,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             input_string = input_string.replace(macroname, macrovalue);
         }
         return input_string;
-    }
+    };
 
     // We have a div that contains the original command-line with all its macros.
     // Lets modify it so all macros are highlighted.
@@ -294,7 +295,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         }
         console.log(decorated_command_line);
         $('#original_command_line').html( decorated_command_line );
-    }
+    };
 
     // Read through all inputs in #input_fields and then save the current service
     // This function reloads the current page on success
@@ -323,7 +324,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         if (self.debug) {
             console.log("debug: " + message);
         }
-    }
+    };
 
     return self;
 };
@@ -380,7 +381,7 @@ adagios.objectbrowser.select2_business_process = function(query) {
         .done( function(data) {
             var name, item, i;
             for (i in data) {
-                name = data[i]
+                name = data[i];
                 item  = {id: name, text: name};
                 results.results.push(item);
             }
@@ -717,7 +718,7 @@ adagios.status.reschedule = function() {
     $.each(selected_objects, function(i, item) {
         host_name =  item['host_name'];
         service_description = item['service_description'] || '';
-        object_type = item['object_type']
+        object_type = item['object_type'];
         if (object_type == 'host') {
             hostlist = hostlist + ';' + host_name;
         }
@@ -772,36 +773,37 @@ adagios.misc.turn_tables_into_datatables = function() {
 // All checkboxes with the "select_many" class have a multiselect
 // kind of feature.
 adagios.status.initilize_multiselect_checkboxes = function() {
+    var select_many_boxes = $('.select_many');
     $('.select_all').click(function(e) {
         $( ".chkbox").each( function() {
             this.checked = true;
         });
-        $('.select_many').prop('checked',true);
-        $('.select_many').prop('indeterminate',false);
+        select_many_boxes.prop('checked',true);
+        select_many_boxes.prop('indeterminate',false);
         adagios.status.count_selected_objects();
     });
     $('.select_none').click(function(e) {
         $( ".chkbox").each( function() {
             this.checked = false;
         });
-        $('.select_many').prop('checked',false);
-        $('.select_many').prop('indeterminate',false);
+        select_many_boxes.prop('checked',false);
+        select_many_boxes.prop('indeterminate',false);
         adagios.status.count_selected_objects();
     });
     $('.select_problems').click(function(e) {
         $( "input.problem ").each( function() {
             this.checked = true;
         });
-        $('.select_many').prop('checked',false);
-        $('.select_many').prop('indeterminate',true);
+        select_many_boxes.prop('checked',false);
+        select_many_boxes.prop('indeterminate',true);
         adagios.status.count_selected_objects();
     });
     $('.select_unhandled_problems').click(function(e) {
         $( "input.unhandled ").each( function() {
             this.checked = true;
         });
-        $('.select_many').prop('checked',false);
-        $('.select_many').prop('indeterminate',true);
+        select_many_boxes.prop('checked',false);
+        select_many_boxes.prop('indeterminate',true);
         adagios.status.count_selected_objects();
     });
 };
