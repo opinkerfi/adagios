@@ -455,20 +455,7 @@
                     }
         };
 
-
-        // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
-        function get_selected_services() {
-            var result = [];
-            checked_boxes = $( ".selectable :checked" );
-            checked_boxes.each(function() {
-               var host_name = $(this).next('.input_hostname').val();
-               var service_description = $(this).next().next('.input_service_description').val();
-               result.push( {'host_name': host_name, 'service_description': service_description} )
-            });
-            return result;
-        }
-
-
+        
         // Return a list of all objects that have been checked and have the selectable class. This is used for
         // Acknowledge, downtime, etc.
         function get_selected_objects() {
