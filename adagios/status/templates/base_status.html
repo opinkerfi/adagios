@@ -357,7 +357,7 @@
         $(document).ready(function() {
 
             // Disable all links that have the class 'disabled'
-            noclick_on_disabled_links();
+            adagios.status.make_disabled_links_unclickable();
 
             // Put keyboard focus on the search box
             adagios.status.enable_search_box();
@@ -455,10 +455,10 @@
                     }
         };
 
-        
+
         // Return a list of all objects that have been checked and have the selectable class. This is used for
         // Acknowledge, downtime, etc.
-        function get_selected_objects() {
+        adagios.status.get_selected_objects = function() {
             var result = [];
             checked_boxes = $( ".selectable :checked" );
             checked_boxes.each(function() {
@@ -466,11 +466,11 @@
             });
             return result;
 
-        }
+        };
 
 
         // Links that have the class 'disabled' should not be clickable by default
-        function noclick_on_disabled_links() {
+        adagios.status.make_disabled_links_unclickable = function() {
             // Disable a links as well as buttons using the disabled class since disabling links is not
             // supported by default.
             jQuery.fn.extend({
@@ -598,7 +598,7 @@
         // When a user clicks the remove downtimes button, this is called
         // to remove downtimes of all "selected" objects
         function remove_active_downtimes() {
-            var selected_objects = get_selected_objects();
+            var selected_objects = adagios.status.get_selected_objects();
             var args;
             var objects_done = 0;
             $.each(selected_objects, function(i, item) {
@@ -623,7 +623,7 @@
         // Any objects are selected or not
         function count_selected_objects() {
 
-            var selected_objects = get_selected_objects();
+            var selected_objects = adagios.status.get_selected_objects();
 
             // Treat acknowledge button depending on if acknowledgements are needed
             if (selected_objects.length > 0) {
@@ -748,7 +748,7 @@
         // This event is fired when one or more objects have been rescheduled
         function reschedule() {
             $("#reschedule_button").button('loading');
-            var selected_objects = get_selected_objects();
+            var selected_objects = adagios.status.get_selected_objects();
             var objects_done = 0;
             var total = selected_objects.length;
             var info_div = $("#reschedule_text");
@@ -807,7 +807,7 @@
                 comment = "No comment was entered...";
             }
             $("#acknowledge_button").button('loading');
-            var selected_objects = get_selected_objects();
+            var selected_objects = adagios.status.get_selected_objects();
             var objects_done = 0;
             var my_data;
             var hostlist = '';
@@ -873,7 +873,7 @@
             var host_name, service_description, hostgroup_name, object_type;
             var my_data;
             $("#downtime_button").button('loading');
-            var selected_objects = get_selected_objects();
+            var selected_objects = adagios.status.get_selected_objects();
             var services_done = 0;
             var hostlist = '';
             var hostgrouplist = '';
@@ -930,7 +930,7 @@
                 "host": []
             };
 
-            var selected_objects = get_selected_objects();
+            var selected_objects = adagios.status.get_selected_objects();
             for (i=0;i<selected_objects.length;i++){
                 if (selected_objects[i]['object_type'] == 'service') {
                     shortname = selected_objects[i]["host_name"] + "/" + selected_objects[i]["service_description"];
