@@ -12,6 +12,23 @@ def startup():
     pynag.Model.cfg_file = settings.nagios_config
     pynag.Model.pynag_directory = settings.destination_directory
 
+    # Multi-Layered Parsing settings
+    pynag.Model.multilayered_parsing = settings.enable_multilayered_parsing
+    pynag.Model.layers = settings.layers
+    pynag.Model.adagios_layer = settings.adagios_layer
+    if pynag.Model.multilayered_parsing:
+        # Do layer compiling and generate the actual config
+        pynag.Model.config = pynag.Parsers.LayeredConfigCompiler(
+                cfg_file=pynag.Model.cfg_file,
+                layers=pynag.Model.layers,
+                destination_directory=pynag.Model.pynag_directory
+                )
+        pynag.Model.config.parse()
+        pynag.Model.config = pynag.Parsers.LayeredConfig(
+                cfg_file=pynag.Model.cfg_file,
+                adagios_layer = pynag.Model.adagios_layer
+                )
+
     # Pre load objects on startup
     pynag.Model.ObjectDefinition.objects.get_all()
 
