@@ -351,6 +351,7 @@
         <!-- Wish modal ends -->
 
     </div>
+
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
         $(document).ready(function() {
@@ -359,10 +360,10 @@
             noclick_on_disabled_links();
 
             // Put keyboard focus on the search box
-            enable_search_box();
+            adagios.status.enable_search_box();
 
             // Configure what happens when user clicks a selectable row or checkbox
-            enable_row_clicks();
+            adagios.status.enable_clickable_rows();
 
             // Enable/disable toolbar and action buttons
             count_selected_objects();
@@ -377,7 +378,7 @@
 
         // Puts keyboard focus on search box, and enables live filtering of
         // objects in the status table.
-        function enable_search_box() {
+        adagios.status.enable_search_box = function() {
             var searchbox = $('#search_field');
             searchbox.focus();
 
@@ -403,11 +404,11 @@
                     $('.repeated_content').show();
             });
 
-        }
+        };
 
 
         // When row in datatable is clicked. Select it.
-        function enable_row_clicks() {
+        adagios.status.enable_clickable_rows = function() {
             var _last_selected = 0;
             var rows = $( ".mainrow" );
             var all_checkboxes = $(".chkbox", rows);
@@ -430,29 +431,29 @@
                             .slice(Math.min( _last_selected, index ), Math.max( _last_selected, index )+1 )
                             .each(function(i, e) {
                                 this.checked = checkbox.prop('checked') || false;
-                                update_row_color($(this));
+                                adagios.status.update_row_color($(this));
                             });
                 }
                 else {
 
                 }
-                update_row_color(checkbox);
+                adagios.status.update_row_color(checkbox);
                 checkbox.focus();
                 _last_selected = index;
                 count_selected_objects();
             });
-        }
+        };
 
 
         // Given a checkbox, update the color of the selected row
-        function update_row_color(checkbox) {
+        adagios.status.update_row_color = function(checkbox) {
                     if (checkbox.prop('checked') == true) {
                         checkbox.parent().parent().addClass('row_selected');
                     }
                     else {
                         checkbox.parent().parent().removeClass('row_selected');
                     }
-        }
+        };
 
 
         // Return a list of all services that have been checked. This is used for acknowledge, downtime, etc.
