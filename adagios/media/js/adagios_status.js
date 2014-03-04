@@ -67,8 +67,8 @@ adagios.status.service_detail_update_servicestate_icon = function(host_name, par
 
 
 adagios.objectbrowser.CheckCommandEditor = function(parameters) {
-    p = parameters || {};
-    self = {};
+    var p = parameters || {};
+    var self = {};
     self.host_name = p.host_name || $('#check_command_editor_host_name').text();
     self.service_description = p.service_description || $('#check_command_editor_service_description').text();
     self.name = p.name || $('#check_command_editor_service_name').text();
@@ -107,8 +107,8 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
     // check_command!$ARG1$!$ARG2$
     self.update_check_command_entry = function() {
         var all_attributes =self.get_all_attributes();
-        check_command = all_attributes.check_command || '';
-        for (i in all_attributes) {
+        var check_command = all_attributes.check_command || '';
+        for (var i in all_attributes) {
             if (i.substring(0,4) == '$ARG') {
                check_command = check_command + '!' + all_attributes[i];
             }
@@ -117,11 +117,11 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             check_command = '';
         }
         $('#check_command_actual_entry').attr('value', check_command);
-    }
+    };
     // This function will look up what macros are related to our check_command
     // and then create correct input boxes for each one.
     self.generate_input_fields = function() {
-        my_data = {
+        var my_data = {
             'host_name': self.host_name,
             'service_description': self.service_description,
             'check_command': self.check_command,
@@ -150,6 +150,8 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
                 var check_command_arguments_input_fields = '';
                 var other_input_fields = '';
                 var input_field_value;
+                var friendly_name;
+                var edit_field;
                 for (var i in data) {
                     // Create a human friendly label for our attribute
                     friendly_name = i.replace('$_SERVICE','');
@@ -273,7 +275,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         var macronames = self.original_command_line.match(/\$.*?\$/g);
         var decorated_command_line =  self.original_command_line;
 
-        console.log(decorated_command_line);
+        var new_str;
         for (var i in macronames) {
             macroname = macronames[i];
             macrovalue = data[macroname];
@@ -297,7 +299,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
     // Read through all inputs in #input_fields and then save the current service
     // This function reloads the current page on success
     self.save_check_command = function() {
-        my_data = self.get_all_attributes();
+        var my_data = self.get_all_attributes();
 
         adagios.rest.status.update_check_command(my_data)
             .done( function(data) {
@@ -345,7 +347,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
 adagios.objectbrowser.select2_objects_query = function(object_type, query) {
     var results = {results: []};
 
-    params = {
+    var params = {
         object_type: object_type,
         name__contains:query.term
     };
@@ -372,8 +374,7 @@ adagios.objectbrowser.select2_objects_query = function(object_type, query) {
 adagios.objectbrowser.select2_business_process = function(query) {
     var results = {results: []};
 
-    params = {
-    };
+    var params = {};
 
     adagios.rest.status.get_business_process_names(params)
         .done( function(data) {
@@ -595,7 +596,7 @@ adagios.status.update_row_color = function(checkbox) {
 // Acknowledge, downtime, etc.
 adagios.status.get_selected_objects = function() {
     var result = [];
-    checked_boxes = $( ".selectable :checked" );
+    var checked_boxes = $( ".selectable :checked" );
     checked_boxes.each(function() {
         result.push($(this).data());
     });
@@ -809,7 +810,7 @@ adagios.status.initilize_multiselect_checkboxes = function() {
 
 // Function to edit a single attribute of an object
 adagios.status.change_attribute = function(object_type,short_name,attribute_name,new_value, success, error) {
-    my_data  = {
+    var my_data  = {
         "object_type": object_type,
         "short_name": short_name,
         "attribute_name":attribute_name,
