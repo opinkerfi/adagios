@@ -3,8 +3,41 @@ window.adagios = window.adagios || {};
 adagios.status = adagios.status || {};
 adagios.objectbrowser = adagios.objectbrowser || {};
 adagios.misc = adagios.misc || {};
+adagios.bi = adagios.bi || {};
 
 adagios.misc.__notification_id_counter = 0;
+
+$(document).ready(function() {
+
+    // Create good default behaviour for bootstrap tabs
+    adagios.misc.init_tab_selection();
+
+    // Disable all links that have the class 'disabled'
+    adagios.status.make_disabled_links_unclickable();
+
+    // Put keyboard focus on the search box
+    adagios.status.enable_search_box();
+
+    // Configure what happens when user clicks a selectable row or checkbox
+    adagios.status.enable_clickable_rows();
+
+    // Enable/disable toolbar and action buttons
+    adagios.status.count_selected_objects();
+
+    // Flash a warning if nagios needs a reload
+    adagios.objectbrowser.check_nagios_needs_reload();
+
+    // If there are any notifications from server, display them
+    adagios.misc.get_server_notifications();
+
+    // change all table with class datatable into datatables
+    adagios.misc.turn_tables_into_datatables();
+
+    // Multiselect checkboxes at the top-left of status-tables
+    adagios.status.initilize_multiselect_checkboxes();
+});
+
+
 
 adagios.status.service_detail_update_servicestate_icon = function(host_name, params) {
     var results = {results: []};
@@ -27,7 +60,6 @@ adagios.status.service_detail_update_servicestate_icon = function(host_name, par
                 if (service['host_state'] === 0 && service['scheduled_downtime_depth'] === 0 && service['acknowledged'] === 0) {
                     circle_div.addClass("unhandled");
                 }
-                console.log(service)
             }
         }
     });
@@ -367,7 +399,6 @@ adagios.objectbrowser.check_nagios_needs_reload = function() {
         });
 };
 
-
 // Reload nagios and display a nice status message on top of screen
 adagios.misc.reload_nagios = function() {
     $("#nagios_is_reloading").show();
@@ -460,7 +491,6 @@ adagios.misc.error = function(message, notification_id, timeout) {
     return adagios.misc.add_notification(message, 'danger', notification_id, timeout);
 };
 
-
 // Initilize all bootstrap tabs, so that
 // By default it is possible to link to a specific tab
 // Also show first tab by default.
@@ -484,7 +514,312 @@ adagios.misc.init_tab_selection = function() {
 
 };
 
+// Puts keyboard focus on search box, and enables live filtering of
+// objects in the status table.
+adagios.status.enable_search_box = function() {
+    var searchbox = $('#search_field');
+    searchbox.focus();
 
-$(document).ready(function() {
-    adagios.misc.init_tab_selection();
-});
+    // When someone is typing in the searchbox, make sure searchtable is updated
+    var $rows;
+    searchbox.keyup(function() {
+        if ($rows === undefined) {
+            $rows = $('.searchtable tbody .mainrow');
+        }
+
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        $rows.show().filter(function() {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+
+            return !~text.indexOf(val);
+        }).hide();
+
+        // Some views like status view hide repeated occurances of host_names
+        // That does not work well if something is being filtered
+        if (val == '')
+            $('.repeated_content').hide();
+        else
+            $('.repeated_content').show();
+    });
+
+};
+
+// When row in datatable is clicked. Select it.
+adagios.status.enable_clickable_rows = function() {
+    var _last_selected = 0;
+    var rows = $( ".mainrow" );
+    var all_checkboxes = $(".chkbox", rows);
+    rows.click(function(e) {
+        var checkbox = $(':checkbox', this);
+        var index = rows.index(this);
+
+        // If we clicked something else than a link or the checkbox,
+        // Trigger an actual click on the checkbox
+        if (e.target.type !== 'checkbox' && e.target.tagName != 'A') {
+                checkbox.prop('checked', ! checkbox.prop('checked'));
+        }
+
+
+        // If shift is down while clicking a row, we select (or unselect)
+        // Everything from last row we clicked til here
+        if ( e.shiftKey && index != _last_selected ) {
+
+            all_checkboxes
+                    .slice(Math.min( _last_selected, index ), Math.max( _last_selected, index )+1 )
+                    .each(function(i, e) {
+                        this.checked = checkbox.prop('checked') || false;
+                        adagios.status.update_row_color($(this));
+                    });
+        }
+        else {
+
+        }
+        adagios.status.update_row_color(checkbox);
+        checkbox.focus();
+        _last_selected = index;
+        adagios.status.count_selected_objects();
+    });
+};
+
+// Given a checkbox, update the color of the selected row
+adagios.status.update_row_color = function(checkbox) {
+            if (checkbox.prop('checked') == true) {
+                checkbox.parent().parent().addClass('row_selected');
+            }
+            else {
+                checkbox.parent().parent().removeClass('row_selected');
+            }
+};
+
+// Return a list of all objects that have been checked and have the selectable class. This is used for
+// Acknowledge, downtime, etc.
+adagios.status.get_selected_objects = function() {
+    var result = [];
+    checked_boxes = $( ".selectable :checked" );
+    checked_boxes.each(function() {
+        result.push($(this).data());
+    });
+    return result;
+
+};
+
+// Links that have the class 'disabled' should not be clickable by default
+adagios.status.make_disabled_links_unclickable = function() {
+    // Disable a links as well as buttons using the disabled class since disabling links is not
+    // supported by default.
+    jQuery.fn.extend({
+            disable: function(state) {
+            return this.each(function() {
+                    var $this = $(this);
+                    $this.toggleClass('disabled', state);
+            });
+            }
+    });
+        // Disable clicking on disabled links
+        $('body').on('click', 'a.disabled', function(event) {
+            event.preventDefault();
+        });
+};
+
+
+
+// adagios.status.count_selected_objects()
+// Enables or disabled the action_buttons and toolbar buttons depending on if
+// Any objects are selected or not
+adagios.status.count_selected_objects = function() {
+
+    var selected_objects = adagios.status.get_selected_objects();
+
+    // Treat acknowledge button depending on if acknowledgements are needed
+    if (selected_objects.length > 0) {
+        $('#action_buttons button.adagios_service_multi').attr('disabled', null);
+        if (selected_objects.length > 1) {
+            $('#action_buttons button.adagios_service_single').attr('disabled', 'disabled');
+        } else {
+            $('#action_buttons button.adagios_service_single').attr('disabled', null);
+        }
+        $('.enable_on_select').attr('disabled', null);
+        $('#action_buttons').attr('title',null);
+        $('#action_buttons_more a').disable(false);
+    }
+    else {
+        $('#action_buttons button').attr('disabled', 'disabled');
+        $('.enable_on_select').attr('disabled', 'disabled');
+        $('#action_buttons_more a').disable(true);
+    }
+};
+
+
+// When a user clicks the remove acknowledgement button, this is called
+// to remove acknowledgements of all "selected" objects
+adagios.status.remove_acknowledgements = function() {
+    var selected_objects = adagios.status.get_selected_objects();
+    var args;
+    var objects_done = 0;
+    $.each(selected_objects, function(i, item) {
+        args = {};
+        args['host_name'] = item['host_name'];
+        args['service_description'] = item['service_description'];
+        adagios.rest.status.remove_acknowledgement(args)
+                .done(function() {
+                    objects_done += 1;
+                    if (objects_done == selected_objects.length) {
+                        location.reload();
+                    }
+            })
+    });
+};
+
+// When a user clicks the remove downtimes button, this is called
+// to remove downtimes of all "selected" objects
+adagios.status.remove_active_downtimes = function() {
+    var selected_objects = adagios.status.get_selected_objects();
+    var args;
+    var objects_done = 0;
+    $.each(selected_objects, function(i, item) {
+        args = {};
+        args['host_name'] = item['host_name'];
+        args['service_description'] = item['service_description'];
+        args['downtime_id'] = item['downtime_id'];
+        adagios.rest.status.remove_downtime(args)
+                .done(function() {
+                    objects_done += 1;
+                    if (objects_done == selected_objects.length) {
+                        location.reload();
+                    }
+                })
+    });
+};
+
+
+// Clear all checked checkboxes
+adagios.status.clear_all_selections = function() {
+       $('.chkbox').each( function(data) {
+           this.checked = false;
+           });
+        $('.select_many').each( function(data) {
+           this.checked = false;
+           });
+        adagios.status.count_selected_objects();
+};
+
+// This event is fired when one or more objects have been rescheduled
+adagios.status.reschedule = function() {
+    $("#reschedule_button").button('loading');
+    var selected_objects = adagios.status.get_selected_objects();
+    var objects_done = 0;
+    var total = selected_objects.length;
+    var info_div = $("#reschedule_text");
+    var hostlist = '';
+    var servicelist = '';
+    var host_name, service_description, object_type;
+    $.each(selected_objects, function(i, item) {
+        host_name =  item['host_name'];
+        service_description = item['service_description'] || '';
+        object_type = item['object_type']
+        if (object_type == 'host') {
+            hostlist = hostlist + ';' + host_name;
+        }
+        else if (object_type == 'service') {
+            servicelist = servicelist + ';' + host_name + ',' + service_description;
+        }
+    });
+
+    var parameters = {};
+    parameters['hostlist'] = hostlist;
+    parameters['servicelist'] = servicelist;
+    if (selected_objects.length == 1) {
+        parameters['wait'] = "1";
+    }
+    else {
+        parameters['wait'] = "0";
+    }
+    info_div.html("Rescheduling " + selected_objects.length + " items");
+    adagios.rest.status.reschedule_many(parameters)
+            .done(function(data) {
+                info_div.html("All Done.");
+                if (parameters['wait'] == "1") {
+                    info_div.html("All Done. Reloading Page.");
+                    location.reload();
+                }
+                adagios.misc.success(selected_objects.length + " objects have been rescheduled");
+            })
+            .fail(function(data) {
+               info_div.html("Error while rescheduling checks. Error output printed in javascript console.");
+               console.error(data.responseText);
+            })
+            .always(function(data) {
+                $("#reschedule_button").button('reset');
+                location.reload();
+            });
+
+
+};
+
+
+// Change all tables with the class "datatable" into a datatable
+adagios.misc.turn_tables_into_datatables = function() {
+    var oTable = $('.datatable').dataTable( {
+        "bPaginate": true,
+        "iDisplayLength": 100
+    });
+    $('.dataTables_length').hide();
+
+};
+
+
+// All checkboxes with the "select_many" class have a multiselect
+// kind of feature.
+adagios.status.initilize_multiselect_checkboxes = function() {
+    $('.select_all').click(function(e) {
+        $( ".chkbox").each( function() {
+            this.checked = true;
+        });
+        $('.select_many').prop('checked',true);
+        $('.select_many').prop('indeterminate',false);
+        adagios.status.count_selected_objects();
+    });
+    $('.select_none').click(function(e) {
+        $( ".chkbox").each( function() {
+            this.checked = false;
+        });
+        $('.select_many').prop('checked',false);
+        $('.select_many').prop('indeterminate',false);
+        adagios.status.count_selected_objects();
+    });
+    $('.select_problems').click(function(e) {
+        $( "input.problem ").each( function() {
+            this.checked = true;
+        });
+        $('.select_many').prop('checked',false);
+        $('.select_many').prop('indeterminate',true);
+        adagios.status.count_selected_objects();
+    });
+    $('.select_unhandled_problems').click(function(e) {
+        $( "input.unhandled ").each( function() {
+            this.checked = true;
+        });
+        $('.select_many').prop('checked',false);
+        $('.select_many').prop('indeterminate',true);
+        adagios.status.count_selected_objects();
+    });
+};
+
+
+
+// Function to edit a single attribute of an object
+adagios.status.change_attribute = function(object_type,short_name,attribute_name,new_value, success, error) {
+    my_data  = {
+        "object_type": object_type,
+        "short_name": short_name,
+        "attribute_name":attribute_name,
+        "new_value":new_value
+    };
+    return adagios.rest.status.edit(my_data)
+            .done(function(data) {
+                adagios.objectbrowser.check_nagios_needs_reload();
+            })
+            .fail(function(data) {
+                adagios.misc.error("Error saving data.")
+            });
+    };
