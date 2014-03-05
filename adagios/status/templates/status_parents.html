@@ -4,9 +4,11 @@
 {% block nav2 %}<a href="{% url status.views.network_parents %}">Network Parents</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}
+
 Network Parents
 {% endblock %}
 
+{% load adagiostags %}
 
 {% block content %}
 {% if hosts %}
@@ -29,8 +31,10 @@ Network Parents
         </th>
         <th>Host Name</th>
         <th>Address</th>
-        <th>Status</th>
         <th>Children</th>
+        <th>Duration</th>
+        <th>Last Check</th>
+        <th>Status</th>
         <th>Child Host Health</th>
     </tr>
     </thead>
@@ -47,14 +51,30 @@ Network Parents
             <td><a style="color: black" href="{% url status.views.status_detail %}?host_name={{ row.name }}">{{ row.name }}</a></td>
 
             <td>{{ row.address }}</td>
+            <td>
+                {{ row.childs|length }}
+            </td>
+            <td>
+                {% if row.last_state_change != 0 %}
+                    <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
+                        {{ row.last_state_change|timestamp|timesince }}
+                    </span>
+                {% endif %}
+            </td>
+            <td>
+            {% if row.last_check != 0 %}
+                <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
+                {{ row.last_check|timestamp|timesince }} ago
+                </span>
+            {% else %}
+                never
+            {% endif %}
+            </td>
             {% if row.state  == 0 %}
                 <td class="alert alert-success">UP</td>
             {% else %}
                 <td class="alert alert-danger">Down</td>
             {% endif %}
-            <td>
-                {{ row.childs|length }}
-            </td>
             <td>
                 <div class="progress">
                     <div class="bar bar-success" style="width: {{ row.percent_ok }}%;"></div>

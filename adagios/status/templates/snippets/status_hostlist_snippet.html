@@ -20,6 +20,7 @@
         <th></th>
         <th>Host Name</th>
         <th>Address</th>
+        <th>Duration</th>
         <th>Last Check</th>
         <th>Host Status</th>
         <th>Service Status</th>
@@ -45,8 +46,17 @@
             </td>
             <td>{{ row.address }}</td>
             <td>
+                {% if row.last_state_change != 0 %}
+                    <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
+                        {{ row.last_state_change|timestamp|timesince }}
+                    </span>
+                {% endif %}
+            </td>
+            <td>
             {% if row.last_check != 0 %}
+                <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
                 {{ row.last_check|timestamp|timesince }} ago
+                </span>
             {% else %}
                 never
             {% endif %}

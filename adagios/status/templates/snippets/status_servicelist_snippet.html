@@ -59,13 +59,17 @@
                     {% endif %}
                 </td>
                 <td class="service_small">
-                    {% if service.last_check != 0 %}
-                    {{ service.last_state_change|timestamp|timesince }}
+                    {% if service.last_state_change != 0 %}
+                        <span title="{{ service.last_state_change|timestamp|date:'Y-m-d H:i' }}">
+                            {{ service.last_state_change|timestamp|timesince }}
+                        </span>
                     {% endif %}
                 </td>
                 <td class="service_small">
                     {% if service.last_check != 0 %}
-                    {{ service.last_check|timestamp|date:'Y-m-d H:i' }}
+                        <span title="{{ service.last_check|timestamp|date:'Y-m-d H:i' }}">
+                            {{ service.last_check|timestamp|timesince }} ago
+                        </span>
                     {% else %}
                     never
                     {% endif %}
