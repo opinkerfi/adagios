@@ -544,7 +544,6 @@
             var end_time = $form_downtime.find("input[name='end_time']").val();
             var host_name, service_description, hostgroup_name, object_type;
             var my_data;
-            $("#downtime_button").button('loading');
             var selected_objects = adagios.status.get_selected_objects();
             var services_done = 0;
             var hostlist = '';
@@ -576,14 +575,13 @@
                 "start_time":start_time,
                 "end_time":end_time
             };
+            adagios.misc.info("Sending downtime command to server.", 'downtime');
             adagios.rest.status.downtime_many(my_data)
                     .done(function(data) {
-                        adagios.misc.success("Command has been sent.");
-                        $("#downtime_text").html('All Done. Reloading page.');
-                        location.reload();
+                        adagios.misc.success("Downtime command has been sent. You should refresh your browser.", 'downtime');
                     })
                     .fail(function(data) {
-                        adagios.misc.error("Could not send downtime command to the server.");
+                        adagios.misc.error("Could not send downtime command to the server.", 'downtime');
                     });
 
         };
