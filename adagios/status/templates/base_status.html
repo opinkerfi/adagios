@@ -491,7 +491,6 @@
             if (comment == '') {
                 comment = "No comment was entered...";
             }
-            $("#acknowledge_button").button('loading');
             var selected_objects = adagios.status.get_selected_objects();
             var objects_done = 0;
             var my_data;
@@ -518,16 +517,16 @@
                 "persistent":"0",
                 "notify":"1"
             };
-
+            adagios.misc.info("Sending Command to server", 'acknowledgement');
             adagios.rest.status.acknowledge_many(my_data)
                     .done(function(data) {
-                        adagios.misc.success("Command has been sent.", undefined, 5000);
-                        $("#acknowledge_text").html('All Done. Reloading page.');
-                        $("#acknowledge_button").button('reset');
+                        adagios.misc.success("Acknowledgement has been set. You should reload your browser.", "acknowledgement", 5000);
                         adagios.status.clear_all_selections();
                     })
                     .fail(function(data) {
-                        adagios.misc.error("Error while sending acknowledge command to the server.");
+                        adagios.misc.error("Error while sending acknowledge command to the server.", "acknowledgement");
+                    })
+                    .always(function(data) {
                     });
             return false;
 
