@@ -698,6 +698,7 @@ adagios.status.remove_active_downtimes = function() {
 adagios.status.clear_all_selections = function() {
        $('.chkbox').each( function(data) {
            this.checked = false;
+           adagios.status.update_row_color($(this));
            });
         $('.select_many').each( function(data) {
            this.checked = false;
@@ -707,11 +708,9 @@ adagios.status.clear_all_selections = function() {
 
 // This event is fired when one or more objects have been rescheduled
 adagios.status.reschedule = function() {
-    $("#reschedule_button").button('loading');
     var selected_objects = adagios.status.get_selected_objects();
     var objects_done = 0;
     var total = selected_objects.length;
-    var info_div = $("#reschedule_text");
     var hostlist = '';
     var servicelist = '';
     var host_name, service_description, object_type;
@@ -730,31 +729,18 @@ adagios.status.reschedule = function() {
     var parameters = {};
     parameters['hostlist'] = hostlist;
     parameters['servicelist'] = servicelist;
-    if (selected_objects.length == 1) {
-        parameters['wait'] = "1";
-    }
-    else {
-        parameters['wait'] = "0";
-    }
-    info_div.html("Rescheduling " + selected_objects.length + " items");
+    parameters['wait'] = 0;
+
+    adagios.misc.info("Rescheduling " + selected_objects.length + " items", "reschedule_status");
     adagios.rest.status.reschedule_many(parameters)
             .done(function(data) {
-                info_div.html("All Done.");
-                if (parameters['wait'] == "1") {
-                    info_div.html("All Done. Reloading Page.");
-                    location.reload();
-                }
-                adagios.misc.success(selected_objects.length + " objects have been rescheduled");
+                adagios.misc.success("Reschedule request for " + selected_objects.length + " items has been sent. You should refresh your browser.", "reschedule_status", 5000);
+                adagios.status.clear_all_selections();
             })
             .fail(function(data) {
-               info_div.html("Error while rescheduling checks. Error output printed in javascript console.");
+               adagios.misc.error("Error while rescheduling checks. Error output printed in javascript console.", "reschedule_status");
                console.error(data.responseText);
             })
-            .always(function(data) {
-                $("#reschedule_button").button('reset');
-                location.reload();
-            });
-
 
 };
 
@@ -777,6 +763,7 @@ adagios.status.initilize_multiselect_checkboxes = function() {
     $('.select_all').click(function(e) {
         $( ".chkbox").each( function() {
             this.checked = true;
+            adagios.status.update_row_color($(this));
         });
         select_many_boxes.prop('checked',true);
         select_many_boxes.prop('indeterminate',false);
@@ -785,6 +772,7 @@ adagios.status.initilize_multiselect_checkboxes = function() {
     $('.select_none').click(function(e) {
         $( ".chkbox").each( function() {
             this.checked = false;
+            adagios.status.update_row_color($(this));
         });
         select_many_boxes.prop('checked',false);
         select_many_boxes.prop('indeterminate',false);
@@ -793,6 +781,7 @@ adagios.status.initilize_multiselect_checkboxes = function() {
     $('.select_problems').click(function(e) {
         $( "input.problem ").each( function() {
             this.checked = true;
+            adagios.status.update_row_color($(this));
         });
         select_many_boxes.prop('checked',false);
         select_many_boxes.prop('indeterminate',true);
@@ -801,11 +790,13 @@ adagios.status.initilize_multiselect_checkboxes = function() {
     $('.select_unhandled_problems').click(function(e) {
         $( "input.unhandled ").each( function() {
             this.checked = true;
+            adagios.status.update_row_color($(this));
         });
         select_many_boxes.prop('checked',false);
         select_many_boxes.prop('indeterminate',true);
         adagios.status.count_selected_objects();
     });
+
 };
 
 
