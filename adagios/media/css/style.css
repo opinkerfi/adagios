@@ -253,9 +253,27 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
 .statustable td.host {
     white-space: nowrap;
 }
+
+/* Needed by IE for ellipsis */
+table.statustable {
+    table-layout: fixed;
+}
+
+/* Boxes in status table need minimum width */
+.statustable thead tr:first-child th {
+    width: 8px;
+}
+
+/* Make the service ellipse if area is too small */
 .statustable td.service {
     word-wrap: break-word;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    clear: both;
 }
+
 .statustable td.service span.plugin_output {
     font-size: 80%;
     color: #808080;

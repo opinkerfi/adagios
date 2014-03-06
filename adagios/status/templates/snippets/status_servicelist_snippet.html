@@ -1,10 +1,11 @@
 <!-- snippet status_servicelist_snippet.html starts -->
 {% load adagiostags %}
 
+
 <table class="statustable table table-condensed well searchtable" id="datatable">
     <thead>
     <tr>
-        <th class="small">
+        <th>
             <div class="btn-group" class="select_bar">
                 <a class="" data-toggle="dropdown" href="#">
                     <input type="checkbox" class="select_many">
@@ -17,11 +18,11 @@
                 </ul>
             </div>
         </th>
-        <th>Host</th>
-        <th>Service Check</th>
-        <td></td>
-        <th>Duration</th>
-        <th>Last Check</th>
+        <th style="width: 20%">Host</th>
+        <th style="width: 60%">Service Check</th>
+        <th></th>
+        <th style="width: 10%">Duration</th>
+        <th style="width: 10%">Last Check</th>
     </tr>
     </thead>
     <tbody class="">
@@ -49,11 +50,11 @@
                         <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}</a>
                     <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
                                 <span title="{{ service.plugin_output }}" class="service_description_short plugin_output">
-                                         {{ service.plugin_output|slice:"70" }}
+                                         {{ service.plugin_output }}
                                  </span>
 
                 </td>
-                <td>
+                <td style="width: 20px">
                     {% if service.comments_with_info  %}
                         <i class="glyph-chat glyph-grey" data-placement=left rel=tooltip title="Comments" data-content="{% for i in service.comments_with_info %}<div class='alert alert-info'><b>{{ i.1 }}:</b> {{ i.2 }}</div>{% endfor %}"></i>
                     {% endif %}
