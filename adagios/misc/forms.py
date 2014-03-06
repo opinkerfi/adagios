@@ -518,6 +518,10 @@ class SendEmailForm(forms.Form):
 
         cc_address = []
         from_address = self._resolve_remote_user(self.remote_user)
+        # Check if _resolve_remote_user did in fact return an email address - avoid SMTPSenderRefused.
+        import re # re built in Py1.5+
+        if re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)').search(from_address) is None:
+            from_address = str(from_address) + '@no.domain'
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')
         text_content = self.cleaned_data['message']
