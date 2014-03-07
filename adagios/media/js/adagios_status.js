@@ -35,6 +35,8 @@ $(document).ready(function() {
 
     // Multiselect checkboxes at the top-left of status-tables
     adagios.status.initilize_multiselect_checkboxes();
+
+
 });
 
 
@@ -136,7 +138,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             return;
         }
         if (my_data.host_name == null || my_data.host_name == '') {
-            console.log("No host_name specified. Not generating any input fields");
+            console.error("No host_name specified. Not generating any input fields");
             $('#check_command_editor_tables').hide();
             return;
         }
@@ -290,10 +292,8 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
                 + "'>"
                 + macroname
                 + "</a>";
-            console.log(i + " replace" + macroname + " with " + macrovalue);
             decorated_command_line = decorated_command_line.replace(macroname,new_str);
         }
-        console.log(decorated_command_line);
         $('#original_command_line').html( decorated_command_line );
     };
 
