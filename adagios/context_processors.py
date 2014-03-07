@@ -266,14 +266,19 @@ def check_nagios_running(request):
 
 def check_selinux(request):
     """ Check if selinux is enabled and notify user """
-    if not settings.warn_if_selinux_is_active == True:
-        return {}
-    try:
-        if open('/sys/fs/selinux/enforce', 'r').readline().strip() == "1":
-            add_notification(
-                level="warning", message='SELinux is enabled, that is not supported, please disable it, see https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Disabling_SELinux')
-    except Exception:
-        pass
+    notification_id = "selinux_active"
+    if settings.warn_if_selinux_is_active:
+        try:
+            if open('/sys/fs/selinux/enforce', 'r').readline().strip() == "1":
+                add_notification(
+                    level="warning",
+                    message='SELinux is enabled, which is likely to give your monitoring engine problems., see <a href="https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Disabling_SELinux">here</a> for information on how to disable it.',
+                    notification_id=notification_id,
+                )
+        except Exception:
+            pass
+    else:
+        clear_notification(notification_id)
     return {}
 
 
