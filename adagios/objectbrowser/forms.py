@@ -66,6 +66,8 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         Changes list into a comma separated string. Removes duplicates.
         """
+        if not value:
+            return "null"
         tmp = []
         for i in value:
             if i not in tmp:
@@ -115,10 +117,9 @@ class PynagForm(AdagiosForm):
         for k, v in cleaned_data.items():
             # change from unicode to str
             v = cleaned_data[k] = smart_str(v)
-            if k in MULTICHOICE_FIELDS:
-                # Put the + back in there if needed
-                if self.pynag_object.get(k, '').startswith('+'):
-                    cleaned_data[k] = "+%s" % (v)
+            if k in MULTICHOICE_FIELDS and v and v != "null":
+                operator = AttributeList(self.pynag_object.get(k, '')).operator or ''
+                cleaned_data[k] = "%s%s" % (operator, v)
         return cleaned_data
 
     def save(self):
