@@ -469,7 +469,7 @@ def log_entries(*args, **kwargs):
     return l.get_log_entries(*args, **kwargs)
 
 
-def state_history(start_time=None, end_time=None, host_name=None, service_description=None):
+def state_history(start_time=None, end_time=None, object_type=None, host_name=None, service_description=None, hostgroup_name=None):
     """ Returns a list of dicts, with the state history of hosts and services. Parameters behaves similar to get_log_entries
 
     """
@@ -483,8 +483,37 @@ def state_history(start_time=None, end_time=None, host_name=None, service_descri
         service_description = None
 
     l = pynag.Parsers.LogFiles()
-    return l.get_state_history(start_time=start_time, end_time=end_time, host_name=host_name, service_description=service_description)
+    log_entries = l.get_state_history(start_time=start_time, end_time=end_time, host_name=host_name, service_description=service_description)
+    if object_type == 'host' or object_type == 'service':
+        pass
+    elif object_type == 'hostgroup':
+        hg = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
+        hosts = hg.get_effective_hosts()
+        hostnames = map(lambda x: x.host_name, hosts)
+        log_entries = filter(lambda x: x['host_name'] in hostnames, log_entries)
+    else:
+        raise Exception("Unsupported object type: %s" % object_type)
 
+    # Add some css-hints for and duration of each state history entry as percent of duration
+    # this is used by all views that have state history and on top of it a progress bar which shows
+    # Up/downtime totals.
+    if len(c['log']) > 0:
+        log = c['log']
+        c['start_time'] = start_time = log[0]['time']
+        c['end_time'] = end_time = log[-1]['time']
+        now = time.time()
+
+        total_duration = now - start_time
+        css_hint = {}
+        css_hint[0] = 'success'
+        css_hint[1] = 'warning'
+        css_hint[2] = 'danger'
+        css_hint[3] = 'info'
+        for i in log:
+            i['duration_percent'] = 100 * i['duration'] / total_duration
+            i['bootstrap_status'] = css_hint[i['state']]
+
+    return log_entries
 
 def _get_service_model(host_name, service_description=None):
     """ Return one pynag.Model.Service object for one specific service as seen

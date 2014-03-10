@@ -11,7 +11,7 @@
         <li><a href="#child_hostgroups" data-toggle="tab">Child Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
         <li><a href="#hosts" data-toggle="tab">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
         <li><a href="#services" data-toggle="tab">Services {% if services %}<span class="muted">({{ services|length }})</span>{% endif %}</a></li>
-        <li><a href="#history" data-toggle="tab">History</a></li>
+        <li><a href="#history" data-toggle="tab" id="history_link">History</a></li>
         <li><a href="#debug" data-toggle="tab">Debug</a></li>
 
     </ul>
@@ -138,11 +138,9 @@
         </div>
 
         <div class="tab-pane" id="history">
-            {% if log %}
-            {% include "snippets/status_statehistory_snippet.html" %}
-            {% else %}
-                No recent state history changes in this hostgroup. Try <a href="{% url status.views.status_log %}#tab_all">Log view</a> to search in older logs.
-            {% endif %}
+            <div id="logdiv">
+                This dialog should reload when the history tab is clicked.
+            </div>
         </div>
         <div class="tab-pane" id="debug">
             <h4>Information available via livestatus:</h4>
@@ -190,6 +188,16 @@
         background-color: transparent;
     }
     </style>
-    </style>
+    <script>
+        // When history link is clicked, load the log history for this object
+        $('#history_link').click(function(event) {
+            // Load log history in its own tab
+            $('#logdiv').html("Loading ...");
+            var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
+            var snippet_url = '{% url adagios.status.views.snippets_log %}?object_type=hostgroup&hostgroup_name=' + hostgroup_name;
+            $('#logdiv').load(snippet_url);
+
+        });
+    </script>
 
 {% endblock %}

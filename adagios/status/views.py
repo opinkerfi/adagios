@@ -136,17 +136,30 @@ def snippets_log(request):
     """
     host_name = request.GET.get('host_name')
     service_description = request.GET.get('service_description')
-    if not host_name:
-        raise Exception("host_name is required")
-    if not service_description or service_description == '_HOST_':
-        # Get host logs
-        log = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
-            host_name=host_name, service_description=None)
+    hostgroup_name = request.GET.get('hostgroup_name')
+
+    if service_description == "_HOST_":
+        service_description = None
+
+    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
+    log = l.get_state_history(host_name=host_name, service_description=service_description)
+
+    # If hostgroup_name was specified, lets get all log entries that belong to that hostgroup
+    if host_name and service_description:
+        object_type = 'service'
+    elif hostgroup_name:
+        object_type = "hostgroup"
+        hg = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
+        hosts = hg.get_effective_hosts()
+        hostnames = map(lambda x: x.host_name, hosts)
+        log = filter(lambda x: x['host_name'] in hostnames, log)
+    elif host_name:
+        object_type = "host"
     else:
-        log = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
-            host_name=host_name, service_description=service_description)
+        raise Exception("Need either a host_name or hostgroup_name parameter")
 
     c = {'log':log}
+    c['object_type'] = object_type
     # Create some state history progress bar from our logs:
     if len(c['log']) > 0:
         log = c['log']
@@ -314,8 +327,7 @@ def status_hostgroup(request, hostgroup_name):
     c['errors'] = []
     c['hostgroup_name'] = hostgroup_name
     c['object_type'] = 'hostgroup'
-    livestatus = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = adagios.status.utils.livestatus(request)
 
     my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(
         hostgroup_name)
@@ -328,46 +340,17 @@ def status_hostgroup(request, hostgroup_name):
     subgroups = subgroups.split(',')
     if subgroups == ['']:
         subgroups = []
-    c['hostgroups'] = map(
-        lambda x: livestatus.get_hostgroups('Filter: name = %s' % x)[0], subgroups)
+    c['hostgroups'] = map(lambda x: livestatus.get_hostgroups('Filter: name = %s' % x)[0], subgroups)
     _add_statistics_to_hostgroups(c['hostgroups'])
 
+    args = ['Filter: host_groups >= %s' % hostgroup_name]
+    args += pynag.Utils.grep_to_livestatus(**request.GET)
+
     # Get hosts that belong in this hostgroup
-    c['hosts'] = livestatus.query(
-        'GET hosts', 'Filter: host_groups >= %s' % hostgroup_name)
-    _add_statistics_to_hosts(c['hosts'])
-    # Sort by service status
-    c['hosts'].sort(cmp=lambda a, b: cmp(a['percent_ok'], b['percent_ok']))
+    c['hosts'] = adagios.status.utils.get_hosts(request, *args)
 
     # Get services that belong in this hostgroup
-    c['services'] = livestatus.query(
-        'GET services', 'Filter: host_groups >= %s' % hostgroup_name)
-    c['services'] = pynag.Utils.grep(c['services'], **request.GET)
-    # Get recent log entries for this hostgroup
-    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    all_history = l.get_state_history()
-    c['log'] = filter(lambda x: x['host_name']
-                      in c['my_hostgroup']['members'], all_history)
-
-    # Create some state history progress bar from our logs:
-    if len(c['log']) > 0:
-        log = c['log']
-        c['start_time'] = start_time = log[0]['time']
-        c['end_time'] = end_time = log[-1]['time']
-        now = time.time()
-
-        total_duration = now - start_time
-        state_hist = []
-        start = start_time
-        last_item = None
-        css_hint = {}
-        css_hint[0] = 'success'
-        css_hint[1] = 'warning'
-        css_hint[2] = 'danger'
-        css_hint[3] = 'info'
-        for i in log:
-            i['duration_percent'] = 100 * i['duration'] / total_duration
-            i['bootstrap_status'] = css_hint[i['state']]
+    c['services'] = adagios.status.utils.get_services(request, *args)
 
     return render_to_response('status_hostgroup.html', c, context_instance=RequestContext(request))
 
