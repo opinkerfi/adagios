@@ -98,22 +98,18 @@
 
     <div id="main_content">
 
-            <!-- page_header contains stuff breadcrumbs and title of the current page -->
+        <!-- page_header contains stuff breadcrumbs and title of the current page -->
         {% block page_header %}
             <div class="pull-right" id="top_right">
             {% block top_right %}
             {% endblock top_right %}
             </div>
             <div id="page_header" class="page_header" >
-                <h3 >
+                <h3 class="nowrap">
                     {% block smallheader %}block=smallheader{% endblock %}
                     {% block largeheader %}block=largeheader {% endblock %}
                 </h3>
-
-
-
-
-                </div>
+            </div>
 
 
 
