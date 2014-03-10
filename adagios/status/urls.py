@@ -4,11 +4,7 @@ from django.conf import settings
 urlpatterns = patterns('adagios',
                       url(r'^/?$', 'status.views.status_index', name="status_index"),
                       (r'^/test/?$', 'status.views.test_livestatus'),
-                      (r'^/boxview/?$', 'status.views.status_boxview'),
-                      (r'^/(?P<object_type>.+?)s.tiles/?$',
-                       'status.views.status_tiles'),
 
-                      (r'^/paneview/?$', 'status.views.status_paneview'),
                       (r'^/state_history/?$', 'status.views.state_history'),
 
                       (r'^/dashboard/?$', 'status.views.dashboard'),
