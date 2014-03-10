@@ -501,7 +501,7 @@ adagios.misc.init_tab_selection = function() {
 
     var tabs = $('ul.nav.nav-tabs');
     var anchor = document.location.href.split('#')[1] || '';
-    anchor = anchor.split('-tab')[0];
+    anchor = anchor.split('_tab')[0];
     var current_tab = tabs.find('a[href="#' + anchor + '"]');
     if (current_tab.length === 0) {
         current_tab = tabs.find('a:first');
@@ -509,10 +509,8 @@ adagios.misc.init_tab_selection = function() {
     current_tab.tab('show');
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
-        var currenttab = $(e.target).attr('href');
-        var id = $(e.target).attr('href').split("-")[0];
-        var currenttable = 'table' + id + "-table";
-        document.location.hash = id + "-tab";
+        var id = $(e.target).attr('href').split("_tab")[0];
+        document.location.hash = id + "_tab";
     });
 
 };
