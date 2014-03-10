@@ -68,7 +68,7 @@ def get_notifications(request):
         if i.get('user') and i.get('user') != request.META.get('remote_user'):
             continue # Skipt this message if it is meant for someone else
         elif i.get('notification_type') == 'show_once':
-            #del notifications[k]
+            del notifications[k]
             pass
         result.append(i)
     return result
