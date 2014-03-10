@@ -130,8 +130,9 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             'check_command': self.check_command,
             'name': self.name
         };
+        var check_command_editor_location = $('#check_command_editor_tables')
 
-        $('#check_command_editor_tables').hide();
+        check_command_editor_location.hide();
 
         if (my_data.check_command == null || my_data.check_command == '')
         {
@@ -143,7 +144,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             return;
         }
 
-        $('#check_command_editor_tables').show();
+        check_command_editor_location.show();
 
         adagios.rest.pynag.check_command(my_data)
             .done( function(data) {
