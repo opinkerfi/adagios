@@ -18,12 +18,14 @@
     </script>
 {% endblock %}
 {%  block content %}
-    <p>
-    You are about to copy multible objects
-    <p>
-    Fill in Attribue Name and New Value and they will be changed on
-    all selected items. If object does not currently have this value defined it will be added anyway.
-    <p>
+    <div class="alert alert-info">
+        <p>
+        You are about to copy multible objects
+        <p>
+        Fill in Attribue Name and New Value and they will be changed on
+        all selected items. If object does not currently have this value defined it will be added anyway.
+        <p>
+    </div>
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         <div>
     {% include "bootstrap_fields.html" with fields=form %}

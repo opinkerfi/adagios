@@ -1,9 +1,9 @@
-{% extends "adagios_standard.html" %}
+{% extends "base.html" %}
 {% block title %}Copy Object{% endblock %}
 {% block smallheader %}Copy{% endblock %}
 {% block largeheader %}{{ object.object_type }}{% endblock %}
 {% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
-
+{% block toolbar %}{% endblock %}
 
 
 {% block content %}
@@ -17,9 +17,11 @@
             </div>
         {% endfor %}
     {% else %}
-    You are about to copy {{ object.object_type }} "{{ object.description }}".
+        <div class="alert alert-info">
+            You are about to copy {{ object.object_type }} "{{ object.description }}".
+        </div>
         <p></p>
-        <form action="#" method="POST" class="form-horizontal">{% csrf_token %}
+        <form  action="#" method="POST" class="form-horizontal">{% csrf_token %}
             {% include "bootstrap_fields.html" with fields=form %}
             <button class="btn btn-success" type="submit"><i class=" icon-thumbs-up icon-white"></i> Copy</button>
         </form>

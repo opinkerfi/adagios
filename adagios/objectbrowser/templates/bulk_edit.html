@@ -1,7 +1,8 @@
-{% extends "adagios_standard.html" %}
+{% extends "base.html" %}
 {% block title %}Bulk edit{% endblock %}
-{% block smallheader %}bulk{% endblock %}
-{% block largeheader %}Edit objects{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Bulk Edit{% endblock %}
+{% block toolbar %}{% endblock %}
 {% block nav1 %}Object Browser{% endblock %}
 {% block footer %}
     <script>
@@ -16,12 +17,15 @@
     </script>
 {% endblock %}
 {%  block content %}
+    <div class="alert alert-warning">
     <p>
     You are about to make changes to multiple objects.
-    <p>
+    </p><p>
     Fill in Attribue Name and New Value and they will be changed on
     all selected items. If object does not currently have this value defined it will be added anyway.
-    <p>
+    </p>
+
+    </div>
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         <div>
     {% include "bootstrap_fields.html" with fields=form %}

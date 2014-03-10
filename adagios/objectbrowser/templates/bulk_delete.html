@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Bulk edit{% endblock %}
-{% block smallheader %}bulk{% endblock %}
+{% block smallheader %}{% endblock %}
 {% block largeheader %}Delete objects{% endblock %}
 {% block nav1 %}Object Browser{% endblock %}
 {% block toolbar %}{% endblock %}
@@ -19,9 +19,9 @@
 {% endblock %}
 {% block content %}
     {% if success %}
-    <h3>Objects have been deleted.</h3>
+    <div class="alert alert-success">Objects have been deleted.</div>
     {% else %}
-    You are about to delete multible objects. Are you sure you want to continue ?
+        <div class="alert alert-danger">You are about to delete multible objects. Are you sure you want to continue ?</div>
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         <div>
         <table id="many">
