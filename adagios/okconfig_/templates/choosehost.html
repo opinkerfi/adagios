@@ -1,9 +1,9 @@
-{% extends "base_okconfig.html" %}
+{% extends "base.html" %}
 {% block title %}Edit host{% endblock %}
 {% block smallheader %}Edit{% endblock %}
 {% block largeheader %}Host thresholds{% endblock %}
 {% block nav2 %}<a href="{% url adagios.okconfig_.views.choose_host %}">Edit Host</a>{% endblock %}
-
+{% block toolbar %}{% endblock %}
 
 {% block content %}
 Please choose a host.

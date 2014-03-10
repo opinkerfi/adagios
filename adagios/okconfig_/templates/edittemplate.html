@@ -1,9 +1,9 @@
-{% extends "base_okconfig.html" %}
+{% extends "base.html" %}
 {% block title %}Edit Host{% endblock %}
 {% block smallheader %}Edit{% endblock %}
 {% block largeheader %}Host{% endblock %}
 {% block nav2 %}<a href="{% url adagios.okconfig_.views.edit host_name %}">Edit Host</a>{% endblock %}
-
+{% block toolbar %}{% endblock %}
 
 {% block content %}
 {% if myhost %}

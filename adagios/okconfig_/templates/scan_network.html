@@ -1,9 +1,9 @@
-{% extends "base_okconfig.html" %}
+{% extends "base.html" %}
 {% block title %}Scan Network{% endblock %}
 {% block smallheader %}scan{% endblock %}
 {% block largeheader %}Network{% endblock %}
 {% block nav2 %}<a href="{% url adagios.okconfig_.views.scan_network %}">Scan Network</a>{% endblock %}
-
+{% block toolbar %}{% endblock %}
 
 {% block header %}
     <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
