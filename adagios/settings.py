@@ -132,7 +132,6 @@ enable_githandler=False
 enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
-enable_pages_view = True
 enable_bi = True
 contrib_dir = "/var/lib/adagios/contrib/"
 escape_html_tags = True
@@ -146,9 +145,6 @@ django_secret_key = ""
 map_center = "64.119595,-21.655426"
 map_zoom = "10"
 title_prefix = "Adagios - "
-
-# pages module, path to extra pages the user can upload
-extra_pages = "/etc/adagios/pages.d"
 
 plugins = {}
 
@@ -204,8 +200,6 @@ else:
 
 if enable_status_view:
   plugins['status'] = 'adagios.status'
-if enable_pages_view:
-  plugins['pages'] = 'adagios.pages'
 if enable_bi:
   plugins['bi'] = 'adagios.bi'
 
