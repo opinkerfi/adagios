@@ -332,9 +332,9 @@ def edit(object_type, short_name, attribute_name, new_value):
     return str(my_obj)
 
 
-def get_map_data(host_name=None):
+def get_map_data(request, host_name=None):
     """ Returns a list of (host_name,2d_coords). If host_name is provided, returns a list with only that host """
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = adagios.status.utils.livestatus(request)
     all_hosts = livestatus.query('GET hosts', )
     hosts_with_coordinates = pynag.Model.Host.objects.filter(
         **{'2d_coords__exists': True})
