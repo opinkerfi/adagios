@@ -7,7 +7,7 @@
 
 {% block sidebar %}{{ block.super }}{% endblock %}
 
-{% block adagios_hausinn %}
+{% block page_header %}
     {{ block.super }}
     {% if status.text and status.plugin_output %}
         <div class="row-fluid" id="top_status">

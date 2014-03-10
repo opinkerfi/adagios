@@ -4,13 +4,13 @@
 {% block header %}{{ block.super }}{% endblock %}
 {% block smallheader %}{{ my_object.object_type }}{% endblock %}
 {% block largeheader %}
-    {{ my_object.service_description }} on host {{ my_object.host_name }}
+    {{ my_object.service_description }} <small>on host</small> {{ my_object.host_name }}
 {% endblock %}
 
 
 {% block sidebar %}{{ block.super }}{% endblock %}
 
-{% block adagios_hausinn %}
+{% block page_header %}
     {{ block.super }}
     {% if status.text and status.plugin_output %}
         <div class="row-fluid" id="top_status">
