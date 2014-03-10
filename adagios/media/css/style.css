@@ -300,7 +300,8 @@ table.statustable {
     list-style-type: none;
     margin-top: 5px;
 }
-.hoverable:hover {
+
+.hoverable:hover, .objecttable:hover {
     background-color: #f6f6f6;
 }
 
@@ -322,6 +323,7 @@ button.close.notification {
    /* right: 2px; */
 }
 
+
 #main_content {
     min-height: 450px;
     overflow: hidden;
@@ -342,10 +344,30 @@ button.close.notification {
    padding-top: 0;
     margin-top: 20px;
 }
+
 .well {
         background: url('../img/bak.jpg')
 }
 
 .errorlist {
     color: red;
+}
+
+#base_objectbrowser {
+    background: url('../img/bak.jpg');
+    font-size: 13px;
+}
+
+#base_objectbrowser .well {
+    background: none;
+    background-color: #f5f5f5;
+}
+#base_objectbrowser a {
+    color: #b70000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#base_objectbrowser .table tbody tr:hover td, #base_objectbrowser .table tbody tr:hover th {
+    background-color: #f6f6f6;
 }
