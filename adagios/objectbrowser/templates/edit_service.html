@@ -2,6 +2,10 @@
 {% block title %}{{ block.super }}{% endblock %}
 
 {% block header %}{{ block.super }}{% endblock %}
+{% block smallheader %}{{ my_object.object_type }}{% endblock %}
+{% block largeheader %}
+    {{ my_object.service_description }} on host {{ my_object.host_name }}
+{% endblock %}
 
 
 {% block sidebar %}{{ block.super }}{% endblock %}
