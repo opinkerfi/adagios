@@ -314,6 +314,8 @@ button.close.notification {
 }
 #page_header {
     margin-top: 20px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 #left_sidebar {
    padding-bottom: 0;

@@ -7,7 +7,7 @@
 
             <div class="row-fluid">
                 <div class="span12">
-                    <div class="block">
+                    <div class="block" id="page_header">
                         <!-- block page_header starts -->
                         {% block page_header %}
                             <ul class="breadcrumb">
@@ -21,7 +21,7 @@
                                     <span class="divider">/</span>
                                 </li>
                             </ul>
-                            <h2 class="nowrap">
+                            <h2>
                                 <i class="icon-th-large"></i> <small>{% block smallheader %}block=smallheader{% endblock%} </small> {% block largeheader %}block=largeheader{% endblock %}
                             </h2>
                         {% endblock %}
