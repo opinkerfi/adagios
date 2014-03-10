@@ -8,9 +8,9 @@
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
         <li class="active"><a href="#information" data-toggle="tab">Information</a></li>
-        <li><a href="#child_hostgroups" data-toggle="tab">Child Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
-        <li><a href="#hosts" data-toggle="tab">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
-        <li><a href="#services" data-toggle="tab">Services {% if services %}<span class="muted">({{ services|length }})</span>{% endif %}</a></li>
+        <li><a href="#child_hostgroups" data-toggle="tab" id="hostgroups_link">Child Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
+        <li><a href="#hosts" data-toggle="tab" id="hosts_link">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
+        <li><a href="#services" data-toggle="tab" id="services_link">Services {% if services %}<span class="muted">({{ services|length }})</span>{% endif %}</a></li>
         <li><a href="#history" data-toggle="tab" id="history_link">History</a></li>
         <li><a href="#debug" data-toggle="tab">Debug</a></li>
 
@@ -129,12 +129,12 @@
 
         <div class="tab-pane " id="hosts">
             Hosts that belong to {{ hostgroup_name }}
-            {% include "snippets/status_hostlist_snippet.html" %}
+            <div id="hostlist">This dialog should start loading when you click the hosts tab</div>
         </div>
 
         <div class="tab-pane " id="services">
             Services that belong to {{ hostgroup_name }}
-            {% include "snippets/status_servicelist_snippet.html" %}
+            <div id="servicelist">This dialog should start loading when you click the services tab</div>
         </div>
 
         <div class="tab-pane" id="history">
@@ -196,8 +196,24 @@
             var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
             var snippet_url = '{% url adagios.status.views.snippets_log %}?object_type=hostgroup&hostgroup_name=' + hostgroup_name;
             $('#logdiv').load(snippet_url);
-
         });
+
+        $('#services_link').click(function(event) {
+            // Load log history in its own tab
+            $('#servicelist').html("Loading ...");
+            var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
+            var snippet_url = '{% url adagios.status.views.snippets_services %}?host_groups__has_field=' + hostgroup_name;
+            $('#servicelist').load(snippet_url);
+        });
+
+        $('#hosts_link').click(function(event) {
+            // Load log history in its own tab
+            $('#hostlist').html("Loading ...");
+            var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
+            var snippet_url = '{% url adagios.status.views.snippets_hosts %}?host_groups__has_field=' + hostgroup_name;
+            $('#hostlist').load(snippet_url);
+        });
+
     </script>
 
 {% endblock %}

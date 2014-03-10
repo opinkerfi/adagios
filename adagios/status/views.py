@@ -131,6 +131,28 @@ def status_dt(request):
 
 
 @error_handler
+def snippets_services(request):
+    """ Returns a html stub with only the services view """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    fields = [
+        'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state',
+        'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
+    c['services'] = utils.get_services(request, fields=fields, **request.GET)
+    return render_to_response('snippets/status_servicelist_snippet.html', c, context_instance=RequestContext(request))
+
+@error_handler
+def snippets_hosts(request):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    c['hosts'] = utils.get_hosts(request, **request.GET)
+    c['host_name'] = request.GET.get('detail', None)
+    return render_to_response('snippets/status_hostlist_snippet.html', c, context_instance=RequestContext(request))
+
+
+@error_handler
 def snippets_log(request):
     """ Returns a html stub with the  snippet_statehistory_snippet.html
     """
@@ -179,7 +201,6 @@ def snippets_log(request):
         for i in log:
             i['duration_percent'] = 100 * i['duration'] / total_duration
             i['bootstrap_status'] = css_hint[i['state']]
-
 
     return render_to_response('snippets/status_statehistory_snippet.html', locals(), context_instance=RequestContext(request))
 
@@ -342,15 +363,6 @@ def status_hostgroup(request, hostgroup_name):
         subgroups = []
     c['hostgroups'] = map(lambda x: livestatus.get_hostgroups('Filter: name = %s' % x)[0], subgroups)
     _add_statistics_to_hostgroups(c['hostgroups'])
-
-    args = ['Filter: host_groups >= %s' % hostgroup_name]
-    args += pynag.Utils.grep_to_livestatus(**request.GET)
-
-    # Get hosts that belong in this hostgroup
-    c['hosts'] = adagios.status.utils.get_hosts(request, *args)
-
-    # Get services that belong in this hostgroup
-    c['services'] = adagios.status.utils.get_services(request, *args)
 
     return render_to_response('status_hostgroup.html', c, context_instance=RequestContext(request))
 

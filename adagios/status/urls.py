@@ -39,5 +39,7 @@ urlpatterns = patterns('adagios',
                       (r'^/detail/?$', 'status.views.status_detail'),
 
                       (r'^/snippets/log/?$', 'status.views.snippets_log'),
+                      (r'^/snippets/services/?$', 'status.views.snippets_services'),
+                      (r'^/snippets/hosts/?$', 'status.views.snippets_hosts'),
 
                        )
