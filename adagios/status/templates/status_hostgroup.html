@@ -160,21 +160,21 @@
         </div>
     </div>
 
-        <!-- has to be here for the action buttons to work -->
-        <div  id="hostgroupstatus" class="hide">
-            <table>
-                <tbody>
-                <tr>
-                    <td class="selectable">
-                        <input class="chkbox"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="hostgroup" value="{{ hostgroup_name }}" data-hostgroup_name="{{ hostgroup_name }}" data-object_type="hostgroup">
-                        <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
-                        <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
+    <!-- has to be here for the action buttons to work -->
+    <div  id="hostgroupstatus" class="hide">
+        <table>
+            <tbody>
+            <tr>
+                <td class="selectable">
+                    <input class="chkbox"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="hostgroup" value="{{ hostgroup_name }}" data-hostgroup_name="{{ hostgroup_name }}" data-object_type="hostgroup">
+                    <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
+                    <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
 
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
 
 {% endblock %}
