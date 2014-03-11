@@ -36,7 +36,8 @@ $(document).ready(function() {
     // Multiselect checkboxes at the top-left of status-tables
     adagios.status.initilize_multiselect_checkboxes();
 
-
+    // Handle user contributed ssi overwrites
+    adagios.misc.ssi_overwrites();
 });
 
 
@@ -798,7 +799,26 @@ adagios.status.initilize_multiselect_checkboxes = function() {
 
 };
 
+// Handle SSI (serverside includes) overwrites.
+// We will look for objects with class ssi-append or ssi-overwrite and rewrite html accordingly.
+//
+// Example: this tag: <div class="ssi-overwrite" data-for="#top_navigation_bar" would overwrite
+// The markup inside #top_navigation_bar
+adagios.misc.ssi_overwrites = function() {
+    $(".ssi-overwrite").each(function(data) {
+        var dest_selector = $(this).data('for');
+        var destination = $(dest_selector);
+        destination.html($(this).html());
+    });
 
+    $(".ssi-append").each(function(data) {
+        var dest_selector = $(this).data('for');
+        var destination = $(dest_selector);
+        destination.html(destination.html() + $(this).html());
+    });
+
+
+};
 
 // Function to edit a single attribute of an object
 adagios.status.change_attribute = function(object_type,short_name,attribute_name,new_value, success, error) {
