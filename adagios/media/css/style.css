@@ -538,4 +538,6 @@ button.close.notification {
     padding:  4px 4px 4px 14px;
 }
 
-
+.ssi-overwrite, .ssi-append {
+    display: none;
+}
