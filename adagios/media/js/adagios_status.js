@@ -38,6 +38,9 @@ $(document).ready(function() {
 
     // Handle user contributed ssi overwrites
     adagios.misc.ssi_overwrites();
+
+    // Fix console logging for internet explorer
+    adagios.misc.internet_explorer_console_fix();
 });
 
 
@@ -836,3 +839,29 @@ adagios.status.change_attribute = function(object_type,short_name,attribute_name
                 adagios.misc.error("Error saving data.")
             });
     };
+
+adagios.misc.internet_explorer_console_fix = function() {
+// Avoid `console` errors in browsers that lack a console.
+(function() {
+    var method;
+    var noop = function () {};
+    var methods = [
+        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
+        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
+        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
+        'timeStamp', 'trace', 'warn'
+    ];
+    var length = methods.length;
+    var console = (window.console = window.console || {});
+
+    while (length--) {
+        method = methods[length];
+
+        // Only stub undefined methods.
+        if (!console[method]) {
+            console[method] = noop;
+        }
+    }
+}());
+
+};
