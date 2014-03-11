@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load ssi from future %}
 
 <html lang="en">
 
@@ -36,6 +37,15 @@
 </head>
 
 <body>
+
+<!-- begin serverside includes -->
+{% for ssi_header in ssi_headers %}
+    <!-- including content from {{ ssi_header }} -->
+    {% ssi ssi_header parsed %}
+    <!-- end of file {{ ssi_header }} -->
+{% endfor %}
+<!-- end of serverside includes -->
+
 
 
 <!-- block top_navigation starts -->
@@ -206,6 +216,14 @@
 {% block footer %}
 {% endblock %}
 <!-- block footer ends -->
+
+<!-- begin serverside includes -->
+{% for ssi_footer in ssi_footers %}
+    <!-- including content from {{ ssi_footer }} -->
+    {% ssi ssi_footer parsed %}
+    <!-- end of file {{ ssi_footer }} -->
+{% endfor %}
+<!-- end of serverside includes -->
 
 <!--
 GLYPHICONS FREE are released under the Creative Commons Attribution 3.0 Unported (CC BY 3.0). The Glyphicons FREE can

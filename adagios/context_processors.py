@@ -53,7 +53,8 @@ def on_page_load(request):
         results[k] = v
     for k, v in get_current_version(request).items():
         results[k] = v
-
+    for k, v in get_serverside_includes(request).items():
+        results[k] = v
     return results
 
 
@@ -67,6 +68,34 @@ def get_current_time(request):
         result['current_timestamp'] = int(time.time())
     except Exception:
         return result
+    return result
+
+
+def get_serverside_includes(request):
+    """ Returns a list of serverside includes to include on this page """
+    result = {}
+    result['ssi_headers'] = []
+    result['ssi_footers'] = []
+    dirname = adagios.settings.serverside_includes
+    files = os.listdir(dirname)
+    current_url = resolve_urlname(request)
+    if not dirname:
+        return {}
+    if not os.path.isdir(dirname):
+        return {}
+    files = os.listdir(dirname)
+    common_header_file = "common-header.ssi"
+    common_footer_file = "common-footer.ssi"
+    custom_header_file = "{urlname}-header.ssi".format(urlname=current_url)
+    custom_footer_file = "{urlname}-footer.ssi".format(urlname=current_url)
+    if common_header_file in files:
+        result['ssi_headers'].append(dirname + "/" + common_header_file)
+    if common_footer_file in files:
+        result['ssi_footers'].append(dirname + "/" + common_footer_file)
+    if custom_header_file in files:
+        result['ssi_headers'].append(dirname + "/" + custom_header_file)
+    if custom_footer_file in files:
+        result['ssi_footers'].append(dirname + "/" + custom_footer_file)
     return result
 
 

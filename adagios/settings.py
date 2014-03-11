@@ -134,6 +134,7 @@ enable_authorization = False
 enable_status_view = True
 enable_bi = True
 contrib_dir = "/var/lib/adagios/contrib/"
+serverside_includes = "/etc/adagios/ssi"
 escape_html_tags = True
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
@@ -189,19 +190,21 @@ if not django_secret_key:
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
     SECRET_KEY = get_random_string(50, chars)
     try:
-        fh = open(adagios_configfile, "a")
-        fh.write("\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n"
-            % SECRET_KEY)
-        fh.close()
+        data = "\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n" % SECRET_KEY
+        with open(adagios_configfile, "a") as f:
+            fh.write(data)
     except Exception, e:
-                raise Exception("Unable to save generated django_secret_key: %s" % e)
+        print("ERROR: Got %s while trying to save django secret_key in %s" % (type(e), adagios_configfile))
+
 else:
     SECRET_KEY = django_secret_key
 
+ALLOWED_INCLUDE_ROOTS = (serverside_includes,)
+
 if enable_status_view:
-  plugins['status'] = 'adagios.status'
+    plugins['status'] = 'adagios.status'
 if enable_bi:
-  plugins['bi'] = 'adagios.bi'
+    plugins['bi'] = 'adagios.bi'
 
 for k,v in plugins.items():
     INSTALLED_APPS.append( v )
