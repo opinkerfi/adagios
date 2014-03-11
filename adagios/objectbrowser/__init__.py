@@ -1,6 +1,5 @@
 import os
 
-
 def startup():
     """ Do some pre-loading and parsing of objects
 
@@ -18,6 +17,27 @@ def startup():
     pynag.Model.adagios_layer = settings.adagios_layer
     if pynag.Model.multilayered_parsing:
         # Do layer compiling and generate the actual config
+        compile_layers()
+
+    # Pre load objects on startup
+    pynag.Model.ObjectDefinition.objects.get_all()
+
+    if settings.save_services_with_hosts:
+        for serv in pynag.Model.Service.objects.all:
+            serv.merge_service_to_host()
+
+    if settings.enable_githandler == True:
+        from pynag.Model import EventHandlers
+        pynag.Model.eventhandlers.append(
+            pynag.Model.EventHandlers.GitEventHandler(
+                os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
+        )
+
+def compile_layers():
+    """ Parses all the layers and generates complete config to use in 
+    adagios 
+    """
+    if pynag.Model.multilayered_parsing:
         pynag.Model.config = pynag.Parsers.LayeredConfigCompiler(
                 cfg_file=pynag.Model.cfg_file,
                 layers=pynag.Model.layers,
@@ -28,17 +48,6 @@ def startup():
                 cfg_file=pynag.Model.cfg_file,
                 adagios_layer = pynag.Model.adagios_layer
                 )
-
-    # Pre load objects on startup
-    pynag.Model.ObjectDefinition.objects.get_all()
-
-    if settings.enable_githandler == True:
-        from pynag.Model import EventHandlers
-        pynag.Model.eventhandlers.append(
-            pynag.Model.EventHandlers.GitEventHandler(
-                os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
-        )
-
 
 # If any pynag errors occur during initial parsing, we ignore them
 # because we still want the webserver to start.
