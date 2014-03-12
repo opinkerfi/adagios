@@ -23,9 +23,10 @@
     <div class="row">
         <div class="col-md-12">
             <h1 class="pull-left">Status Dashboard</h1>
-        <div id="information_dialog" class="pull-right dynamic">
-            Test
-        </div>
+            <div id="top-right" class="pull-right">
+                <div> You are {{ request.META.REMOTE_USER }} coming from {{ request.META.REMOTE_ADDR }}. </div>
+                <div id="information_dialog" class="dynamic"></div>
+            </div>
         </div>
     </div>
 
