@@ -236,7 +236,7 @@ class PynagForm(AdagiosForm):
                 lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
             field = PynagChoiceField(
                 choices=sorted(choices), inline_help_text="No %s selected" % (field_name))
-        elif field_name in ('hostgroups', 'hostgroup_members', 'hostgroup_name'):
+        elif field_name in ('hostgroups', 'hostgroup_members', 'hostgroup_name') and object_type != 'hostgroup':
             all_groups = Model.Hostgroup.objects.filter(
                 hostgroup_name__contains='')
             choices = map(
