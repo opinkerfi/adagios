@@ -74,14 +74,24 @@ $.extend $.fn.dataTableExt.oStdClasses,
     return true if cache_type is undefined
 
     # We are showing templates and this is register=0
-    if aData[0] is "0" and cache_type is "2"
+    if aData[1] isnt null and cache_type is "2"
       return true
 
-    if cache_type is "1" and aData[1] is "#{object_type}group" and aData[0] != "0"
+    if cache_type is "1" and aData[2] is "#{object_type}group" and aData[1] is null
       return true
 
-    if cache_type is "0" and aData[1] is object_type and aData[0] != "0"
+    if cache_type is "0" and aData[2] is object_type and aData[1] is null
       return true
+
+    # default no
+    # if aData[0] is "0" and cache_type is "2"
+    #   return true
+
+    # if cache_type is "1" and aData[1] is "#{object_type}group" and aData[0] != "0"
+    #   return true
+
+    # if cache_type is "0" and aData[1] is object_type and aData[0] != "0"
+    #   return true
 
     # default no
     false
@@ -195,6 +205,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
       sTitle: "object_type"
       bVisible: false
     ,
+      sTitle: "name"
+      bVisible: false
+    ,
       sTitle: """<label rel="tooltip" title="Select All" id="selectall" class="checkbox"><input type="checkbox"></label>"""
       sWidth: "32px"
 
@@ -226,6 +239,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
         $.each data, (i, item) ->
           field_array = [
             item["register"],
+            item["name"],
             object_type,
             """<input id="ob_mass_select" name="#{ item["id"] }" type="checkbox">"""
           ]
@@ -344,7 +358,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
         """
     if object_type == "command" or object_type == "timeperiod"
-      $("#view_filter").hide();
+      $("#view_filter").hide()
 
     $("#actions #modify a").on "click", (e) ->
       checked = $("input#ob_mass_select:checked").length
@@ -429,9 +443,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $("div\##{object_type}_filter.dataTables_filter input").addClass "input-medium search-query"
 
     if object_type == "service"
-      dt.fnSort [[3, "asc"], [4, "asc"]]
+      dt.fnSort [[4, "asc"], [5, "asc"]]
     else
-      dt.fnSort [[3, "asc"]]
+      dt.fnSort [[4, "asc"]]
 
   
   #return this.each(function() {
