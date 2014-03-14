@@ -10,19 +10,8 @@
 {% block content %}
 
     <div id="friendly_livestatus_message" class=hide>
-        {% if not nagios_running %}
-            We can't find a running nagios instance. Make sure nagios is running and adagios can connect to it.
-            <ul>
-                <li>
-                    check that nagios is in fact running, if sudoers.d is correctly configured, you can start it <a href="{% url misc.views.nagios_service %}">here</a>
-                </li>
-                <li>
-                    Please verify your <a href="{% url misc.views.settings %}">settings</a> and check all paths are valid.
-                </li>
 
-            </ul>
-        {% endif %}
-        {% if nagios_running and not num_problems %}
+        {% if exception_type == "LivestatusNotConfiguredException" or nagios_running and not num_problems %}
             Adagios cannot connect to livestatus. Don't worry, you can still use the other parts of Adagios,
             but to get the status part to work check the following:
             <ul>
@@ -44,31 +33,53 @@ pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nag
 service nagios3 reload
             </pre>
         {% endif %}
+
+        {% if not nagios_running %}
+            <hr>
+            <p>
+                Is our monitoring engine even running ? If so we cant detect it.
+            </p>
+            <p>
+                Don't worry you can still configure stuff but you might want to start it so you can start monitoring stuff.
+            </p>
+            <ul>
+                <li>
+                    Please verify your <a href="{% url misc.views.settings %}">settings</a> and check all paths are valid.
+                </li>
+                <li>
+                    check that nagios is in fact running and sudoers.d is correctly configured.
+                </li>
+                <li>
+                    Try starting it by clicking <a href="{% url misc.views.nagios_service %}">here</a> and see if you are getting some sort of errors
+                </li>
+            </ul>
+        {% endif %}
+
+
+        {% if exception_type == "ConfigFileNotFound" %}
+            <p>
+            So! Adagios is up and running. But you need to install and configure a monitoring engine.
+            </p>
+            <p>
+                If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already installed.
+                You should head over to <a href="{% url adagios.misc.views.settings %}">settings page</a> and
+                configure right paths.
+            </p>
+            <p>
+                If you don't have a monitoring engine installed you should take a look at our
+                <a href="http://adagios.org">installation instructions</a> to get started.
+            </p>
+        {% endif %}
+
         <hr>
     </div>
+
 
 
     {% if exception %}
         <div id="error_message" class="alert alert-danger">
             <b>{{ exception_type }}</b>: {{ exception }}
         </div>
-    {% endif %}
-
-    {% if exception_type == "ConfigFileNotFound" %}
-        <p>
-        So! Adagios is up and running. But you need to install and configure a monitoring engine.
-        </p>
-        <p>
-            If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already installed.
-            You should head over to <a href="{% url adagios.misc.views.settings %}">settings page</a> and
-            configure right paths.
-        </p>
-        <p>
-            If you don't have a monitoring engine installed you should take a look at our
-            <a href="http://adagios.org">installation instructions</a> to get started.
-        </p>
-
-        <hr>
     {% endif %}
 
 
