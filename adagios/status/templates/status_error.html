@@ -54,6 +54,23 @@ service nagios3 reload
         </div>
     {% endif %}
 
+    {% if exception_type == "ConfigFileNotFound" %}
+        <p>
+        So! Adagios is up and running. But you need to install and configure a monitoring engine.
+        </p>
+        <p>
+            If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already installed.
+            You should head over to <a href="{% url adagios.misc.views.settings %}">settings page</a> and
+            configure right paths.
+        </p>
+        <p>
+            If you don't have a monitoring engine installed you should take a look at our
+            <a href="http://adagios.org">installation instructions</a> to get started.
+        </p>
+
+        <hr>
+    {% endif %}
+
 
     <button id="debug_button" class="btn" onclick="$('#traceback').toggle(); $('#debug_button').toggle();">show debug information</button>
     <div id="traceback" class="hide">
