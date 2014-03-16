@@ -59,3 +59,14 @@ If you need any help with getting adagios to work, feel free to open up an issue
   - Bug reports, feature requests: https://github.com/opinkerfi/adagios/issues
   - Mailing list: http://groups.google.com/group/adagios
   - IRC: #adagios on irc.freenode.net
+
+
+License
+=======
+GNU AFFERO GENERAL PUBLIC LICENSE Version 3
+
+The GNU Affero General Public License is a free, copyleft license for
+software and other kinds of works, specifically designed to ensure
+cooperation with the community in the case of network server software.
+
+
