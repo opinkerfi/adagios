@@ -73,26 +73,24 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     return true if cache_type is undefined
 
-    # We are showing templates and this is register=0
-    if aData[1] isnt null and cache_type is "2"
+    if cache_type is "2" and aData[0] is "0" and aData[1] isnt null
       return true
 
-    if cache_type is "1" and aData[2] is "#{object_type}group" and aData[1] is null
-      return true
+    if cache_type is "1" and aData[2] is "#{object_type}group" and aData[0] != "0"
+      # Enabled hosts
+      if aData[0] is "1"
+        return true
+      # Disabled hosts
+      if aData[0] is "0" and aData[1] is null
+        return true
 
-    if cache_type is "0" and aData[2] is object_type and aData[1] is null
-      return true
-
-    # default no
-    # if aData[0] is "0" and cache_type is "2"
-    #   return true
-
-    # if cache_type is "1" and aData[1] is "#{object_type}group" and aData[0] != "0"
-    #   return true
-
-    # if cache_type is "0" and aData[1] is object_type and aData[0] != "0"
-    #   return true
-
+    if cache_type is "0" and aData[2] is "#{object_type}"
+      # Enabled hosts
+      if aData[0] is "1"
+        return true
+      # Disabled hosts
+      if aData[0] is "0" and aData[1] is null
+        return true
     # default no
     false
 
@@ -202,10 +200,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
       sTitle: "register"
       bVisible: false
     ,
-      sTitle: "object_type"
+      sTitle: "name"
       bVisible: false
     ,
-      sTitle: "name"
+      sTitle: "object_type"
       bVisible: false
     ,
       sTitle: """<label rel="tooltip" title="Select All" id="selectall" class="checkbox"><input type="checkbox"></label>"""
@@ -225,7 +223,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $.each $this.fetch, (f, v) ->
       object_type = v["object_type"]
       console.log """Populating #{ object_type } #{ $this.attr("id") }<br/>"""
-      json_query_fields = ["id", "register"]
+      json_query_fields = ["id", "register", "name"]
       $.each v["rows"], (k, field) ->
         json_query_fields.push field["cName"]  if "cName" of field
         json_query_fields.push field["cAltName"]  if "cAltName" of field
@@ -358,7 +356,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
         """
     if object_type == "command" or object_type == "timeperiod"
-      $("#view_filter").hide()
+        $("#view_filter").hide()
 
     $("#actions #modify a").on "click", (e) ->
       checked = $("input#ob_mass_select:checked").length
