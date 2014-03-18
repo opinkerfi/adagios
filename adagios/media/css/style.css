@@ -507,12 +507,12 @@ button.close.notification {
 
 .dashboard.alert.alert-danger {
   color: black;
-  background-color: red;
+  background-color: rgba(255, 0, 0, 0.32);
 }
 
 .dashboard.alert.alert-warning {
   color: black;
-    background-color: #ffff00;
+    background-color: rgba(255, 255, 0, 0.61);
 }
 
 #status_toolbar_more_button {
