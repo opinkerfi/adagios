@@ -240,9 +240,9 @@ def get_statistics(request, *args, **kwargs):
     arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     # Get host/service totals as an array of [ok,warn,crit,unknown]
     c['service_totals'] = l.query('GET services', 'Stats: state = 0',
-                                  'Stats: state = 1', 'Stats: state = 2', 'Stats: state = 3', *arguments, columns=False)
+                                  'Stats: state = 1', 'Stats: state = 2', 'Stats: state = 3', *arguments)
     c['host_totals'] = l.query(
-        'GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2', *arguments, columns=False)
+        'GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2', *arguments)
 
     # Get total number of host/services
     c['total_hosts'] = sum(c['host_totals'])
@@ -267,15 +267,13 @@ def get_statistics(request, *args, **kwargs):
                                       'Filter: scheduled_downtime_depth = 0',
                                       'Filter: host_state = 0',
                                       'Stats: state > 0',
-                                      *arguments,
-                                      columns=False
+                                      *arguments
                                       )[0]
     c['unhandled_hosts'] = l.query('GET hosts',
                                    'Filter: acknowledged = 0',
                                    'Filter: scheduled_downtime_depth = 0',
                                    'Stats: state = 1',
-                                   *arguments,
-                                   columns=False
+                                   *arguments
                                    )[0]
 
     c['total_unhandled_network_problems'] = l.query('GET hosts',
@@ -283,15 +281,13 @@ def get_statistics(request, *args, **kwargs):
                                                     'Filter: scheduled_downtime_depth = 0',
                                                     'Filter: childs != ',
                                                     'Stats: state = 1',
-                                                    *arguments,
-                                                    columns=False
+                                                    *arguments
                                                     )[0]
     tmp = l.query('GET hosts',
                   'Filter: childs != ',
                   'Stats: state >= 0',
                   'Stats: state > 0',
-                  *arguments,
-                  columns=False
+                  *arguments
                   )
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
