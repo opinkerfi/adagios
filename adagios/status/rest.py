@@ -227,22 +227,28 @@ def downtime(host_name=None, service_description=None, start_time=None, end_time
             comment=comment,
         )
 
+import adagios.utils
 
-def reschedule_many(hostlist, servicelist, check_time=None, wait=0):
+def reschedule_many(hostlist, servicelist, check_time=None, **kwargs):
     """ Same as reschedule() but takes a list of hosts/services as input
 
     Arguments:
       hostlist    -- semicolon seperated list of hosts to schedule checks for. Same as multiple calls with host_name=
       servicelist -- Same as hostlist but for services. Format is: host_name,service_description;host_name,service_description
     """
+    task = adagios.utils.Task()
+    WaitCondition = "last_check > %s" % int(time.time()- 1)
     for i in hostlist.split(';'):
         if not i: continue
-        reschedule(host_name=i, service_description=None, check_time=check_time, wait=wait)
+        reschedule(host_name=i, service_description=None, check_time=check_time)
+        task.add(wait, 'hosts', i, WaitCondition)
     for i in servicelist.split(';'):
         if not i: continue
         host_name,service_description = i.split(',')
-        reschedule(host_name=host_name, service_description=service_description, check_time=check_time, wait=wait)
-    return "ok"
+        reschedule(host_name=host_name, service_description=service_description, check_time=check_time)
+        WaitObject = "{h};{s}".format(h=host_name, s=service_description)
+        task.add(wait, 'services', WaitObject, WaitCondition)
+    return {'message': "command sent successfully", 'task_id': task.get_id()}
 
 
 def reschedule(host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
@@ -706,4 +712,76 @@ def statistics(request, **kwargs):
     """ Returns a dict with various statistics on status data. """
     return adagios.status.utils.get_statistics(request, **kwargs)
 
+
+def metrics(request, **kwargs):
+    """ Returns a list of dicts which contain service perfdata metrics
+    """
+    result = []
+    fields = "host_name description perf_data state host_state".split()
+    services = adagios.status.utils.get_services(request, fields=fields, **kwargs)
+    for service in services:
+        metrics = pynag.Utils.PerfData(service['perf_data']).metrics
+        metrics = filter(lambda x: x.is_valid(), metrics)
+        for metric in metrics:
+            metric_dict = {
+                'host_name': service['host_name'],
+                'service_description': service['description'],
+                'state': service['state'],
+                'host_state': service['host_state'],
+                'label': metric.label,
+                'value': metric.value,
+                'uom': metric.uom,
+                'warn': metric.warn,
+                'crit': metric.crit,
+                'min': metric.min,
+                'max': metric.max,
+            }
+            result.append(metric_dict)
+    return result
+
+def metric_names(request, **kwargs):
+    """ Returns the names of all perfdata metrics that match selected request """
+    metric_names = set()
+    fields = "host_name description perf_data state host_state".split()
+    services = adagios.status.utils.get_services(request, fields=fields, **kwargs)
+    for service in services:
+        metrics = pynag.Utils.PerfData(service['perf_data']).metrics
+        metrics = filter(lambda x: x.is_valid(), metrics)
+        for metric in metrics:
+            metric_names.add(metric.label)
+
+    result = {
+        'services that match filter': len(services),
+        'filter': kwargs,
+        'metric_names': sorted(list(metric_names)),
+    }
+    return result
+
+def wait(table, WaitObject, WaitCondition=None, WaitTrigger='check', **kwargs):
+    print "Lets wait for", locals()
+    if not WaitCondition:
+        WaitCondition = "last_check > %s" % int(time.time()-1)
+    livestatus = adagios.status.utils.livestatus(None)
+    print "livestatus ok"
+    result = livestatus.get(table, 'Stats: state != 999', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
+    print "ok no more waiting for ", WaitObject
+    return result
+
+
+def wait_many(hostlist, servicelist, WaitCondition=None, WaitTrigger='check', **kwargs):
+    if not WaitCondition:
+        WaitCondition = "last_check > %s" % int(time.time()-1)
+    livestatus = adagios.status.utils.livestatus(None)
+    for host in hostlist.split(';'):
+        if not host:
+            continue
+        WaitObject = host
+        livestatus.get('hosts', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
+        print WaitObject
+    for service in servicelist.split(';'):
+        if not service:
+            continue
+        WaitObject = service.replace(',', ';')
+        livestatus.get('services', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
+        print WaitObject
 

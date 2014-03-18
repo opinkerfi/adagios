@@ -31,7 +31,7 @@ urlpatterns = patterns('adagios',
                       (r'^/acknowledgements/?$', 'status.views.acknowledgement_list'),
                       (r'^/perfdata/?$', 'status.views.perfdata'),
                       (r'^/perfdata2/?$', 'status.views.perfdata2'),
-                      (r'^/acknowledge/?$', 'status.views.perfdata2'),
+
                        #(r'^/hosts/(?P<host_name>.+?)/(?P<service_description>.+)/?$', 'status.views.status_detail'),
                        #(r'^/hosts/(?P<host_name>.+)/$', 'status.views.status_detail'),
                        #(r'^/hosts/(?P<host_name>.+)$', 'status.views.status_detail'),

@@ -69,10 +69,10 @@
         <ul class="nav nav-list">
             <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
             <li >
-                <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems_unhandled %}<span>({{ num_problems_unhandled }})</span>{% endif %}</a>
+                <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems_unhandled %}<span class="pull-right">({{ num_problems_unhandled }})</span>{% endif %}</a>
             </li>
             <li >
-                <a href="{% url status.views.problems %}">All Problems  {% if num_problems_all %}<span>({{ num_problems_all }})</span>{% endif %}</a>
+                <a href="{% url status.views.problems %}">All Problems  {% if num_problems_all %}<span class="pull-right">({{ num_problems_all }})</span>{% endif %}</a>
             </li>
             <li><a href="{% url status.views.hosts %}">Hosts</a></li>
             <li><a href="{% url status.views.services %}">Services </a></li>
@@ -99,7 +99,8 @@
         <h5>Experimental</h5>
         <ul class="nav nav-list">
             <li><a href="{% url misc.views.map_view %}">Map</a></li>
-            <li><a href="{% url status.views.perfdata %}">Performance Data</a></li>
+            <li><a href="{% url status.views.perfdata %}">Performance Data 1</a></li>
+            <li><a href="{% url status.views.perfdata2 %}">Performance Data 2</a></li>
             <li><a href="{% url bi.views.index %}">Business Intelligence</a></li>
             <li><a href="{% url status.views.dashboard %}">Dashboard</a></li>
         </ul>

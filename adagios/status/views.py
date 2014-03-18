@@ -1053,8 +1053,7 @@ def perfdata2(request):
     c['messages'] = []
     c['errors'] = []
     columns = 'Columns: host_name description perf_data state host_state'
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
 
     # User can specify from querystring a filter of which services to fetch
     # we convert querystring into livestatus filters.
@@ -1063,7 +1062,11 @@ def perfdata2(request):
     querystring = request.GET.copy()
     interesting_metrics = querystring.pop('metrics', [''])[0].strip(',')
     arguments = pynag.Utils.grep_to_livestatus(**querystring)
-    services = l.query('GET services', columns, *arguments)
+    if not arguments:
+        services = []
+    else:
+        services = l.query('GET services', columns, *arguments)
+
     # If no metrics= was specified on querystring, we take the string
     # from first service in our search result
     if not interesting_metrics and services:
