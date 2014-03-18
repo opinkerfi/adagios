@@ -11,7 +11,7 @@ Version: 1.3.1
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
-License: GPLv2+
+License: AGPLv3
 URL: https://adagios.opensource.is/
 Source0: https://adagios.opensource.is/releases/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
