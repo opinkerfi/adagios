@@ -131,7 +131,7 @@ def advanced_edit(request, object_id):
     return HttpResponseRedirect(reverse('edit_object', args=[o.get_id()]))
 
 
-def new_edit(request, object_id=None):
+def edit_object(request, object_id=None):
     """ Brings up an edit dialog for one specific object.
 
         If an object_id is specified, bring us to that exact object.
@@ -139,95 +139,59 @@ def new_edit(request, object_id=None):
         Otherwise we expect some search arguments to have been provided via querystring
     """
     c = {}
+    c.update(csrf(request))
     c['messages'] = []
     c['errors'] = []
-    my_object = None
+    my_object = None  # This is where we store our item that we are editing
 
     # If object_id was not provided, lets see if anything was given to us in a querystring
-    if object_id:
+    if not object_id:
+        objects = pynag.Model.ObjectDefinition.objects.filter(**request.GET)
+        if len(objects) == 1:
+            my_object = objects[0]
+        else:
+            return search_objects(request)
+    else:
         try:
             my_object = pynag.Model.ObjectDefinition.objects.get_by_id(object_id)
         except KeyError:
             c['error_summary'] = 'Could not find any object with id="%s" :/' % object_id
             c['error_type'] = "object not found"
             return render_to_response('error.html', c, context_instance=RequestContext(request))
-    else:
-        objects = pynag.Model.ObjectDefinition.objects.filter(**request.GET)
-        if len(objects) == 1:
-            my_object = objects[0]
-        else:
-            return search_objects(request)
-
-    return edit_object(request, object_id=my_object.get_id())
-
-
-def edit_object(request, object_id=None, object_type=None, shortname=None):
-    """ View details about one specific pynag object """
-    c = {}
-    c.update(csrf(request))
-    c['messages'] = m = []
-    c['errors'] = []
-    c['nagios_url'] = settings.nagios_url
-    # Get our object
-    if object_id is not None:
-        # If object id was specified
-        try:
-            o = ObjectDefinition.objects.get_by_id(id=object_id)
-        except Exception, e:
-            # Not raising, handled by template
-            c['error_summary'] = 'Unable to get object'
-            c['error'] = e
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
-    elif object_type is not None and shortname is None:
-        # Specifying only object_type indicates this is a new object
-        otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
-        o = otype()
-        c['form'] = PynagForm(pynag_object=o, initial=request.GET)
-    elif object_type is not None and shortname is not None:
-        # Its also valid to specify object type and shortname
-        # TODO: if multiple objects are found, display a list
-        try:
-            otype = Model.string_to_class.get(
-                object_type, Model.ObjectDefinition)
-            o = otype.objects.get_by_shortname(shortname)
-        except Exception, e:
-            # Not raising, handled by template
-            c['error_summary'] = 'Unable to get object'
-            c['error'] = e
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
-    else:
-        raise ValueError("Object not found")
 
     if request.method == 'POST':
         # User is posting data into our form
         c['form'] = PynagForm(
-            pynag_object=o, initial=o._original_attributes, data=request.POST)
+            pynag_object=my_object,
+            initial=my_object._original_attributes,
+            data=request.POST
+        )
         if c['form'].is_valid():
             try:
                 c['form'].save()
-                m.append("Object Saved to %s" % o['filename'])
-                return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': o.get_id()}))
+                c['messages'].append("Object Saved to %s" % my_object['filename'])
+                return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': my_object.get_id()}))
             except Exception, e:
                 c['errors'].append(e)
         else:
             c['errors'].append("Could not validate form input")
     if 'form' not in c:
-        c['form'] = PynagForm(pynag_object=o, initial=o._original_attributes)
-    c['my_object'] = o
+        c['form'] = PynagForm(pynag_object=my_object, initial=my_object._original_attributes)
+    c['my_object'] = my_object
     c['geek_edit'] = GeekEditObjectForm(
-        initial={'definition': o['meta']['raw_definition'], })
+        initial={'definition': my_object['meta']['raw_definition'], })
     c['advanced_form'] = AdvancedEditForm(
-        pynag_object=o, initial=o._original_attributes)
+        pynag_object=my_object, initial=my_object._original_attributes)
 
     try:
-        c['effective_hosts'] = o.get_effective_hosts()
+        c['effective_hosts'] = my_object.get_effective_hosts()
     except KeyError, e:
         c['errors'].append("Could not find host: %s" % str(e))
     except AttributeError:
         pass
 
     try:
-        c['effective_parents'] = o.get_effective_parents()
+        c['effective_parents'] = my_object.get_effective_parents()
     except KeyError, e:
         c['errors'].append("Could not find parent: %s" % str(e))
 
@@ -235,25 +199,25 @@ def edit_object(request, object_id=None, object_type=None, shortname=None):
     # to appropriate helper function
     if False:
         pass
-    elif o['object_type'] == 'servicegroup':
+    elif my_object['object_type'] == 'servicegroup':
         return _edit_servicegroup(request, c)
-    elif o['object_type'] == 'hostdependency':
+    elif my_object['object_type'] == 'hostdependency':
         return _edit_hostdependency(request, c)
-    elif o['object_type'] == 'service':
+    elif my_object['object_type'] == 'service':
         return _edit_service(request, c)
-    elif o['object_type'] == 'contactgroup':
+    elif my_object['object_type'] == 'contactgroup':
         return _edit_contactgroup(request, c)
-    elif o['object_type'] == 'hostgroup':
+    elif my_object['object_type'] == 'hostgroup':
         return _edit_hostgroup(request, c)
-    elif o['object_type'] == 'host':
+    elif my_object['object_type'] == 'host':
         return _edit_host(request, c)
-    elif o['object_type'] == 'contact':
+    elif my_object['object_type'] == 'contact':
         return _edit_contact(request, c)
-    elif o['object_type'] == 'command':
+    elif my_object['object_type'] == 'command':
         return _edit_command(request, c)
-    elif o['object_type'] == 'servicedependency':
+    elif my_object['object_type'] == 'servicedependency':
         return _edit_servicedependency(request, c)
-    elif o['object_type'] == 'timeperiod':
+    elif my_object['object_type'] == 'timeperiod':
         return _edit_timeperiod(request, c)
     else:
         return render_to_response('edit_object.html', c, context_instance=RequestContext(request))

@@ -214,7 +214,7 @@
                     <td>Check Period</td>
                     <td>
                         {% if my_object.check_period %}
-                        <a href="{% url edit_by_shortname "timeperiod" my_object.check_period %}">{{ my_object.check_period }}</a>
+                        <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type=timeperiod&timeperiod_name={{ my_object.check_period }}">{{ my_object.check_period }}</a>
                         {% else %}
                         Unknown
                         {% endif %}
@@ -227,7 +227,7 @@
                     <td>Notification Period</td>
                     <td>
                         {% if my_object.notification_period %}
-                        <a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a>
+                        <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type=timeperiod&timeperiod_name={{ my_object.notification_period }}">{{ my_object.notification_period }}</a>
                         {% else %}
                         Unknown
                         {% endif %}

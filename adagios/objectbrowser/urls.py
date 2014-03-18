@@ -8,11 +8,10 @@ urlpatterns = patterns('adagios',
     url(r'^/edit_all/(?P<object_type>.+)/(?P<attribute_name>.+)/?$', 'objectbrowser.views.edit_all'),
     url(r'^/search/?$', 'objectbrowser.views.search_objects', name="search"),
 
-    url(r'^/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object'),
-    url(r'/edit/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object', name="edit_object"),
-    url(r'/edit_object/object_type=(?P<object_type>.+)/shortname=(?P<shortname>.+)$', 'objectbrowser.views.edit_object', name="edit_by_shortname"),
 
-    url(r'/new_edit/(?P<object_id>.+?)?$', 'objectbrowser.views.new_edit'),
+    url(r'/edit/(?P<object_id>.+?)?$', 'objectbrowser.views.edit_object', name="edit_object"),
+
+    url(r'/edit/?$', 'objectbrowser.views.edit_object'),
     url(r'/copy_and_edit/(?P<object_id>.+?)?$', 'objectbrowser.views.copy_and_edit_object'),
 
     url(r'/copy/id=(?P<object_id>.+)$', 'objectbrowser.views.copy_object', name="copy_object"),
@@ -33,9 +32,11 @@ urlpatterns = patterns('adagios',
     url(r'/geek_edit/id=(?P<object_id>.+)$', 'objectbrowser.views.geek_edit'),
     url(r'/advanced_edit/id=(?P<object_id>.+)$', 'objectbrowser.views.advanced_edit'),
 
+    # Here for backwards compatibility.
+    url(r'/edit/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object', ),
+    url(r'/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object', ),
+
     # These should be deprecated as of 2012-08-27
-    url(r'^/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object'),
-    url(r'/edit_object/id=(?P<object_id>.+)$', 'objectbrowser.views.edit_object'),
     url(r'/copy_object/id=(?P<object_id>.+)$', 'objectbrowser.views.copy_object'),
     url(r'/delete_object/id=(?P<object_id>.+)$', 'objectbrowser.views.delete_object'),
 
