@@ -7,6 +7,7 @@ adagios.bi = adagios.bi || {};
 
 adagios.misc.__notification_id_counter = 0;
 
+
 $(document).ready(function() {
 
     // Create good default behaviour for bootstrap tabs
@@ -36,11 +37,14 @@ $(document).ready(function() {
     // Multiselect checkboxes at the top-left of status-tables
     adagios.status.initilize_multiselect_checkboxes();
 
-    // Handle user contributed ssi overwrites
-    adagios.misc.ssi_overwrites();
+
 
     // Fix console logging for internet explorer
     adagios.misc.internet_explorer_console_fix();
+
+    // Handle user contributed ssi overwrites
+    adagios.misc.ssi_overwrites();
+
 });
 
 
@@ -732,18 +736,17 @@ adagios.status.reschedule = function() {
     var parameters = {};
     parameters['hostlist'] = hostlist;
     parameters['servicelist'] = servicelist;
-    parameters['wait'] = 0;
 
     adagios.misc.info("Rescheduling " + selected_objects.length + " items", "reschedule_status");
     adagios.rest.status.reschedule_many(parameters)
-            .done(function(data) {
-                adagios.misc.success("Reschedule request for " + selected_objects.length + " items has been sent. You should refresh your browser.", "reschedule_status", 5000);
-                adagios.status.clear_all_selections();
-            })
-            .fail(function(data) {
-               adagios.misc.error("Error while rescheduling checks. Error output printed in javascript console.", "reschedule_status");
-               console.error(data.responseText);
-            })
+        .done(function(data) {
+            adagios.misc.success("Reschedule request for " + selected_objects.length + " items has been sent. You should refresh your browser.", "reschedule_status", 5000);
+            adagios.status.clear_all_selections();
+        })
+        .fail(function(data) {
+           adagios.misc.error("Error while rescheduling checks. Error output printed in javascript console.", "reschedule_status");
+           console.error(data.responseText);
+        });
 
 };
 
@@ -865,3 +868,20 @@ adagios.misc.internet_explorer_console_fix = function() {
 }());
 
 };
+
+// Given a specific background task id, monitor its status
+// And display output on regular intervals.
+adagios.misc.subscribe_to_task = function() {
+    adagios.rest.adagios.list_tasks()
+        .done(function(data) {
+           var first_task = data[0]['task_id'];
+            adagios.rest.adagios.get_task({'task_id': first_task})
+                .done(function(data) {
+                   adagios.misc.info(data['task_status'], "task_" + data['task_id']);
+
+                });
+        });
+
+};
+
+

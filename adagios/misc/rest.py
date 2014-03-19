@@ -21,7 +21,7 @@ This is a rest interface used by the "/rest/" module that affects adagios direct
 
 '''
 
-from adagios import __version__, notifications
+from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
 version = __version__
 
@@ -78,3 +78,29 @@ def clear_all_notifications():
     """ Removes all notifications from adagios notification panel """
     notifications.clear()
     return "all notifications cleared"
+
+
+def list_tasks():
+    """
+
+    """
+    result = []
+    for task in tasks:
+        current_task = {
+            'task_id': task.get_id(),
+            'task_status': task.status()
+            }
+        result.append(current_task)
+    return result
+
+
+def get_task(task_id="someid"):
+    """ Return information about one specific background task """
+    for task in tasks:
+        if str(task.get_id) == str(task_id) or task_id:
+            current_task = {
+                'task_id': task.get_id(),
+                'task_status': task.status()
+            }
+            return current_task
+    raise KeyError("Task not '%s' Found" % task_id)

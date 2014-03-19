@@ -141,11 +141,12 @@ def get_httpuser(request):
     """ Get the current user that is authenticating to us and update event handlers"""
     try:
         remote_user = request.META.get('REMOTE_USER', 'anonymous')
+
         for i in pynag.Model.eventhandlers:
             i.modified_by = remote_user
     except Exception:
-        remote_user = None
-    return {'remote_user': remote_user}
+        remote_user = "anonymous"
+    return {'remote_user': remote_user or "anonymous"}
 
 
 def get_nagios_url(request):
