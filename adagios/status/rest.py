@@ -225,7 +225,7 @@ def downtime(host_name=None, service_description=None, start_time=None, end_time
 
 import adagios.utils
 
-def reschedule_many(hostlist, servicelist, check_time=None, **kwargs):
+def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
     """ Same as reschedule() but takes a list of hosts/services as input
 
     Arguments:
@@ -236,12 +236,12 @@ def reschedule_many(hostlist, servicelist, check_time=None, **kwargs):
     WaitCondition = "last_check > %s" % int(time.time()- 1)
     for i in hostlist.split(';'):
         if not i: continue
-        reschedule(host_name=i, service_description=None, check_time=check_time)
+        reschedule(request, host_name=i, service_description=None, check_time=check_time)
         task.add(wait, 'hosts', i, WaitCondition)
     for i in servicelist.split(';'):
         if not i: continue
         host_name,service_description = i.split(',')
-        reschedule(host_name=host_name, service_description=service_description, check_time=check_time)
+        reschedule(request, host_name=host_name, service_description=service_description, check_time=check_time)
         #WaitObject = "{h};{s}".format(h=host_name, s=service_description)
         #task.add(wait, 'services', WaitObject, WaitCondition)
     return {'message': "command sent successfully", 'task_id': task.get_id()}
@@ -502,7 +502,7 @@ def state_history(start_time=None, end_time=None, object_type=None, host_name=No
     if len(c['log']) > 0:
         log = c['log']
         c['start_time'] = start_time = log[0]['time']
-        c['end_time'] = end_time = log[-1]['time']
+        c['end_time'] = log[-1]['time']
         now = time.time()
 
         total_duration = now - start_time
@@ -591,7 +591,7 @@ def get_business_process_names():
 def get(request, object_type, *args, **kwargs):
     livestatus_arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     if not object_type.endswith('s'):
-        object_type = object_type + 's'
+        object_type += 's'
     if 'name__contains' in kwargs and object_type == 'services':
         name = str(kwargs['name__contains'])
         livestatus_arguments = filter(
