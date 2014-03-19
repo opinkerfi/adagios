@@ -117,6 +117,12 @@ class PynagForm(AdagiosForm):
         for k, v in cleaned_data.items():
             # change from unicode to str
             v = cleaned_data[k] = smart_str(v)
+
+            # Empty string, or the string None, means remove the field
+            if v in ('', 'None'):
+                cleaned_data[k] = v = None
+
+            # Maintain operator (+,-, !) for multichoice fields
             if k in MULTICHOICE_FIELDS and v and v != "null":
                 operator = AttributeList(self.pynag_object.get(k, '')).operator or ''
                 cleaned_data[k] = "%s%s" % (operator, v)
@@ -125,26 +131,32 @@ class PynagForm(AdagiosForm):
     def save(self):
         changed_keys = map(lambda x: smart_str(x), self.changed_data)
         for k in changed_keys:
-            # Ignore fields that did not appear in the POST at all
-            if k not in self.data and k not in MULTICHOICE_FIELDS:
+
+            # Ignore fields that did not appear in the POST at all EXCEPT
+            # If it it a pynagchoicefield. That is because multichoicefield that
+            # does not appear in the post, means that the user removed every attribute
+            # in the multichoice field
+            if k not in self.data and not isinstance(self.fields.get(k, None), PynagChoiceField):
                 continue
-            # If value is empty, we assume it is to be removed
+
             value = self.cleaned_data[k]
-            if value == '':
-                value = None
+
             # Sometimes attributes slide in changed_data without having
             # been modified, lets ignore those
             if self.pynag_object[k] == value:
                 continue
+
             # Multichoice fields have a special restriction, sometimes they contain
             # the same values as before but in a different order.
             if k in MULTICHOICE_FIELDS:
                 original = AttributeList(self.pynag_object[k])
                 new = AttributeList(value)
                 if sorted(original.fields) == sorted(new.fields):
-                    continue
-            # If we reach here, it is save to modify our pynag object.
+                    continue            # If we reach here, it is save to modify our pynag object.
+
+            # Here we actually make a change to our pynag object
             self.pynag_object[k] = value
+
             # Additionally, update the field for the return form
             self.fields[k] = self.get_pynagField(k, css_tag="defined")
             self.fields[k].value = value
@@ -166,8 +178,7 @@ class PynagForm(AdagiosForm):
         # Special hack for macros
         # If this is a post and any post data looks like a nagios macro
         # We will generate a field for it on the fly
-        macros = filter(lambda x: x.startswith(
-            '$') and x.endswith('$'), self.data.keys())
+        macros = filter(lambda x: x.startswith('$') and x.endswith('$'), self.data.keys())
         for field_name in macros:
             # if field_name.startswith('$ARG'):
             #    self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
