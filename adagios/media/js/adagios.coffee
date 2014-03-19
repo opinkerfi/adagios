@@ -230,7 +230,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
             """<input id="ob_mass_select" name="#{ item["id"] }" type="checkbox">"""
           ]
           $.each v["rows"], (k, field) ->
-            cell = """<a href="id=#{ item["id"] }">"""
+            cell = """<a href="edit/#{ item["id"] }">"""
             field_value = ""
             cell += """<i class="#{ field.icon }"></i>"""  if "icon" of field
             if item[field["cName"]]
