@@ -20,7 +20,7 @@
     <!-- place new host modal -->
     <div class="modal hide fade" id="addhost_modal">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" >&times;</button>
                 <h3>Host location here</h3>
             </div>
             <div class="modal-body">
@@ -96,17 +96,11 @@
                 "latitude":latitude,
                 "longitude":longitute
             };
-            $.ajax({
-                type: 'POST',
-                url: '{% url rest/status %}json/change_host_coordinates',
-                data: my_data,
-                async: true,
-                success: function(data) {
-                    refresh(map);
-                },
-                contentType: "application/json",
-                dataType: 'json'
-            });
+            adagios.rest.status.change_host_coordinates(my_data)
+                    .done(function() {
+                        refresh(map);
+                    });
+
 
         }
         // Returns a new marker that is used for adding a new host
@@ -121,7 +115,7 @@
         }
         // Place a specific host on the map
         function placeHostMarker(map, host) {
-
+            var service, html, marker, service_url;
             var icon = null;
             var x = host.x_coordinates;
             var y = host.y_coordinates;
@@ -150,7 +144,7 @@
             html = html + "<hr>";
             // Do the services on this host
             for (var i = 0; i < host.services_with_state.length; i++) {
-                service = host.services_with_state[x];
+                service = host.services_with_state[i];
                 service_url = host_url + "&service_description=" +  service[0];
                 html = html + '<br> <div class="circle state_' + service[1] +'"> </div> ';
                 html = html + '<a href="' + service_url + '">' + service[0] + '</a>';
@@ -179,11 +173,11 @@
             for(var i=0; i < map.markers.length; i++){
                 map.markers[i].setMap(null);
             }
-            map.markers = new Array();
-            map.infowindows = new Array();
+            map.markers = [];
+            map.infowindows = [];
 
             // Create an invisble marker that you can place down for new hosts
-            new_host_marker = newHostMarker(map, new google.maps.LatLng(0,0))
+            var new_host_marker = newHostMarker(map, new google.maps.LatLng(0,0));
             map.markers.push(new_host_marker);
 
 
@@ -192,7 +186,7 @@
             infowindow.setContent(html);
             map.infowindows.push(infowindow);
 
-            google.maps.event.addListener(new_host_marker, 'click', function(event) {
+            google.maps.event.addListener(new_host_marker, 'click', function() {
                 // Close all other infowindows
                 for(var i=0; i < map.infowindows.length; i++)
                     map.infowindows[i].close();
@@ -215,24 +209,25 @@
             });
 
             // Get a list of of all hosts with positions
-            var url = '{% url rest/status %}json/get_map_data?host_name=';
-            $.getJSON(url, function(data) {
-                var hosts = data['hosts'];
-                var connections = data['connections']
-                var marker, i, color,html;
-                for (i = 0; i < hosts.length; i++) {
-                    host = hosts[i];
-                    // placeHostMarker is responsible for putting the
-                    // Host as a marker on the map
-                    placeHostMarker(map, host);
-                }
+            adagios.rest.status.get_map_data({})
+                    .done(function(data) {
+                        var hosts = data['hosts'];
+                        var connections = data['connections'];
+                        var host;
+                        for (var i = 0; i < hosts.length; i++) {
+                            host = hosts[i];
+                            // placeHostMarker is responsible for putting the
+                            // Host as a marker on the map
+                            placeHostMarker(map, host);
+                        }
 
-                // If any connections returned from webservice, draw a polyline between host
-                // and network parent
-                for (i = 0; i < connections.length; i++) {
-                    placeConnection(map, connections[i]);
-                }
-            });
+                        // If any connections returned from webservice, draw a polyline between host
+                        // and network parent
+                        for (i = 0; i < connections.length; i++) {
+                            placeConnection(map, connections[i]);
+                        }
+                    });
+
 
 
 
@@ -284,7 +279,7 @@
                 center: new google.maps.LatLng({{ map_center }}),
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             });
-            map.markers = new Array();
+            map.markers = [];
 
             $(".refreshmap").click( function() {
                         refresh(map);
