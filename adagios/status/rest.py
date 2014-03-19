@@ -246,8 +246,8 @@ def reschedule_many(hostlist, servicelist, check_time=None, **kwargs):
         if not i: continue
         host_name,service_description = i.split(',')
         reschedule(host_name=host_name, service_description=service_description, check_time=check_time)
-        WaitObject = "{h};{s}".format(h=host_name, s=service_description)
-        task.add(wait, 'services', WaitObject, WaitCondition)
+        #WaitObject = "{h};{s}".format(h=host_name, s=service_description)
+        #task.add(wait, 'services', WaitObject, WaitCondition)
     return {'message': "command sent successfully", 'task_id': task.get_id()}
 
 
