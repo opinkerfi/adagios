@@ -18,8 +18,11 @@ def startup():
     # Associate services with their host in the written config files. 
     # (If option is set in adagios.conf)
     if settings.save_services_with_hosts:
-        for serv in pynag.Model.Service.objects.all:
-            serv.merge_service_to_host()
+        for serv in pynag.Model.Service.objects.get_all():
+            try:
+                serv.merge_service_to_host()
+            except Exception:
+                continue
 
     if settings.enable_githandler == True:
         from pynag.Model import EventHandlers
