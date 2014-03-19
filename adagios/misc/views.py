@@ -356,6 +356,7 @@ def mail(request):
         c['form'] = forms.SendEmailForm(remote_user, data=request.POST)
         services = request.POST.getlist('service') or request.POST.getlist('service[]')
         hosts = request.POST.getlist('host') or request.POST.getlist('host[]')
+        c['acknowledged_or_not'] = request.POST.get('acknowledge_all_problems') == 'true'
 
     for host_name in hosts:
         host_object = adagios.status.utils.get_hosts(request, host_name=host_name)
