@@ -74,6 +74,8 @@ def settings(request):
                 m.append("%s successfully saved." % form.adagios_configfile)
             except IOError, exc:
                 e.append(exc)
+    else:
+        raise Exception("We only support methods GET or POST")
     c['form'] = form
     return render_to_response('settings.html', c, context_instance=RequestContext(request))
 
@@ -207,7 +209,7 @@ def nagios_service(request):
     elif s == 1:
         c['friendly_status'] = "not running"
     else:
-        c['friendly_status'] = 'unknown (exit status %s)' % (s)
+        c['friendly_status'] = 'unknown (exit status %s)' % (s, )
     needs_reload = pynag.Model.config.needs_reload()
     c['needs_reload'] = needs_reload
     return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))

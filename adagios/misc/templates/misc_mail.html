@@ -24,14 +24,15 @@
     {{ block.super }}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         $(document).ready(function() {
-            var url = '{% url rest/status %}json/emails?fields=email';
-            $.getJSON(url, function(data) {
-                $("#id_to").select2({
-                    tags:data,
-                    tokenSeparators: [",", " "],
-                    placeholder:"Comma seperated list of email addresses to send to"
-                });
-            })
+            adagios.rest.status.emails({'fields': 'email'})
+                    .done(function(data) {
+                        $("#id_to").select2({
+                            tags:data,
+                            tokenSeparators: [",", " "],
+                            placeholder:"Comma seperated list of email addresses to send to"
+                        });
+
+                    });
         })
     </script>
 

@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-'''
+"""
 
 Convenient stateless functions for pynag. This module is used by the /rest/ interface of adagios.
 
-'''
+"""
 
 
 import platform
@@ -29,7 +29,7 @@ def _get_dict(x):
 
 
 def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwargs):
-    ''' Get any type of object definition in a dict-compatible fashion
+    """ Get any type of object definition in a dict-compatible fashion
 
         Arguments:
             object_type (optional) -- Return objects of this type
@@ -42,7 +42,7 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
             get_objects(object_type="service", with_fields='*')
         Returns:
             List of ObjectDefinition
-    '''
+    """
 
     tmp = Model.ObjectDefinition.objects.filter(
         object_type=object_type, **kwargs)
@@ -81,7 +81,7 @@ def object_to_dict(object, attributes="id,shortname,object_type"):
 
 
 def get_object(id, with_fields="id,shortname,object_type"):
-    '''Returns one specific ObjectDefinition'''
+    """Returns one specific ObjectDefinition"""
     o = Model.ObjectDefinition.objects.get_by_id(id)
     return object_to_dict(o, attributes=with_fields)
 
@@ -116,13 +116,13 @@ def get_host_names(invalidate_cache=False):
 
 
 def change_attribute(id, attribute_name, new_value):
-    '''Changes object with the designated ID to file
+    """Changes object with the designated ID to file
 
     Arguments:
         id                -- object_id of the definition to be saved
         attribute_name    -- name of the attribute (i.e. "host_name")
         new_value         -- new value (i.e. "host.example.com")
-    '''
+    """
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
@@ -176,15 +176,15 @@ def copy_object(object_id, recursive=False, **kwargs):
 
 
 def run_check_command(object_id):
-    ''' Runs the check_command for one specified object
+    """ Runs the check_command for one specified object
 
     Arguments:
         object_id         -- object_id of the definition (i.e. host or service)
     Returns:
         [return_code,stdout,stderr]
-    '''
+    """
     if platform.node() == 'adagios.opensource.is':
-        return (1, 'Running check commands is disabled in demo-environment')
+        return 1, 'Running check commands is disabled in demo-environment'
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     return o.run_check_command()
 
@@ -358,24 +358,6 @@ def verify_configuration():
     result['output'] = stdout
     result['errors'] = stderr
 
-    return result
-
-    total_errors = 0
-    total_warnings = 0
-
-    for line in stdout.splitlines():
-        output = {}
-        output['tags'] = tags = []
-        output['content'] = line
-        if line.lower().startswith('warning'):
-            tags.append('warning')
-            total_warnings += 1
-        if line.lower().startswith('error'):
-            tags.append('error')
-            total_errors += 1
-        result['output'].append(output)
-        result['error_count'] = total_errors
-        result['warning_count'] = total_warnings
     return result
 
 

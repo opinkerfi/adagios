@@ -174,10 +174,10 @@ class EditAllForm(forms.Form):
         self.attribute = attribute
         self.new_value = new_value
         super(self.__class__, self).__init__(self, args, kwargs)
-        filter = {}
-        filter['object_type'] = object_type
-        filter['%s__isnot' % attribute] = new_value
-        items = Model.ObjectDefinition.objects.filter(**filter)
+        search_filter = {}
+        search_filter['object_type'] = object_type
+        search_filter['%s__isnot' % attribute] = new_value
+        items = Model.ObjectDefinition.objects.filter(**search_filter)
         interesting_objects = []
         for i in items:
             if attribute in i._defined_attributes or i.use is None:
@@ -224,9 +224,8 @@ class PNPTemplatesForm(forms.Form):
                 directory = v.strip(";").strip('"').strip("'")
                 self.template_directories.append(directory)
                 if os.path.isdir(directory):
-                    for file in os.listdir(directory):
-                        self.templates.append("%s/%s" % (directory, file))
-                        # self.templates.append(file)
+                    for f in os.listdir(directory):
+                        self.templates.append("%s/%s" % (directory, f))
 
         super(self.__class__, self).__init__(*args, **kwargs)
 pnp_loglevel_choices = [('0', '0 - Only Errors'), ('1', '1 - Little logging'), (
@@ -271,7 +270,9 @@ class PNPConfigForm(forms.Form):
     perfdata_file_processing_interval = forms.IntegerField(
         help_text="Interval between file processing")
 
-    def __init__(self, initial={}, *args, **kwargs):
+    def __init__(self, initial=None, *args, **kwargs):
+        if not initial:
+            initial = {}
         my_initial = {}
         # Lets use PNPBrokerModuleForm to find sensible path to npcd config
         # file
@@ -295,7 +296,9 @@ class EditFileForm(forms.Form):
     filecontent = forms.CharField(widget=forms.Textarea(
         attrs={'wrap': 'off', 'rows': '50', 'cols': '2000'}))
 
-    def __init__(self, filename, initial={}, *args, **kwargs):
+    def __init__(self, filename, initial=None, *args, **kwargs):
+        if not initial:
+            initial = {}
         self.filename = filename
         my_initial = initial.copy()
         if 'filecontent' not in my_initial:
@@ -338,7 +341,9 @@ class PNPBrokerModuleForm(forms.Form):
             raise forms.ValidationError('File not found')
         return filename
 
-    def __init__(self, initial={}, *args, **kwargs):
+    def __init__(self, initial=None, *args, **kwargs):
+        if not initial:
+            initial = {}
         my_initial = {}
         Model.config.parse()
         maincfg_values = Model.config.maincfg_values
@@ -372,7 +377,7 @@ class PNPBrokerModuleForm(forms.Form):
         for i in possible_locations:
             if os.path.isfile(i):
                 return i
-        return i
+        return possible_locations[-1]
 
     def get_suggested_npcd_path(self):
         """ Returns best guess for full path to npcd.cfg file """
@@ -382,7 +387,7 @@ class PNPBrokerModuleForm(forms.Form):
         for i in possible_locations:
             if os.path.isfile(i):
                 return i
-        return i
+        return possible_locations[-1]
 
     def save(self):
         if 'broker_module' in self.changed_data or 'config_file' in self.changed_data or self.nagios_configline is None:
@@ -440,6 +445,8 @@ class NagiosServiceForm(forms.Form):
             command = "status"
         elif "verify" in self.data:
             command = "verify"
+        else:
+            raise Exception("Unknown command")
         self.command = command
         nagios_init = settings.nagios_init_script
         nagios_binary = settings.nagios_binary

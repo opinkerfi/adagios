@@ -15,11 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-'''
+"""
 
 This is a rest interface used by the "/rest/" module that affects adagios directly.
 
-'''
+"""
 
 from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
