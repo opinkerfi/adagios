@@ -65,7 +65,7 @@
                     <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
                 </td>
                     {% for i in service.metrics %}
-                        <td>
+                        <td class="small nowrap">
                             <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
                                 <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
                             </a>
