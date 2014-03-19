@@ -26,7 +26,6 @@ class TestObjectBrowser(unittest.TestCase):
 
         # TODO: Better tests, at least squeeze out a 200OK for these views
         self.loadPage('/objectbrowser/')
-        self.loadPage('/objectbrowser/new_edit', 301)
         self.loadPage('/objectbrowser/copy', 404)
         self.loadPage('/objectbrowser/search')
         self.loadPage('/objectbrowser/delete', 404)
