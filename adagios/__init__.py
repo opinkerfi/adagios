@@ -4,6 +4,7 @@ __version__='1.3.1'
 
 notifications = {}
 active_plugins = {}
+tasks = []
 misc_menubar_items = []
 menubar_items = []
 
