@@ -9,12 +9,10 @@ with status of Nagios.
 import time
 import pynag.Control.Command
 import pynag.Model
-import django.core.mail
 import pynag.Utils
 import adagios.status.utils
 import pynag.Parsers
 import collections
-from pynag.Utils import PynagError
 
 
 def hosts(request, fields=None, **kwargs):
@@ -39,19 +37,17 @@ def services_dt(fields=None, *args, **kwargs):
     return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
 
 
-def contacts(fields=None, *args, **kwargs):
+def contacts(request, fields=None, *args, **kwargs):
     """ Wrapper around pynag.Parsers.mk_livestatus.get_contacts()
     """
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
     return l.get_contacts(*args, **kwargs)
 
 
-def emails(*args, **kwargs):
+def emails(request, *args, **kwargs):
     """ Returns a list of all emails of all contacts
     """
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
     return map(lambda x: x['email'], l.get_contacts('Filter: email !='))
 
 
@@ -251,7 +247,7 @@ def reschedule_many(hostlist, servicelist, check_time=None, **kwargs):
     return {'message': "command sent successfully", 'task_id': task.get_id()}
 
 
-def reschedule(host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
+def reschedule(request, host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
     """ Reschedule a check of this service/host
 
     Arguments:
@@ -268,7 +264,7 @@ def reschedule(host_name=None, service_description=None, check_time=None, wait=0
         pynag.Control.Command.schedule_forced_host_check(
             host_name=host_name, check_time=check_time)
         if wait == "1":
-            livestatus = pynag.Parsers.mk_livestatus()
+            livestatus = adagios.status.utils.livestatus(request)
             livestatus.query("GET hosts",
                              "WaitObject: %s " % host_name,
                              "WaitCondition: last_check > %s" % check_time,
@@ -279,7 +275,7 @@ def reschedule(host_name=None, service_description=None, check_time=None, wait=0
         pynag.Control.Command.schedule_forced_svc_check(
             host_name=host_name, service_description=service_description, check_time=check_time)
         if wait == "1":
-            livestatus = pynag.Parsers.mk_livestatus()
+            livestatus = adagios.status.utils.livestatus(request)
             livestatus.query("GET services",
                              "WaitObject: %s %s" % (
                                  host_name, service_description),
@@ -487,7 +483,6 @@ def state_history(start_time=None, end_time=None, object_type=None, host_name=No
         host_name = None
     if service_description == '':
         service_description = None
-
     l = pynag.Parsers.LogFiles()
     log_entries = l.get_state_history(start_time=start_time, end_time=end_time, host_name=host_name, service_description=service_description)
     if object_type == 'host' or object_type == 'service':
@@ -503,6 +498,7 @@ def state_history(start_time=None, end_time=None, object_type=None, host_name=No
     # Add some css-hints for and duration of each state history entry as percent of duration
     # this is used by all views that have state history and on top of it a progress bar which shows
     # Up/downtime totals.
+    c = {'log': log_entries }
     if len(c['log']) > 0:
         log = c['log']
         c['start_time'] = start_time = log[0]['time']
@@ -592,7 +588,7 @@ def get_business_process_names():
     return map(lambda x: x.name, adagios.businessprocess.get_all_processes())
 
 
-def get(object_type, *args, **kwargs):
+def get(request, object_type, *args, **kwargs):
     livestatus_arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     if not object_type.endswith('s'):
         object_type = object_type + 's'
@@ -603,7 +599,7 @@ def get(object_type, *args, **kwargs):
         livestatus_arguments.append('Filter: host_name ~ %s' % name)
         livestatus_arguments.append('Filter: description ~ %s' % name)
         livestatus_arguments.append('Or: 2')
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = adagios.status.utils.livestatus(request)
     results = livestatus.query('GET %s' % object_type, *livestatus_arguments)
 
     if object_type == 'service':
@@ -636,14 +632,14 @@ def get_business_process(process_name=None, process_type=None):
     return result
 
 
-def remove_downtime(host_name, service_description=None, downtime_id=None):
+def remove_downtime(request, host_name, service_description=None, downtime_id=None):
     """ Remove downtime for one specific host or service """
     downtimes_to_remove = []
     # If downtime_id is not provided, remove all downtimes of that service or host
     if downtime_id:
         downtimes_to_remove.append(downtime_id)
     else:
-        livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
+        livestatus = adagios.status.utils.livestatus(request)
         query_parameters = []
         query_parameters.append('GET downtimes')
         query_parameters.append('Filter: host_name = {host_name}'.format(**locals()))
