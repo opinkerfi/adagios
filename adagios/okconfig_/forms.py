@@ -148,10 +148,10 @@ class InstallAgentForm(AdagiosForm):
         choices=[('auto detect', 'auto detect'), ('ssh', 'ssh'), ('winexe', 'winexe')])
     username = forms.CharField(
         initial='root', help_text="Log into remote machine with as this user")
-    windows_domain = forms.CharField(
-        required=False, help_text="If remote machine is running a windows domain")
     password = forms.CharField(
         required=False, widget=forms.PasswordInput, help_text="Leave empty if using kerberos or ssh keys")
+    windows_domain = forms.CharField(
+        required=False, help_text="If remote machine is running a windows domain")
 
 
 class ChooseHostForm(AdagiosForm):
