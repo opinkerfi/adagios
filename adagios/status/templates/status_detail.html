@@ -242,7 +242,72 @@
                     </td>
                     <td id="effective_check_command"> Loading...</td>
                 </tr>
-                <tr></tr>
+                <tr>
+                    <td colspan="2">
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>Active Checks</td>
+                    <td>
+                        {% if my_object.active_checks_enabled == 1 %}
+                            Enabled
+                        {% else %}
+                            Disabled
+                        {% endif %}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>Passive checks</td>
+                    <td>
+                        {% if my_object.accept_passive_checks == 1 %}
+                            Enabled
+                        {% else %}
+                            Disabled
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Obsessing</td>
+                    <td>
+                        {% if my_object.host_obsess_over_host == 1 %}
+                            Enabled
+                        {% else %}
+                            Disabled
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Notifications</td>
+                    <td>
+                        {% if my_object.notifications_enabled == 1 %}
+                            Enabled
+                        {% else %}
+                            Disabled
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Event Handler</td>
+                    <td>
+                        {% if my_object.event_handler_enabled == 1 %}
+                            Enabled
+                        {% else %}
+                            Disabled
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Flap Detection</td>
+                    <td>
+                        {% if my_object.flap_detection_enabled == 1 %}
+                            Enabled
+                        {% else %}
+                            Disabled
+                        {% endif %}
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         Downtimes:
