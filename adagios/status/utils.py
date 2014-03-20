@@ -608,3 +608,96 @@ def get_business_process(process_type, name):
         return c
     else:
         raise Exception("Business process of type %s not found" % process_type)
+
+
+
+
+def request_to_livestatus(request, object_type="service", *args, **kwargs):
+    """ Take querystring parameters from django request object, and returns list of livestatus queries
+
+        Should support both hosts and services.
+
+        It does minimal support for views have hosts and services in same view and user wants to
+        enter some querystring parameters for both.
+
+    """
+    result = []
+    for key in request.GET:
+        values = request.GET.getlist(key)
+
+        if object_type == 'host' and key.startswith('service_'):
+            continue
+        if object_type == 'host' and key == 'description':
+            continue
+        if object_type == 'host' and key in ('host_scheduled_downtime_depth', 'host_acknowledged', 'host_state'):
+            key = key[len('host_'):]
+        if object_type == 'service' and key in ('service_state', 'service_description'):
+            key = key[len('service_'):]
+
+        if object_type == 'service' and key == 'unhandled':
+            tmp = {}
+            tmp['state__isnot'] = 0
+            tmp['acknowledged'] = 0
+            tmp['scheduled_downtime_depth'] = 0
+            tmp['host_scheduled_downtime_depth'] = 0
+            tmp['host_acknowledged'] = 0
+            ktmpwargs['host_state'] = 0
+            result += pynag.Utils.grep_to_livestatus(**kwargs)
+        elif object_type == 'host' and key == 'unhandled':
+            tmp = {}
+            tmp['state__isnot'] = 0
+            tmp['acknowledged'] = 0
+            tmp['scheduled_downtime_depth'] = 0
+        elif object_type == 'host' and key == 'q':
+            for i in values:
+                result.append('Filter: name ~~ %s' % i)
+                result.append('Filter: address ~~ %s' % i)
+                result.append('Filter: plugin_output ~~ %s' % i)
+                result.append('Or: 3')
+        elif object_type == 'service' and key == 'q':
+            for i in values:
+                result.append('Filter: host_name ~~ %s' % i)
+                result.append('Filter: description ~~ %s' % i)
+                result.append('Filter: plugin_output ~~ %s' % i)
+                result.append('Filter: host_address ~~ %s' % i)
+                result.append('Or: 4')
+        else:
+            for value in values:
+                result += pynag.Utils.grep_to_livestatus(**{key: value})
+        result += pynag.Utils.grep_to_livestatus(*args, **kwargs)
+    print result
+    return result
+
+
+
+def grep_to_livestatus(request, *args, **kwargs):
+    """ Converts kwargs into a livestatus compatible search filter.
+
+     This is a wrapper around pynag.Utils.grep_to_livestatus() with the exception
+     that it support taking django Request.GET objects as an input (that support getlist method)
+
+     :param request:
+        Any querystring parameters in request.GET are converted to mklivestatus filter
+
+     :param *args:
+                    For convenience, any args are returned as is at the front of the list
+
+     :param **kwargs:
+                    Any key/value argument provided will be converted to livestatus compatible output
+
+     :returns: * A list of livestatus arguments (usually 'Filter: x' commands)
+    """
+    result = []
+    for key in request.GET:
+        if key not in kwargs:
+            continue
+        if key.startswith('filter'):
+            values = request.GET.getlist(key)
+            for value in values:
+                result += pynag.Utils.grep_to_livestatus(*value)
+        else:
+            values = request.GET.getlist(key)
+            for value in values:
+                result += pynag.Utils.grep_to_livestatus(**{key: value})
+    result += pynag.Utils.grep_to_livestatus(*args, **kwargs)
+    return result
