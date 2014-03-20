@@ -330,11 +330,6 @@ def icons(request, image_name=None):
             raise Exception("Not allowed to see this image")
 
 
-def sign_out(request):
-    """ Use this to force browser to update authentication """
-    return HttpResponse('You have been signed out', status=401)
-
-
 def mail(request):
     """ Send a notification email to one or more contacts regarding hosts or services """
     c = {}
