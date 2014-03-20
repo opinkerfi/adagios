@@ -232,19 +232,19 @@ def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
       hostlist    -- semicolon seperated list of hosts to schedule checks for. Same as multiple calls with host_name=
       servicelist -- Same as hostlist but for services. Format is: host_name,service_description;host_name,service_description
     """
-    task = adagios.utils.Task()
-    WaitCondition = "last_check > %s" % int(time.time()- 1)
+    #task = adagios.utils.Task()
+    #WaitCondition = "last_check > %s" % int(time.time()- 1)
     for i in hostlist.split(';'):
         if not i: continue
         reschedule(request, host_name=i, service_description=None, check_time=check_time)
-        task.add(wait, 'hosts', i, WaitCondition)
+        #task.add(wait, 'hosts', i, WaitCondition)
     for i in servicelist.split(';'):
         if not i: continue
         host_name,service_description = i.split(',')
         reschedule(request, host_name=host_name, service_description=service_description, check_time=check_time)
         #WaitObject = "{h};{s}".format(h=host_name, s=service_description)
         #task.add(wait, 'services', WaitObject, WaitCondition)
-    return {'message': "command sent successfully", 'task_id': task.get_id()}
+    return {'message': "command sent successfully"}
 
 
 def reschedule(request, host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
