@@ -34,6 +34,8 @@ def error_handler(fn):
             c['exception_type'] = str(type(e).__name__)
             c['traceback'] = traceback.format_exc()
             return error_page(*args, context=c)
+    wrapper.__name__ = fn.__name__
+    wrapper.__module__ = fn.__module__
     return wrapper
 
 
