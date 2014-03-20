@@ -612,7 +612,7 @@ def get_business_process(process_type, name):
 
 
 
-def request_to_livestatus(request, object_type="service", *args, **kwargs):
+def grep_to_livestatus(object_type, *args, **kwargs):
     """ Take querystring parameters from django request object, and returns list of livestatus queries
 
         Should support both hosts and services.
@@ -622,8 +622,11 @@ def request_to_livestatus(request, object_type="service", *args, **kwargs):
 
     """
     result = []
-    for key in request.GET:
-        values = request.GET.getlist(key)
+    for key in kwargs:
+        if hasattr(kwargs, 'getlist'):
+            values = kwargs(key)
+        else:
+            values = [kwargs.get(key)]
 
         if object_type == 'host' and key.startswith('service_'):
             continue
@@ -641,7 +644,7 @@ def request_to_livestatus(request, object_type="service", *args, **kwargs):
             tmp['scheduled_downtime_depth'] = 0
             tmp['host_scheduled_downtime_depth'] = 0
             tmp['host_acknowledged'] = 0
-            ktmpwargs['host_state'] = 0
+            tmp['host_state'] = 0
             result += pynag.Utils.grep_to_livestatus(**kwargs)
         elif object_type == 'host' and key == 'unhandled':
             tmp = {}
@@ -664,40 +667,6 @@ def request_to_livestatus(request, object_type="service", *args, **kwargs):
         else:
             for value in values:
                 result += pynag.Utils.grep_to_livestatus(**{key: value})
-        result += pynag.Utils.grep_to_livestatus(*args, **kwargs)
-    print result
-    return result
 
+    return list(args) + result
 
-
-def grep_to_livestatus(request, *args, **kwargs):
-    """ Converts kwargs into a livestatus compatible search filter.
-
-     This is a wrapper around pynag.Utils.grep_to_livestatus() with the exception
-     that it support taking django Request.GET objects as an input (that support getlist method)
-
-     :param request:
-        Any querystring parameters in request.GET are converted to mklivestatus filter
-
-     :param *args:
-                    For convenience, any args are returned as is at the front of the list
-
-     :param **kwargs:
-                    Any key/value argument provided will be converted to livestatus compatible output
-
-     :returns: * A list of livestatus arguments (usually 'Filter: x' commands)
-    """
-    result = []
-    for key in request.GET:
-        if key not in kwargs:
-            continue
-        if key.startswith('filter'):
-            values = request.GET.getlist(key)
-            for value in values:
-                result += pynag.Utils.grep_to_livestatus(*value)
-        else:
-            values = request.GET.getlist(key)
-            for value in values:
-                result += pynag.Utils.grep_to_livestatus(**{key: value})
-    result += pynag.Utils.grep_to_livestatus(*args, **kwargs)
-    return result
