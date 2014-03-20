@@ -72,7 +72,7 @@ def handle_request(request, module_name, module_path, attribute, format):
                 arguments['request'] = request
             result = item(**arguments)
     else:
-        raise BaseException("Unsupported operation: %s" % (request.method))
+        raise BaseException("Unsupported operation: %s" % (request.method, ))
     # Everything below is just about formatting the results
     if format == 'json':
         result = simplejson.dumps(
