@@ -18,7 +18,7 @@
                 <option value=""></option>
             </select>
         </td>
-        <td></td>
+        <td><span id="num_services_that_match_filter">0</span> services have this service description.</td>
     </tr>
     <tr>
         <td>Application Metric:</td>
@@ -29,53 +29,58 @@
     <td>
         <button class="btn btn-primary" onclick="reload_page_with_new_querystring();">Update</button>
     </td>
-    <td><span id="num_services_that_match_filter">0</span> services match current filter.</td>
+    <td></td>
     <td></td>
 </tr>
 </table>
 
 
+<hr>
 
-
-
+{% if services %}
     <table class="table table-condensed searchtable datatable well" style="font-size:12px;" >
         <thead>
-        <tr>
-            <th class="small"></th>
-            <th>host</th>
-            <th>service</th>
-            {% for i in metrics %}
-                <th>{{ i }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-    {% for service in services %}
-        {% if service.metrics|length == metrics|length %}
-            <tr class=mainrow>
-                <td class="selectable small">
-                    <input type=checkbox class="chkbox" name="graph" value="{{ service.host_name }},{{ service.description }},{{ i.label }}" data-host_name="{{ service.host_name }}" data-service_description="{{ service.description }}" data-object_type="perfdata">
-                </td>
-
-                <td class="small nowrap">
-                    <div class="circle state_{{ service.host_state }}"></div>
-                    <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
-                </td>
-                <td>
-                    <div class="circle state_{{ service.state }}"></div>
-                    <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
-                </td>
-                    {% for i in service.metrics %}
-                        <td class="small nowrap">
-                            <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
-                                <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
-                            </a>
-                        </td>
-                    {% endfor %}
-
+            <tr>
+                <th class="small"></th>
+                <th>host</th>
+                <th>service</th>
+                {% for i in metrics %}
+                    <th>{{ i }}</th>
+                {% endfor %}
             </tr>
-        {% endif %}
-    {% endfor %}
+        </thead>
+        <tbody>
+            {% for service in services %}
+                {% if service.metrics|length == metrics|length %}
+                    <tr class=mainrow>
+                        <td class="selectable small">
+                            <input type=checkbox class="chkbox" name="graph" value="{{ service.host_name }},{{ service.description }},{{ i.label }}" data-host_name="{{ service.host_name }}" data-service_description="{{ service.description }}" data-object_type="perfdata">
+                        </td>
+
+                        <td class="small nowrap">
+                            <div class="circle state_{{ service.host_state }}"></div>
+                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
+                        </td>
+                        <td>
+                            <div class="circle state_{{ service.state }}"></div>
+                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
+                        </td>
+                            {% for i in service.metrics %}
+                                <td class="small nowrap">
+                                    <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
+                                        <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
+                                    </a>
+                                </td>
+                            {% endfor %}
+
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
     </table>
+{% else %}
+<div class="alert alert-info">No services have been selected. Change the filters above and press update button.</div>
+{% endif %}
 {% endblock %}
 
 {% block footer %}
