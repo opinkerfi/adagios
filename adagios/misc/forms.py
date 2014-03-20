@@ -532,6 +532,8 @@ class SendEmailForm(forms.Form):
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')
         text_content = self.cleaned_data['message']
+        text_content = text_content.replace('\n','<br>')
+
         # self.html_content is rendered in misc.views.mail()
         html_content = text_content + "<p></p>" + self.html_content
         if self.cleaned_data['add_myself_to_cc']:
@@ -541,7 +543,7 @@ class SendEmailForm(forms.Form):
             self.acknowledge_all_services(comment)
             self.acknowledge_all_hosts(comment)
         # Here we actually send some email:
-        text_content = text_content.replace('\n','\r\n')
+
         msg = EmailMultiAlternatives(
             subject=subject, body=text_content, from_email=from_address, cc=cc_address, to=to_address)
         msg.attach_alternative(html_content, "text/html")
