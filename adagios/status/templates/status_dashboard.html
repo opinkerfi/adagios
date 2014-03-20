@@ -196,3 +196,10 @@
 </div>
 
 {% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <script>
+        $("#status_dashboard input").hide();
+    </script>
+{% endblock footer %}
