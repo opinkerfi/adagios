@@ -113,6 +113,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         });
         return my_data;
     };
+
     // Find the selected attributes, and read through all arguments,
     // and concat it in one field that looks like this:
     // check_command!$ARG1$!$ARG2$
@@ -129,6 +130,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         }
         $('#check_command_actual_entry').attr('value', check_command);
     };
+
     // This function will look up what macros are related to our check_command
     // and then create correct input boxes for each one.
     self.generate_input_fields = function() {
@@ -245,7 +247,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         var effective_command_line = self.original_command_line;
 
         effective_command_line = self.resolve_macros(effective_command_line, macros, true);
-        $('#command_line_preview').html( effective_command_line );
+        $('#command_line_preview').text( effective_command_line );
 
     };
 
