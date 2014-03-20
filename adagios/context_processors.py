@@ -134,7 +134,7 @@ def resolve_urlname(request):
         if res:
             return {'urlname': res.url_name}
     except Exception:
-        return {}
+        return {'urlname': 'None'}
 
 
 def get_httpuser(request):
