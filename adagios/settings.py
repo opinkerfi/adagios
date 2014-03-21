@@ -146,6 +146,7 @@ django_secret_key = ""
 map_center = "64.119595,-21.655426"
 map_zoom = "10"
 title_prefix = "Adagios - "
+auto_reload = False
 
 plugins = {}
 
