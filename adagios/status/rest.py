@@ -225,6 +225,7 @@ def downtime(host_name=None, service_description=None, start_time=None, end_time
 
 import adagios.utils
 
+
 def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
     """ Same as reschedule() but takes a list of hosts/services as input
 

@@ -89,6 +89,9 @@ class AdagiosSettingsForm(forms.Form):
     enable_status_view = forms.BooleanField(
         required=False, initial=settings.enable_status_view,
         help_text="If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect")
+    auto_reload = forms.BooleanField(
+        required=False, initial=settings.auto_reload,
+        help_text="If set. Nagios is reloaded automatically after every change.")
     warn_if_selinux_is_active = forms.BooleanField(
         required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
     pnp_filepath = forms.CharField(

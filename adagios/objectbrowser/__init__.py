@@ -15,13 +15,14 @@ def startup():
     # Pre load objects on startup
     pynag.Model.ObjectDefinition.objects.get_all()
 
+    from pynag.Model import EventHandlers
     if settings.enable_githandler == True:
-        from pynag.Model import EventHandlers
-        pynag.Model.eventhandlers.append(
-            pynag.Model.EventHandlers.GitEventHandler(
-                os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
-        )
-
+        nagios_dir = os.path.dirname(pynag.Model.config.cfg_file)
+        githandler = pynag.Model.EventHandlers.GitEventHandler(nagios_dir, 'adagios', 'tommi')
+        pynag.Model.eventhandlers.append(githandler)
+    if settings.auto_reload:
+        handler = pynag.Model.EventHandlers.NagiosReloadHandler(nagios_init=settings.nagios_init_script)
+        pynag.Model.eventhandlers.append(handler)
 
 # If any pynag errors occur during initial parsing, we ignore them
 # because we still want the webserver to start.
