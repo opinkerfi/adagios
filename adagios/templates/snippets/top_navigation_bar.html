@@ -93,7 +93,7 @@
                             {% if plugins.status %}
                                 <li><a href="{% url status.views.contact_detail remote_user %}">My Profile</a></li>
                             {% endif %}
-                            <li><a href="#" onclick="adagios.misc.logout(); location.reload();">Sign Out</a></li>
+                            <li><a href="#" onclick="adagios.misc.logout(); return false;">Sign Out</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
