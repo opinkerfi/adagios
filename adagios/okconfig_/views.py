@@ -21,6 +21,7 @@ from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedir
 from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
+from adagios.views import adagios_decorator
 
 from django.core.urlresolvers import reverse
 
@@ -31,12 +32,16 @@ import okconfig.network_scan
 from pynag import Model
 
 
-def addcomplete(request, c={}):
+@adagios_decorator
+def addcomplete(request, c=None):
     """ Landing page when a new okconfig group has been added
     """
+    if not c:
+        c = {}
     return render_to_response('addcomplete.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addgroup(request):
     """ Add a new okconfig group
 
@@ -70,6 +75,7 @@ def addgroup(request):
     return render_to_response('addgroup.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addhost(request):
     """ Add a new host from an okconfig template
     """
@@ -104,6 +110,7 @@ def addhost(request):
     return render_to_response('addhost.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addtemplate(request, host_name=None):
     """ Add a new okconfig template to a host
 
@@ -133,6 +140,7 @@ def addtemplate(request, host_name=None):
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addservice(request):
     """ Create a new service derived from an okconfig template
     """
@@ -169,6 +177,7 @@ def addservice(request):
     return render_to_response('addservice.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def verify_okconfig(request):
     """ Checks if okconfig is properly set up. """
     c = {}
@@ -182,6 +191,7 @@ def verify_okconfig(request):
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def install_agent(request):
     """ Installs an okagent on a remote host """
     c = {}
@@ -230,6 +240,7 @@ def install_agent(request):
     return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit(request, host_name):
     """ Edit all the Service "__MACROS" for a given host """
 
@@ -274,6 +285,7 @@ def edit(request, host_name):
     return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def choose_host(request):
     """Simple form that lets you choose one host to edit"""
     c = {}
@@ -288,6 +300,7 @@ def choose_host(request):
     return render_to_response('choosehost.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def scan_network(request):
     """ Scan a single network and show hosts that are alive
     """

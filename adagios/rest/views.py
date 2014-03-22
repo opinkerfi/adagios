@@ -7,7 +7,7 @@ from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
 from django.core.urlresolvers import resolve
-
+from adagios.views import adagios_decorator
 
 import inspect
 from django import forms
@@ -23,6 +23,7 @@ def _load(module_path):
 
 
 @csrf_exempt
+@adagios_decorator
 def handle_request(request, module_name, module_path, attribute, format):
     m = _load(module_path)
     # TODO: Only allow function calls if method == POST
@@ -94,6 +95,7 @@ def handle_request(request, module_name, module_path, attribute, format):
     return HttpResponse(result, mimetype=mimetype)
 
 
+@adagios_decorator
 def list_modules(request):
     """ List all available modules and their basic info
 
@@ -102,6 +104,7 @@ def list_modules(request):
     return render_to_response('list_modules.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def index(request, module_name, module_path):
     """ This view is used to display the contents of a given python module
     """

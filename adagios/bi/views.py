@@ -6,6 +6,7 @@ from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from adagios.pnp.functions import run_pnp
+from adagios.views import adagios_decorator
 
 import adagios.bi
 import adagios.bi.forms
@@ -13,6 +14,7 @@ import adagios.bi.forms
 from adagios.views import adagios_decorator, error_page
 
 
+@adagios_decorator
 def edit(request, process_name, process_type):
     """ Edit one specific business process
     """
@@ -66,6 +68,7 @@ def edit(request, process_name, process_type):
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def add_graph(request):
     """ Add one or more graph to a single business process
     """
@@ -114,6 +117,7 @@ def add_graph(request):
     return render_to_response('business_process_add_graph.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def view(request, process_name, process_type=None):
     """ View one specific business process
     """
@@ -129,6 +133,7 @@ def view(request, process_name, process_type=None):
     return render_to_response('business_process_view.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def json(request, process_name=None, process_type=None):
     """ Returns a list of all processes in json format.
 
@@ -150,6 +155,7 @@ def json(request, process_name=None, process_type=None):
     json = simplejson.dumps(result)
     return HttpResponse(json, content_type="application/json")
 
+@adagios_decorator
 def graphs_json(request, process_name, process_type):
     """ Get graphs for one specific business process
     """
@@ -182,6 +188,7 @@ def graphs_json(request, process_name, process_type):
     return HttpResponse(graph_json)
 
 
+@adagios_decorator
 def add_subprocess(request):
     """ Add subitems to one specific businessprocess
     """
@@ -212,6 +219,7 @@ def add_subprocess(request):
     return render_to_response('business_process_add_subprocess.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def add(request):
     """ View one specific business process
     """
@@ -232,6 +240,7 @@ def add(request):
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def index(request):
     """ List all configured business processes
     """
@@ -242,6 +251,7 @@ def index(request):
     return render_to_response('business_process_list.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def delete(request, process_name, process_type):
     """ Delete one specific business process """
     import adagios.businessprocess
@@ -255,6 +265,7 @@ def delete(request, process_name, process_type):
     return render_to_response('business_process_delete.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def change_status_calculation_method(request, process_name):
     import adagios.businessprocess
     bp = adagios.bi.get_business_process(process_name)

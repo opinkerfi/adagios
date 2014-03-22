@@ -57,7 +57,7 @@ def index(request):
     c['version'] = __version__
     return render_to_response('frontpage.html', c, context_instance=RequestContext(request))
 
-
+@adagios_decorator
 def settings(request):
     c = {}
     c.update(csrf(request))
@@ -80,12 +80,14 @@ def settings(request):
     return render_to_response('settings.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def nagios(request):
     c = {}
     c['nagios_url'] = adagios.settings.nagios_url
     return render_to_response('nagios.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def map_view(request):
     c = {}
     try:
@@ -99,6 +101,7 @@ def map_view(request):
     return render_to_response('map.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def gitlog(request):
     """ View that displays a nice log of previous git commits in dirname(config.cfg_file) """
     c = {}
@@ -179,6 +182,7 @@ def gitlog(request):
     return render_to_response('gitlog.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def nagios_service(request):
     """ View to restart / reload nagios service """
     c = {}
@@ -215,6 +219,7 @@ def nagios_service(request):
     return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def pnp4nagios(request):
     """ View to handle integration with pnp4nagios """
     c = {}
@@ -256,6 +261,7 @@ def pnp4nagios(request):
     return render_to_response('pnp4nagios.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit_file(request, filename):
     """ This view gives raw read/write access to a given filename.
 
@@ -278,12 +284,14 @@ def edit_file(request, filename):
     return render_to_response('editfile.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit_nagios_cfg(request):
     """ Allows raw editing of nagios.cfg configfile
     """
     return edit_file(request, filename=adagios.settings.nagios_config)
 
 
+@adagios_decorator
 def pnp4nagios_edit_template(request, filename):
     """ Allows raw editing of a pnp4nagios template.
 
@@ -298,6 +306,7 @@ def pnp4nagios_edit_template(request, filename):
             "Security violation. You are not allowed to edit %s" % filename)
 
 
+@adagios_decorator
 def icons(request, image_name=None):
     """ Use this view to see nagios icons/logos
     """
@@ -330,6 +339,7 @@ def icons(request, image_name=None):
             raise Exception("Not allowed to see this image")
 
 
+@adagios_decorator
 def mail(request):
     """ Send a notification email to one or more contacts regarding hosts or services """
     c = {}
@@ -396,6 +406,7 @@ def mail(request):
     return render_to_response('misc_mail.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def test(request):
     """ Generic test view, use this as a sandbox if you like
     """
@@ -414,6 +425,7 @@ def test(request):
     return render_to_response('test.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit_check_command(request):
     """ Generic view for editing check command of a service
     """
@@ -450,6 +462,7 @@ def edit_check_command(request):
     return render_to_response('edit_check_command.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def paste(request):
     """ Generic test view, use this as a sandbox if you like
     """

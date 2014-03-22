@@ -20,9 +20,11 @@ from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.shortcuts import HttpResponse
 from adagios.pnp.functions import run_pnp
+from adagios.views import adagios_decorator
 import json
 
 
+@adagios_decorator
 def pnp(request, pnp_command='image'):
     c = {}
     c['messages'] = []
