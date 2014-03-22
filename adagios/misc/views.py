@@ -43,14 +43,14 @@ from adagios import __version__
 import adagios.status.utils
 
 from collections import defaultdict
-from adagios.views import error_handler, error_page
+from adagios.views import adagios_decorator, error_page
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
-@error_handler
+@adagios_decorator
 def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file

@@ -47,15 +47,15 @@ state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
-from adagios.views import error_handler, error_page
+from adagios.views import adagios_decorator, error_page
 
 
-@error_handler
+@adagios_decorator
 def status_parents(request):
     """ Here for backwards compatibility """
     return network_parents(request)
 
-@error_handler
+@adagios_decorator
 def network_parents(request):
     """ List of hosts that are network parents """
     c = {}
@@ -89,7 +89,7 @@ def network_parents(request):
     return render_to_response('status_parents.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def status(request):
     """ Compatibility layer around status.views.services
     """
@@ -98,7 +98,7 @@ def status(request):
     return services(request)
 
 
-@error_handler
+@adagios_decorator
 def services(request):
     """ This view handles list of services  """
     c = {}
@@ -110,7 +110,7 @@ def services(request):
     c['services'] = utils.get_services(request, fields=fields, **request.GET)
     return render_to_response('status_services.html', c, context_instance=RequestContext(request))
 
-@error_handler
+@adagios_decorator
 def services_js(request):
     """ This view handles list of services  """
     c = {}
@@ -123,14 +123,14 @@ def services_js(request):
     return render_to_response('status_services_js.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def status_dt(request):
     """ This view handles list of services  """
     c = {}
     return render_to_response('status_dt.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def snippets_services(request):
     """ Returns a html stub with only the services view """
     c = {}
@@ -142,7 +142,7 @@ def snippets_services(request):
     c['services'] = utils.get_services(request, fields=fields, **request.GET)
     return render_to_response('snippets/status_servicelist_snippet.html', c, context_instance=RequestContext(request))
 
-@error_handler
+@adagios_decorator
 def snippets_hosts(request):
     c = {}
     c['messages'] = []
@@ -152,7 +152,7 @@ def snippets_hosts(request):
     return render_to_response('snippets/status_hostlist_snippet.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def snippets_log(request):
     """ Returns a html stub with the  snippet_statehistory_snippet.html
     """
@@ -206,7 +206,7 @@ def snippets_log(request):
 
 
 
-@error_handler
+@adagios_decorator
 def status_detail(request, host_name=None, service_description=None):
     """ Displays status details for one host or service """
     c = {}
@@ -340,7 +340,7 @@ def _get_network_parents(host_name):
     return result
 
 
-@error_handler
+@adagios_decorator
 def status_hostgroup(request, hostgroup_name):
     """ Status detail for one specific hostgroup  """
     c = {}
@@ -367,7 +367,7 @@ def status_hostgroup(request, hostgroup_name):
     return render_to_response('status_hostgroup.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def _add_statistics_to_hostgroups(hostgroups):
     """ Enriches a list of hostgroup dicts with information about subgroups and parentgroups
     """
@@ -408,7 +408,7 @@ def _add_statistics_to_hostgroups(hostgroups):
             pass
 
 
-@error_handler
+@adagios_decorator
 def status_servicegroups(request):
     c = {}
     c['messages'] = []
@@ -422,7 +422,7 @@ def status_servicegroups(request):
     return render_to_response('status_servicegroups.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def status_hostgroups(request):
     c = {}
     c['messages'] = []
@@ -515,13 +515,13 @@ def status_hostgroups(request):
     return render_to_response('status_hostgroups.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def status_host(request):
     """ Here for backwards compatibility """
     return hosts(request)
 
 
-@error_handler
+@adagios_decorator
 def hosts(request):
     c = {}
     c['messages'] = []
@@ -531,7 +531,7 @@ def hosts(request):
     return render_to_response('status_host.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def problems(request):
     c = {}
     c['messages'] = []
@@ -599,7 +599,7 @@ def _add_statistics_to_hosts(hosts):
             host['percent_pending'] = 0
 
 
-@error_handler
+@adagios_decorator
 def status_index(request):
     c = adagios.status.utils.get_statistics(request)
     c['services'] = adagios.status.utils.get_services(request, 'unhandled')
@@ -608,7 +608,7 @@ def status_index(request):
     return render_to_response('status_index.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def test_livestatus(request):
     """ This view is a test on top of mk_livestatus which allows you to enter your own queries """
     c = {}
@@ -712,12 +712,12 @@ def _status_combined(request, optimized=False):
     return c
 
 
-@error_handler
+@adagios_decorator
 def status_problems(request):
     return dashboard(request)
 
 
-@error_handler
+@adagios_decorator
 def dashboard(request):
 
     # Get statistics
@@ -739,7 +739,7 @@ def dashboard(request):
     return render_to_response('status_dashboard.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def state_history(request):
     c = {}
     c['messages'] = []
@@ -885,7 +885,7 @@ def _status_log(request):
     return c
 
 
-@error_handler
+@adagios_decorator
 def status_log(request):
     c = _status_log(request)
     c['request'] = request
@@ -893,7 +893,7 @@ def status_log(request):
     return render_to_response('status_log.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def comment_list(request):
     """ Display a list of all comments """
     c = {}
@@ -905,7 +905,7 @@ def comment_list(request):
     return render_to_response('status_comments.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def downtime_list(request):
     """ Display a list of all comments """
     c = {}
@@ -916,7 +916,7 @@ def downtime_list(request):
     c['downtimes'] = l.query('GET downtimes', *args)
     return render_to_response('status_downtimes.html', c, context_instance=RequestContext(request))
 
-@error_handler
+@adagios_decorator
 def acknowledgement_list(request):
     """ Display a list of all comments """
     c = {}
@@ -928,7 +928,7 @@ def acknowledgement_list(request):
     return render_to_response('status_acknowledgements.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def perfdata(request):
     """ Display a list of perfdata
     """
@@ -946,7 +946,7 @@ def perfdata(request):
     return render_to_response('status_perfdata.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def contact_list(request):
     """ Display a list of active contacts
     """
@@ -961,7 +961,7 @@ def contact_list(request):
     return render_to_response('status_contacts.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def contact_detail(request, contact_name):
     """ Detailed information for one specific contact
     """
@@ -1010,7 +1010,7 @@ def contact_detail(request, contact_name):
     return render_to_response('status_contact.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def contactgroup_detail(request, contactgroup_name):
     """ Detailed information for one specific contactgroup
     """
@@ -1045,7 +1045,7 @@ def contactgroup_detail(request, contactgroup_name):
     return render_to_response('status_contactgroup.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def perfdata2(request):
     """ Just a test method, feel free to remove it
     """

@@ -4,6 +4,7 @@ import multiprocessing
 import adagios.status.utils
 import time
 import adagios
+import pynag.Model
 
 
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
@@ -56,3 +57,11 @@ class Task(object):
     def ready(self):
         """ Returns True if all the Tasks in this class have finished running. """
         return max(map(lambda x: x.ready(), self._tasks))
+
+
+def update_eventhandlers(request):
+    """ Iterates through all pynag eventhandler and informs them who might be making a change
+    """
+    remote_user = request.META.get('REMOTE_USER', 'anonymous')
+    for i in pynag.Model.eventhandlers:
+        i.modified_by = remote_user

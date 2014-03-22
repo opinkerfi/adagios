@@ -31,22 +31,22 @@ import pynag.Model
 
 from adagios import settings
 from adagios.objectbrowser.forms import *
-from adagios.views import error_handler
+from adagios.views import adagios_decorator
 
 
-@error_handler
+@adagios_decorator
 def home(request):
     return redirect('adagios')
 
 
-@error_handler
+@adagios_decorator
 def list_object_types(request):
     """ Collects statistics about pynag objects and returns to template """
     c = {}
     return render_to_response('list_object_types.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def geek_edit(request, object_id):
     """ Function handles POST requests for the geek edit form """
     c = {}
@@ -93,7 +93,7 @@ def geek_edit(request, object_id):
     return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': o.get_id()}))
 
 
-@error_handler
+@adagios_decorator
 def advanced_edit(request, object_id):
     """ Handles POST only requests for the "advanced" object edit form. """
     c = {}
@@ -136,7 +136,7 @@ def advanced_edit(request, object_id):
     return HttpResponseRedirect(reverse('edit_object', args=[o.get_id()]))
 
 
-@error_handler
+@adagios_decorator
 def edit_object(request, object_id=None):
     """ Brings up an edit dialog for one specific object.
 
@@ -439,7 +439,7 @@ def _edit_host(request, c):
     return render_to_response('edit_host.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def config_health(request):
     """ Display possible errors in your nagios config
     """
@@ -485,7 +485,7 @@ def config_health(request):
         return render_to_response('suggestions.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def show_plugins(request):
     """ Finds all command_line arguments, and shows missing plugins """
     c = {}
@@ -520,7 +520,7 @@ def show_plugins(request):
     return render_to_response('show_plugins.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def edit_nagios_cfg(request):
     """ This views is made to make modifications to nagios.cfg
     """
@@ -557,7 +557,7 @@ def edit_nagios_cfg(request):
     return render_to_response('edit_configfile.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def bulk_edit(request):
     """ Edit multiple objects with one post """
     c = {}
@@ -591,7 +591,7 @@ def bulk_edit(request):
 
     return render_to_response('bulk_edit.html', c, context_instance=RequestContext(request))
 
-@error_handler
+@adagios_decorator
 def bulk_delete(request):
     """ Edit delete multiple objects with one post """
     c = {}
@@ -635,7 +635,7 @@ def bulk_delete(request):
 
     return render_to_response('bulk_delete.html', c, context_instance=RequestContext(request))
 
-@error_handler
+@adagios_decorator
 def bulk_copy(request):
     """ Copy multiple objects with one post """
     c = {}
@@ -678,7 +678,7 @@ def bulk_copy(request):
 
     return render_to_response('bulk_copy.html', c, context_instance=RequestContext(request))
 
-@error_handler
+@adagios_decorator
 def delete_object_by_shortname(request, object_type, shortname):
     """ Same as delete_object() but uses object type and shortname instead of object_id
     """
@@ -686,7 +686,7 @@ def delete_object_by_shortname(request, object_type, shortname):
     my_obj = obj_type.objects.get_by_shortname(shortname)
     return delete_object(request, object_id=my_obj.get_id())
 
-@error_handler
+@adagios_decorator
 def delete_object(request, object_id):
     """ View to Delete a single object definition """
     c = {}
@@ -707,7 +707,7 @@ def delete_object(request, object_id):
     return render_to_response('delete_object.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def copy_object(request, object_id):
     """ View to Copy a single object definition """
     c = {}
@@ -730,7 +730,7 @@ def copy_object(request, object_id):
     return render_to_response('copy_object.html', c, context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def add_object(request, object_type):
     """ Friendly wizard on adding a new object of any particular type
     """
@@ -819,7 +819,7 @@ def _querydict_to_objects(request, raise_on_not_found=False):
     return result
 
 
-@error_handler
+@adagios_decorator
 def add_to_group(request, group_type=None, group_name=''):
     """ Add one or more objects into a group
     """
@@ -851,7 +851,7 @@ def add_to_group(request, group_type=None, group_name=''):
     return render_to_response('add_to_group.html', locals(), context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def edit_all(request, object_type, attribute_name):
     """  Edit many objects at once, changing only a single attribute
 
@@ -866,7 +866,7 @@ def edit_all(request, object_type, attribute_name):
 
 
 
-@error_handler
+@adagios_decorator
 def search_objects(request, objects=None):
     """ Displays a list of pynag objects, search parameters can be entered via querystring
 
@@ -902,7 +902,7 @@ def search_objects(request, objects=None):
     return render_to_response('search_objects.html', locals(), context_instance=RequestContext(request))
 
 
-@error_handler
+@adagios_decorator
 def copy_and_edit_object(request, object_id):
     """ Create a new object, and open up an edit dialog for it.
 

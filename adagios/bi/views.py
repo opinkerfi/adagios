@@ -10,7 +10,7 @@ from adagios.pnp.functions import run_pnp
 import adagios.bi
 import adagios.bi.forms
 
-from adagios.views import error_handler, error_page
+from adagios.views import adagios_decorator, error_page
 
 
 def edit(request, process_name, process_type):

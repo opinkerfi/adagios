@@ -6,27 +6,25 @@ from django import template
 import time
 import logging
 import adagios.settings
+import adagios.utils
 
-def error_handler(fn):
+
+def adagios_decorator(view_func):
     """ This is a python decorator intented for all views in the status module.
 
      It catches all unhandled exceptions and displays them on a generic web page.
 
      Kind of what the django exception page does when debug mode is on.
     """
-    def wrapper(*args, **kwargs):
+    def wrapper(request, *args, **kwargs):
         start_time = time.time()
         try:
-            result = fn(*args, **kwargs)
+            if request.method == 'POST':
+                adagios.utils.update_eventhandlers(request)
+            result = view_func(request, *args, **kwargs)
             end_time = time.time()
             time_now = time.ctime()
             duration = end_time - start_time
-            try:
-                with open('/var/log/adagios.log', 'a') as f:
-                    message = "%s %s.%s %s seconds\n" % (time_now, fn.__module__, fn.__name__, duration)
-                    f.write(message)
-            except IOError:
-                pass
             return result
         except Exception, e:
             c = {}
@@ -34,8 +32,8 @@ def error_handler(fn):
             c['exception_type'] = str(type(e).__name__)
             c['traceback'] = traceback.format_exc()
             return error_page(*args, context=c)
-    wrapper.__name__ = fn.__name__
-    wrapper.__module__ = fn.__module__
+    wrapper.__name__ = view_func.__name__
+    wrapper.__module__ = view_func.__module__
     return wrapper
 
 
