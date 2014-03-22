@@ -56,6 +56,7 @@ service nagios3 reload
         {% endif %}
 
 
+    </div>
         {% if exception_type == "ConfigFileNotFound" %}
             <p>
             So! Adagios is up and running. But you need to install and configure a monitoring engine.
@@ -70,9 +71,18 @@ service nagios3 reload
                 <a href="http://adagios.org">installation instructions</a> to get started.
             </p>
         {% endif %}
-
+        {% if exception_type == "EventHandlerError" %}
+            {% if "Not a git repository" in exception %}
+                <p>So! Seems like your configuration directory is not a git repository but Adagios was configured to that it uses git.</p>
+                <p>
+                    It's not a big deal, all you have to do is to visit <a href="{% url adagios.misc.views.gitlog %}">this page</a> and we will generate one for you.
+                </p>
+                <p>
+                    You configuration files should always be a git repository anyway, so this is for your own good :)
+                </p>
+            {% endif %}
+        {% endif %}
         <hr>
-    </div>
 
 
 
