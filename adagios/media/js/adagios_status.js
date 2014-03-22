@@ -712,6 +712,9 @@ adagios.status.clear_all_selections = function() {
         $('.select_many').each( function(data) {
            this.checked = false;
            });
+        $('.chkbox-primary').each( function(data) {
+            this.checked = true;
+        });
         adagios.status.count_selected_objects();
 };
 
