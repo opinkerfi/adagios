@@ -607,7 +607,8 @@ def bulk_delete(request):
     for i in _querystring_to_objects(request.GET or request.POST):
         try:
             obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
-            objects.append(obj)
+            if obj not in objects:
+                objects.append(obj)
         except KeyError:
             c['errors'].append("Could not find %s '%s' Maybe it has already been deleted." % (i.object_type, i.description))
     if request.method == "GET" and len(objects) == 1:
@@ -620,7 +621,8 @@ def bulk_delete(request):
             if i.startswith('change_'):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
-                objects.append(my_obj)
+                if my_obj not in objects:
+                    objects.append(my_obj)
 
         c['form'] = BulkDeleteForm(objects=objects, data=request.POST)
         if c['form'].is_valid():
@@ -651,7 +653,8 @@ def bulk_copy(request):
     for i in _querystring_to_objects(request.GET or request.POST):
         try:
             obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
-            objects.append(obj)
+            if obj not in objects:
+                objects.append(obj)
         except KeyError:
             c['errors'].append("Could not find %s '%s'" % (i.object_type, i.description))
     if request.method == "GET" and len(objects) == 1:
@@ -663,7 +666,8 @@ def bulk_copy(request):
             if i.startswith('change_'):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
-                objects.append(my_obj)
+                if my_obj not in objects:
+                    objects.append(my_obj)
 
         c['form'] = BulkCopyForm(objects=objects, data=request.POST)
         if c['form'].is_valid():
