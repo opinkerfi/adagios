@@ -376,6 +376,3 @@ def get_object_statistics():
             total = len(Class.objects.all)
             object_types.append({"object_type": object_type, "total": total})
     return object_types
-
-def check_git():
-    """

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}Audit Log{% endblock %}
-{% block smallheader %}audit{% endblock %}
-{% block largeheader %}log{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Audit Log{% endblock %}
 {% block nav1 %}misc{% endblock %}
 {% block toolbar %}{% endblock %}
 
@@ -17,9 +17,9 @@
     {% endif %}
     
     {% if uncommited_files %}
-        <h2>There are uncommited files in your git repo</h2>
+        <div class="alert alert-warning">There are uncommited files in your git repo</div>
         <form method="post" class="form-horizontal">{% csrf_token %}
-            <table class="gitlog table table-condensed">
+            <table class="gitlog well table table-condensed">
             <tr>
                 <th><input id="check_all" name="check_all" type="checkbox"/></th>
                 <th>status</th>
@@ -40,10 +40,11 @@
             </td></tr>
             </table>
         </form>
+        <hr>
     {% endif %}
     {% if commits %}
         <!-- List of recent commits -->
-        <h2>Previous changes (via git log)</h2>
+        <h4>Previous changes (via git log)</h4>
         <table class="gitlog table table-condensed" >
         <tr>
             <th>Date</th>
@@ -54,9 +55,9 @@
         </tr>
         {% for commit in commits %}
             <tr id="{{ commit.hash }}">
-                <td>{{ commit.author_time }}</td>
+                <td class="nowrap small">{{ commit.author_time }}</td>
                 <td>{{ commit.comment }}</td>
-                <td>{{ commit.author_name }}</td>
+                <td class="small nowrap">{{ commit.author_name }}</td>
                 <td>{{ commit.author_email }}</td>
                 <td>
                     {% if commit_id != commit.hash %}

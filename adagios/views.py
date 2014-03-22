@@ -31,7 +31,7 @@ def adagios_decorator(view_func):
             c['exception'] = e
             c['exception_type'] = str(type(e).__name__)
             c['traceback'] = traceback.format_exc()
-            return error_page(*args, context=c)
+            return error_page(request, *args, context=c)
     wrapper.__name__ = view_func.__name__
     wrapper.__module__ = view_func.__module__
     return wrapper
