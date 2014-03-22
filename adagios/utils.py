@@ -65,3 +65,13 @@ def update_eventhandlers(request):
     remote_user = request.META.get('REMOTE_USER', 'anonymous')
     for i in pynag.Model.eventhandlers:
         i.modified_by = remote_user
+
+    # if okconfig is installed, make sure okconfig is notified of git
+    # settings
+    try:
+        from pynag.Utils import GitRepo
+        import okconfig
+        okconfig.git = GitRepo(directory=os.path.dirname(
+            adagios.settings.nagios_config), auto_init=False, author_name=remote_user)
+    except Exception:
+        pass

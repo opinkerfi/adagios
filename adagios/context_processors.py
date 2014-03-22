@@ -140,10 +140,7 @@ def resolve_urlname(request):
 def get_httpuser(request):
     """ Get the current user that is authenticating to us and update event handlers"""
     try:
-        remote_user = request.META.get('REMOTE_USER', 'anonymous')
-
-        for i in pynag.Model.eventhandlers:
-            i.modified_by = remote_user
+        remote_user = request.META.get('REMOTE_USER', None)
     except Exception:
         remote_user = "anonymous"
     return {'remote_user': remote_user or "anonymous"}
@@ -248,39 +245,6 @@ def check_destination_directory(request):
                          message="Destination directory for new objects (%s) is not found. Please create it." % dest)
     else:
         clear_notification(notification_id="dest_dir")
-    return {}
-
-
-def check_git(request):
-    """ Notify user if there is uncommited data in git repository """
-    nagiosdir = os.path.dirname(pynag.Model.config.cfg_file)
-    if settings.enable_githandler == True:
-        try:
-            git = pynag.Model.EventHandlers.GitEventHandler(
-                nagiosdir, 'adagios', 'adagios')
-            uncommited_files = git.get_uncommited_files()
-            if len(uncommited_files) > 0:
-                add_notification(level="warning", notification_id="uncommited",
-                                 message="There are %s uncommited files in %s" % (len(uncommited_files), nagiosdir))
-            else:
-                clear_notification(notification_id="uncommited")
-            clear_notification(notification_id="git_missing")
-
-        except pynag.Model.EventHandlers.EventHandlerError, e:
-            if e.errorcode == 128:
-                add_notification(
-                    level="warning", notification_id="git_missing",
-                    message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
-        # if okconfig is installed, make sure okconfig is notified of git
-        # settings
-        try:
-            author = request.META.get('REMOTE_USER', 'anonymous')
-            from pynag.Utils import GitRepo
-            import okconfig
-            okconfig.git = GitRepo(directory=os.path.dirname(
-                adagios.settings.nagios_config), auto_init=False, author_name=author)
-        except Exception:
-            pass
     return {}
 
 
