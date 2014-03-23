@@ -1011,6 +1011,16 @@ def contact_detail(request, contact_name):
 
 
 @adagios_decorator
+def map_view(request):
+    c = {}
+    livestatus = adagios.status.utils.livestatus(request)
+    c['hosts'] = livestatus.get_hosts()
+    c['map_center'] = adagios.settings.map_center
+    c['map_zoom'] = adagios.settings.map_zoom
+
+    return render_to_response('status_map.html', c, context_instance=RequestContext(request))
+
+@adagios_decorator
 def contactgroup_detail(request, contactgroup_name):
     """ Detailed information for one specific contactgroup
     """

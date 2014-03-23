@@ -32,6 +32,8 @@ urlpatterns = patterns('adagios',
                       (r'^/perfdata/?$', 'status.views.perfdata'),
                       (r'^/perfdata2/?$', 'status.views.perfdata2'),
 
+                      (r'^/map/?', 'status.views.map_view'),
+
                        #(r'^/hosts/(?P<host_name>.+?)/(?P<service_description>.+)/?$', 'status.views.status_detail'),
                        #(r'^/hosts/(?P<host_name>.+)/$', 'status.views.status_detail'),
                        #(r'^/hosts/(?P<host_name>.+)$', 'status.views.status_detail'),
