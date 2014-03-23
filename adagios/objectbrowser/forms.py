@@ -714,7 +714,6 @@ class AddObjectForm(PynagForm):
         if self.pynag_object.object_type == 'service':
             host_name = cleaned_data.get('host_name')
             hostgroup_name = cleaned_data.get('hostgroup_name')
-            print type(host_name), type(hostgroup_name)
             if host_name in (None, 'None', '') and hostgroup_name in (None, 'None', ''):
                 raise forms.ValidationError("Please specify either hostgroup_name or host_name")
             else:
@@ -753,7 +752,7 @@ class AddObjectForm(PynagForm):
     def clean_hostgroup_name(self):
         if self.pynag_object.object_type == 'service':
             value = self.cleaned_data['hostgroup_name']
-            if not value:
+            if value in (None, '', 'null'):
                 return None
             groups = value.split(',')
             for i in groups:
