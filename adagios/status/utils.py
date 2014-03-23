@@ -35,6 +35,12 @@ def query(request, *args, **kwargs):
     return l.query(*args, **kwargs)
 
 
+def get_hostgroups(request, *args, **kwargs):
+    """ Get a list of hostgroups from mk_livestatus
+    """
+    l = livestatus(request)
+    return l.get_hostgroups(*args, **kwargs)
+
 def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     """ Get a list of hosts from mk_livestatus
 
