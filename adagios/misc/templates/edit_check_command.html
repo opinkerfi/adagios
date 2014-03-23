@@ -17,7 +17,7 @@
         <div>
         <p>
             You are editing check command for service
-            <a href="{% url adagios.status.views.status_detail %}?host_name={{ host_name }}&service_description={{ service_description }}">{{ service_description }}</a> on host <a href="{% url adagios.status.views.status_detail %}?host_name={{ host_name }}">{{ host_name }}</a>
+            <a href="{% url adagios.status.views.detail %}?host_name={{ host_name }}&service_description={{ service_description }}">{{ service_description }}</a> on host <a href="{% url adagios.status.views.detail %}?host_name={{ host_name }}">{{ host_name }}</a>
         </p>
         <p>
             If the command takes any custom arguments or macros you can edit them and see the results in-line at the bottom of the page.

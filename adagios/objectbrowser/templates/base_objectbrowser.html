@@ -84,14 +84,14 @@
 
                                     {% if plugins.status and my_object.object_type == 'service' and my_object.register == '1' %}
                                         <li>
-                                            <a href="{% url adagios.status.views.status_detail %}?host_name={{  my_object.host_name }}&service_description={{  my_object.service_description }}">
+                                            <a href="{% url adagios.status.views.detail %}?host_name={{  my_object.host_name }}&service_description={{  my_object.service_description }}">
                                                 <i class="glyph-table"></i> Show Status information</a>
                                         </li>
                                     {% endif %}
 
                                     {% if plugins.status and  my_object.object_type == 'host' and my_object.register == '1' %}
                                         <li>
-                                            <a href="{% url adagios.status.views.status_detail %}?host_name={{  my_object.host_name }}">
+                                            <a href="{% url adagios.status.views.detail %}?host_name={{  my_object.host_name }}">
                                                 <i class="glyph-table"></i> Show Status information</a>
                                         </li>
                                         <li>

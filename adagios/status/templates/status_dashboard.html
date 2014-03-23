@@ -166,12 +166,12 @@
                             {% if i.state == 2 %}<tr class="dashboard alert alert-danger">{% endif %}
                             {% if i.state == 3 %}<tr class="dashboard alert alert-danger">{% endif %}
                                 <td>
-                                    <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}">
+                                    <a href="{% url adagios.status.views.detail %}/?host_name={{ i.host_name }}">
                                         {{ i.host_name }}
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="{% url adagios.status.views.status_detail %}/?host_name={{ i.host_name }}&service_description={{ i.description }}">
+                                    <a href="{% url adagios.status.views.detail %}/?host_name={{ i.host_name }}&service_description={{ i.description }}">
                                     {{ i.description }}
                                     </a>
                                 </td>

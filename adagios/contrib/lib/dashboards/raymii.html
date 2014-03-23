@@ -88,7 +88,7 @@
 <!-- This is a container for how to display a typical service problem -->
 <div class="hide" id="service_prototype">
     <div class="alert CSSHINT">
-        <a href="{% url adagios.status.views.status_detail %}?host_name=HOST&service_description=SERVICE">
+        <a href="{% url adagios.status.views.detail %}?host_name=HOST&service_description=SERVICE">
         #NUMBER <b>SERVICE</b> on <i>HOST</i></a> OUTPUT
     </div>
 </div>
@@ -104,7 +104,7 @@
 <!-- This is a container for how to display a typical host problem -->
 <div class="hide" id="host_prototype">
     <div class="alert CSSHINT">
-        <a href="{% url adagios.status.views.status_detail %}?host_name=HOST">
+        <a href="{% url adagios.status.views.detail %}?host_name=HOST">
             #NUMBER <b>HOST</b>
         </a> OUTPUT
     </div>

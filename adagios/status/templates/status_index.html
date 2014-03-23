@@ -277,8 +277,8 @@
                 var row=table.insertRow(i+1);
                 var cell1=row.insertCell(0);
                 var cell2=row.insertCell(1);
-                cell1_html = '<a href="{% url status.views.status_detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
-                cell2_html = '<a href="{% url status.views.status_detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
+                cell1_html = '<a href="{% url status.views.detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
+                cell2_html = '<a href="{% url status.views.detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
                 cell1.innerHTML=cell1_html;
                 cell2.innerHTML=cell2_html;
             }

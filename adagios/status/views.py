@@ -51,9 +51,32 @@ from adagios.views import adagios_decorator, error_page
 
 
 @adagios_decorator
+def detail(request):
+    """ Return status detail view for a single given host, hostgroup,service, contact, etc """
+    host_name = request.GET.get('host_name')
+    service_description = request.GET.get('service_description')
+    contact_name = request.GET.get('contact_name')
+    hostgroup_name = request.GET.get('hostgroup_name')
+    contactgroup_name = request.GET.get('contactgroup_name')
+    if service_description:
+        return service_detail(request, host_name=host_name, service_description=service_description)
+    elif host_name:
+        return host_detail(request, host_name=host_name)
+    elif contact_name:
+        return contact_detail(request, contact_name=contact_name)
+    elif contactgroup_name:
+        return contactgroup_detail(request, contactgroup_name=contactgroup_name)
+    elif hostgroup_name:
+        return hostgroup_detail(request, hostgroup_name=hostgroup_name)
+
+    raise Exception("You have to provide an item via querystring so we know what to give you details for")
+
+
+@adagios_decorator
 def status_parents(request):
     """ Here for backwards compatibility """
     return network_parents(request)
+
 
 @adagios_decorator
 def network_parents(request):
@@ -205,16 +228,19 @@ def snippets_log(request):
     return render_to_response('snippets/status_statehistory_snippet.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
+def host_detail(request, host_name):
+    """ Return status detail view for a single host """
+    return service_detail(request, host_name=host_name, service_description=None)
+
 
 @adagios_decorator
-def status_detail(request, host_name=None, service_description=None):
+def service_detail(request, host_name, service_description):
     """ Displays status details for one host or service """
     c = {}
     c['messages'] = []
     c['errors'] = []
 
-    host_name = request.GET.get('host_name')
-    service_description = request.GET.get('service_description')
     livestatus = utils.livestatus(request)
     c['pnp_url'] = adagios.settings.pnp_url
     c['nagios_url'] = adagios.settings.nagios_url
@@ -341,7 +367,7 @@ def _get_network_parents(request, host_name):
 
 
 @adagios_decorator
-def status_hostgroup(request, hostgroup_name):
+def hostgroup_detail(request, hostgroup_name):
     """ Status detail for one specific hostgroup  """
     c = {}
     c['messages'] = []
@@ -1111,3 +1137,14 @@ def acknowledge(request):
 
     hostlist = request.POST.getlist('host', [])
     servicelist = request.POST.getlist('service', [])
+
+
+@adagios_decorator
+def status_hostgroup(request, hostgroup_name):
+    """ Here for backwards compatibility """
+    return hostgroup_detail(request, hostgroup_name=hostgroup_name)
+
+@adagios_decorator
+def status_detail(request):
+    """ Here for backwards compatibility """
+    return detail(request)

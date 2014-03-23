@@ -34,14 +34,16 @@ urlpatterns = patterns('adagios',
 
                       (r'^/map/?', 'status.views.map_view'),
 
-                       #(r'^/hosts/(?P<host_name>.+?)/(?P<service_description>.+)/?$', 'status.views.status_detail'),
-                       #(r'^/hosts/(?P<host_name>.+)/$', 'status.views.status_detail'),
-                       #(r'^/hosts/(?P<host_name>.+)$', 'status.views.status_detail'),
+                       #(r'^/hosts/(?P<host_name>.+?)/(?P<service_description>.+)/?$', 'status.views.detail'),
+                       #(r'^/hosts/(?P<host_name>.+)/$', 'status.views.detail'),
+                       #(r'^/hosts/(?P<host_name>.+)$', 'status.views.detail'),
                       (r'^/error/?$', 'status.views.error_page'),
-                      (r'^/detail/?$', 'status.views.status_detail'),
+                      (r'^/detail/?$', 'status.views.detail'),
 
                       (r'^/snippets/log/?$', 'status.views.snippets_log'),
                       (r'^/snippets/services/?$', 'status.views.snippets_services'),
                       (r'^/snippets/hosts/?$', 'status.views.snippets_hosts'),
+
+                      (r'^/status_detail/?$', 'status.views.detail'),
 
                        )

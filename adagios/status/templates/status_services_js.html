@@ -51,12 +51,12 @@
 			'<td class="host">';
 			if (service.host_name !== last_host) {
 			  tr += '<div title="' + service.host_plugin_output + '" class="circle  state_' + service.host_state + '"></div>' +
-			'<a href="{% url status.views.status_detail %}?host_name=[[ service.host_name ]]" title="Details for host [[ service.host_name ]]"> ' + service.host_name + '</a>';
+			'<a href="{% url status.views.detail %}?host_name=[[ service.host_name ]]" title="Details for host [[ service.host_name ]]"> ' + service.host_name + '</a>';
 			last_host = service.host_name;
 			}
 			tr += '</td>' +
                 	'<td class="service">' +
-                    	'<a href="{% url status.views.status_detail %}?host_name=' + service.host_name + '&service_description=' + service.description + '" title="' + service.status + ' for the past ' + service.last_state_change + '">' +
+                    	'<a href="{% url status.views.detail %}?host_name=' + service.host_name + '&service_description=' + service.description + '" title="' + service.status + ' for the past ' + service.last_state_change + '">' +
                         '<div class="circle circle_' + service.unhandled + '  state_' + service.state + (service.unhandled && service.unhandled || "") + '"> </div> ' + service.description + '</a>' +
                         '<span title="' + service.plugin_output + '" class="service_description_short plugin_output">' +
                                           service.plugin_output +

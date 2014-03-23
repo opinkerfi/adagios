@@ -59,11 +59,11 @@
 
                         <td class="small nowrap">
                             <div class="circle state_{{ service.host_state }}"></div>
-                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
+                            <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
                         </td>
                         <td>
                             <div class="circle state_{{ service.state }}"></div>
-                            <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
+                            <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
                         </td>
                             {% for i in service.metrics %}
                                 <td class="small nowrap">

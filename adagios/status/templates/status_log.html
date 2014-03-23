@@ -65,8 +65,8 @@
                     {% endifchanged %}
                     <tr>
                         <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
-                        <td><a href="{% url status.views.status_detail %}?host_name={{ line.host_name }}">{{ line.host_name }}</a></td>
-                        <td><a href="{% url status.views.status_detail %}?host_name={{ line.host_name }}&service_description={{ line.service_description }}">{{ line.service_description }}</a></td>
+                        <td><a href="{% url status.views.detail %}?host_name={{ line.host_name }}">{{ line.host_name }}</a></td>
+                        <td><a href="{% url status.views.detail %}?host_name={{ line.host_name }}&service_description={{ line.service_description }}">{{ line.service_description }}</a></td>
                         <td><div class="circle-spin circle state_{{ line.state }}"></div></td>
                         <td>
                             <div>{{ line.text }}</div></td>

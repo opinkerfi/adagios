@@ -13,7 +13,7 @@
     host
 
     <div class="circle host state_{{ host.state }}"></div>
-    <a href="{% url status.views.status_detail %}?host_name={{ host.name }}">
+    <a href="{% url status.views.detail %}?host_name={{ host.name }}">
         <small>{{ host.display_name }}</small>
     </a>
 {% endblock %}
@@ -56,7 +56,7 @@
                 </tr>
                 <tr >
                     <td class="hidden-phone" >Host Name</td>
-                    <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
+                    <td><a href="{% url status.views.detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
                         {% if my_object.last_check != 0 %}
                         <div class="circle host state_{{ host.state }}"></div>
                         {% else %}
@@ -320,7 +320,7 @@
                                         <button class="close delete_downtime" data-dismiss="alert" title="Delete Downtime {{ i.0 }}"
                                                 onclick="$.getJSON('{% url rest/status %}json/delete_downtime?downtime_id={{ i.0 }}{% if object_type == 'host' %}&is_service=False{% endif %}');">
                                             <i class="glyph-bin"></i></button>
-                                        <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
+                                        <i class="glyph-user"></i> <a href="{% url status.views.detail %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -341,7 +341,7 @@
                                     <div class="alert alert-info">
                                         <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
                                             <i class="glyph-bin"></i></button>
-                                        <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
+                                        <i class="glyph-user"></i> <a href="{% url status.views.detail %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
                                     </div>
                                 {% endfor %}
                             {% else %}
@@ -371,7 +371,7 @@
                                         {% for parent in parent_level %}
                                             <td>
                                                 <div class="alert host state_{{ parent.state }}">
-                                                    <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
+                                                    <a href="{% url status.views.detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
                                                 </div>
                                             </td>
                                         {% endfor %}
@@ -419,7 +419,7 @@
             {% endif %}
             <p></p>
             {% if my_object.host_custom_variables %}
-                Host <a href="{% url status.views.status_detail %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
+                Host <a href="{% url status.views.detail %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
                 <table class="table table-condensed">
                     <tr>
                         <th>
@@ -508,7 +508,7 @@
         <ul class="nav nav-list">
             {% for i in host.services_with_info %}
                 <li >
-                    <a title="{{ i.3 }}" href="{% url status.views.status_detail %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
+                    <a title="{{ i.3 }}" href="{% url status.views.detail %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
                         <div class="circle state_pending"></div> {{ i.0 }}
                     </a>
                 </li>
@@ -550,7 +550,7 @@
         <h5>Network Parents</h5>
         <ul class="nav nav-list">
             {% for i in host.parents %}
-                <li><a href="{% url status.views.status_detail %}?host_name={{ i }}">
+                <li><a href="{% url status.views.detail %}?host_name={{ i }}">
                     {{ i }}
                 </a></li>
             {% endfor %}

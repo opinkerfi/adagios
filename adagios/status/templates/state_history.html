@@ -30,13 +30,13 @@
         {% if service.num_problems > 1 %}
         <tr>
         <td>
-            <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
+            <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
         </td>
         <td class="nowrap">
             {% if service.service_description %}
-                <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.service_description }}</a>
+                <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.service_description }}</a>
             {% else %}
-                <a href="{% url adagios.status.views.status_detail %}?host_name={{ service.host_name }}">Host Status</a>
+                <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">Host Status</a>
             {% endif %}
         </td>
         <td>{{ service.sla|floatformat }}%</td>

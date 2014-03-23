@@ -44,11 +44,11 @@
             <tr>
                 <td style="white-space: nowrap;">{{ line.time|timestamp|date:'Y-m-d H:i' }} </td>
                 {% if object_type == 'hostgroup' %}
-                    <td><a href="{% url status.views.status_detail %}?host_name={{ line.host_name  }}">{{ line.host_name }}</a></td>
-                    <td><a href="{% url status.views.status_detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
+                    <td><a href="{% url status.views.detail %}?host_name={{ line.host_name  }}">{{ line.host_name }}</a></td>
+                    <td><a href="{% url status.views.detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
                 {% endif %}
                 {% if object_type == 'host' %}
-                    <td><a href="{% url status.views.status_detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
+                    <td><a href="{% url status.views.detail %}?host_name={{  line.host_name }}&service_description={{ line.service_description  }}">{{ line.service_description }}<a/></td>
                 {% endif %}
                 <td><div>{{ line.duration|duration}}</div></td>
                 <td class="small"><div class="circle state_{{ line.state }}"></div></td>
