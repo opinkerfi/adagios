@@ -357,8 +357,7 @@ button.close.notification {
     margin-bottom: 50px;
 }
 
-#view_buttons,
-#action_buttons {
+#view_buttons {
     margin-right: 15px;
 }
 #search_field {
