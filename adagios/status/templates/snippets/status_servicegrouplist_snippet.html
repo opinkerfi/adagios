@@ -14,9 +14,9 @@
         {% for row in servicegroups %}
 
             <tr>
-                <td><a href="{% url adagios.status.views.services %}?groups__has_field={{ row.name }}">{{ row.name }}</a></td>
-                <td><a href="{% url adagios.status.views.services %}?groups__has_field={{ row.name }}">{{ row.alias }}</a></td>
-                <td><a href="{% url adagios.status.views.services %}?groups__has_field={{ row.name }}">{{ row.num_services }}</a></td>
+                <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.name }}</a></td>
+                <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.alias }}</a></td>
+                <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.num_services }}</a></td>
                 <td>{{ row.notes }}</td>
                 <td>
                     {% if row.notes_url %}

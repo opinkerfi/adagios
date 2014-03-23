@@ -58,6 +58,7 @@ def detail(request):
     contact_name = request.GET.get('contact_name')
     hostgroup_name = request.GET.get('hostgroup_name')
     contactgroup_name = request.GET.get('contactgroup_name')
+    servicegroup_name = request.GET.get('servicegroup_name')
     if service_description:
         return service_detail(request, host_name=host_name, service_description=service_description)
     elif host_name:
@@ -68,6 +69,8 @@ def detail(request):
         return contactgroup_detail(request, contactgroup_name=contactgroup_name)
     elif hostgroup_name:
         return hostgroup_detail(request, hostgroup_name=hostgroup_name)
+    elif servicegroup_name:
+        return servicegroup_detail(request, servicegroup_name=servicegroup_name)
 
     raise Exception("You have to provide an item via querystring so we know what to give you details for")
 
@@ -1041,6 +1044,18 @@ def map_view(request):
 
     return render_to_response('status_map.html', c, context_instance=RequestContext(request))
 
+
+@adagios_decorator
+def servicegroup_detail(request, servicegroup_name):
+    """ Detailed information for one specific servicegroup """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    c['servicegroup_name'] = servicegroup_name
+
+    c['services'] = adagios.status.utils.get_services(request, groups__has_field=servicegroup_name)
+    return render_to_response('status_services.html', c, context_instance=RequestContext(request))
+
 @adagios_decorator
 def contactgroup_detail(request, contactgroup_name):
     """ Detailed information for one specific contactgroup
@@ -1073,6 +1088,7 @@ def contactgroup_detail(request, contactgroup_name):
     #c['contacts'] = l.query('GET contacts', 'Filter: contactgroup_ >= %s' % contact_name)
 
     return render_to_response('status_contactgroup.html', c, context_instance=RequestContext(request))
+
 
 
 @adagios_decorator

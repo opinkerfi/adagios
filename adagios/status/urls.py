@@ -38,6 +38,7 @@ urlpatterns = patterns('adagios',
                         url(r'^/contacts/(?P<contact_name>.+)/?$', 'status.views.contact_detail'),
                         url(r'^/hostgroups/(?P<hostgroup_name>.+)/?$', 'status.views.status_hostgroup'),
                         url(r'^/contactgroups/(?P<contactgroup_name>.+)/?$', 'status.views.contactgroup_detail'),
+                        url(r'^/servicegroups/(?P<servicegroup_name>.+)/?$', 'status.views.servicegroup_detail'),
                         url(r'^/services_old/?$', 'status.views.status'),
 
 
