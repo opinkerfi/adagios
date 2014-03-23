@@ -7,6 +7,7 @@ import pynag.Parsers
 import os
 from django.test.client import RequestFactory
 import adagios.status
+import adagios.status.utils
 
 class LiveStatusTestCase(unittest.TestCase):
 
@@ -16,8 +17,7 @@ class LiveStatusTestCase(unittest.TestCase):
         self.factory = RequestFactory()
 
     def testLivestatusConnectivity(self):
-        livestatus = pynag.Parsers.mk_livestatus(
-            nagios_cfg_file=self.nagios_config)
+        livestatus = adagios.status.utils.livestatus(request=None)
         requests = livestatus.query('GET status', 'Columns: requests')
         self.assertEqual(
             1, len(requests), "Could not get status.requests from livestatus")
@@ -53,7 +53,7 @@ class LiveStatusTestCase(unittest.TestCase):
         self.loadPage('/status/downtimes')
         self.loadPage('/status/hostgroups')
         self.loadPage('/status/servicegroups')
-        self.loadPage('/misc/map')
+        self.loadPage('/status/map')
         self.loadPage('/status/dashboard')
 
     def testStateHistory(self):

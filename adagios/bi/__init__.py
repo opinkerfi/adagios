@@ -8,6 +8,7 @@ import pynag.Control
 import adagios.pnp.functions
 import adagios.settings
 import time
+import adagios.status.utils
 
 class BusinessProcess(object):
 
@@ -357,7 +358,7 @@ class BusinessProcess(object):
     def get_pnp_last_value(self, host_name, service_description, metric_name):
         """ Looks up current nagios perfdata via mk-livestatus and returns the last value for a specific metric (str)
         """
-        l = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        l = adagios.status.utils.livestatus(request=None)
         try:
             service = l.get_service(host_name, service_description)
         except Exception:
@@ -509,7 +510,7 @@ class Hostgroup(BusinessProcess):
     subitem_method = 'host'
 
     def load(self):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        self._livestatus = adagios.status.utils.livestatus(request=None)
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
         self.display_name = self._hostgroup.get('alias')
         self.notes = self._hostgroup.get(
@@ -577,7 +578,7 @@ class Servicegroup(BusinessProcess):
     _default_status_calculation_method = 'worst_service_state'
 
     def __init__(self, name):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        self._livestatus = adagios.status.utils.livestatus(request=None)
 
         self._servicegroup = self._livestatus.get_servicegroup(name)
         self.servicegroup_name = name
@@ -625,7 +626,7 @@ class Service(BusinessProcess):
                 return
             host_name = tmp[0]
             service_description = tmp[1]
-            self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+            self._livestatus = adagios.status.utils.livestatus(request=None)
             self._service = self._livestatus.get_service(
                 host_name, service_description)
             self.notes = self._service.get('plugin_output', '')
@@ -653,7 +654,7 @@ class Host(BusinessProcess):
     process_type = 'host'
 
     def load(self):
-            self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+            self._livestatus = adagios.status.utils.livestatus(request=None)
             self._host = self._livestatus.get_host(self.name)
             self.display_name = self._host.get('display_name') or self.name
             self.notes = self._host.get(
@@ -697,7 +698,7 @@ class Domain(Host):
     _livestatus = None
 
     def load(self):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        self._livestatus = adagios.status.utils.livestatus(request=None)
         try:
             self._host = self._livestatus.get_host(self.name)
         except IndexError:

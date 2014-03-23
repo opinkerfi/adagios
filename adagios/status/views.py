@@ -284,7 +284,7 @@ def status_detail(request, host_name=None, service_description=None):
 
     # Get a complete list of network parents
     try:
-        c['network_parents'] = reversed(_get_network_parents(host_name))
+        c['network_parents'] = reversed(_get_network_parents(request, host_name))
     except Exception, e:
         c['errors'].append(e)
 
@@ -300,7 +300,7 @@ def status_detail(request, host_name=None, service_description=None):
     return render_to_response('status_detail.html', c, context_instance=RequestContext(request))
 
 
-def _get_network_parents(host_name):
+def _get_network_parents(request, host_name):
     """ Returns a list of hosts that are network parents (or grandparents) to host_name
 
      Every item in the list is a host dictionary from mk_livestatus
@@ -316,7 +316,7 @@ def _get_network_parents(host_name):
         ]
     """
     result = []
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = adagios.status.utils.livestatus(request)
     if isinstance(host_name, unicode):
         host_name = smart_str(host_name)
 
@@ -615,8 +615,7 @@ def test_livestatus(request):
     c['messages'] = []
     c['table'] = table = request.GET.get('table')
 
-    livestatus = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = adagios.status.utils.livestatus(request)
     if table is not None:
         columns = livestatus.query('GET columns', 'Filter: table = %s' % table)
         c['columns'] = columns
@@ -649,8 +648,7 @@ def _status_combined(request, optimized=False):
     If optimized is True, fewer attributes are loaded it, makes it run faster but with less data
     """
     c = {}
-    livestatus = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = adagios.status.utils.livestatus(request)
     if optimized == True:
         hosts = livestatus.get_hosts(
             'Columns: name state acknowledged downtimes childs parents')
@@ -745,8 +743,7 @@ def state_history(request):
     c['messages'] = []
     c['errors'] = []
 
-    livestatus = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    livestatus = adagios.status.utils.livestatus(request)
     start_time = request.GET.get('start_time', None)
     end_time = request.GET.get('end_time', None)
     if end_time is None:
@@ -953,8 +950,7 @@ def contact_list(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
     c['contacts'] = l.query('GET contacts')
     c['contacts'] = pynag.Utils.grep(c['contacts'], **request.GET)
     c['contactgroups'] = l.query('GET contactgroups')
@@ -969,8 +965,7 @@ def contact_detail(request, contact_name):
     c['messages'] = []
     c['errors'] = []
     c['contact_name'] = contact_name
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
 
     # Fetch contact and basic information
     result = l.query("GET contacts", "Filter: name = %s" % contact_name)
@@ -1028,8 +1023,7 @@ def contactgroup_detail(request, contactgroup_name):
     c['messages'] = []
     c['errors'] = []
     c['contactgroup_name'] = contactgroup_name
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
 
     # Fetch contact and basic information
     result = l.query("GET contactgroups", "Filter: name = %s" %

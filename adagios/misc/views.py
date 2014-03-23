@@ -88,20 +88,6 @@ def nagios(request):
 
 
 @adagios_decorator
-def map_view(request):
-    c = {}
-    try:
-        import pynag.Parsers
-        livestatus = pynag.Parsers.mk_livestatus()
-        c['hosts'] = livestatus.get_hosts()
-        c['map_center'] = adagios.settings.map_center
-        c['map_zoom'] = adagios.settings.map_zoom
-    except Exception:
-        pass
-    return render_to_response('map.html', c, context_instance=RequestContext(request))
-
-
-@adagios_decorator
 def gitlog(request):
     """ View that displays a nice log of previous git commits in dirname(config.cfg_file) """
     c = {}

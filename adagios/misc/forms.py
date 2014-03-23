@@ -593,8 +593,8 @@ class SendEmailForm(forms.Form):
          Else if remote user is a valid email address, return that address
          Else return None
         """
-        livestatus = pynag.Parsers.mk_livestatus(
-            nagios_cfg_file=settings.nagios_config)
+        import adagios.status.utils
+        livestatus = adagios.status.utils.livestatus(request=None)
         try:
             contact = livestatus.get_contact(username)
             return "%s <%s>" % (contact.get('alias'), contact.get('email'))

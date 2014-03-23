@@ -20,12 +20,14 @@ def livestatus(request):
     """ Returns a new pynag.Parsers.mk_livestatus() object with authauser automatically set from request.META['remoteuser']
     """
 
-    if adagios.settings.enable_authorization == True:
+    if request == None:
+        authuser = None
+    elif adagios.settings.enable_authorization == True:
         authuser = request.META.get('REMOTE_USER', None)
     else:
         authuser = None
-    livestatus = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
+
+    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
     return livestatus
 
 

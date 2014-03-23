@@ -267,11 +267,13 @@ class TestHostProcess(TestCase):
 
         self.original_objects_dir = pynag.Model.pynag_directory
         self.original_cfg_file = pynag.Model.cfg_file
+        self.original_cfg_file_in_adagios = adagios.settings.nagios_config
 
         pynag.Model.config = config
         pynag.Model.cfg_file = cfg_file
         pynag.Model.pynag_directory = objects_dir
         pynag.Model.eventhandlers = []
+        adagios.settings.nagios_config = cfg_file
 
         command = [adagios.settings.nagios_binary, '-d', cfg_file]
         result = pynag.Utils.runCommand(command=command, shell=False)
@@ -293,6 +295,7 @@ class TestHostProcess(TestCase):
         pynag.Model.config = None
         pynag.Model.cfg_file = self.original_cfg_file
         pynag.Model.pynag_directory = self.original_objects_dir
+        adagios.settings.nagios_config = self.original_cfg_file_in_adagios
 
     def testNonExistingHost(self):
         host = get_business_process('non-existant host', process_type='host')
