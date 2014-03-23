@@ -40,7 +40,7 @@
         {% if my_object %}
             <table class="table">
                 <tr>
-                    <td>Status</td>
+                    <td class="hidden-phone">Status</td>
                     <td>
                         {% if my_object.last_check != 0 %}
                         <div class="circle {{ object_type }} state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}
@@ -55,7 +55,7 @@
                     </td>
                 </tr>
                 <tr >
-                    <td>Host Name</td>
+                    <td class="hidden-phone" >Host Name</td>
                     <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
                         {% if my_object.last_check != 0 %}
                         <div class="circle host state_{{ host.state }}"></div>
@@ -67,21 +67,21 @@
                     </td>
                 </tr>
                 <tr >
-                    <td>Host Address</td>
+                    <td class="hidden-phone">Host Address</td>
                     <td>{{ host.address }}</td>
                 </tr>
                 <tr>
-                    <td>Host Alias</td>
+                    <td class="hidden-phone">Host Alias</td>
                     <td>{{ host.alias }}</td>
                 </tr>
                 {% if service %}
                 <tr >
-                    <td>Service Name</td>
+                    <td class="hidden-phone">Service Name</td>
                     <td>{{ service.display_name }}</td>
                 </tr>
                 {% endif %}
                 <tr>
-                    <td>Check output</td>
+                    <td class="hidden-phone">Check output</td>
                     <td>
                         {% if my_object.last_check == 0 %}
                         <div class="alert alert-info">Has not run yet.</div>
@@ -96,7 +96,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Performance  Metrics</td>
+                    <td class="hidden-phone">Performance  Metrics</td>
                     <td >
                         {% if perfdata %}
                             <table border=1 class="small" style="font-size: 90%; border-color: #ffffff;" >
@@ -501,7 +501,7 @@
         </div>
     </div>
 
-    <div class="span3" id="maincontent_right_side">
+    <div class="span3 visible-desktop" id="maincontent_right_side">
     {% if host.services_with_info %}
      <div id="host_services">
         <h5>Services on this host</h5>
