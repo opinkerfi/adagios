@@ -570,7 +570,7 @@
         <h5>Is a member of contactgroups</h5>
         <ul class="nav nav-list">
             {% for group in my_object.contact_groups %}
-                <li><a href="">{{ group }}</a></li>
+                <li><a href="{% url adagios.status.views.detail %}?contactgroup_name={{ group }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -579,7 +579,7 @@
         <h5>Is a member of servicegroups</h5>
         <ul class="nav nav-list">
             {% for group in service.groups %}
-                <li><a href="">{{ group }}</a></li>
+                <li><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ group }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
