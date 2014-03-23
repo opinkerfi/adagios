@@ -51,7 +51,7 @@
                         <td>Parent Hostgroups</td>
                         <td>
                             {% for i in my_hostgroup.parent_hostgroups %}
-                                <a href="{% url status.views.status_hostgroup i %}">{{ i }}</a>,
+                                <a href="{% url status.views.detail %}?hostgroup_name={{  i  }}">{{ i }}</a>,
                             {% endfor %}
                         </td>
                     </tr>

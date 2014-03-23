@@ -541,7 +541,7 @@
             <h5>Is a member of hostgroup:</h5>
             <ul class="nav nav-list">
                 {% for group in hostgroups %}
-                    <li><a href="{% url status.views.status_hostgroup group.name %}">{{ group.name }}</a></li>
+                    <li><a href="{% url status.views.detail %}?hostgroup_name={{ group.name }}">{{ group.name }}</a></li>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -561,7 +561,7 @@
         <h5>Is a member of hostgroups</h5>
         <ul class="nav nav-list">
             {% for group in host.groups %}
-                <li><a href="{% url status.views.status_hostgroup group %}">{{ group }}</a></li>
+                <li><a href="{% url status.views.detail %}?hostgroup_name={{ group  }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
