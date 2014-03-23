@@ -38,16 +38,16 @@
 
                 <!-- block action_buttons starts -->
                 {% block action_buttons %}
-                    <div class="pull-left hidden-phone" id="action_buttons" >
+                    <div class="pull-left" id="action_buttons" >
 
                         <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="adagios.status.reschedule();">
-                            <i class="glyph-refresh" > </i> <span class="visible-desktop" id="reschedule_text">Recheck</span>
+                            <i class="glyph-refresh" > </i> <span class="hide visible-desktop" id="reschedule_text">Recheck</span>
                         </button>
                         <button class="btn btn-small adagios_service_multi" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
-                            <i class="glyph-check" > </i><span  class="visible-desktop" id="acknowledge_text"> Acknowledge</span>
+                            <i class="glyph-check" > </i><span  class="hide visible-desktop" id="acknowledge_text"> Acknowledge</span>
                         </button>
                         <button class="btn btn-small adagios_service_multi" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="downtime_text"> Running...</span>'>
-                            <i class="glyph-clock" > </i> <span  class="visible-desktop">Downtime</span>
+                            <i class="glyph-clock" > </i> <span  class="hide visible-desktop">Downtime</span>
                         </button>
                         <button class="btn btn-small adagios_service_multi" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
                             <i class="glyph-envelope" > </i>
@@ -110,14 +110,6 @@
                     <form action="{% url status.views.services %}" method="get" >
                         <div class="pull-left">
                             <input name="q"  id="search_field"  value="{{ request.GET.q }}" class="search-query" placeholder="hosts, services, etc..." />
-                        </div>
-                        <div class="visible-desktop btn-group pull-left"><button class="btn btn-small"  type="submit" href="{% url status.views.services %}"><i class="icon-search"></i> Search</button><a class="btn  dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="{% url status.views.services %}?unhandled"> Open Problems</a></li>
-                                <li><a href="{% url status.views.services %}?state__isnot=0"> All Problems</a></li>
-                                <li><a href="{% url status.views.services %}?state=0"> All OK</a></li>
-                                <li><a href="{% url status.views.services %}"> Everything</a></li>
-                            </ul>
                         </div>
                     </form>
                 </div>
