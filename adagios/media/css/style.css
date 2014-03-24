@@ -310,6 +310,8 @@ button.close.notification {
 #page_footer {
     clear:both;
     overflow: hidden;
+    margin-right: 20px;
+    margin-left: 20px;
 }
 #page_header {
     margin-top: 20px;
