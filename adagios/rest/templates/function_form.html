@@ -28,7 +28,7 @@
             Using javascript:
 
 <pre class="well">
-&lt;script src=&quot;<a href="{{ BASE_URL }}/rest/{{ module_name }}.js">{{ BASE_URL }}/rest/{{ module_name }}.js</a>&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;<a href="{% url rest.views.list_modules %}/{{ module_name }}.js">{% url rest.views.list_modules %}/rest/{{ module_name }}.js</a>&quot;&gt;&lt;/script&gt;
 
 &lt;script&gt;
 parameters = {

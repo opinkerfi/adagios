@@ -11,7 +11,7 @@
         <ul>
             {% for k, v in rest_modules.items %}
             <li>
-                <a href="{{  BASE_URL  }}/rest/{{ k }}">{{ k }}</a></li>
+                <a href="{% url rest.views.list_modules %}/{{ k }}">{{ k }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
