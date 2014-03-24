@@ -521,19 +521,19 @@
     <h5>External Links</h5>
     <ul class="nav nav-list">
         {% if my_object.action_url %}
-            <li><a href="{{ my_object.action_url_expanded }}">Extra Actions</a></li>
+            <li><a target="_blank" href="{{ my_object.action_url_expanded }}">Extra Actions</a></li>
         {% endif %}
 
         {% if my_object.notes_url %}
-            <li><a href="{{ my_object.notes_url_expanded }}">Extra Notes</a></li>
+            <li><a target="_blank" href="{{ my_object.notes_url_expanded }}">Extra Notes</a></li>
         {% endif %}
 
         {% if my_object.host_action_url %}
-            <li><a href="{{ my_object.host_action_url_expanded }}">Host Actions</a></li>
+            <li><a target="_blank" href="{{ my_object.host_action_url_expanded }}">Host Actions</a></li>
         {% endif %}
 
         {% if my_object.host_notes_url %}
-            <li><a href="{{ my_object.host_notes_url_expanded }}">Host Notes</a></li>
+            <li><a target="_blank" href="{{ my_object.host_notes_url_expanded }}">Host Notes</a></li>
         {% endif %}
     </ul>
     {% if hostgroup_name %}
@@ -541,7 +541,7 @@
             <h5>Is a member of hostgroup:</h5>
             <ul class="nav nav-list">
                 {% for group in hostgroups %}
-                    <li><a href="{% url status.views.detail %}?hostgroup_name={{ group.name }}">{{ group.name }}</a></li>
+                    <li><a target="_blank" href="{% url status.views.detail %}?hostgroup_name={{ group.name }}">{{ group.name }}</a></li>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -550,9 +550,11 @@
         <h5>Network Parents</h5>
         <ul class="nav nav-list">
             {% for i in host.parents %}
-                <li><a href="{% url status.views.detail %}?host_name={{ i }}">
-                    {{ i }}
-                </a></li>
+                <li>
+                    <a href="{% url status.views.detail %}?host_name={{ i }}">
+                        {{ i }}
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
