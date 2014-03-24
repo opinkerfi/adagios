@@ -760,7 +760,8 @@ adagios.status.reschedule = function() {
 adagios.misc.turn_tables_into_datatables = function() {
     var oTable = $('.datatable').dataTable( {
         "bPaginate": true,
-        "iDisplayLength": 100
+        "iDisplayLength": 100,
+        "sPaginationType": "bootstrap",
     });
     $('.dataTables_length').hide();
 

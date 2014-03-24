@@ -13,24 +13,31 @@
 
 <table id="status_dt">
   <thead>
+    <tr>
+      <th>Host name</th>
+      <th>Service</th>
+    </tr>
   </thead>
   <tbody>
-  <tbody>
-</table>
+  </tbody>
 </table>
 {% endblock %}
 
 {% block header %} {{ block.super }}
 {% endblock %}
 
+{% block footer %}
+{{ block.super }}
+
+<script>
 $(document).ready(function() {
     $('#status_dt').dataTable( {
         "bProcessing": true,
         "bServerSide": true,
-        "sAjaxSource": "/status/rest/json/dt"
+
+        "sAjaxSource": "/rest/status/json/services_dt"
     } );
 } );
+</script>
 
-
-{% block header %}
 {% endblock %}

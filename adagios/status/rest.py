@@ -31,10 +31,19 @@ def services(request, fields=None, **kwargs):
     """
     return adagios.status.utils.get_services(request=request, fields=fields, **kwargs)
 
-def services_dt(fields=None, *args, **kwargs):
+def services_dt(request, fields=None, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
     """
-    return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
+    services = adagios.status.utils.get_services(request=request, fields='host_name,description')
+
+    result = {
+        'sEcho': len(services),
+	'iTotalRecords': len(services),
+        'aaData': []
+    }
+    for service in services:
+        result['aaData'].append(service.values())
+    return result
 
 
 def contacts(request, fields=None, *args, **kwargs):
