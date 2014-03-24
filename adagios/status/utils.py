@@ -27,7 +27,10 @@ def livestatus(request):
     else:
         authuser = None
 
-    livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config, authuser=authuser)
+    livestatus = pynag.Parsers.mk_livestatus(
+        nagios_cfg_file=adagios.settings.nagios_config,
+        livestatus_socket_path=adagios.settings.livestatus_path,
+        authuser=authuser)
     return livestatus
 
 

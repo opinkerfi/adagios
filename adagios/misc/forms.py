@@ -36,6 +36,30 @@ TOPIC_CHOICES = (
     ('easier', 'I have an idea how make a certain task easier to do'),
 )
 
+pnp_loglevel_choices = [
+    ('0', '0 - Only Errors'),
+    ('1', '1 - Little logging'),
+    ('2', '2 - Log Everything'),
+    ('-1', '-1 Debug mode (log all and slower processing')
+]
+pnp_log_type_choices = [('syslog', 'syslog'), ('file', 'file')]
+
+COMMAND_CHOICES = [('reload', 'reload'), ('status', 'status'),
+                   ('restart', 'restart'), ('stop', 'stop'), ('start', 'start')]
+
+
+initial_paste = """
+define service {
+    host_name  host01.example.com
+    service_description http://host01.example.com
+    use     template-http
+}
+
+define service {
+    name        template-http
+    check_command   okc-check_http
+}
+"""
 
 class ContactUsForm(forms.Form):
     topic = forms.ChoiceField(choices=TOPIC_CHOICES)
@@ -79,6 +103,10 @@ class AdagiosSettingsForm(forms.Form):
         help_text="Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios")
     nagios_binary = forms.CharField(
         help_text="Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'")
+    livestatus_path = forms.CharField(
+        help_text="Path to MK Livestatus socket. If left empty Adagios will try to autodiscover from your nagios.cfg",
+        required=False,
+    )
     enable_githandler = forms.BooleanField(
         required=False, initial=settings.enable_githandler, help_text="If set. Adagios will commit any changes it makes to git repository.")
     enable_loghandler = forms.BooleanField(
@@ -231,9 +259,6 @@ class PNPTemplatesForm(forms.Form):
                         self.templates.append("%s/%s" % (directory, f))
 
         super(self.__class__, self).__init__(*args, **kwargs)
-pnp_loglevel_choices = [('0', '0 - Only Errors'), ('1', '1 - Little logging'), (
-    '2', '2 - Log Everything'), ('-1', '-1 Debug mode (log all and slower processing')]
-pnp_log_type_choices = [('syslog', 'syslog'), ('file', 'file')]
 
 
 class PNPConfigForm(forms.Form):
@@ -423,9 +448,6 @@ class PluginOutputForm(forms.Form):
         output = Utils.PluginOutput(plugin_output)
         self.results = output
 
-COMMAND_CHOICES = [('reload', 'reload'), ('status', 'status'),
-                   ('restart', 'restart'), ('stop', 'stop'), ('start', 'start')]
-
 
 class NagiosServiceForm(forms.Form):
 
@@ -603,18 +625,7 @@ class SendEmailForm(forms.Form):
             return username
 
 
-initial_paste = """
-define service {
-    host_name  host01.example.com
-    service_description http://host01.example.com
-    use     template-http
-}
 
-define service {
-    name        template-http
-    check_command   okc-check_http
-}
-"""
 
 
 class PasteForm(forms.Form):
