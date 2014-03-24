@@ -240,7 +240,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
             field_value = field_value.replace("\"", "&quot;")
             field_value = field_value.replace(">", "&gt;")
             field_value = field_value.replace("<", "&lt;")
-            if "truncate" of field and field_value.length > (field["truncate"] + 3)
+            if "truncate" not of field
+                field["truncate"] = 50
+
+            if field_value.length > (field["truncate"] + 3)
               cell += """<abbr rel="tooltip" title=" #{ field_value }">#{ field_value.substr(0, field["truncate"]) } ...</abbr>"""
             else
               cell += " #{field_value}"
