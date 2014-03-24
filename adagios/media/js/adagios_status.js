@@ -514,7 +514,7 @@ adagios.misc.init_tab_selection = function() {
     anchor = anchor.split('_tab')[0];
     var current_tab = tabs.find('a[href="#' + anchor + '"]');
     if (current_tab.length === 0) {
-        current_tab = tabs.find('a:first');
+        current_tab = tabs.find('a[data-toggle=tab]:first');
     }
     current_tab.tab('show');
 
