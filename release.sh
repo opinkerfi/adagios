@@ -120,9 +120,9 @@ update_version_number() {
     
     echo
     echo "### Updating Makefile"
-    sed -i "s/^VERSION.*= ${current_version}/VERSION		= ${new_version}/" Makefile
+    sed -i "s/^VERSION.*=.*/VERSION		= ${new_version}/" Makefile
     echo "### Updating ${project_name}/__init__.py"
-    sed -i "s/^__version__ =.*/__version__ = '${new_version}'/" ${project_name}/__init__.py
+    sed -i "s/^__version__.*/__version__ = '${new_version}'/" ${project_name}/__init__.py
     echo "### Updating ${project_name}.spec"
     sed -i "s/^Version: ${current_version}/Version: ${new_version}/" ${project_name}.spec
     echo "### Updating rel-eng/packages/${project_name}"
