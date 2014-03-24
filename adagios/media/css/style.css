@@ -6,7 +6,7 @@
 @import url(../datatables/DT_bootstrap.css);
 @import url(../select2/select2.css);
 @import url(../datepicker/css/datepicker.css);
-@import url(bootstrap-progressbar-backports.css);
+@import url(bootstrap-backports.css);
 
 
 body {
