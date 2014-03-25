@@ -362,11 +362,6 @@ button.close.notification {
 #view_buttons {
     margin-right: 15px;
 }
-#search_field {
-    width: 200px;
-    line-height: 22px;
-    margin-left: 5px;
-}
 
 #error_messages {
     margin-left: 30px;
@@ -540,4 +535,9 @@ button.close.notification {
 
 .ssi-overwrite, .ssi-append {
     display: none;
+}
+
+/* Override border-radius for search boxes */
+.search-query {
+    border-radius: 3px;
 }
