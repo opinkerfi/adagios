@@ -45,6 +45,9 @@ $(document).ready(function() {
     // Handle user contributed ssi overwrites
     adagios.misc.ssi_overwrites();
 
+    // Handle user contributed ssi overwrites
+    adagios.misc.modal_resize();
+
 });
 
 
@@ -920,4 +923,12 @@ adagios.misc.logout = function() {
         // return !!outcome
     })(/*if present URI does not return 200 OK for GET, set some other 200 OK location here*/)
 
+};
+
+// Resize modals to relative size to window
+adagios.misc.modal_resize = function() {
+    $('div.modal').on('show', function() {
+        $(this).find('div.modal-body').css({'max-height': ($( window ).height() * 0.7)+"px" });
+        $(this).find('div.modal-body').css({'max-width': ($( window ).width() * 0.9)+"px" });
+    });
 };
