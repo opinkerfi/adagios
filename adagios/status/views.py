@@ -1057,6 +1057,18 @@ def servicegroup_detail(request, servicegroup_name):
     return render_to_response('status_services.html', c, context_instance=RequestContext(request))
 
 @adagios_decorator
+def contactgroups(request):
+    """ Display a list of active contacts
+    """
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+    l = adagios.status.utils.livestatus(request)
+    c['contactgroups'] = l.get_contactgroups(**request.GET)
+    return render_to_response('status_contactgroups.html', c, context_instance=RequestContext(request))
+
+
+@adagios_decorator
 def contactgroup_detail(request, contactgroup_name):
     """ Detailed information for one specific contactgroup
     """

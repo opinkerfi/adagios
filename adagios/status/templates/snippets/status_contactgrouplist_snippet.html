@@ -1,0 +1,20 @@
+<!-- snippet status_contactgrouplist_snippet.html starts -->
+<table style="font-size: 80%;" class="table well table-condensed table-striped searchtable">
+    <thead>
+    <th>Group Name</th>
+    <th>Alias</th>
+    <th>Members</th>
+    </thead>
+    {% for i in contactgroups  %}
+        <tr class="mainrow">
+            <td><a href="{% url adagios.status.views.services %}?contact_groups__has_field={{ i.name }}">{{ i.name }}</a></td>
+            <td>{{ i.alias }}</td>
+            <td>
+                {% for x in i.members %}
+                <a href="{% url status.views.detail %}?contact_name={{ x }}">{{ x }}</a>,
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+<!-- snippet status_contactgrouplist_snippet.html ends -->

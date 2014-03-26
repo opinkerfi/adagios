@@ -1,6 +1,6 @@
 <!-- snippet status_contactlist_snippet.html starts -->
 
-<table style="font-size: 80%;" class="table table-striped table-condensed well">
+<table style="font-size: 80%;" class="table well table-condensed table-striped searchtable">
     <thead>
     <th>Contact Name</th>
     <th>Alias</th>
@@ -10,7 +10,7 @@
     <th>Service Notification Period</th>
     </thead>
     {% for i in contacts  %}
-        <tr>
+        <tr class="mainrow">
             <td>
                 <a href="{% url status.views.detail %}?contact_name={{ i.name }}">{{ i.name }}</a></td>
             <td>{{ i.alias }}</td>

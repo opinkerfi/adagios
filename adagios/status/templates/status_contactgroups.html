@@ -1,15 +1,15 @@
 {% extends "base_status.html" %}
 
-{% block title %}Contacts{% endblock %}
+{% block title %}Contactgroups{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Contacts{% endblock %}
+{% block largeheader %}Contactgroups{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.contact_list %}">Contacts</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}">Contactgroups</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
-    {% include "snippets/status_contactlist_snippet.html" %}
+    {% include "snippets/status_contactgrouplist_snippet.html" %}
 {% endblock %}
 
 {% block view_buttons %}{% endblock %}

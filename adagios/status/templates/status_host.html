@@ -20,20 +20,7 @@
 {% endblock %}
 
 {% block content %}
-    <ul class="nav nav-tabs" id="objecttabs">
-        <li class=active><a href="#hosts">Hosts</a></li>
-        <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
-    </ul>
-    <div class="tab-content">
-
-        <div class="tab-pane active" id="hosts">
-            {% include "snippets/status_hostlist_snippet.html" %}
-        </div>
-
-        <div class="tab-pane active" id="hostgroups">
-        </div>
-    </div>
-
+    {% include "snippets/status_hostlist_snippet.html" %}
 {% endblock %}
 
 {% block header %} {{ block.super }}

@@ -2,18 +2,20 @@
 {% load adagiostags %}
 
 {% if servicegroups %}
-    <table class="table well table-condensed searchtable" style="font-size:12px;" >
-        <tr>
-            <th>Servicegroup</th>
-            <th>Alias</th>
-            <th>Number of services</th>
-            <th>Notes</th>
-            <th>urls</th>
-        </tr>
+    <table class="table well table-condensed table-striped searchtable"  style="font-size: 80%;" >
+        <thead>
+            <tr>
+                <th>Servicegroup</th>
+                <th>Alias</th>
+                <th>Number of services</th>
+                <th>Notes</th>
+                <th>urls</th>
+            </tr>
+        </thead>
         <tbody>
         {% for row in servicegroups %}
 
-            <tr>
+            <tr class="mainrow">
                 <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.name }}</a></td>
                 <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.alias }}</a></td>
                 <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.num_services }}</a></td>
