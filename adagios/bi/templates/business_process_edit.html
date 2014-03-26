@@ -98,16 +98,30 @@
     <div class="tab-pane " id="rules">
         <table id="business_rules_table" class="well table table-condensed">
             <tr>
-                <th>Trigger</th>
-                <th></th>
-                <th>Action</th>
+                <th colspan="2">Trigger</th>
+                <th colspan="2"></th>
+                <th colspan="2">Action</th>
             </tr>
             {% for i in bp.rules %}
                 <tr>
 
-                    <td>When a sub process with tag <input value="{{ i.0 }}"/> has at least <input value="{{ i.1 }}"> problems</td>
-                    <td></td>
-                    <td ><span>Mark this business group as </span>
+                    <td>
+                        When a sub process with tag
+                    </td>
+                    <td>
+                        <input type="text" class="input-medium" value="{{ i.0 }}"/>
+                    </td>
+                    <td>
+                        has at least
+                    </td>
+                    <td>
+                        <input type="text" class="input-medium" value="{{ i.1 }}"> problems
+                    </td>
+                    
+                    <td >
+                        <span>Mark this business group as </span>
+                    </td>
+                    <td>
                         <span style="background-color: transparent;">
                             <select style="width: 120px">
                                 <option value="ok" {% if i.2 == "ok" %}selected=selected{% endif %}>ok</option>
