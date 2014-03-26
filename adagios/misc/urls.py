@@ -6,7 +6,6 @@ urlpatterns = patterns('',
                       (r'^/paste/?', 'adagios.misc.views.paste'),
                       (r'^/?$', 'adagios.misc.views.index'),
 
-                      (r'^/edit_check_command/?', 'adagios.misc.views.edit_check_command'),
                       (r'^/settings/?', 'adagios.misc.views.settings'),
                       (r'^/nagios/?', 'adagios.misc.views.nagios'),
                       (r'^/gitlog/?', 'adagios.misc.views.gitlog'),

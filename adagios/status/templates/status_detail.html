@@ -438,7 +438,7 @@
                 </table>
             {% else %}
             {% endif %}
-            See also <a href="{% url adagios.misc.views.edit_check_command %}?host_name={{ host_name }}&service_description={{ service_description }}&check_command={{ my_object.check_command }}">Configure check command</a>
+            See also <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type={{ object_type }}&host_name={{ host_name }}{% if object_type == "service" %}&service_description={{ service_description }}{% endif %}#monitoring_tab">Configure check command</a>
 
 
         </div>
