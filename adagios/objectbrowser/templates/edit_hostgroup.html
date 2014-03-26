@@ -12,7 +12,7 @@
         <!-- wrapper for scrollable items -->
         <ul class="nav nav-tabs" id="objecttab">
             <li><a href="#general" data-toggle="tab">General</a></li>
-            <li><a href="#members_tab" data-toggle="tab">Members</a></li>
+            <li><a href="#members" data-toggle="tab">Members</a></li>
             <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
             <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
         </ul>
@@ -57,7 +57,7 @@
                 </div>
 
 
-                <div class="tab-pane" id="members_tab">
+                <div class="tab-pane" id="members">
                     <fieldset>
                         {% include "bootstrap_field.html" with field=form.members %}
                         {% include "bootstrap_field.html" with field=form.hostgroup_members %}

@@ -14,7 +14,7 @@
             <ul class="nav nav-tabs" id="objecttab">
                 <li><a href="#general" data-toggle="tab">General</a></li>
 			    <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
-			    <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
+			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
 			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 		    </ul>
         <form class="form-horizontal" action="#" method="POST">
@@ -66,7 +66,7 @@
                     </div>
 
 
-                    <div class="tab-pane" id="notifications_tab">
+                    <div class="tab-pane" id="notifications">
                         <fieldset>
                             {% include "bootstrap_field.html" with field=form.host_notifications_enabled %}
                             {% include "bootstrap_field.html" with field=form.host_notification_commands %}

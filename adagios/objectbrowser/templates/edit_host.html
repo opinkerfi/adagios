@@ -26,8 +26,8 @@
         <ul class="nav nav-tabs" id="objecttab">
             <li><a href="#general" data-toggle="tab">General</a></li>
             <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
-            <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
-            <li id="macros_li"><a href="#macros_tab" data-toggle="tab">Macros</a></li>
+            <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+            <li id="macros_li"><a href="#macros" data-toggle="tab">Macros</a></li>
             <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
         </ul>
         <form class="form-horizontal" action="#" method="POST">
@@ -67,7 +67,7 @@
                 </div>
 
 
-                <div class="tab-pane" id="notifications_tab">
+                <div class="tab-pane" id="notifications">
                     <fieldset>
 
                         {% include "bootstrap_field.html" with field=form.notification_interval %}
@@ -82,7 +82,7 @@
                         <button class="btn">Cancel</button>
                     </div>
                 </div>
-                <div class="tab-pane" id="macros_tab">
+                <div class="tab-pane" id="macros">
                     <div class="well">
                         This tab contains custom macros (also called "custom variables") for this {{  my_object.object_type }}.
                     </div>
@@ -132,7 +132,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-                    if ( $('div.tab-pane#macros_tab fieldset').children().length ) {
+                    if ( $('div.tab-pane#macros fieldset').children().length ) {
                         $('li#macros_li').show();
                     }
                 }
