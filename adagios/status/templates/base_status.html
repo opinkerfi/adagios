@@ -109,7 +109,7 @@
                 <div class=" pull-right" id="search_box">
                     <form action="{% url status.views.services %}" method="get" >
                         <div class="pull-left">
-                            <input name="q"  id="search_field"  value="{{ request.GET.q }}" class="search-query" placeholder="hosts, services, etc..." />
+                            <input name="q"  type="text" id="search_field"  value="{{ request.GET.q }}" class="input-large search-query" placeholder="search hosts, services, etc..." />
                         </div>
                     </form>
                 </div>

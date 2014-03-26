@@ -536,8 +536,3 @@ button.close.notification {
 .ssi-overwrite, .ssi-append {
     display: none;
 }
-
-/* Override border-radius for search boxes */
-.search-query {
-    border-radius: 3px;
-}
