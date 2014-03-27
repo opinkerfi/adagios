@@ -38,6 +38,7 @@
         }
 
         $(document).ready(function() {
+            $("div#search_box").hide();
             timedRefresh(30000);
             var statustable_body = $("table.statustable tbody");
 	    var aaData = [];
@@ -62,7 +63,7 @@
 
 
             }
-	    var dt = $("table.statustable").dataTable( { "aaData": aaData, "iDisplayLength": 100, "bStateSave": true });
+	    var dt = $("table.statustable").dataTable( { "aaData": aaData, "iDisplayLength": 100, "bStateSave": true, "sPaginationType": "bootstrap" });
         });
 
     </script>
