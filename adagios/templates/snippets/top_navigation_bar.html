@@ -64,14 +64,6 @@
                         </a>
                         </li>
                     {% endif %}
-                    <!--
-                    <li>
-                        <a data-toggle="modal"
-                           href="#notifications">
-                            <div class="badge{% if notifications|length %} badge-warning{% endif %}"><span id="num_notifications">{{ notifications|length }}</span> Notification{% if notifications|length != 1 %}s{% endif %}</div>
-                        </a>
-                    </li>
-                    -->
 
                     <li class="dropdown"><a><i class="glyph-grey glyph-clock"></i> {{ current_time }}</a></li>
 
@@ -128,27 +120,5 @@
         </div>
     </div>
 </div>
-
-
-    <div class="modal hide fade" id="notifications">
-        <div class="modal-header"><h3>Notifications: <span id="num_notifications">{{ notifications|length }}</span></h3></div>
-        <div class="modal-body">
-            {%  for id,notification in notifications.items %}
-                <div class="alert alert-{{ notification.level }}" data-notification-dismiss="{{ id }}">
-
-                    <strong>{{ notification.level }}!</strong> {{  notification.message }}
-                    <div class="pull-right">
-                        <a href="#" data-dismiss="alert">
-                            Hide
-                        </a>
-                    </div>
-                </div>
-            {%  endfor %}
-        </div>
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Close</button>
-        </div>
-    </div>
-
 
 <!-- snippets/header.html ends -->
