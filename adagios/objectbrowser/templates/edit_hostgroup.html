@@ -42,7 +42,7 @@
                                 {% if effective_memberof %}
                                     <p>
                                         {% for group in effective_memberof %}
-                                            <label><a href="id={{ group.id }}">{{group.hostgroup_name}}</a></label>
+                                            <label><a href="{% url adagios.objectbrowser.views.edit_object group.id %}">{{group.hostgroup_name}}</a></label>
                                         {% endfor %}
                                     </p>
                                 {% endif %}
@@ -72,7 +72,7 @@
                             {% if effective_hosts %}
                                 <p>
                                     {% for i in effective_hosts %}
-                                        <label><a href="id={{ i.id }}">{{i.host_name}}</a></label>
+                                        <label><a href="{% url adagios.objectbrowser.views.edit_object i.id %}">{{i.host_name}}</a></label>
                                     {% endfor %}
                                 </p>
                             {% endif %}

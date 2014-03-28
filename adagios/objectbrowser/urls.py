@@ -14,8 +14,8 @@ urlpatterns = patterns('adagios',
     url(r'^/edit/?$', 'objectbrowser.views.edit_object'),
     url(r'^/copy_and_edit/(?P<object_id>.+?)?$', 'objectbrowser.views.copy_and_edit_object'),
 
-    url(r'^/copy/id=(?P<object_id>.+)$', 'objectbrowser.views.copy_object', name="copy_object"),
-    url(r'^/delete/id=(?P<object_id>.+)$', 'objectbrowser.views.delete_object', name="delete_object"),
+    url(r'^/copy/(?P<object_id>.+)$', 'objectbrowser.views.copy_object', name="copy_object"),
+    url(r'^/delete/(?P<object_id>.+)$', 'objectbrowser.views.delete_object', name="delete_object"),
     url(r'^/delete/(?P<object_type>.+?)/(?P<shortname>.+)/?$', 'objectbrowser.views.delete_object_by_shortname', name="delete_by_shortname"),
 
     url(r'^/add/(?P<object_type>.+)$', 'objectbrowser.views.add_object', name="addobject"),

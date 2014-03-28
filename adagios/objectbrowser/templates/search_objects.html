@@ -33,9 +33,9 @@ $(document).ready(function() {
             <tbody>
             {% for o in objects %}
                 <tr class="{% cycle 'even' 'odd' %}">
-                    <td><a href="id={{ o.id }}">{{ o.description }}</a></td>
+                    <td><a href="{% url adagios.objectbrowser.views.edit_object o.id %}">{{ o.description }}</a></td>
                     <td><a href="{% url search %}?object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
-                    <td><a href="id={{ o.id }}">{{ o.name }} </a></td>
+                    <td><a href="{% url adagios.objectbrowser.views.edit_object o.id %}">{{ o.name }} </a></td>
                     <td><a href="{% url search %}?filename={{ o.filename }}">{{ o.filename }}</a></td>
                 </tr>
             {% endfor %}

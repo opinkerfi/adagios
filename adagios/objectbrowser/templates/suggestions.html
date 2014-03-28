@@ -62,8 +62,8 @@
                 n/a
             {% endif %}
         </td>
-		<td><a href="/objectbrowser/search?filename={{ i.filename }}">{{ i.filename }}</a></td>
-		<td><a href="{{ objectbrowser }}/delete_object?id={{ i.item }}">Delete Object</a> </td>
+		<td><a href="{% url adagios.objectbrowser.views.search_objects %}?filename={{ i.filename }}">{{ i.filename }}</a></td>
+		<td><a href="{% url adagios.objectbrowser.views.delete_object i.item %}">Delete Object</a> </td>
         <td> <a href="#">Create Reference</a></td>
         <td> <a href="#">Manually Edit</a> </td>
 	</tr>
