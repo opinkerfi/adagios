@@ -17,7 +17,7 @@ def startup():
     pynag.Model.adagios_layer = settings.adagios_layer
     if pynag.Model.multilayered_parsing:
         # Do layer compiling and generate the actual config
-        compile_layers()
+        pynag.Model.compile_layers()
 
     # Pre load objects on startup
     pynag.Model.ObjectDefinition.objects.get_all()
@@ -32,22 +32,6 @@ def startup():
             pynag.Model.EventHandlers.GitEventHandler(
                 os.path.dirname(pynag.Model.config.cfg_file), 'adagios', 'tommi')
         )
-
-def compile_layers():
-    """ Parses all the layers and generates complete config to use in 
-    adagios 
-    """
-    if pynag.Model.multilayered_parsing:
-        pynag.Model.config = pynag.Parsers.LayeredConfigCompiler(
-                cfg_file=pynag.Model.cfg_file,
-                layers=pynag.Model.layers,
-                destination_directory=pynag.Model.pynag_directory
-                )
-        pynag.Model.config.parse()
-        pynag.Model.config = pynag.Parsers.LayeredConfig(
-                cfg_file=pynag.Model.cfg_file,
-                adagios_layer = pynag.Model.adagios_layer
-                )
 
 # If any pynag errors occur during initial parsing, we ignore them
 # because we still want the webserver to start.
