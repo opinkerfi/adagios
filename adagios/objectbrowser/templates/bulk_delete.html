@@ -21,46 +21,50 @@
     {% if success %}
     <div class="alert alert-success">Objects have been deleted.</div>
     {% else %}
-        <div class="alert alert-danger">You are about to delete multible objects. Are you sure you want to continue ?</div>
+        {% if objects %}
+            <div class="alert alert-danger">You are about to delete multible objects. Are you sure you want to continue ?</div>
 
-        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-            <div>
-            <table id="many">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Object Type</th>
-                    <th>Description</th>
-                    <th>Filename</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for obj in objects %}
+            <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                <div>
+                <table id="many">
+                    <thead>
                     <tr>
-                        <td>
-                            <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
-                            <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
-                        </td>
-                        <td>{{ obj.object_type }}</td>
-                        <td>{{ obj.description }}</td>
-                        <td>{{ obj.filename }}</td>
+                        <th></th>
+                        <th>Object Type</th>
+                        <th>Description</th>
+                        <th>Filename</th>
                     </tr>
+                    </thead>
+                    <tbody>
+                    {% for obj in objects %}
+                        <tr>
+                            <td>
+                                <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
+                                <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                            </td>
+                            <td>{{ obj.object_type }}</td>
+                            <td>{{ obj.description }}</td>
+                            <td>{{ obj.filename }}</td>
+                        </tr>
 
-                {% endfor %}
-                </tbody>
-            </table>
-            <br/>
-            </div>
-            <div class="form-actions">
-                <label class="control-label" for="yes_i_am_sure" rel="tooltip" title="">
-                    Yes, I am sure
-                </label>
-                <div class="controls" id="yes_i_am_sure_field">
-                    <input type="checkbox" name="yes_i_am_sure" id="id_yes_i_am_sure" />
-                    <button class="btn btn-danger" type="submit"><i class="icon-trash icon-white"></i> Delete them</button>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <br/>
                 </div>
+                <div class="form-actions">
+                    <label class="control-label" for="yes_i_am_sure" rel="tooltip" title="">
+                        Yes, I am sure
+                    </label>
+                    <div class="controls" id="yes_i_am_sure_field">
+                        <input type="checkbox" name="yes_i_am_sure" id="id_yes_i_am_sure" />
+                        <button class="btn btn-danger" type="submit"><i class="icon-trash icon-white"></i> Delete them</button>
+                    </div>
 
-            </div>
-        </form>
+                </div>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">Hey we didn't find any objects that match what you were looking for :(</div>
+        {% endif %}
     {% endif %}
 {%  endblock %}
