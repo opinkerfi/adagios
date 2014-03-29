@@ -371,10 +371,10 @@ def get_object_statistics():
     ]
     """
     object_types = []
-    for object_type, Class in Model.string_to_class.items():
-        if object_type is not None:
-            total = len(Class.objects.all)
-            object_types.append({"object_type": object_type, "total": total})
+    Model.ObjectDefinition.objects.reload_cache()
+    for k, v in Model.ObjectFetcher._cached_object_type.items():
+        total = len(v)
+        object_types.append({"object_type": k, "total": total})
     return object_types
 
 
