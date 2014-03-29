@@ -217,6 +217,9 @@
                     }
                     $("#objectoverview_loading").hide();
 
+                })
+                .fail(function(data) {
+                    $("#objectoverview").text("Error getting object statistics.")
                 });
     }
 
