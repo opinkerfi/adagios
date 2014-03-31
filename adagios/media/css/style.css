@@ -337,7 +337,8 @@ button.close.notification {
 #base_objectbrowser .well {
     background: #f5f5f5 none;
 }
-#base_objectbrowser a {
+#base_objectbrowser a,
+#objectbrowser a {
     color: #b70000;
     text-decoration: none;
     font-weight: bold;
