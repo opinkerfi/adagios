@@ -312,6 +312,11 @@ def _edit_service(request, c):
     if c['check_command'] in (None, '', 'None'):
         c['check_command'] = ''
 
+    if service.hostgroup_name and service.hostgroup_name != 'null':
+        c['errors'].append("This Service is applied to every host in hostgroup %s" % (service.hostgroup_name, ))
+    host_name = service.host_name or ''
+    if ',' in host_name:
+        c['errors'].append("This Service is applied to multiple hosts")
     return render_to_response('edit_service.html', c, context_instance=RequestContext(request))
 
 
@@ -829,9 +834,27 @@ def _querydict_to_objects(request, raise_on_not_found=False):
                 my_object = Class.objects.get_by_shortname(shortname)
                 result.append(my_object)
             except Exception, e:
+                # If a service was not found, check if it was registered in
+                # some unusual way
+                if object_type == 'service' and '/' in shortname:
+                    host_name,service_description = shortname.split('/', 1)
+                    result.append(_find_service(host_name, service_description))
                 if raise_on_not_found is True:
                     raise e
     return result
+
+
+def _find_service(host_name, service_description):
+    """ Returns pynag.Model.Service matching our search filter """
+    result = pynag.Model.Service.objects.filter(host_name__has_field=host_name, service_description=service_description)
+
+    if not result:
+        host = pynag.Model.Host.objects.get_by_shortname(host_name, cache_only=True)
+        for i in host.get_effective_services():
+            if i.service_description == service_description:
+                result = [i]
+                break
+    return result[0]
 
 
 @adagios_decorator
@@ -910,9 +933,8 @@ def search_objects(request, objects=None):
             host_name, service_description = shortname.split('/')
 
         # If at this point we have found some objects, then lets do a special workaround
-        services = pynag.Model.Service.objects.filter(service_description=service_description, hostgroup_name__exists=True)
+        services = [_find_service(host_name, service_description)]
         errors.append('be careful')
-
 
     return render_to_response('search_objects.html', locals(), context_instance=RequestContext(request))
 
