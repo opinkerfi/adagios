@@ -93,6 +93,11 @@ a {
     font-weight: bold;
 }
 
+a.dis-object {
+    color: #e29999;
+    font-weight: normal;
+}
+
 div.dataTables_length label {
 	float: left;
 	text-align: left;

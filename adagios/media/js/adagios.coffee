@@ -61,6 +61,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
 (($) ->
   obIgnoreTables = [$("table#service-table")[0], $("table#contact-table")[0], $("table#host-table")[0], $("table#command-table")[0], $("table#timeperiod-table")[0]]
   filter_cache = {}
+  filter_cache_dis = {}
   object_types = ['service', 'servicegroup', 'host', 'hostgroup', 'contact', 'contactgroup', 'command', 'timeperiod']
 
   $.fn.dataTableExt.afnFiltering.push (oSettings, aData) ->
@@ -70,27 +71,21 @@ $.extend $.fn.dataTableExt.oStdClasses,
     # Default we show nothing
     object_type = oSettings["sTableId"].split("-")[0]
     cache_type = filter_cache[object_type]
+    show_disabled = filter_cache_dis[object_type]
 
     return true if cache_type is undefined
 
-    if cache_type is "2" and aData[0] is "0" and aData[1] isnt null
-      return true
+    if cache_type is "0" or cache_type is "1"
+      if aData[0] isnt "0"
+        return true
+      if aData[1] is null or aData[1] is undefined
+        if show_disabled is "1"
+          return true
 
-    if cache_type is "1" and aData[2] is "#{object_type}group" and aData[0] != "0"
-      # Enabled hosts
-      if aData[0] is "1"
-        return true
-      # Disabled hosts
-      if aData[0] is "0" and aData[1] is null
+    if cache_type is "2"
+      if aData[1] isnt null and aData[1] isnt undefined
         return true
 
-    if cache_type is "0" and aData[2] is "#{object_type}"
-      # Enabled hosts
-      if aData[0] is "1"
-        return true
-      # Disabled hosts
-      if aData[0] is "0" and aData[1] is null
-        return true
     # default no
     false
 
@@ -242,9 +237,17 @@ $.extend $.fn.dataTableExt.oStdClasses,
             """<input id="ob_mass_select" name="#{ item["id"] }" type="checkbox">"""
           ]
           $.each v["rows"], (k, field) ->
-            cell = """<a href="id=#{ item["id"] }">"""
+            cell = """<a href="id=#{ item["id"] }" """
+            cell += 'class="'
+            if item["register"] is "0" and (item["name"] is null or item["name"] is undefined)
+              cell += "dis-object"
+            cell += '">'
             field_value = ""
-            cell += """<i class="#{ field.icon }"></i>"""  if "icon" of field
+            if "icon" of field
+              cell += """<i class="#{ field.icon }"""
+              if item["register"] is "0" and (item["name"] is null or item["name"] is undefined)
+                cell += """ glyph-grey"""
+              cell += """ "></i>"""
             if item[field["cName"]]
               field_value = item[field["cName"]]
             else
@@ -351,12 +354,14 @@ $.extend $.fn.dataTableExt.oStdClasses,
             <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit_object"><i class="glyph-pencil"></i></a>
             <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete_object"><i class="glyph-bin"></i></a>
           </div>
+          <div id="view_filter_disable" class="btn-group pull-right"></div>
           <div id="view_filter" class="btn-group pull-right"></div>
         </div>
 
         """
     if object_type == "command" or object_type == "timeperiod"
         $("#view_filter").hide()
+        $("#view_filter_dis").hide()
 
     $("#actions #modify a").on "click", (e) ->
       checked = $("input#ob_mass_select:checked").length
@@ -393,8 +398,13 @@ $.extend $.fn.dataTableExt.oStdClasses,
       <a rel="tooltip" title="Show #{ object_type } templates" class="btn" data-filter-type="2">
         <i class="glyph-cogwheels"></i>
       </a>"""
+      $(".toolbar_#{ object_type } div#view_filter_disable.btn-group").append """
+      <a rel="tooltip" title="Show disabled #{ object_type }s" class="btn active" data-filter-disabled="0">
+        <i class="glyph-computer-service glyph-grey"></i>
+      </a>"""
 
       filter_cache[object_type] = "0"
+      filter_cache_dis[object_type] = "1" #Show disabled objects by default
 
     for ot in object_types
       if ot is object_type or ot is "#{object_type}group"
@@ -425,6 +435,20 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     # When inputs are selected in toolbar, we call redraw on the datatable which calls the filtering routing
     #        above 
+    $("[class^=\"toolbar_\"] div#view_filter_disable.btn-group a").on "click", (e) ->
+      $target = $(this)
+      e.preventDefault()
+      # return false  if $target.hasClass("active")
+      object_type = $target.parentsUntil(".tab-content", ".tab-pane").attr("id").split("-")[0]
+      if $target.hasClass "active"
+        $target.removeClass "active"
+        filter_cache_dis[object_type] = "0"
+      else
+        $target.addClass "active"
+        filter_cache_dis[object_type] = "1"
+      $("table#" + object_type + "-table").dataTable().fnDraw()
+      false
+
     $("[class^=\"toolbar_\"] div#view_filter.btn-group a").on "click", (e) ->
       $target = $(this)
       e.preventDefault()
