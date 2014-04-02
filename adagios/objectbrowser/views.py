@@ -26,6 +26,7 @@ from os.path import dirname
 from pynag.Model import ObjectDefinition, string_to_class
 from pynag import Model
 from pynag.Parsers import status
+import pynag.Utils
 from collections import defaultdict, namedtuple
 import pynag.Model
 
@@ -197,7 +198,7 @@ def edit_object(request, object_id=None):
         pass
 
     try:
-        c['effective_parents'] = my_object.get_effective_parents()
+        c['effective_parents'] = my_object.get_effective_parents(cache_only=True)
     except KeyError, e:
         c['errors'].append("Could not find parent: %s" % str(e))
 
@@ -229,6 +230,7 @@ def edit_object(request, object_id=None):
         return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_contact(request, c):
     """ This is a helper function to edit_object """
     try:
@@ -240,6 +242,7 @@ def _edit_contact(request, c):
     return render_to_response('edit_contact.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_service(request, c):
     """ This is a helper function to edit_object """
     service = c['my_object']
@@ -309,9 +312,15 @@ def _edit_service(request, c):
     if c['check_command'] in (None, '', 'None'):
         c['check_command'] = ''
 
+    if service.hostgroup_name and service.hostgroup_name != 'null':
+        c['errors'].append("This Service is applied to every host in hostgroup %s" % (service.hostgroup_name, ))
+    host_name = service.host_name or ''
+    if ',' in host_name:
+        c['errors'].append("This Service is applied to multiple hosts")
     return render_to_response('edit_service.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_contactgroup(request, c):
     """ This is a helper function to edit_object """
     try:
@@ -333,6 +342,7 @@ def _edit_contactgroup(request, c):
     return render_to_response('edit_contactgroup.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_hostgroup(request, c):
     """ This is a helper function to edit_object """
     hostgroup = c['my_object']
@@ -349,6 +359,7 @@ def _edit_hostgroup(request, c):
     return render_to_response('edit_hostgroup.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_servicegroup(request, c):
     """ This is a helper function to edit_object """
     try:
@@ -359,26 +370,31 @@ def _edit_servicegroup(request, c):
     return render_to_response('edit_servicegroup.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_command(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_command.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_hostdependency(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_hostdepedency.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_servicedependency(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('_edit_servicedependency.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_timeperiod(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_timeperiod.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_host(request, c):
     """ This is a helper function to edit_object """
     host = c['my_object']
@@ -818,9 +834,27 @@ def _querydict_to_objects(request, raise_on_not_found=False):
                 my_object = Class.objects.get_by_shortname(shortname)
                 result.append(my_object)
             except Exception, e:
+                # If a service was not found, check if it was registered in
+                # some unusual way
+                if object_type == 'service' and '/' in shortname:
+                    host_name,service_description = shortname.split('/', 1)
+                    result.append(_find_service(host_name, service_description))
                 if raise_on_not_found is True:
                     raise e
     return result
+
+
+def _find_service(host_name, service_description):
+    """ Returns pynag.Model.Service matching our search filter """
+    result = pynag.Model.Service.objects.filter(host_name__has_field=host_name, service_description=service_description)
+
+    if not result:
+        host = pynag.Model.Host.objects.get_by_shortname(host_name, cache_only=True)
+        for i in host.get_effective_services():
+            if i.service_description == service_description:
+                result = [i]
+                break
+    return result[0]
 
 
 @adagios_decorator
@@ -899,9 +933,8 @@ def search_objects(request, objects=None):
             host_name, service_description = shortname.split('/')
 
         # If at this point we have found some objects, then lets do a special workaround
-        services = pynag.Model.Service.objects.filter(service_description=service_description, hostgroup_name__exists=True)
+        services = [_find_service(host_name, service_description)]
         errors.append('be careful')
-
 
     return render_to_response('search_objects.html', locals(), context_instance=RequestContext(request))
 

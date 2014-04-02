@@ -43,7 +43,7 @@
                                 {% if effective_memberof %}
                                     <p>
                                         {% for group in effective_memberof %}
-                                            <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
+                                            <label><a href="{% url adagios.objectbrowser.views.edit_object group.id %}">{{group.contactgroup_name}}</a></label>
                                         {% endfor %}
                                     </p>
                                 {% endif %}
@@ -73,7 +73,7 @@
                             {% if effective_contacts %}
                                 <p>
                                     {% for i in effective_contacts %}
-                                        <label><a href="id={{ i.id }}">{{i.contact_name}}</a></label>
+                                        <label><a href="{% url adagios.objectbrowser.views.edit_object i.id %}">{{i.contact_name}}</a></label>
                                     {% endfor %}
                                 </p>
                             {% endif %}

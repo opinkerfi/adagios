@@ -320,28 +320,32 @@ def check_command(host_name, service_description, name=None, check_command=None,
 
     # Lets put all our results in a nice little dict
     macros = {}
-    macros['check_command'] = command.command_name
-    macros['original_command_line'] = command.command_line
-    macros['effective_command_line'] = my_object.get_effective_command_line()
+    cache = Model.ObjectFetcher._cache_only
+    try:
+        Model.ObjectFetcher._cache_only = True
+        macros['check_command'] = command.command_name
+        macros['original_command_line'] = command.command_line
+        macros['effective_command_line'] = my_object.get_effective_command_line()
 
-    # Lets get all macros that this check command defines:
-    regex = re.compile("(\$\w+\$)")
-    macronames = regex.findall(command.command_line)
-    for i in macronames:
-        macros[i] = my_object.get_macro(i) or ''
+        # Lets get all macros that this check command defines:
+        regex = re.compile("(\$\w+\$)")
+        macronames = regex.findall(command.command_line)
+        for i in macronames:
+            macros[i] = my_object.get_macro(i) or ''
 
-    if not check_command:
-        # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
-        ARGs = my_object.check_command.split('!')
-        for i, arg in enumerate(ARGs):
-            if i == 0:
-                continue
+        if not check_command:
+            # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
+            ARGs = my_object.check_command.split('!')
+            for i, arg in enumerate(ARGs):
+                if i == 0:
+                    continue
 
-            macronames = regex.findall(arg)
-            for m in macronames:
-                macros[m] = my_object.get_macro(m) or ''
-            macros['$ARG{i}$'.format(i=i)] = arg
-
+                macronames = regex.findall(arg)
+                for m in macronames:
+                    macros[m] = my_object.get_macro(m) or ''
+                macros['$ARG{i}$'.format(i=i)] = arg
+    finally:
+        Model.ObjectFetcher._cache_only = cache
     return macros
 
 
@@ -371,10 +375,10 @@ def get_object_statistics():
     ]
     """
     object_types = []
-    for object_type, Class in Model.string_to_class.items():
-        if object_type is not None:
-            total = len(Class.objects.all)
-            object_types.append({"object_type": object_type, "total": total})
+    Model.ObjectDefinition.objects.reload_cache()
+    for k, v in Model.ObjectFetcher._cached_object_type.items():
+        total = len(v)
+        object_types.append({"object_type": k, "total": total})
     return object_types
 
 
@@ -385,9 +389,9 @@ def autocomplete(q):
         q = ''
     result = {}
 
-    hosts = pynag.Model.Host.objects.filter(host_name__contains=q)
-    services = pynag.Model.Service.objects.filter(service_description__contains=q)
-    hostgroups = pynag.Model.Hostgroup.objects.filter(hostgroup_name__contains=q)
+    hosts = Model.Host.objects.filter(host_name__contains=q)
+    services = Model.Service.objects.filter(service_description__contains=q)
+    hostgroups = Model.Hostgroup.objects.filter(hostgroup_name__contains=q)
 
     result['hosts'] = sorted(set(map(lambda x: x.host_name, hosts)))
     result['hostgroups'] = sorted(set(map(lambda x: x.hostgroup_name, hostgroups)))

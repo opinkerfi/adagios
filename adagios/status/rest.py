@@ -559,7 +559,7 @@ def command_line(host_name, service_description=None):
 def _get_host_or_service(host_name, service_description=None):
     """ Return a pynag.Model.Host or pynag.Model.Service or raise exception if none are found """
     host = pynag.Model.Host.objects.get_by_shortname(host_name)
-    if not service_description:
+    if not service_description or service_description == '_HOST_':
         return host
     else:
         search_result = pynag.Model.Service.objects.filter(host_name=host_name, service_description=service_description)

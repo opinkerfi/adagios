@@ -50,7 +50,7 @@
                                     {% if effective_contactgroups %}
                                       <p>
                                     {% for group in effective_contactgroups %}
-                                        <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
+                                        <label><a href="{% url adagios.objectbrowser.views.edit_object group.id %}">{{group.contactgroup_name}}</a></label>
                                     {% endfor %}
                                       </p>
                                     {% endif %}

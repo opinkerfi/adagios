@@ -339,8 +339,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
           </div>
           <div id="modify" class="btn-group pull-left">
             <a rel="tooltip" id="copy" title="Copy" class="btn btn-important" data-target-bulk="bulk_copy" data-target="copy"><i class="icon-copy"></i></a>
-            <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit_object"><i class="glyph-pencil"></i></a>
-            <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete_object"><i class="glyph-bin"></i></a>
+            <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit"><i class="glyph-pencil"></i></a>
+            <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete"><i class="glyph-bin"></i></a>
           </div>
           <div id="view_filter" class="btn-group pull-right"></div>
         </div>
@@ -367,7 +367,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       else if checked > 0
         where = $(this).attr('data-target')
         id = $("table tbody input:checked").attr('name')
-        window.location.href = window.location.href.split("#")[0] + "#{where}/id=#{id}"
+        window.location.href = window.location.href.split("#")[0] + "#{where}/#{id}"
       e.preventDefault()
 
     if (object_type != "command" and object_type != "timeperiod")

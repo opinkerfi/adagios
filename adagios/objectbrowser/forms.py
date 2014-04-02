@@ -59,7 +59,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
     def __init__(self, inline_help_text="Select some options", *args, **kwargs):
         self.__prefix = ''
         self.data = kwargs.get('data')
-        super(PynagChoiceField, self).__init__(*args, **kwargs)
+        super(PynagChoiceField, self).__init__(initial=["apc01.acme.com", "apc01.acme.com"], *args, **kwargs)
         self.widget.attrs['data-placeholder'] = inline_help_text
 
     def clean(self, value):

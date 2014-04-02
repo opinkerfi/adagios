@@ -1,5 +1,7 @@
-{% extends "base_objectbrowser.html" %}
-
+{% extends "base.html" %}
+{% block toolbar %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}Object Configuration{% endblock %}
 {% block title %}Object Browser{% endblock %}
 {% block footer %}
     {{ block.super }}
@@ -217,27 +219,17 @@
                     }
                     $("#objectoverview_loading").hide();
 
+                })
+                .fail(function(data) {
+                    $("#objectoverview").text("Error getting object statistics.")
                 });
     }
 
     </script>
 {% endblock %}
 
-{% block page_header %}
-                <ul class="breadcrumb">
-                    <li>
-                        <a href="{% url home %}">Home</a> <span class="divider">/</span>
-                    </li>
-                </ul>
-                <h2>
-                    <i class="icon-th-large"></i> <small>Object</small> Browser
-                </h2>
-
-{% endblock %}
 
 {% block content %}
-
-
                 <div id="objectbrowser">
                     <ul class="nav nav-tabs" id="objecttabs">
                         <li><a href="#host-tab" data-toggle="tab"><i class="glyph-computer-locked"></i> Hosts</a></li>

@@ -17,47 +17,51 @@
     </script>
 {% endblock %}
 {%  block content %}
-    <div class="alert alert-warning">
-    <p>
-    You are about to make changes to multiple objects.
-    </p><p>
-    Fill in Attribue Name and New Value and they will be changed on
-    all selected items. If object does not currently have this value defined it will be added anyway.
-    </p>
+       {% if objects %}
+            <div class="alert alert-warning">
+            <p>
+            You are about to make changes to multiple objects.
+            </p><p>
+            Fill in Attribue Name and New Value and they will be changed on
+            all selected items. If object does not currently have this value defined it will be added anyway.
+            </p>
 
-    </div>
-    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-        <div>
-    {% include "bootstrap_fields.html" with fields=form %}
-        <table id="many">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Object Type</th>
-                <th>Description</th>
-                <th>Filename</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for obj in objects %}
-                <tr>
-                    <td>
-                        <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
-                        <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
-                    </td>
+            </div>
+            <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                <div>
+            {% include "bootstrap_fields.html" with fields=form %}
+                <table id="many">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Object Type</th>
+                        <th>Description</th>
+                        <th>Filename</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for obj in objects %}
+                        <tr>
+                            <td>
+                                <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
+                                <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                            </td>
 
-                    <td>{{ obj.object_type }}</td>
-                    <td>{{ obj.description }}</td>
-                    <td>{{ obj.filename }}</td>
-                </tr>
+                            <td>{{ obj.object_type }}</td>
+                            <td>{{ obj.description }}</td>
+                            <td>{{ obj.filename }}</td>
+                        </tr>
 
-            {% endfor %}
-            </tbody>
-        </table>
-        <br/>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </div>
-    </form>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <br/>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
+            </form>
+       {% else %}
+           <div class="alert alert-warning">Hey we didn't find any objects that match what you were looking for :(</div>
+       {% endif %}
 {%  endblock %}
