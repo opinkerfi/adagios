@@ -24,4 +24,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
+    
+    # Internationalization
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog'),
 )
