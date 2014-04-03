@@ -1,4 +1,6 @@
 {% extends "base_objectbrowser.html" %}
+{% load i18n %}
+
 {% block title %}{{ my_object.object_type }} {{ my_object.description }}{% endblock %}
 {% block smallheader %}{{ my_object.object_type }}{% endblock %}
 {% block largeheader %}{{ my_object.description }}{% endblock %}

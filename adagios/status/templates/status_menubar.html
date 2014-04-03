@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <li class="{% if urlname == "status"%}active{% endif %}">
   <a href="{% url status.views.status_index %}"><i class="glyph-grey glyph-table"></i> Status</a>
 </li>

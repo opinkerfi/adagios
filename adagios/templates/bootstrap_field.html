@@ -1,5 +1,8 @@
 {# This is a snippet, include it from somewhere else to get single field in a bootstrap friendly way#}
 {# Usage: {% include "boostrap_field.html" with field=my_field %} #}
+
+{% load i18n %}
+
 {% if field.label %}
 <!-- Field {{ field.label }} -->
 <div class="control-group{% if field.errors %} error{% endif %}{% if field.required %} required{% endif %}{% if field.hide  %} hide{% endif %}">
