@@ -23,6 +23,8 @@ This is a rest interface used by the "/rest/" module that affects adagios direct
 
 from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
+from django.utils.translation import ugettext as _
+
 version = __version__
 
 

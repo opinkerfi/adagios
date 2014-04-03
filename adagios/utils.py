@@ -6,6 +6,8 @@ import time
 import adagios
 import pynag.Model
 
+from django.utils.translation import ugettext as _
+
 
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
     livestatus = adagios.status.utils.livestatus(None)

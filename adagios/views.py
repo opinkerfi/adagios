@@ -3,6 +3,7 @@ import traceback
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, loader
 from django import template
+from django.utils.translation import ugettext as _
 import time
 import logging
 import adagios.settings

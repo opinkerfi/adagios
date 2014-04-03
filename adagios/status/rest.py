@@ -14,6 +14,7 @@ import adagios.status.utils
 import pynag.Parsers
 import collections
 
+from django.utils.translation import ugettext as _
 
 def hosts(request, fields=None, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()

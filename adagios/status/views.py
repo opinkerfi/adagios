@@ -26,6 +26,7 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.utils.encoding import smart_str
 from django.core.context_processors import csrf
+from django.utils.translation import ugettext as _
 
 import pynag.Model
 import pynag.Utils

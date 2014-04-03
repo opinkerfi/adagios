@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 from django import forms
+from django.utils.translation import ugettext as _
 import adagios.status.utils
 import adagios.bi
 

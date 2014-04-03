@@ -21,6 +21,7 @@ This is an extends of pynag's all_attributes with friendly help message for all 
 """
 
 from pynag.Model.all_attributes import object_definitions
+from django.utils.translation import ugettext as _
 
 
 object_definitions["any"]["use"][

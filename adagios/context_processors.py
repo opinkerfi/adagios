@@ -14,6 +14,8 @@ import time
 import datetime
 from adagios import __version__
 
+from django.utils.translation import ugettext as _
+
 def on_page_load(request):
     """ Collection of actions that take place every page load """
     results = {}
