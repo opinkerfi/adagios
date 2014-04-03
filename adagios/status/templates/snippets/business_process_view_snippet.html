@@ -1,3 +1,5 @@
+{% load i18n %}
+
     <div id="content_div" class="centralized_dashboard">
         <h3 class="dashboard_header">{{ bp.display_name }} <span class="status_{{ bp.get_status }}">Status</span></h3>
         <div class="top-margin service alert alert-{{ bp.css_hint }}">
