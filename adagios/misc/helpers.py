@@ -16,6 +16,7 @@ from pynag import Utils
 from pynag import __version__
 from socket import gethostbyname_ex
 import adagios.settings
+from django.utils.translation import ugettext as _
 
 
 #_config = Parsers.config(adagios.settings.nagios_config)

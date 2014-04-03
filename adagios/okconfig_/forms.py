@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 import socket
 from pynag import Model
 from adagios.forms import AdagiosForm
+from django.utils.translation import ugettext as _
 
 
 def get_all_hosts():

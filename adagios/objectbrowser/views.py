@@ -20,6 +20,7 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 import os
 from os.path import dirname
 

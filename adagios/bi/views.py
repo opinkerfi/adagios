@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 from adagios.pnp.functions import run_pnp
 from adagios.views import adagios_decorator
 

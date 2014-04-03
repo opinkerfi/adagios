@@ -21,6 +21,7 @@ from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedir
 from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
+from django.utils.translation import ugettext as _
 from adagios.views import adagios_decorator
 
 from django.core.urlresolvers import reverse

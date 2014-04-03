@@ -20,6 +20,7 @@ from django import forms
 from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 
 import os.path
 from adagios import settings
