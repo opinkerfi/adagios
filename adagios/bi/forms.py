@@ -45,7 +45,7 @@ class BusinessProcessForm(forms.Form):
 
     """ Use this form to edit a BusinessProcess """
     name = forms.CharField(max_length=100, required=True,
-                           help_text="Uniqe name for this business process.")
+                           help_text="Unique name for this business process.")
     #processes = forms.CharField(max_length=100, required=False)
     display_name = forms.CharField(max_length=100, required=False,
                                    help_text="This is the name that will be displayed to users on this process. Usually it is the name of the system this business group represents.")
