@@ -590,15 +590,17 @@ $(document).ready ->
           lbl = $(this).find("span")
           lbl.text(data[field_name])
 
-        $("div.control-group").mouseenter ->
-            lbl = $(this).find("span")
+        $("div.control-group").each ->
+          $(this).find("input").mouseenter ->
+            lbl = $(this).parent().find("span")
             lbl.fadeIn 500
             lbl.removeClass "hidden"
 
-        $("div.control-group").mouseleave ->
-          lbl = $(this).find("span")
-          lbl.addClass "hidden"
-          lbl.fadeOut 100
+        $("div.control-group").each ->
+          $(this).find("input").mouseleave ->
+            lbl = $(this).parent().find("span")
+            lbl.fadeOut 200
+            lbl.addClass "hidden"
 
   $("[rel=tooltip]").popover()
   $("#popover").popover()
