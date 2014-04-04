@@ -69,5 +69,14 @@
             });
         });
 
+        $('#id_hostgroup_name').change( function() {
+            if (this.value) {
+                adagios.misc.warning("Service will be applied to all hosts in this hostgroup", 'hostgroup_notification')
+            }
+            else {
+                $("#notification_hostgroup_notification").remove();
+            }
+        })
+
     </script>
 {% endblock %}
