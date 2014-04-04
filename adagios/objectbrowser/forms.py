@@ -741,7 +741,7 @@ class AddObjectForm(PynagForm):
     def clean_host_name(self):
         if self.pynag_object.object_type == 'service':
             value = self.cleaned_data['host_name']
-            if not value:
+            if not value or value == 'null':
                 return None
             hosts = value.split(',')
             for i in hosts:
