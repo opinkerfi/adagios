@@ -150,7 +150,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $this.find("input[name='#{which}_time_picker']").each ->
         $dateobj = $this.data "#{which}_time_obj"
         $(this).val root.dateStr $dateobj
-        $(this).datepicker(format: "yyyy-mm-dd" ).on 'changeDate', (ev) ->
+        $(this).datepicker(format: gettext("yyyy-mm-dd") ).on 'changeDate', (ev) ->
           $dateobj.setYear ev.date.getFullYear()
           $dateobj.setMonth ev.date.getMonth()
           $dateobj.setDate ev.date.getDate()
