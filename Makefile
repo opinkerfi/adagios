@@ -95,3 +95,9 @@ debs: build sdist
 	  cd adagios-${VERSION} ;\
 	  cp -r ../debian debian ;\
 	  debuild -i -us -uc -b
+
+trad:
+	cd adagios && \
+	django-admin.py makemessages --all -e py && \
+	django-admin.py makemessages --all -d djangojs && \
+	django-admin.py compilemessages
