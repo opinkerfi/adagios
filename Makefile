@@ -96,7 +96,10 @@ debs: build sdist
 	  cp -r ../debian debian ;\
 	  debuild -i -us -uc -b
 
-trad:
+coffee:
+	cd adagios/media/js/ && coffee -c adagios.coffee
+
+trad: coffee
 	cd adagios && \
 	django-admin.py makemessages --all -e py && \
 	django-admin.py makemessages --all -d djangojs && \
