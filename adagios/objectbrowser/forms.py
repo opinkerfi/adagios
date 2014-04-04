@@ -59,7 +59,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
     def __init__(self, inline_help_text="Select some options", *args, **kwargs):
         self.__prefix = ''
         self.data = kwargs.get('data')
-        super(PynagChoiceField, self).__init__(initial=["apc01.acme.com", "apc01.acme.com"], *args, **kwargs)
+        super(PynagChoiceField, self).__init__(*args, **kwargs)
         self.widget.attrs['data-placeholder'] = inline_help_text
 
     def clean(self, value):
@@ -684,10 +684,9 @@ class AddTemplateForm(PynagForm):
 
 class AddObjectForm(PynagForm):
 
-    def __init__(self, object_type, *args, **kwargs):
+    def __init__(self, object_type, initial=None, *args, **kwargs):
         self.pynag_object = Model.string_to_class.get(object_type)()
         super(AdagiosForm, self).__init__(*args, **kwargs)
-
         # Some object types we will suggest a template:
         if object_type in ('host', 'contact', 'service'):
             self.fields['use'] = self.get_pynagField('use')
@@ -707,17 +706,21 @@ class AddObjectForm(PynagForm):
             field_name = "%s_name" % object_type
             self.fields[field_name] = self.get_pynagField(
                 field_name, required=True)
+        # For some reason calling super()__init__() with initial as a parameter
+        # will not work on PynagChoiceFields. This forces initial value to be set:
+        initial = initial or {}
+        for field_name, field in self.fields.items():
+            initial_value = initial.get(field_name, None)
+            if initial_value:
+                field.initial = str(initial_value)
 
     def clean(self):
         cleaned_data = super(AddObjectForm, self).clean()
-        print self.pynag_object.object_type
         if self.pynag_object.object_type == 'service':
             host_name = cleaned_data.get('host_name')
             hostgroup_name = cleaned_data.get('hostgroup_name')
             if host_name in (None, 'None', '') and hostgroup_name in (None, 'None', ''):
                 raise forms.ValidationError("Please specify either hostgroup_name or host_name")
-            else:
-                print "everything is A OK"
         return cleaned_data
 
     def clean_timeperiod_name(self):
