@@ -609,7 +609,12 @@ adagios.status.update_row_color = function(checkbox) {
 // Acknowledge, downtime, etc.
 adagios.status.get_selected_objects = function() {
     var result = [];
-    var checked_boxes = $( ".selectable :checked" );
+    var primary = $( ".chkbox-primary:checked " );
+    var checked_boxes = $( ".selectable :checked:visible" );
+
+    if (checked_boxes.length == 0) {
+        checked_boxes = primary;
+    }
     checked_boxes.each(function() {
         result.push($(this).data());
     });
