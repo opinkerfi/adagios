@@ -394,3 +394,25 @@ def get_object_statistics():
             total = len(Class.objects.all)
             object_types.append({"object_type": object_type, "total": total})
     return object_types
+
+def source_tracker_enabled():
+    return Model.source_tracker != None
+
+def get_all_attr_src(item_id=None):
+    """ Returns a dictionary containing all {object attributes: source} """
+
+    if Model.source_tracker and item_id:
+        item = Model.ObjectDefinition.objects.get_by_id(item_id)
+        st_item = Model.source_tracker.create_srctracker_item(item)
+        return Model.source_tracker.get_all_src(st_item)
+    return None
+
+def get_attr_src(item_id=None, attr=None):
+    """ Returns a dictionary containing all {object attributes: source} """
+
+    if Model.source_tracker and item_id and attr:
+        item = Model.ObjectDefinition.objects.get_by_id(item_id)
+        st_item = Model.source_tracker.create_srctracker_item(item)
+        return Model.source_tracker.get_src(st_item, attr)
+
+    return None

@@ -344,7 +344,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
         """
     if object_type == "command" or object_type == "timeperiod"
-      $("#view_filter").hide();
+      $("#view_filter").hide()
 
     $("#actions #modify a").on "click", (e) ->
       checked = $("input#ob_mass_select:checked").length
@@ -577,6 +577,28 @@ getCookie = (name) ->
 window.csrftoken = getCookie 'csrftoken'
 
 $(document).ready ->
+  adagios.rest.pynag.source_tracker_enabled().done (data) ->
+    window.st_enabled = data
+    if data is true
+      id = window.location.href.split("#")[0].split("id=")[1]
+      parameters =
+        item_id: id
+      adagios.rest.pynag.get_all_attr_src(parameters).done (data) ->
+
+        $("div.control-group").each ->
+          field_name = $(this).find("label.control-label").attr("for")
+          lbl = $(this).find("span")
+          lbl.text(data[field_name])
+
+        $("div.control-group").mouseenter ->
+          lbl = $(this).find("span")
+          lbl.fadeIn 800
+          lbl.removeClass "hidden"
+
+        $("div.control-group").mouseleave ->
+          lbl = $(this).find("span")
+          lbl.fadeOut 500
+
   $("[rel=tooltip]").popover()
   $("#popover").popover()
   $("select").select2({
@@ -589,7 +611,19 @@ $(document).ready ->
      event.preventDefault()
      return
 
+  #$("div.control-group").hover ->
+  #  lbl = $(this).find("span")
+  #  id = window.location.href.split("#")[0].split("id=")[1]
+  #  attrib = $(this).find("input").attr("name")
+  #  parameters =
+  #    item_id: id
+  #    attr: attrib
 
+  #  adagios.rest.pynag.get_attr_src(parameters).done (data) ->
+  #    lbl.toggleClass "hidden"
+  #    lbl.text data
+  #    console.log data
+  #  return
 
   $('div.modal#notifications div.alert').bind 'close', (e) ->
     $this = $(this)

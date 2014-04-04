@@ -8,6 +8,7 @@
     </label>
     <div class="controls" id="{{ field.name }}_field">
         {{ field }}
+        <span class="label label-info source hidden" id="source_{{ field.name }}">This attribute is not defined</span>
         {% for err in field.errors %}
             <p class="help-inline error">{{ err }}</p>
         {% endfor %}

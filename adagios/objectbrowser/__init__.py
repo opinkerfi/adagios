@@ -17,6 +17,7 @@ def startup():
     pynag.Model.adagios_layer = settings.adagios_layer
     if pynag.Model.multilayered_parsing:
         # Do layer compiling and generate the actual config
+        pynag.Model.source_tracker = pynag.Parsers.SourceTracker()
         pynag.Model.compile_layers()
 
     # Pre load objects on startup
