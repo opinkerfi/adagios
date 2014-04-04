@@ -34,7 +34,7 @@ Adagios is a web based Nagios configuration interface build to be simple and int
 %setup -qn %{name}-%{version} -n %{name}-%{version}
 VERSION=%{version}
 echo %{release} | grep -q git && VERSION=$VERSION-%{release}
-sed -i "s/__version__=.*/__version__='$VERSION'/" adagios/__init__.py
+sed -i "s/^__version__.*/__version__ = '$VERSION'/" adagios/__init__.py
 
 %build
 python setup.py build
