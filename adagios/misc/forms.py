@@ -31,17 +31,17 @@ import pynag.Control.Command
 
 
 TOPIC_CHOICES = (
-    ('general', 'General Suggestion'),
-    ('bug', 'I think i have found a bug'),
-    ('suggestion', 'I have a particular task in mind that i would like to do with Adagios'),
-    ('easier', 'I have an idea how make a certain task easier to do'),
+    ('general', _('General Suggestion')),
+    ('bug', _('I think i have found a bug')),
+    ('suggestion', _('I have a particular task in mind that i would like to do with Adagios')),
+    ('easier', _('I have an idea how make a certain task easier to do')),
 )
 
 pnp_loglevel_choices = [
-    ('0', '0 - Only Errors'),
-    ('1', '1 - Little logging'),
-    ('2', '2 - Log Everything'),
-    ('-1', '-1 Debug mode (log all and slower processing')
+    ('0', _('0 - Only Errors')),
+    ('1', _('1 - Little logging')),
+    ('2', _('2 - Log Everything')),
+    ('-1', _('-1 Debug mode (log all and slower processing'))
 ]
 pnp_log_type_choices = [('syslog', 'syslog'), ('file', 'file')]
 
@@ -66,79 +66,79 @@ class ContactUsForm(forms.Form):
     topic = forms.ChoiceField(choices=TOPIC_CHOICES)
     sender = forms.CharField(
         required=False,
-        help_text="Optional email address if you want feedback from us",
+        help_text=_("Optional email address if you want feedback from us"),
     )
     message = forms.CharField(
         widget=forms.widgets.Textarea(
             attrs={'rows': 15, 'cols': 40}),
-        help_text="See below for examples of good suggestions",
+        help_text=_("See below for examples of good suggestions"),
     )
 
     def save(self):
         from_address = 'adagios@adagios.opensource.is'
         to_address = ["palli@ok.is"]
-        subject = "Suggestion from Adagios"
+        subject = _("Suggestion from Adagios")
 
         sender = self.cleaned_data['sender']
         topic = self.cleaned_data['topic']
         message = self.cleaned_data['message']
 
-        msg = """
-        topic: %s
-        from: %s
+        msg = _("""
+        topic: %(topic)s
+        from: %(sender)s
 
-        %s
-        """ % (topic, sender, message)
+        %(message)s
+        """) % {'topic': topic, 'sender': sender, 'message': message}
         send_mail(subject, msg, from_address, to_address, fail_silently=False)
 
 
 class AdagiosSettingsForm(forms.Form):
     nagios_config = forms.CharField(
         required=False, initial=settings.nagios_config,
-        help_text="Path to nagios configuration file. i.e. /etc/nagios/nagios.cfg")
+        help_text=_("Path to nagios configuration file. i.e. /etc/nagios/nagios.cfg"))
     destination_directory = forms.CharField(
-        required=False, initial=settings.destination_directory, help_text="Where to save new objects that adagios creates.")
+        required=False, initial=settings.destination_directory, help_text=_("Where to save new objects that adagios creates."))
     nagios_url = forms.CharField(required=False, initial=settings.nagios_url,
-                                 help_text="URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi.")
+                                 help_text=_("URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi."))
     nagios_init_script = forms.CharField(
-        help_text="Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios")
+        help_text=_("Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios"))
     nagios_binary = forms.CharField(
-        help_text="Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'")
+        help_text=_("Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'"))
     livestatus_path = forms.CharField(
-        help_text="Path to MK Livestatus socket. If left empty Adagios will try to autodiscover from your nagios.cfg",
+        help_text=_("Path to MK Livestatus socket. If left empty Adagios will try to autodiscover from your nagios.cfg"),
         required=False,
     )
     enable_githandler = forms.BooleanField(
-        required=False, initial=settings.enable_githandler, help_text="If set. Adagios will commit any changes it makes to git repository.")
+        required=False, initial=settings.enable_githandler, help_text=_("If set. Adagios will commit any changes it makes to git repository."))
     enable_loghandler = forms.BooleanField(
-        required=False, initial=settings.enable_loghandler, help_text="If set. Adagios will log any changes it makes to a file.")
+        required=False, initial=settings.enable_loghandler, help_text=_("If set. Adagios will log any changes it makes to a file."))
     enable_authorization = forms.BooleanField(
         required=False, initial=settings.enable_authorization,
-        help_text="If set. Users in Status view will only see hosts/services they are a contact for. Unset means everyone will see everything.")
+        help_text=_("If set. Users in Status view will only see hosts/services they are a contact for. Unset means everyone will see everything."))
     enable_status_view = forms.BooleanField(
         required=False, initial=settings.enable_status_view,
-        help_text="If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect")
+        help_text=_("If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect"))
     auto_reload = forms.BooleanField(
         required=False, initial=settings.auto_reload,
-        help_text="If set. Nagios is reloaded automatically after every change.")
+        help_text=_("If set. Nagios is reloaded automatically after every change."))
     warn_if_selinux_is_active = forms.BooleanField(
-        required=False, help_text="Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing.")
+        required=False, help_text=_("Adagios does not play well with SElinux. So lets issue a warning if it is active. Only disable this if you know what you are doing."))
     pnp_filepath = forms.CharField(
-        help_text="Full path to your pnp4nagios/index.php file. Adagios will use this to generate graphs")
+        help_text=_("Full path to your pnp4nagios/index.php file. Adagios will use this to generate graphs"))
     pnp_url = forms.CharField(
-        help_text="Full or relative url to pnp4nagios web interface, adagios can use this to link directly to pnp")
+        help_text=_("Full or relative url to pnp4nagios web interface, adagios can use this to link directly to pnp"))
     map_center = forms.CharField(
-        help_text="Default coordinates when opening up the world map. This should be in the form of longitude,latitude")
+        help_text=_("Default coordinates when opening up the world map. This should be in the form of longitude,latitude"))
     map_zoom = forms.CharField(
-        help_text="Default Zoom level when opening up the world map. 10 is a good default value")
+        help_text=_("Default Zoom level when opening up the world map. 10 is a good default value"))
     include = forms.CharField(
-        required=False, help_text="Include configuration options from files matching this pattern")
+        required=False, help_text=_("Include configuration options from files matching this pattern"))
 
     def save(self):
         # First of all, if configfile does not exist, lets try to create it:
         if not os.path.isfile(settings.adagios_configfile):
             open(settings.adagios_configfile, 'w').write(
-                "# Autocreated by adagios")
+                _("# Autocreated by adagios"))
         for k, v in self.cleaned_data.items():
             Model.config._edit_static_file(
                 attribute=k, new_value=v, filename=settings.adagios_configfile)
@@ -226,7 +226,7 @@ class PNPActionUrlForm(forms.Form):
     #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
     action_url = forms.CharField(
         required=False, initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$",
-        help_text="Reset the action_url attribute of every service check in your nagios configuration with this one. ")
+        help_text=_("Reset the action_url attribute of every service check in your nagios configuration with this one. "))
 
     def save(self):
         action_url = self.cleaned_data['action_url']
@@ -266,38 +266,38 @@ class PNPConfigForm(forms.Form):
 
     """ This form handles the npcd.cfg configuration file """
     user = forms.CharField(
-        help_text="npcd service will have privileges of this group")
+        help_text=_("npcd service will have privileges of this group"))
     group = forms.CharField(
-        help_text="npcd service will have privileges of this user")
+        help_text=_("npcd service will have privileges of this user"))
     log_type = forms.ChoiceField(
-        widget=forms.RadioSelect, choices=pnp_log_type_choices, help_text="Define if you want to log to 'syslog' or 'file'")
+        widget=forms.RadioSelect, choices=pnp_log_type_choices, help_text=_("Define if you want to log to 'syslog' or 'file'"))
     log_file = forms.CharField(
-        help_text="If log_type is set to file. Log to this file")
+        help_text=_("If log_type is set to file. Log to this file"))
     max_logfile_size = forms.IntegerField(
-        help_text="Defines the maximum filesize (bytes) before logfile will rotate.")
+        help_text=_("Defines the maximum filesize (bytes) before logfile will rotate."))
     log_level = forms.ChoiceField(
-        help_text="How much should we log?", choices=pnp_loglevel_choices)
+        help_text=_("How much should we log?"), choices=pnp_loglevel_choices)
     perfdata_spool_dir = forms.CharField(
-        help_text="where we can find the performance data files")
+        help_text=_("where we can find the performance data files"))
     perfdata_file_run_cmd = forms.CharField(
-        help_text="execute following command for each found file in perfdata_spool_dir")
+        help_text=_("execute following command for each found file in perfdata_spool_dir"))
     perfdata_file_run_cmd_args = forms.CharField(
-        required=False, help_text="optional arguments to perfdata_file_run_cmd")
+        required=False, help_text=_("optional arguments to perfdata_file_run_cmd"))
     identify_npcd = forms.ChoiceField(widget=forms.RadioSelect, choices=(
-        ('1', 'Yes'), ('0', 'No')), help_text="If yes, npcd will append -n to the perfdata_file_run_cmd")
+        ('1', 'Yes'), ('0', 'No')), help_text=_("If yes, npcd will append -n to the perfdata_file_run_cmd"))
     npcd_max_threads = forms.IntegerField(
-        help_text="Define how many parallel threads we should start")
+        help_text=_("Define how many parallel threads we should start"))
     sleep_time = forms.IntegerField(
-        help_text="How many seconds npcd should wait between dirscans")
+        help_text=_("How many seconds npcd should wait between dirscans"))
     load_threshold = forms.FloatField(
-        help_text="npcd won't start if load is above this threshold")
-    pid_file = forms.CharField(help_text="Location of your pid file")
+        help_text=_("npcd won't start if load is above this threshold"))
+    pid_file = forms.CharField(help_text=_("Location of your pid file"))
     perfdata_file = forms.CharField(
-        help_text="Where should npcdmod.o write the performance data. Must not be same directory as perfdata_spool_dir")
+        help_text=_("Where should npcdmod.o write the performance data. Must not be same directory as perfdata_spool_dir"))
     perfdata_spool_filename = forms.CharField(
-        help_text="Filename for the spooled files")
+        help_text=_("Filename for the spooled files"))
     perfdata_file_processing_interval = forms.IntegerField(
-        help_text="Interval between file processing")
+        help_text=_("Interval between file processing"))
 
     def __init__(self, initial=None, *args, **kwargs):
         if not initial:
@@ -346,13 +346,13 @@ class PNPBrokerModuleForm(forms.Form):
     """ This form is responsible for configuring PNP4Nagios. """
     #enable_pnp= forms.BooleanField(required=False, initial=True,help_text="If set, PNP will be enabled and will graph Nagios Performance Data.")
     broker_module = forms.CharField(
-        help_text="Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation")
+        help_text=_("Full path to your npcdmod.o broker module that shipped with your pnp4nagios installation"))
     config_file = forms.CharField(
-        help_text="Full path to your npcd.cfg that shipped with your pnp4nagios installation")
+        help_text=_("Full path to your npcd.cfg that shipped with your pnp4nagios installation"))
     event_broker_options = forms.IntegerField(
-        initial="-1", help_text="Nagios's default of -1 is recommended here. PNP Documentation says you will need at least bits 2 and 3. Only change this if you know what you are doing.")
+        initial=_("-1"), help_text="Nagios's default of -1 is recommended here. PNP Documentation says you will need at least bits 2 and 3. Only change this if you know what you are doing.")
     process_performance_data = forms.BooleanField(
-        required=False, initial=True, help_text="PNP Needs the nagios option process_performance_data enabled to function. Make sure it is enabled.")
+        required=False, initial=True, help_text=_("PNP Needs the nagios option process_performance_data enabled to function. Make sure it is enabled."))
     #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
     #action_url=forms.CharField(required=False,initial="/pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$", help_text="Action url that your nagios objects can use to access perfdata")
 
@@ -472,7 +472,7 @@ class NagiosServiceForm(forms.Form):
         elif "verify" in self.data:
             command = "verify"
         else:
-            raise Exception("Unknown command")
+            raise Exception(_("Unknown command"))
         self.command = command
         nagios_init = settings.nagios_init_script
         nagios_binary = settings.nagios_binary
@@ -517,20 +517,20 @@ class SendEmailForm(forms.Form):
     """
     to = forms.CharField(
         required=True,
-        help_text="E-mail address",
+        help_text=_("E-mail address"),
     )
     message = forms.CharField(
         widget=forms.widgets.Textarea(attrs={'rows': 15, 'cols': 40}),
         required=False,
-        help_text="Message that is to be sent to recipients",
+        help_text=_("Message that is to be sent to recipients"),
     )
     add_myself_to_cc = forms.BooleanField(
         required=False,
-        help_text="If checked, you will be added automatically to CC"
+        help_text=_("If checked, you will be added automatically to CC")
     )
     acknowledge_all_problems = forms.BooleanField(
         required=False,
-        help_text="If checked, also acknowledge all problems as they are sent"
+        help_text=_("If checked, also acknowledge all problems as they are sent")
     )
 
     def __init__(self, remote_user, *args, **kwargs):
@@ -538,7 +538,7 @@ class SendEmailForm(forms.Form):
         """
         self.remote_user = remote_user
         #self.contact_email = contact_email
-        self.html_content = "There is now HTML content with this message."
+        self.html_content = _("There is now HTML content with this message.")
         self.services = []
         self.hosts = []
         self.status_objects = []
@@ -547,7 +547,7 @@ class SendEmailForm(forms.Form):
 
     def save(self):
 
-        subject = "%s sent you a a message through adagios" % self.remote_user
+        subject = _("%s sent you a a message through adagios") % self.remote_user
 
         cc_address = []
         from_address = self._resolve_remote_user(self.remote_user)
@@ -565,7 +565,7 @@ class SendEmailForm(forms.Form):
         if self.cleaned_data['add_myself_to_cc']:
             cc_address.append(from_address)
         if self.cleaned_data['acknowledge_all_problems']:
-            comment = "Sent mail to %s" % self.cleaned_data['to']
+            comment = _("Sent mail to %s") % self.cleaned_data['to']
             self.acknowledge_all_services(comment)
             self.acknowledge_all_hosts(comment)
         # Here we actually send some email:

@@ -14,7 +14,7 @@ class TestOkconfig(unittest.TestCase):
     def testOkconfigVerifies(self):
         result = okconfig.verify()
         for k, v in result.items():
-            self.assertTrue(v, msg="Failed on test: %s" % k)
+            self.assertTrue(v, msg=_("Failed on test: %s") % k)
 
     def testIndexPage(self):
         c = Client()

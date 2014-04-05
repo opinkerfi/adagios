@@ -145,13 +145,13 @@ def change_service_attribute(identifier, new_value):
     tmp = identifier.split('::')
     if len(tmp) != 3:
         raise ValueError(
-            "identifier must be in the form of host_name::service_description::attribute_name (got %s)" % identifier)
+            _("identifier must be in the form of host_name::service_description::attribute_name (got %s)") % identifier)
     host_name, service_description, attribute_name = tmp
     try:
         service = Model.Service.objects.get_by_shortname(
             "%s/%s" % (host_name, service_description))
     except KeyError, e:
-        raise KeyError("Could not find service %s" % e)
+        raise KeyError(_("Could not find service %s") % e)
     service[attribute_name] = new_value
     service.save()
     return True
@@ -173,7 +173,7 @@ def copy_object(object_id, recursive=False, **kwargs):
     """
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     new_object = o.copy(recursive=recursive, **kwargs)
-    return "Object successfully copied to %s" % new_object.get_filename()
+    return _("Object successfully copied to %s") % new_object.get_filename()
 
 
 def run_check_command(object_id):
@@ -185,7 +185,7 @@ def run_check_command(object_id):
         [return_code,stdout,stderr]
     """
     if platform.node() == 'adagios.opensource.is':
-        return 1, 'Running check commands is disabled in demo-environment'
+        return 1, _('Running check commands is disabled in demo-environment')
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     return o.run_check_command()
 
@@ -230,11 +230,11 @@ def reload_nagios():
     )
     result = {}
     if daemon.reload() == 0:
-        result['status'] = "success"
-        result['message'] = 'Nagios Successfully reloaded'
+        result['status'] = _("success")
+        result['message'] = _('Nagios Successfully reloaded')
     else:
-        result['status'] = "error"
-        result['message'] = "Failed to reload nagios (do you have enough permissions?)"
+        result['status'] = _("error")
+        result['message'] = _("Failed to reload nagios (do you have enough permissions?)")
     return result
 
 
