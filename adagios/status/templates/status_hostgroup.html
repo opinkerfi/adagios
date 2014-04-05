@@ -1,19 +1,19 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Hostgroup {{ hostgroup_name }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_hostgroups %}">Hostgroups</a> / {{ hostgroup_name }}{% endblock %}
-{% block smallheader %}hostgroup{% endblock %}
+{% block title %}{% trans "Hostgroup" %} {{ hostgroup_name }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.status_hostgroups %}">{% trans "Hostgroups" %}</a> / {{ hostgroup_name }}{% endblock %}
+{% block smallheader %}{% trans "hostgroup" %}{% endblock %}
 {% block largeheader %}{{ hostgroup_name }}{% endblock %}
 
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
-        <li class="active"><a href="#information" data-toggle="tab">Information</a></li>
-        <li><a href="#child_hostgroups" data-toggle="tab" id="hostgroups_link">Child Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
-        <li><a href="#hosts" data-toggle="tab" id="hosts_link">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
-        <li><a href="#services" data-toggle="tab" id="services_link">Services {% if services %}<span class="muted">({{ services|length }})</span>{% endif %}</a></li>
-        <li><a href="#history" data-toggle="tab" id="history_link">History</a></li>
-        <li><a href="#debug" data-toggle="tab">Debug</a></li>
+        <li class="active"><a href="#information" data-toggle="tab">{% trans "Information" %}</a></li>
+        <li><a href="#child_hostgroups" data-toggle="tab" id="hostgroups_link">{% trans "Child Hostgroups" %} {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
+        <li><a href="#hosts" data-toggle="tab" id="hosts_link">{% trans "Hosts" %} {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
+        <li><a href="#services" data-toggle="tab" id="services_link">{% trans "Services" %} {% if services %}<span class="muted">({{ services|length }})</span>{% endif %}</a></li>
+        <li><a href="#history" data-toggle="tab" id="history_link">{% trans "History" %}</a></li>
+        <li><a href="#debug" data-toggle="tab">{% trans "Debug" %}</a></li>
 
     </ul>
     <div class="tab-content">
@@ -22,15 +22,15 @@
             {% if my_hostgroup %}
                 <table class="table">
                     <tr>
-                        <td>Hostgroup Name</td>
+                        <td>{% trans "Hostgroup Name" %}</td>
                         <td>{{ my_hostgroup.name }}</td>
                     </tr>
                     <tr>
-                        <td>Alias</td>
+                        <td>{% trans "Alias" %}</td>
                         <td>{{ my_hostgroup.alias }}</td>
                     </tr>
                     <tr>
-                        <td>External links</td>
+                        <td>{% trans "External links" %}</td>
                         <td>
                             {% if my_hostgroup.action_url %}
                                 <a href="{{ my_hostgroup.action_url }}">action url</a>
@@ -44,12 +44,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <label for="id_notes">Notes</label>
+                            <label for="id_notes">{% trans "Notes" %}</label>
                         </td>
                         <td><textarea id="id_notes" cols="100" rows=3 name="notes">{{ my_object.notes }}</textarea></td>
                     </tr>
                     <tr>
-                        <td>Parent Hostgroups</td>
+                        <td>{% trans "Parent Hostgroups" %}</td>
                         <td>
                             {% for i in my_hostgroup.parent_hostgroups %}
                                 <a href="{% url status.views.detail %}?hostgroup_name={{  i  }}">{{ i }}</a>,
@@ -60,25 +60,25 @@
                         <td>
                             <table class="table well table-condensed">
                                 <thead>
-                                <tr><td colspan=2>Host Status</td></tr>
+                                <tr><td colspan=2>{% trans "Host Status" %}</td></tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td><div class="circle state_0"> </div> Hosts up: <t/d>
+                                    <td><div class="circle state_0"> </div> {% trans "Hosts up:" %} <t/d>
                                     <td>{{ my_hostgroup.num_hosts_up }}</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="circle state_2"> </div> Hosts down: </td>
+                                    <td><div class="circle state_2"> </div> {% trans "Hosts down:" %} </td>
                                     <td>{{ my_hostgroup.num_hosts_down }}</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="circle state_3"> </div> Hosts unreachable: </td>
+                                    <td><div class="circle state_3"> </div> {% trans "Hosts unreachable:" %} </td>
                                     <td>{{ my_hostgroup.num_hosts_unreach }}</td>
                                 </tr>
                                 <tr><td colspan=2>...</td></tr>
 
                                 <tr>
-                                    <th>Total:</th>
+                                    <th>{% trans "Total:" %}</th>
                                     <th>{{ my_hostgroup.num_hosts }}</th>
                                 </tr>
                                 </tbody>
@@ -87,7 +87,7 @@
                         <td>
                             <table class="table well table-condensed">
                                 <thead>
-                                <tr><td colspan=2>Service Status</td></tr>
+                                <tr><td colspan=2>{% trans "Service Status" %}</td></tr>
                                 </thead>
                                 <tbody>
                                 <tr>
@@ -107,7 +107,7 @@
                                     <td>{{ my_hostgroup.num_services_unknown }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Total:</th>
+                                    <th>{% trans "Total:" %}</th>
                                     <th>{{ my_hostgroup.num_services }}</th>
                                 </tr>
                                 </tbody>
@@ -117,30 +117,30 @@
                     </tr>
                 </table>
             {% else %}
-                No Information found for hostgroup {{ hostgroup_name }}. Are you sure it exists ?
+                {% blocktrans %}No Information found for hostgroup {{ hostgroup_name }}. Are you sure it exists ?{% endblocktrans %}
             {% endif %}
 
         </div>
 
         <div class="tab-pane " id="child_hostgroups">
-            hostgroups that belong to {{ hostgroup_name }}
+            {% blocktrans %}hostgroups that belong to {{ hostgroup_name }}{% endblocktrans %}
             {% include "snippets/status_hostgrouplist_snippet.html" %}
 
         </div>
 
         <div class="tab-pane " id="hosts">
-            Hosts that belong to {{ hostgroup_name }}
-            <div id="hostlist">This dialog should start loading when you click the hosts tab</div>
+            {% blocktrans %}Hosts that belong to {{ hostgroup_name }}{% endblocktrans %}
+            <div id="hostlist">{% trans "This dialog should start loading when you click the hosts tab" %}</div>
         </div>
 
         <div class="tab-pane " id="services">
-            Services that belong to {{ hostgroup_name }}
-            <div id="servicelist">This dialog should start loading when you click the services tab</div>
+            {% blocktrans %}Services that belong to {{ hostgroup_name }}{% endblocktrans %}
+            <div id="servicelist">{% trans "This dialog should start loading when you click the services tab" %}</div>
         </div>
 
         <div class="tab-pane" id="history">
             <div id="logdiv">
-                This dialog should reload when the history tab is clicked.
+                {% trans "This dialog should reload when the history tab is clicked." %}
             </div>
         </div>
         <div class="tab-pane" id="debug">
@@ -193,7 +193,7 @@
         // When history link is clicked, load the log history for this object
         $('#history_link').click(function(event) {
             // Load log history in its own tab
-            $('#logdiv').html("Loading ...");
+            $('#logdiv').html(gettext("Loading ..."));
             var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
             var snippet_url = '{% url adagios.status.views.snippets_log %}?object_type=hostgroup&hostgroup_name=' + hostgroup_name;
             $('#logdiv').load(snippet_url);
@@ -201,7 +201,7 @@
 
         $('#services_link').click(function(event) {
             // Load log history in its own tab
-            $('#servicelist').html("Loading ...");
+            $('#servicelist').html(gettext("Loading ..."));
             var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
             var snippet_url = '{% url adagios.status.views.snippets_services %}?host_groups__has_field=' + hostgroup_name;
             $('#servicelist').load(snippet_url);
@@ -209,7 +209,7 @@
 
         $('#hosts_link').click(function(event) {
             // Load log history in its own tab
-            $('#hostlist').html("Loading ...");
+            $('#hostlist').html(gettext("Loading ..."));
             var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
             var snippet_url = '{% url adagios.status.views.snippets_hosts %}?host_groups__has_field=' + hostgroup_name;
             $('#hostlist').load(snippet_url);
