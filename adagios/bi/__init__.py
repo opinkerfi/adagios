@@ -630,8 +630,8 @@ class Service(BusinessProcess):
             self._service = self._livestatus.get_service(
                 host_name, service_description)
             self.notes = self._service.get('plugin_output', '')
-            display_name = _("service %s on host %s")
-            self.display_name = display_name % (self._service.get('display_name', service_description), host_name)
+            self.display_name = _("service %(service)s on host %(host)s") % {'service': self._service.get('display_name', service_description),
+                                                              'host': host_name}
             perfdata = pynag.Utils.PerfData(self._service.get('perf_data', ''))
             for i in perfdata.metrics:
                 notes = '%s %s' % (service_description, i.label)
