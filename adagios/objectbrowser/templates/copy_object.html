@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Copy Object{% endblock %}
-{% block smallheader %}Copy{% endblock %}
+{% block title %}{% trans "Copy Object" %}{% endblock %}
+{% block smallheader %}{% trans "Copy" %}{% endblock %}
 {% block largeheader %}{{ object.object_type }}{% endblock %}
 {% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
 {% block toolbar %}{% endblock %}
@@ -13,19 +13,19 @@
         {% for i in copied_objects %}
             <div class="alert alert-success">
                 <button class="close" data-dismiss="alert">×</button>
-                <strong>Success!</strong>
-                {{ i.object_type }} <a href="{% url edit_object i.id  %}">"{{ i.description }}"</a>
-                was successfully saved to {{ i.filename }}.
+                <strong>{% trans "Success!" %}</strong>
+                {% blocktrans %}{{ i.object_type }} <a href="{% url edit_object i.id  %}">"{{ i.description }}"</a>
+                was successfully saved to {{ i.filename }}.{% endblocktrans %}
             </div>
         {% endfor %}
     {% else %}
         <div class="alert alert-info">
-            You are about to copy {{ object.object_type }} "{{ object.description }}".
+            {% blocktrans %}You are about to copy {{ object.object_type }} "{{ object.description }}".{% endblocktrans %}
         </div>
         <p></p>
         <form  action="#" method="POST" class="form-horizontal">{% csrf_token %}
             {% include "bootstrap_fields.html" with fields=form %}
-            <button class="btn btn-success" type="submit"><i class=" icon-thumbs-up icon-white"></i> Copy</button>
+            <button class="btn btn-success" type="submit"><i class=" icon-thumbs-up icon-white"></i>{% trans " Copy" %}</button>
         </form>
     {% endif %}
 {% endblock %}
