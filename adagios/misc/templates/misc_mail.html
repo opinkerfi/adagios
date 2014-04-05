@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Send Email{% endblock %}
+{% block title %}{% trans "Send Email" %}{% endblock %}
 
 {% block view_buttons  %}{% endblock %}
 {% block toolbar %}{% endblock %}
@@ -11,11 +11,11 @@
 
     {% if form %}
         <form method="post" class="form-horizontal">{% csrf_token %}
-            <button id="zesubmit" class="btn btn-success" type="submit">Send mail</button>
+            <button id="zesubmit" class="btn btn-success" type="submit">{% trans "Send mail" %}</button>
             {% include "bootstrap_fields.html" with fields=form %}
             {% include "snippets/misc_mail_objectlist.html" %}
             <hr>
-            <button class="btn btn-success" type="submit">Send mail</button>
+            <button class="btn btn-success" type="submit">{% trans "Send mail" %}</button>
         </form>
     {% endif %}
 
@@ -31,7 +31,7 @@
                         $("#id_to").select2({
                             tags:data,
                             tokenSeparators: [",", " "],
-                            placeholder:"Comma seperated list of email addresses to send to"
+                            placeholder:"{% trans "Comma seperated list of email addresses to send to" %}"
                         });
 
                     });

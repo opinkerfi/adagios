@@ -1,31 +1,31 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Add Complete{% endblock %}
-{% block smallheader %}Add{% endblock %}
-{% block largeheader %}Complete{% endblock %}
+{% block title %}{% trans "Add Complete" %}{% endblock %}
+{% block smallheader %}{% trans "Add" %}{% endblock %}
+{% block largeheader %}{% trans "Complete" %}{% endblock %}
 {% block toolbar %}{% endblock %}
 {%  block content %}
-Next Steps:
+{% trans "Next Steps:" %}
 
 <ul>
     {% if host_name %}
-        <li><a href="{% url okconfig_.views.install_agent %}?remote_host={{ host_name }}">Install an agent</a> on host {{host_name}}</li>
-        <li><a href="{% url adagios.objectbrowser.views.edit_object %}?object_type=host&host_name={{ host_name }}">Configure</a> host {{host_name}}</li>
-        <li><a href="{% url okconfig_.views.edit host_name=host_name %}">Edit the services</a> on host {{host_name}}</li>
-        <li><a href="{% url okconfig_.views.addtemplate %}?host_name={{host_name}}">Add service checks</a> to {{host_name}}</li>
+        <li><a href="{% url okconfig_.views.install_agent %}?remote_host={{ host_name }}">Install an agent</a> {% blocktrans %}on host {{host_name}}{% endblocktrans %}</li>
+        <li><a href="{% url adagios.objectbrowser.views.edit_object %}?object_type=host&host_name={{ host_name }}">Configure</a> {% blocktrans %}host {{host_name}} {% endblocktrans %}</li>
+        <li><a href="{% url okconfig_.views.edit host_name=host_name %}">{% blocktrans %}Edit the services</a> on host {{host_name}} {% endblocktrans %}</li>
+        <li><a href="{% url okconfig_.views.addtemplate %}?host_name={{host_name}}">{% blocktrans %}Add service checks</a> to {{host_name}}{% endblocktrans %}</li>
     {% endif %}
 
     {% if group_name %}
-     <li><a href="{% url okconfig_.views.addhost %}?group_name={{group_name}}">Add Hosts to {{group_name}}</a></li>
+     <li><a href="{% url okconfig_.views.addhost %}?group_name={{group_name}}">{% blocktrans %}Add Hosts to {{group_name}}{% endblocktrans %}</a></li>
     {% endif %}
 
-    <li><a href="{% url adagios.misc.views.nagios_service %}">Reload Nagios</a> to apply your changes</li>
+    <li><a href="{% url adagios.misc.views.nagios_service %}">{% trans "Reload Nagios" %}</a>{% trans "to apply your changes" %}</li>
 </ul>
 <ul>
     {% if filelist %}
       {% for file in filelist %}
-       <li>See what was written to <a href="{% url objectbrowser.views.search_objects %}?filename={{file}}">{{file}}</a></li>
+       <li>{% trans "See what was written to" %} <a href="{% url objectbrowser.views.search_objects %}?filename={{file}}">{{file}}</a></li>
       {% endfor %}
     {% endif %}
 

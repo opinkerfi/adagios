@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Add Template{% endblock %}
-{% block smallheader %}Add{% endblock %}
-{% block largeheader %}Template{% endblock %}
+{% block title %}{% trans "Add Template" %}{% endblock %}
+{% block smallheader %}{% trans "Add" %}{% endblock %}
+{% block largeheader %}{% trans "Template" %}{% endblock %}
 {% block toolbar %}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.addtemplate %}">Add Template</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.addtemplate %}">{% trans "Add Template" %}</a>{% endblock %}
 {% block footer %}
     {{ block.super }}
 {% endblock %}
@@ -14,7 +14,7 @@
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Submit</button>
+            <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
         </div>
     </form>
     <div id="template_services">

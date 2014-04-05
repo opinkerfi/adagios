@@ -1,10 +1,10 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Edit Check Command{% endblock %}
-{% block smallheader %}edit{% endblock %}
-{% block largeheader %}Check Command{% endblock %}
-{% block nav1 %}misc{% endblock %}
+{% block title %}{% trans "Edit Check Command" %}{% endblock %}
+{% block smallheader %}{% trans "edit" %}{% endblock %}
+{% block largeheader %}{% trans "Check Command" %}{% endblock %}
+{% block nav1 %}{% trans "misc" %}{% endblock %}
 
 {% block toolbar %}
 {% endblock %}
@@ -16,8 +16,8 @@
             {% if form.objects %}
                 <table class="table table-condensed">
                     <tr>
-                        <th>Object Type</th>
-                        <th>Short Name</th>
+                        <th>{% trans "Object Type" %}</th>
+                        <th>{% trans "Short Name" %}</th>
                     </tr>
                     {% for i in form.objects %}
                         <tr>
@@ -47,9 +47,9 @@
                 <h4>Errors</h4>
                 <table class="table table-condensed">
                 <tr>
-                    <th>Item</th>
-                    <th>Line number</th>
-                    <th>Detail</th>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Line number" %}</th>
+                    <th>{% trans "Detail" %}</th>
                 </tr>
                     {% for i in form.config.errors %}
                         <tr>
@@ -73,7 +73,7 @@
 
         </div>
         <hr>
-        <h4>Pasted string</h4>
+        <h4>{% trans "Pasted string" %}</h4>
         <div class=row>
             <table>
                 {% for line in form.pasted_string %}
@@ -91,13 +91,13 @@
 
             <!-- On get requests, let display a paste form -->
             <form action="" method="post" class="form-horizontal">{% csrf_token %}
-                    <h4>Paste the output of a nagios plugin below</h4>
+                    <h4>{% trans "Paste the output of a nagios plugin below" %}</h4>
                     <hr>
                     <textarea wrap="off" id="id_plugin_output" rows="10" class=span11 cols="80" name="paste">
                         {{ form.paste.value }}
                     </textarea>
                     <hr>
-                    <button class="pull-right btn btn-success" type="submit">Save</button>
+                    <button class="pull-right btn btn-success" type="submit">{% trans "Save" %}</button>
             </form>
             </div>
 

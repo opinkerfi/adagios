@@ -6,15 +6,15 @@ okconfig_menubar.html is responsible for creating the menuitems in top_navigatio
 <li class="dropdown">
     <a class="dropdown-toggle"
        data-toggle="dropdown"
-       href="#"><i class="glyph-edit glyph-grey"></i> Okconfig <b class="caret"></b>
+       href="#"><i class="glyph-edit glyph-grey"></i> {% trans "Okconfig" %} <b class="caret"></b>
     </a>
     <ul class="dropdown-menu">
-        <li><a href="{% url okconfig_.views.addhost %}">Add Host</a></li>
-        <li><a href="{% url okconfig_.views.addtemplate %}">Add Template to Host</a></li>
-        <li><a href="{% url okconfig_.views.addservice %}">Add Service</a></li>
-        <li><a href="{% url okconfig_.views.choose_host %}">Edit Host</a></li>
-        <li><a href="{% url okconfig_.views.addgroup %}">Add Group</a></li>
-        <li><a href="{% url okconfig_.views.install_agent %}">Install Agent</a></li>
-        <li><a href="{% url okconfig_.views.scan_network %}">Scan Network</a></li>
+        <li><a href="{% url okconfig_.views.addhost %}">{% trans "Add Host" %}</a></li>
+        <li><a href="{% url okconfig_.views.addtemplate %}">{% trans "Add Template to Host" %}</a></li>
+        <li><a href="{% url okconfig_.views.addservice %}">{% trans "Add Service" %}</a></li>
+        <li><a href="{% url okconfig_.views.choose_host %}">{% trans "Edit Host" %}</a></li>
+        <li><a href="{% url okconfig_.views.addgroup %}">{% trans "Add Group" %}</a></li>
+        <li><a href="{% url okconfig_.views.install_agent %}">{% trans "Install Agent" %}</a></li>
+        <li><a href="{% url okconfig_.views.scan_network %}">{% trans "Scan Network" %}</a></li>
     </ul>
 </li>

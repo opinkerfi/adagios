@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Nagios Service{% endblock %}
+{% block title %}{% trans "Nagios Service" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Nagios Service is <b> {{ friendly_status }}</b>{% endblock %}
-{% block nav1 %}Nagios Service{% endblock %}
+{% block largeheader %}{% blocktrans %}Nagios Service is <b> {{ friendly_status }}</b>{% endblocktrans %}{% endblock %}
+{% block nav1 %}{% trans "Nagios Service" %}{% endblock %}
 
 {% block content %}
 
@@ -12,33 +12,33 @@
     {% if form %}
         <form action="#" method="post" class="form-horizontal">{% csrf_token %}
             {% if status == 0 %}
-                <button class="btn btn-success" type="submit" name="reload">Reload</button>
-                <button class="btn " type="submit" name="stop">Stop</button>
-                <button class="btn " type="submit" name="restart">Restart</button>
+                <button class="btn btn-success" type="submit" name="reload">{% trans "Reload" %}</button>
+                <button class="btn " type="submit" name="stop">{% trans "Stop" %}</button>
+                <button class="btn " type="submit" name="restart">{% trans "Restart" %}</button>
             {% endif %}
             {% if status == 1 %}
-                <button class="btn btn-success" type="submit" name="start">Start</button>
+                <button class="btn btn-success" type="submit" name="start">{% trans "Start" %}</button>
             {% endif %}
             {% if status > 1 %}
-                <button class="btn btn-success" type="submit" name="start">Start</button>
-                <button class="btn " type="submit" name="stop">Stop</button>
-                <button class="btn " type="submit" name="restart">Restart</button>
-                <button class="btn" type="submit" name="reload">Reload</button>
+                <button class="btn btn-success" type="submit" name="start">{% trans "Start" %}</button>
+                <button class="btn " type="submit" name="stop">{% trans "Stop" %}</button>
+                <button class="btn " type="submit" name="restart">{% trans "Restart" %}</button>
+                <button class="btn" type="submit" name="reload">{% trans "Reload" %}</button>
             {% endif %}
-            <button class="btn " type="submit" name="status">Status</button>
-             <button class="btn " type="submit" name="verify">Verify</button>
+            <button class="btn " type="submit" name="status">{% trans "Status" %}</button>
+             <button class="btn " type="submit" name="verify">{% trans "Verify" %}</button>
         </form>
     {% else %}
-        No form found
+        {% trans "No form found" %}
     {%  endif %}
 
 
 
     {% if command %}
         <div >
-            Executing <b>nagios {{ command }}</b>
+            {% blocktrans %} "Executing <b>nagios {{ command }}</b>" {% endblocktrans %}
             {% if stderr %}
-                <h4>Errors</h4>
+                <h4>{% trans "Errors" %}</h4>
                 <pre>{{ stderr }}</pre>
             {% endif %}
 
@@ -50,12 +50,12 @@
         {% if not stdout and not stderr %}
             <div class="alert alert-danger">
                 <p>
-                    Something does not smell right. We ran {{ command }} and got no output.
-                    Usually when this happens there is a problem with sudoers configuration.
+                    {% blocktrans %}Something does not smell right. We ran {{ command }} and got no output.
+                    Usually when this happens there is a problem with sudoers configuration.{% endblocktrans %}
                 </p>
                 <p>
-                    Inspect webserver apache log and check if there are any sudo errors.
-                    Your <a>/etc/sudoers.d/adagios</a> should have something like this:
+                    {% blocktrans %}Inspect webserver apache log and check if there are any sudo errors.
+                    Your <a>/etc/sudoers.d/adagios</a> should have something like this:{% endblocktrans %}
                 </p>
             <pre>
                 Defaults:{{ local_user }}    !requiretty
@@ -67,7 +67,7 @@
     {% endif %}
 
     <hr>
-    <div>Nagios Service is <b>{{ friendly_status }}</b>.</div>
+    <div>{% blocktrans %}Nagios Service is <b>{{ friendly_status }}</b>.{% endblocktrans %}</div>
 
 {% endblock %}
 
@@ -79,8 +79,8 @@
 {% block header %} {{ block.super }} {% endblock %}
 
 {% block sidebar %}
-    <h5>Diagnostics</h5>
-        <div>Nagios Service is {{ friendly_status }}.</div>
+    <h5>{% trans "Diagnostics" %}</h5>
+        <div>{% blocktrans %}Nagios Service is {{ friendly_status }}.{% endblocktrans %}</div>
 
 {% endblock %}
 

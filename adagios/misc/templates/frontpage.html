@@ -3,8 +3,8 @@
 
 {% block title %}{% endblock %}
 {% block nav1 %}{% endblock %}
-{% block smallheader %}Welcome to{% endblock %}
-{% block largeheader %}Adagios{% endblock %}
+{% block smallheader %}{% trans "Welcome to" %}{% endblock %}
+{% block largeheader %}{% trans "Adagios" %}{% endblock %}
 
 {% block toolbar %}{% endblock %}
 {% block footer %}
@@ -16,44 +16,44 @@
 
 
 
-        <p> Adagios is a web based Nagios configuration interface built to be simple and intuitive
-             in design, exposing less of the clutter under the hood in Nagios.
+        <p> {% trans "Adagios is a web based Nagios configuration interface built to be simple and intuitive
+             in design, exposing less of the clutter under the hood in Nagios." %}
         </p>
         <p>
-            This is a tech preview and there are a lot of known bugs.
-            We would really like <a href="mailto:opensource@ok.is">your feedback</a>
-            to help us develop this app.
+            {% trans 'This is a tech preview and there are a lot of known bugs.
+            We would really like <a href="mailto:opensource@ok.is">your feedback</a>" 
+            to help us develop this app.' %}
         </p>
 
 
-    <h4>Features</h4>
+    <h4>{% trans "Features" %}</h4>
         <ul>
-            <li>Edit Nagios configs in-place without a database backend (thanks <a href="http://pynag.org">pynag</a>)</li>
-            <li>Audit of configuration changes (aka git integration)</li>
-            <li>Bulk edit/copy/delete objects</li>
-            <li>Value-add for both novices and Nagios gurus alike</li>
-            <li>REST interface</li>
-            <li>Start/stop/reload Nagios service</li>
+            <li>{% trans 'Edit Nagios configs in-place without a database backend (thanks <a href="http://pynag.org">pynag</a>)' %}</li>
+            <li>{% trans "Audit of configuration changes (aka git integration)" %}</li>
+            <li>{% trans "Bulk edit/copy/delete objects" %}</li>
+            <li>{% trans "Value-add for both novices and Nagios gurus alike"</li>
+            <li>{% trans "REST interface" %}</li>
+            <li>{% trans "Start/stop/reload Nagios service" %}</li>
         </ul>
-        Adagios also integrates nicely with <a href="https://github.com/opinkerfi/okconfig">okconfig</a> offering features such as:
+        {% trans 'Adagios also integrates nicely with <a href="https://github.com/opinkerfi/okconfig">okconfig</a> offering features such as:' %}
         <ul>
-            <li>Template support</li>
-            <li>Preconfigured templates (Windows, Linux, Oracle, Brocade, <a href="https://github.com/opinkerfi/okconfig/tree/master/usr/share/okconfig/templates">and more...</a>)</li>
-            <li>Remotely push Nagios agent to clients (Windows, RHEL, Debian and SUSE are supported)</li>
-            <li>Network scan to find unmonitored hosts</li>
-            <li>Easy changes to plugin thresholds via Nagios macros</li>
+            <li>{% trans "Template support" %}</li>
+            <li>{% trans 'Preconfigured templates (Windows, Linux, Oracle, Brocade, <a href="https://github.com/opinkerfi/okconfig/tree/master/usr/share/okconfig/templates">and more...</a>)' %}</li>
+            <li>{% trans "Remotely push Nagios agent to clients (Windows, RHEL, Debian and SUSE are supported)" %}</li>
+            <li>{% trans "Network scan to find unmonitored hosts" %}</li>
+            <li>{% trans "Easy changes to plugin thresholds via Nagios macros" %}</li>
         </ul>
     <div id="updates_avail">
-        <h3>Version Information</h3>
+        <h3>{% trans "Version Information" %}</h3>
         <ul>
-        <li><strong>Latest Stable version is</strong>: <a href="" id="version_info"><span id="latest_version">Checking for latest version</span></a></li>
-        <li><strong>You are running</strong>: <span id="current_version">{{ version }}</span> </li>
+        <li><strong>{% trans 'Latest Stable version is</strong>: <a href="" id="version_info"><span id="latest_version">Checking for latest version</span></a>' %}</li>
+        <li><strong>{% trans 'You are running' %}</strong>: <span id="current_version">{{ version }}</span> </li>
         </ul>
     </div>
 
-    <h3>Project Page</h3>
+    <h3>{% trans "Project Page" %}</h3>
     <p>
-        If you are looking for the project page, it is <a href="http://adagios.org">right here</a>
+        {% trans 'If you are looking for the project page, it is <a href="http://adagios.org">right here</a>' %}
     </p>
 
 {% endblock %}

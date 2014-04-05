@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}PNP4nagios integration{% endblock %}
-{% block nav1 %}PNP4Nagios{% endblock %}
-{% block smallheader %}Configuring{% endblock %}
-{% block largeheader %}PNP{% endblock %}
+{% block title %}{% trans "PNP4nagios integration" %}{% endblock %}
+{% block nav1 %}{% trans "PNP4Nagios" %}{% endblock %}
+{% block smallheader %}{% trans "Configuring" %}{% endblock %}
+{% block largeheader %}{% trans "PNP" %}{% endblock %}
 
 
 {% block content %}
     <div class="well" xmlns="http://www.w3.org/1999/html">
     <p >
-    PNP is an addon to Nagios which analyzes performance data provided by plugins and stores them automatically into Round Robin Databases (RRD).
+    {% trans "PNP is an addon to Nagios which analyzes performance data provided by plugins and stores them automatically into Round Robin Databases (RRD)." %}
     <p xmlns="http://www.w3.org/1999/html">
-    This page helps you configure PNP using the so-called "bulk npcmod" method.
+    {% trans 'This page helps you configure PNP using the so-called "bulk npcmod" method.' %}
     </p>
     </div>
     <ul class="nav nav-tabs" id="objecttab">
-        <li><a href="#broker_module" data-toggle="tab">Broker Module</a></li>
-        <li><a href="#npcd_config" data-toggle="tab">NPCD Config</a></li>
-        <li><a href="#action_url" data-toggle="tab">Action Url</a></li>
-        <li><a href="#pnp_templates" data-toggle="tab">PNP Templates</a></li>
+        <li><a href="#broker_module" data-toggle="tab">{% trans "Broker Module" %}</a></li>
+        <li><a href="#npcd_config" data-toggle="tab">{% trans "NPCD Config" %}</a></li>
+        <li><a href="#action_url" data-toggle="tab">{% trans "Action Url" %}</a></li>
+        <li><a href="#pnp_templates" data-toggle="tab">{% trans "PNP Templates" %}</a></li>
     </ul>
 
     <div class="tab-content">
@@ -29,55 +29,55 @@
                 <form action="#" method="post" class="form-horizontal">{% csrf_token %}
                     {% include "bootstrap_fields.html" with fields=broker_module %}
                     <div class="form-actions">
-                        <button name="save_broker_module" class="btn btn-success" type="submit">Enable broker module</button>
+                        <button name="save_broker_module" class="btn btn-success" type="submit">{% trans "Enable broker module" %}</button>
                     </div>
                 </form>
             {% endif %}
         </div> <!-- End of advanced tab -->
 
         <div class="tab-pane" id="npcd_config">
-            <p>This tab helps you configure your npcd.cfg file which controls the behaviour of npcd daemon.</p>
+            <p>{% trans "This tab helps you configure your npcd.cfg file which controls the behaviour of npcd daemon." %}</p>
             <br>
             {% if npcd_config %}
                 <form action="#" method="post" class="form-horizontal">{% csrf_token %}
                     {% include "bootstrap_fields.html" with fields=npcd_config %}
                     <div class="form-actions">
-                        <button name="save_npcd_config" class="btn btn-success" type="submit">Save npcd.cfg</button>
+                        <button name="save_npcd_config" class="btn btn-success" type="submit">{% trans "Save npcd.cfg" %}</button>
                     </div>
                 </form>
             {% else %}
                 <div class="well">
 
                 <p>
-                    Sorry, but we could not read npcd config file {{ form.config_file.value }}.
+                    {% blocktrans %}Sorry, but we could not read npcd config file {{ form.config_file.value }}.{% endblocktrans %}
                 </p>
-                <p>Make sure permissions are correct and that config file path in Broker Module tab is correct</p>
+                <p>{% trans "Make sure permissions are correct and that config file path in Broker Module tab is correct" %}</p>
                 </div>
             {% endif %}
 
 
         </div>
         <div class="tab-pane" id="action_url">
-            <p>To make PNP graphs easily accessable from your Nagios web interface. You can set the 'action_url' attribute
-            on your hosts and services.</p>
-            <p>Here you can reset action_url of all your services (first applying them to templates)</p>
+            <p>{% trans "To make PNP graphs easily accessable from your Nagios web interface. You can set the 'action_url' attribute
+            on your hosts and services." %}</p>
+            <p>{% trans "Here you can reset action_url of all your services (first applying them to templates)" %}</p>
             {% if action_url %}
                 <form action="#" method="post" class="form-horizontal">{% csrf_token %}
                     {% include "bootstrap_fields.html" with fields=action_url %}
                     <div class="form-actions">
-                        <button name="save_action_url" class="btn btn-success" type="submit">Apply this action url to every object</button>
+                        <button name="save_action_url" class="btn btn-success" type="submit">{% trans "Apply this action url to every object" %}</button>
                     </div>
                 </form>
             {% endif %}
         </div>
         <div class="tab-pane" id="pnp_templates">
-            <p>Manage the templates used to generate performance graphs.</p>
+            <p>{% trans "Manage the templates used to generate performance graphs." %}</p>
             {% if pnp_templates %}
                 <table class="table">
                     {% for file in pnp_templates.templates %}
 
                         <tr>
-                            <td><a title="Edit {{ file }}" href="{%  url misc.views.pnp4nagios_edit_template file  %}" >{{ file }}</a></td>
+                            <td><a title="{% blocktrans %}Edit {{ file }}{% endblocktrans %}" href="{%  url misc.views.pnp4nagios_edit_template file  %}" >{{ file }}</a></td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -89,5 +89,5 @@
 
 
 {% block toolbar %}
-    <a class="btn btn-small" href="{%  url misc.views.edit_nagios_cfg  %}" >Edit nagios.cfg</a>
+    <a class="btn btn-small" href="{%  url misc.views.edit_nagios_cfg  %}" >{% trans "Edit nagios.cfg" %}</a>
 {% endblock %}
