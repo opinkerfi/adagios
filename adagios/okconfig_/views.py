@@ -227,8 +227,8 @@ def install_agent(request):
                     elif 'NT_STATUS_DUPLICATE_NAME' in i:
                         c['hint'] = _("The security settings on the remote windows host might forbid logins if the host name specified does not match the computername on the server. Try again with either correct hostname or the ip address of the server.")
                     elif 'NT_STATUS_ACCESS_DENIED' in i:
-                        c['hint'] = _("Please make sure that %s is a local administrator on host %s") % (
-                            user, host)
+                        c['hint'] = _("Please make sure that %(admin)s is a local administrator on host %(host)s") % {
+                            'admin': user, 'host': host}
                     elif i.startswith('Error: Directory') and i.endswith('not found'):
                         c['hint'] = _("No nsclient copy found ")
                     c['stdout'].append(i)
@@ -278,7 +278,7 @@ def edit(request, host_name):
                             _("'%s' successfully saved.") % service.get_description())
                 except Exception, e:
                     c['errors'].append(
-                        _("Failed to save service %s: %s") % (service.get_description(), e))
+                        _("Failed to save service %(service)s: %(exc)s") % {'service': service.get_description(), 'exc': e})
             else:
                 c['errors'].append(
                     _('invalid data in %s') % service.get_description())
