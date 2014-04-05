@@ -6,7 +6,7 @@
 {% block largeheader %}Performance Data Metrics{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}{% blocktrans %}<a href="{% url status.views.perfdata %}">Performance Data</a>{% endblocktrans %}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.perfdata %}">Performance Data</a>{% endblocktrans %}
 {% load adagiostags %}
 
 {% block content %}

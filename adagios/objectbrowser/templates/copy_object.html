@@ -14,8 +14,8 @@
             <div class="alert alert-success">
                 <button class="close" data-dismiss="alert">×</button>
                 <strong>{% trans "Success!" %}</strong>
-                {% blocktrans %}{{ i.object_type }} <a href="{% url edit_object i.id  %}">"{{ i.description }}"</a>
-                was successfully saved to {{ i.filename }}.{% endblocktrans %}
+                {{ i.object_type }} <a href="{% url edit_object i.id  %}">"{{ i.description }}"</a>
+                was successfully saved to {{ i.filename }}.
             </div>
         {% endfor %}
     {% else %}
