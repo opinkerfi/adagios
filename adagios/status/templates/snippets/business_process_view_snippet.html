@@ -1,9 +1,9 @@
 {% load i18n %}
 
     <div id="content_div" class="centralized_dashboard">
-        <h3 class="dashboard_header">{{ bp.display_name }} <span class="status_{{ bp.get_status }}">Status</span></h3>
+        <h3 class="dashboard_header">{{ bp.display_name }} <span class="status_{{ bp.get_status }}">{% trans "Status" %}</span></h3>
         <div class="top-margin service alert alert-{{ bp.css_hint }}">
-            Overall health status
+            {% trans "Overall health status" %}
             <span class="bold pull-right">{{ bp.get_human_friendly_status }}</span>
         </div>
         {% if bp.notes %}
@@ -11,7 +11,7 @@
                 {{ bp.notes }}
             </p>
         {% endif %}
-        <h4 class="dashboard_header">More information</h4>
+        <h4 class="dashboard_header">{% trans "More information" %}</h4>
 
 
         {% if bp.get_processes %}
@@ -32,16 +32,16 @@
                 {% endfor %}
             </div>
         {% else %}
-            No subgroups in {{ bp.display_name }}
+            {% transblock %}No subgroups in {{ bp.display_name }}{% endtransblock %}
         {% endif %}
-        <h4 class="dashboard_header">Graphs</h4>
+        <h4 class="dashboard_header">{% trans "Graphs" %}</h4>
         <div id="objecttab" class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-tabs" id="graphs_ul">
-                <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
-                <li><a href="#day" class="active" data-toggle="tab" id="25hours">25 Hours</a></li>
-                <li><a href="#week" data-toggle="tab">One Week</a></li>
-                <li><a href="#month" data-toggle="tab">One Month</a></li>
-                <li><a href="#year" data-toggle="tab">One Year</a></li>
+                <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">{% trans "4 Hours" %}</a></li>
+                <li><a href="#day" class="active" data-toggle="tab" id="25hours">{% trans "25 Hours" %}</a></li>
+                <li><a href="#week" data-toggle="tab">{% trans "One Week" %}</a></li>
+                <li><a href="#month" data-toggle="tab">{% trans "One Month" %}</a></li>
+                <li><a href="#year" data-toggle="tab">{% trans "One Year" %}</a></li>
             </ul>
 
             <div class="tab-content" id="graphs_content">

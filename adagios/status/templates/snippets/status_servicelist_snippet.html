@@ -11,18 +11,18 @@
                     <input type="checkbox" class="select_many">
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="select_all"> All</a></li>
-                    <li><a class="select_none"> None</a></li>
-                    <li><a class="select_unhandled_problems" > Unhandled Problems</a></li>
-                    <li><a class="select_problems"> All Problems</a></li>
+                    <li><a class="select_all">{% trans " All" %}</a></li>
+                    <li><a class="select_none">{% trans " None" %}</a></li>
+                    <li><a class="select_unhandled_problems" >{% trans " Unhandled Problems" %}</a></li>
+                    <li><a class="select_problems">{% trans " All Problems" %}</a></li>
                 </ul>
             </div>
         </th>
-        <th class="hidden-phone">Host</th>
-        <th>Service Check</th>
+        <th class="hidden-phone">{% trans "Host" %}</th>
+        <th>{% trans "Service Check" %}</th>
         <td class="small"></td>
-        <th class="hidden-phone">Duration</th>
-        <th class="hidden-phone">Last Check</th>
+        <th class="hidden-phone">{% trans "Duration" %}</th>
+        <th class="hidden-phone">{% trans "Last Check" %}</th>
     </tr>
     </thead>
     <tbody class="">
@@ -37,12 +37,12 @@
                 <td class="host hidden-phone">
                     {% ifchanged service.host_name %}
                         <div title="{{ service.host_plugin_output }}" class="circle  host state_{{ service.host_state }}"></div>
-                        <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
+                        <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='{% blocktrans %}Details for host {{ service.host_name }}{% endblocktrans %}'>{{ service.host_name }}</a>
                         <span class="pull-right right-of-host"></span>
                     {% else %}
                         <div class="repeated_content hide">
                             <div title="{{ service.host_plugin_output }}" class="circle host state_{{ service.host_state }}"></div>
-                            <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
+                            <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='{% blocktrans %}Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
                         </div>
                     {% endifchanged %}
                 </td>
@@ -50,11 +50,12 @@
                     <!-- Show hostname inside this table if we are on a phone layout -->
                     <div class="visible-phone">
                         <div title="{{ service.host_plugin_output }}" class="circle  host state_{{ service.host_state }}"></div>
-                        <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
+                        <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='{% blocktrans %}Details for host {{ service.host_name }}{% endblocktrans %}'>{{ service.host_name }}</a>
                         <span class="pull-right right-of-host"></span>
                     </div>
                     <!-- Here is the service description -->
-                    <a href="{% url status.views.detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}" title='{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}'>
+                    <a href="{% url status.views.detail %}?host_name={{ service.host_name }}&service_description={{
+                        service.description }}" title='{% blocktrans %}{{ service.status }} for the past {{ service.last_state_change|timestamp|timesince }}{% endblocktrans %}'>
                         <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}
                     </a>
 
@@ -81,10 +82,10 @@
                 <td class="service_small hidden-phone">
                     {% if service.last_check != 0 %}
                         <span title="{{ service.last_check|timestamp|date:'Y-m-d H:i' }}">
-                            {{ service.last_check|timestamp|timesince }} ago
+                            {% blocktrans %}{{ service.last_check|timestamp|timesince }} ago{% endblocktrans %}
                         </span>
                     {% else %}
-                    never
+                    {% trans "never" %}
                     {% endif %}
                 </td>
                 <!-- <td class="state_{{ service.state }}"><b>{{ service.status }}</b></td> -->
@@ -92,7 +93,7 @@
         {% endfor %}
     </tbody>
 </table>
-{{ services|length }} objects found.
+{% blocktrans %}{{ services|length }} objects found.{% endblocktrans %}
 
 <script>
     // Enable the multiselect checkbox in all status tables

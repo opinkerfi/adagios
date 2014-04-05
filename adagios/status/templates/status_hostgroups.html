@@ -1,22 +1,22 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Hostgroups{% endblock %}
+{% block title %}{% trans "Hostgroups" %}{% endblock %}
 {% block nav2 %}
-    <a href="{% url status.views.status_hostgroups %}">Hostgroups</a>
+    <a href="{% url status.views.status_hostgroups %}">{% trans "Hostgroups" %}</a>
     {% if hostgroup_name %}
     / {{ hostgroup_name }}
     {% else %}
     {% endif %}
 {% endblock %}
 {% block smallheader %}
-    {% if hostgroup_name %}hostgroup
+    {% if hostgroup_name %}{% trans "hostgroup" %}
     {% endif %}
 {% endblock %}
 {% block largeheader %}
     {% if hostgroup_name %}{{ hostgroup_name }}
     {% else %}
-    Hostgroups
+    {% trans "Hostgroups" %}
     {% endif %}
 {% endblock %}
 

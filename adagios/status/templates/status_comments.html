@@ -1,20 +1,20 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Contacts{% endblock %}
+{% block title %}{% trans "Contacts" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Contacts{% endblock %}
+{% block largeheader %}{% trans "Contacts" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.comment_list %}">Comments</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.comment_list %}">{% trans "Comments" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
-        <li class="active"><a href="{% url adagios.status.views.comment_list %}" >Comments</a></li>
-        <li><a href="{% url adagios.status.views.downtime_list  %}">Downtimes</a></li>
-        <li><a href="{% url adagios.status.views.acknowledgement_list %}">Acknowledgements</a></li>
+        <li class="active"><a href="{% url adagios.status.views.comment_list %}" >{% trans "Comments" %}</a></li>
+        <li><a href="{% url adagios.status.views.downtime_list  %}">{% trans "Downtimes" %}</a></li>
+        <li><a href="{% url adagios.status.views.acknowledgement_list %}">{% trans "Acknowledgements" %}</a></li>
     </ul>
     <div class="tab-content">
 

@@ -1,34 +1,34 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Performance Data Metrics{% endblock %}
+{% block title %}{% trans "Performance Data Metrics" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Performance Data Metrics{% endblock %}
+{% block largeheader %}{% trans "Performance Data Metrics" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.perfdata %}">Performance Data</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.perfdata %}">{% trans "Performance Data" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
 
 <table>
     <tr>
-        <td>Service Description:</td>
+        <td>{% trans "Service Description:" %}</td>
         <td>
-            <select style="width: 490px;" id="services" name="service_description" data-placeholder="Select a service">
+            <select style="width: 490px;" id="services" name="service_description" data-placeholder="{% trans "Select a service" %}">
                 <option value=""></option>
             </select>
         </td>
-        <td><span id="num_services_that_match_filter">0</span> services have this service description.</td>
+        <td><span id="num_services_that_match_filter">0</span>{% trans " services have this service description." %}</td>
     </tr>
     <tr>
-        <td>Application Metric:</td>
-        <td><input style="width: 490px;" id="metric_names"  data-placeholder="Select a Perfdata Metric"/></td>
+        <td>{% trans "Application Metric:" %}</td>
+        <td><input style="width: 490px;" id="metric_names"  data-placeholder="{% trans "Select a Perfdata Metric" %}"/></td>
         <td></td>
     </tr>
 <tr>
     <td>
-        <button class="btn btn-primary" onclick="reload_page_with_new_querystring();">Update</button>
+        <button class="btn btn-primary" onclick="reload_page_with_new_querystring();">{% trans "Update" %}</button>
     </td>
     <td></td>
     <td></td>
@@ -43,8 +43,8 @@
         <thead>
             <tr>
                 <th class="small"></th>
-                <th>host</th>
-                <th>service</th>
+                <th>{% trans "host" %}</th>
+                <th>{% trans "service" %}</th>
                 {% for i in metrics %}
                     <th>{{ i }}</th>
                 {% endfor %}
@@ -80,7 +80,7 @@
         </tbody>
     </table>
 {% else %}
-<div class="alert alert-info">No services have been selected. Change the filters above and press update button.</div>
+<div class="alert alert-info">{% trans "No services have been selected. Change the filters above and press update button." %}</div>
 {% endif %}
 {% endblock %}
 

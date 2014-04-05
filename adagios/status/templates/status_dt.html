@@ -1,13 +1,13 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Datatable status{% endblock %}
+{% block title %}{% trans "Datatable status" %}{% endblock %}
 {% block nav2 %}
 {% endblock %}
 {% block smallheader %}
 {% endblock %}
 {% block largeheader %}
-    Datatable status
+    {% trans "Datatable status" %}
 {% endblock %}
 
 {% block content %}
@@ -15,8 +15,8 @@
 <table id="status_dt">
   <thead>
     <tr>
-      <th>Host name</th>
-      <th>Service</th>
+      <th>{% trans "Host name" %}</th>
+      <th>{% trans "Service" %}</th>
     </tr>
   </thead>
   <tbody>
