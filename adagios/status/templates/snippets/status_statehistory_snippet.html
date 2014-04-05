@@ -21,21 +21,21 @@
 
     </div>
     <hr>
-    Last {{ log|length }} state changes (<a href="{% url status.views.status_log %}?search={{ host_name }}#tab_all">see all log entries for this host</a>):
+    {% transblock %}Last {{ log|length }} state changes ({% endtransblock %}<a href="{% url status.views.status_log %}?search={{ host_name }}#tab_all">{% trans "see all log entries for this host" %}</a>):
     <table style="font-size: 80%;" class="table well table-condensed">
         <thead>
             <tr>
-                <th>Time</th>
+                <th>{% trans "Time" %}</th>
                 {% if object_type == 'hostgroup' %}
-                    <th>Host</th>
-                    <th>Service</th>
+                    <th>{% trans "Host" %}</th>
+                    <th>{% trans "Service" %}</th>
                 {% endif %}
                 {% if object_type == 'host' %}
-                    <th>Service</th>
+                    <th>{% trans "Service" %}</th>
                 {% endif %}
-                <th>Duration</th>
+                <th>{% trans "Duration" %}</th>
                 <th class="small"></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +62,7 @@
     </tbody>
     </table>
 {% else %}
-    Host has no recent log entries. Try <a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">Log view</a> to search in older logs.
+    {% trans "Host has no recent log entries. Try " %}<a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">{% trans "Log view" %}</a>{% trans " to search in older logs." %}
 {% endif %}
 
 

@@ -11,21 +11,21 @@
                         <input style="margin-left: -1px; padding: 0px;" type="checkbox" class="select_many">
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="select_all"> All</a></li>
-                        <li><a class="select_none"> None</a></li>
-                        <li><a class="select_unhandled_problems" > Unhandled Problems</a></li>
-                        <li><a class="select_problems"> All Problems</a></li>
+                        <li><a class="select_all">{% trans " All" %}</a></li>
+                        <li><a class="select_none">{% trans " None" %}</a></li>
+                        <li><a class="select_unhandled_problems" >{% trans " Unhandled Problems" %}</a></li>
+                        <li><a class="select_problems">{% trans " All Problems" %}</a></li>
                     </ul>
                 </div>
             </th>
             <th ></th>
-            <th>Hostgroup</th>
-            <th>Child Hostgroups</th>
-            <th>Parent Hostgroups</th>
-            <th>Hosts</th>
-            <th>Services</th>
-            <th>Health</th>
-            <th colspan=2>Service Status</th>
+            <th>{% trans "Hostgroup" %}</th>
+            <th>{% trans "Child Hostgroups" %}</th>
+            <th>{% trans "Parent Hostgroups" %}</th>
+            <th>{% trans "Hosts" %}</th>
+            <th>{% trans "Services" %}</th>
+            <th>{% trans "Health" %}</th>
+            <th colspan=2>{% trans "Service Status" %}</th>
         </tr>
         {% for row in hostgroups %}
             {% if row.members|length > 0 %}

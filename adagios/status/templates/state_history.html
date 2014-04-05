@@ -1,30 +1,30 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}State History{% endblock %}
+{% block title %}{% trans "State History" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}State History
+{% block largeheader %}{% trans "State History" %}
 {% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.state_history %}">State History</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.state_history %}">{% trans "State History" %}</a>{% endblock %}
 {% load adagiostags %}
 {% block toolbar %}{% endblock %}
 {% block content %}
-    {{ log|length }} lines in logfile
+    {{ log|length }}{% trans " lines in logfile" %}
     <table class="table">
     <tr>
-        <th title="{{  start_time}}">Start Time: {{ start_time|timestamp|date:'Y-m-d H:i' }}</th>
-        <th>End Time: {{ end_time|timestamp|date:'Y-m-d H:i' }}</th>
-        <th>Total Duration: {{ total_duration }}</th>
+        <th title="{{  start_time}}">{% trans "Start Time: " %}{{ start_time|timestamp|date:'Y-m-d H:i' }}</th>
+        <th>{% trans "End Time: " %}{{ end_time|timestamp|date:'Y-m-d H:i' }}</th>
+        <th>{% trans "Total Duration: " %}{{ total_duration }}</th>
     </tr>
     </table>
     <table class="table table-condensed well">
     <tr style="white-space: nowrap">
-        <th>Host</th>
-        <th>Service </th>
-        <th>SLA %</th>
-        <th># alerts</th>
-        <th>Timeline</th>
+        <th>{% trans "Host" %}</th>
+        <th>{% trans "Service " %}</th>
+        <th>{% trans "SLA %" %}</th>
+        <th>{% trans "# alerts" %}</th>
+        <th>{% trans "Timeline" %}</th>
     </tr>
 
     {% for service in services.values %}
@@ -37,7 +37,7 @@
             {% if service.service_description %}
                 <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.service_description }}</a>
             {% else %}
-                <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">Host Status</a>
+                <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{% trans "Host Status" %}</a>
             {% endif %}
         </td>
         <td>{{ service.sla|floatformat }}%</td>

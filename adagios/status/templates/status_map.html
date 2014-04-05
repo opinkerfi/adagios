@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Map{% endblock %}
+{% block title %}{% trans "Map" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Map{% endblock %}
+{% block largeheader %}{% trans "Map" %}{% endblock %}
 {% block toolbar %}{% endblock %}
 
 
@@ -13,7 +13,7 @@
         <i class="glyph-refresh" > </i>
     </button>
 
-    <button  id="place_new_host_button" class="hide button btn-small" data-toggle="modal"  data-target="#addhost_modal" >Place new host here</button>
+    <button  id="place_new_host_button" class="hide button btn-small" data-toggle="modal"  data-target="#addhost_modal">{% trans "Place new host here" %}</button>
 {% endblock %}
 
 {% block content %}
@@ -23,33 +23,33 @@
     <div class="modal hide fade" id="addhost_modal">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" >&times;</button>
-                <h3>Host location here</h3>
+                <h3>{% trans "Host location here" %}</h3>
             </div>
             <div class="modal-body">
-                <p>Pick a host from the list below. The host will from now on be at those coordinates on the map.</p>
+                <p>{% trans "Pick a host from the list below. The host will from now on be at those coordinates on the map." %}</p>
 
 
                 <div class="control-group">
                     <label class="control-label" for="id_latitude">
-                        Latitude:
+                        {% trans "Latitude:" %}
                     </label>
                     <div class="controls" >
-                            <input id="id_latitude" type=text disabled=disabled placeholder="Click on the map to get coordinates" value=""/>
+                            <input id="id_latitude" type=text disabled=disabled placeholder="{% trans "Click on the map to get coordinates" %}" value=""/>
                     </div>
                 </div>
 
                 <div class="control-group">
                     <label class="control-label" for="id_longitude">
-                        Longitude:
+                        {% trans "Longitude:" %}
                     </label>
                     <div class="controls" >
-                        <input id="id_longitude" type=text disabled=disabled placeholder="Click on the map to get coordinates" value=""/>
+                        <input id="id_longitude" type=text disabled=disabled placeholder="{% trans "Click on the map to get coordinates" %}" value=""/>
                     </div>
                 </div>
 
                 <div class="control-group">
                     <label class="control-label" for="id_host_name">
-                        Host Name:
+                        {% trans "Host Name:" %}
                     </label>
                     <div class="controls" id="host_name_field">
                         <select name="host_name" id="id_host_name">
@@ -63,7 +63,7 @@
 
                 <div class="modal-footer">
                     <a href="#" class="btn" onclick='$("#addhost_modal").modal("hide");'>Cancel</a>
-                    <button id="change_host_coordinates" type="submit" onclick='$("#addhost_modal").modal("hide");' class="btn btn-primary">Place this host here</button>
+                    <button id="change_host_coordinates" type="submit" onclick='$("#addhost_modal").modal("hide");' class="btn btn-primary">{% trans "Place this host here" %}</button>
                 </div>
             </div>
     </div>
@@ -110,7 +110,7 @@
             return new google.maps.Marker({
                 position: location,
                 map: map,
-                title: "Place a new host here",
+                title: "{% trans "Place a new host here" %}",
                 visible: false
             });
 
@@ -184,7 +184,7 @@
 
 
             var infowindow = new google.maps.InfoWindow();
-            var html = "<div><a href='#' onclick='showmodal();'>Place new host here</a></div>";
+            var html = "<div><a href='#' onclick='showmodal();'>{% trans "Place new host here" %}</a></div>";
             infowindow.setContent(html);
             map.infowindows.push(infowindow);
 

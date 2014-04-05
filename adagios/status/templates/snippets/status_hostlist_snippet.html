@@ -11,20 +11,20 @@
                     <input style="margin-left: -1px; padding: 0px;" type="checkbox" class="select_many">
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="select_all"> All</a></li>
-                    <li><a class="select_none"> None</a></li>
-                    <li><a class="select_unhandled_problems" > Unhandled Problems</a></li>
-                    <li><a class="select_problems"> All Problems</a></li>
+                    <li><a class="select_all">{% trans " All" %}</a></li>
+                    <li><a class="select_none">{% trans " None" %}</a></li>
+                    <li><a class="select_unhandled_problems" >{% trans " Unhandled Problems" %}</a></li>
+                    <li><a class="select_problems">{% trans " All Problems" %}</a></li>
                 </ul>
             </div>
         </th>
         <th></th>
-        <th>Host Name</th>
-        <th>Address</th>
-        <th>Duration</th>
-        <th>Last Check</th>
-        <th>Host Status</th>
-        <th>Service Status</th>
+        <th>{% trans "Host Name" %}</th>
+        <th>{% trans "Address" %}</th>
+        <th>{% trans "Duration" %}</th>
+        <th>{% trans "Last Check" %}</th>
+        <th>{% trans "Host Status" %}</th>
+        <th>{% trans "Service Status" %}</th>
     </tr>
     </thead>
     <tbody>
@@ -63,12 +63,12 @@
             {% endif %}
             </td>
             {% if row.last_check == 0 %}
-                <td class="alert alert-info">Pending</td>
+            <td class="alert alert-info">{% trans "Pending" %}</td>
             {% else %}
                 {% if row.state  == 0 %}
-                    <td class="alert alert-success">Host UP</td>
+                <td class="alert alert-success">{% trans "Host UP" %}</td>
                 {% else %}
-                    <td class="alert alert-danger">{% if row.childs %}Network outage {% else %}Host Down {% endif %}</td>
+                <td class="alert alert-danger">{% blocktrans %}{% if row.childs %}Network outage {% else %}Host Down {% endif %}{% endblocktrans %}</td>
                 {% endif %}
             {% endif %}
             <td>

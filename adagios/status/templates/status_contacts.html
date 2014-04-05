@@ -1,12 +1,12 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Contacts{% endblock %}
+{% block title %}{% trans "Contacts" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Contacts{% endblock %}
+{% block largeheader %}{% trans "Contacts" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.contact_list %}">Contacts</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}">{% trans "Contacts</a>" %}{% endblock %}
 {% load adagiostags %}
 
 {% block content %}

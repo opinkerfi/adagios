@@ -1,11 +1,11 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Host And Service Overview{% endblock %}
+{% block title %}{% trans "Host And Service Overview" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Host And Service Overview{% endblock %}
+{% block largeheader %}{% trans "Host And Service Overview" %}{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.services %}">Services</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.services %}">{% trans "Services</a>" %}{% endblock %}
 {% load adagiostags %}
 
 {% block sidebar_outer %}
@@ -14,17 +14,17 @@
 
 {% block content %}
     {% if hosts %}
-        Hosts:
+        {% trans "Hosts:" %}
         {% include "snippets/status_hostlist_snippet.html" %}
     <hr>
     {% else %}
-        <p>There are no host problems.</p>
+        <p>{% trans "There are no host problems." %}</p>
     {% endif %}
     {% if services %}
-        Services:
+        {% trans "Services:" %}
         {% include "snippets/status_servicelist_snippet.html" %}
     {% else %}
-        <p>There are no service problems.</p>
+        <p>{% trans "There are no service problems." %}</p>
     {% endif %}
 {% endblock %}
 
