@@ -19,10 +19,10 @@ class PNP4NagiosTestCase(unittest.TestCase):
             if k == "broker_module" and v.find('npcd') > 1:
                 tmp = v.split()
                 self.assertFalse(
-                    len(tmp) < 2, 'We think pnp4nagios broker module is incorrectly configured. In nagios.cfg it looks like this: %s' % v)
+                    len(tmp) < 2, _('We think pnp4nagios broker module is incorrectly configured. In nagios.cfg it looks like this: %s') % v)
                 module_file = tmp.pop(0)
                 self.assertTrue(
-                    os.path.exists(module_file), 'npcd broker_module module not found at "%s". Is nagios correctly configured?' % module_file)
+                    os.path.exists(module_file), _('npcd broker_module module not found at "%s". Is nagios correctly configured?') % module_file)
 
                 config_file = None
                 for i in tmp:
@@ -30,17 +30,17 @@ class PNP4NagiosTestCase(unittest.TestCase):
                         config_file = i.split('=', 1)[1]
                         break
                 self.assertIsNotNone(
-                    config_file, "npcd broker module has no config_file= argument. Is pnp4nagios correctly configured?")
+                    config_file, _("npcd broker module has no config_file= argument. Is pnp4nagios correctly configured?"))
                 self.assertTrue(
-                    os.path.exists(config_file), 'PNP4nagios config file was not found (%s).' % config_file)
+                    os.path.exists(config_file), _('PNP4nagios config file was not found (%s).') % config_file)
                 return
         self.assertTrue(
-            False, 'Nagios Broker module not found. Is pnp4nagios installed and configured?')
+            False, _('Nagios Broker module not found. Is pnp4nagios installed and configured?'))
 
     def testGetJson(self):
         result = functions.run_pnp('json')
         self.assertGreaterEqual(
-            len(result), 0, msg="Tried to get json from pnp4nagios but result was improper")
+            len(result), 0, msg=_("Tried to get json from pnp4nagios but result was improper"))
 
     def testPageLoad(self):
         c = Client()

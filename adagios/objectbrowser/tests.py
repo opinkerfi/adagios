@@ -14,7 +14,7 @@ class TestObjectBrowser(unittest.TestCase):
         result = pynag.Model.ObjectDefinition.objects.all
         config = pynag.Model.config.cfg_file
         self.assertGreaterEqual(
-            len(result), 0, msg="Parsed nagios.cfg, but found no objects, are you sure this is the right config file (%s) ? " % config)
+            len(result), 0, msg=_("Parsed nagios.cfg, but found no objects, are you sure this is the right config file (%(config)s) ? ") % {'config': config})
 
     def testIndexPage(self):
         c = Client()
@@ -58,6 +58,6 @@ class TestObjectBrowser(unittest.TestCase):
         try:
             c = Client()
             response = c.get(url)
-            self.assertEqual(response.status_code, expected_code, "Expected status code 200 for page %s" % url)
+            self.assertEqual(response.status_code, expected_code, _("Expected status code 200 for page %(url)s") % {'url': url})
         except Exception, e:
-            self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
+            self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(error)s") % {'url': url, 'error': e})

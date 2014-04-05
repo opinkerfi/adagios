@@ -53,4 +53,4 @@ def find_pnp_path():
         if os.path.isfile(i):
             return i
     raise PynagError(
-        "Could not find pnp4nagios/index.php. Please specify it in adagios->settings->PNP. Tried %s" % possible_paths)
+        _("Could not find pnp4nagios/index.php. Please specify it in adagios->settings->PNP. Tried %s") % possible_paths)
