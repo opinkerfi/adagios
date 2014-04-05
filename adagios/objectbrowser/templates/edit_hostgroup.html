@@ -13,10 +13,10 @@
     {% if my_object %}
         <!-- wrapper for scrollable items -->
         <ul class="nav nav-tabs" id="objecttab">
-            <li><a href="#general" data-toggle="tab">General</a></li>
-            <li><a href="#members" data-toggle="tab">Members</a></li>
-            <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
-            <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+            <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
+            <li><a href="#members" data-toggle="tab">{% trans "Members" %}</a></li>
+            <li><a href="#memberof" data-toggle="tab">{% trans "Member Of" %}</a></li>
+            <li><a href="#advanced" data-toggle="tab">{% trans "Advanced" %}</a></li>
         </ul>
         <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
@@ -30,7 +30,7 @@
                     </fieldset>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
 
@@ -39,7 +39,7 @@
                         <!-- Display All Hostgroups if this is that kind of an object -->
                         <div class="effective_memberof">
                             <fieldset id="id_effective_memberof" class="attribute_{{object_type}}">
-                                Following is a list of all hostgroups that <i>{{ my_object.hostgroup_name }}</i> is a member of.
+                                {% trans "Following is a list of all hostgroups that" %} <i>{{ my_object.hostgroup_name }}</i> {% trans "is a member of." %}
                                 <p></p>
                                 {% if effective_memberof %}
                                     <p>
@@ -54,7 +54,7 @@
                     </fieldset>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
 
@@ -67,9 +67,9 @@
 
                     <div class="effective_hosts">
                         <fieldset id="id_effective_hosts" class="attribute_{{object_type}}">
-                            <legend>Effective Members of this group</legend>
-                            Group membership can be defined in multiple ways, for example by editing the host and editing the "hostgroups"
-                            attribute. For your convenience, here is a list of all hosts for this hostgroup.
+                            <legend>{% trans "Effective Members of this group" %}</legend>
+                            {% trans 'Group membership can be defined in multiple ways, for example by editing the host and editing the "hostgroups"
+                            attribute. For your convenience, here is a list of all hosts for this hostgroup.' %}
                             <p></p>
                             {% if effective_hosts %}
                                 <p>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
         </form>
@@ -92,7 +92,7 @@
             <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                 {% include "bootstrap_fields.html" with fields=advanced_form %}
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Submit</button>
+                    <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
                 </div>
             </form>
         </div>
@@ -101,7 +101,7 @@
 
 
     {% else %}
-        <p>Object not found </p>
+        <p>{% trans "Object not found" %} </p>
     {% endif %}
 
 
