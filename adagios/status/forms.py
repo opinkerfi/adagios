@@ -55,22 +55,22 @@ class BusinessProcessForm(forms.Form):
 
     """ Use this form to edit a BusinessProcess """
     name = forms.CharField(max_length=100, required=True,
-                           help_text="Unique name for this business process.")
+                           help_text=_("Unique name for this business process."))
     #processes = forms.CharField(max_length=100, required=False)
     display_name = forms.CharField(max_length=100, required=False,
-                                   help_text="This is the name that will be displayed to users on this process. Usually it is the name of the system this business group represents.")
+                                   help_text=_("This is the name that will be displayed to users on this process. Usually it is the name of the system this business group represents."))
     notes = forms.CharField(max_length=1000, required=False,
-                            help_text="Here you can put in any description of the business process you are adding. Its a good idea to write down what the business process is about and who to contact in case of downtimes.")
+                            help_text=_("Here you can put in any description of the business process you are adding. Its a good idea to write down what the business process is about and who to contact in case of downtimes."))
     status_method = forms.ChoiceField(
-        choices=status_method_choices, help_text="Here you can choose which method is used to calculate the global status of this business process")
+        choices=status_method_choices, help_text=_("Here you can choose which method is used to calculate the global status of this business process"))
     state_0 = forms.CharField(max_length=100, required=False,
-                              help_text="Human friendly text for this respective state. You can type whatever you want but nagios style exit codes indicate that 0 should be 'ok'")
+                              help_text=_("Human friendly text for this respective state. You can type whatever you want but nagios style exit codes indicate that 0 should be 'ok'"))
     state_1 = forms.CharField(max_length=100, required=False,
-                              help_text="Typically used to represent warning or performance problems")
+                              help_text=_("Typically used to represent warning or performance problems"))
     state_2 = forms.CharField(max_length=100, required=False,
-                              help_text="Typically used to represent critical status")
+                              help_text=_("Typically used to represent critical status"))
     state_3 = forms.CharField(
-        max_length=100, required=False, help_text="Use this when status is unknown")
+        max_length=100, required=False, help_text=_("Use this when status is unknown"))
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
     #graphs = models.ManyToManyField(BusinessProcess, unique=False, blank=True)
 
@@ -101,7 +101,7 @@ class BusinessProcessForm(forms.Form):
         if new_name and new_name != self.bp.name:
             if new_name in adagios.businessprocess.get_all_process_names():
                 raise forms.ValidationError(
-                    "Cannot rename process to %s. Another process with that name already exists" % new_name
+                    _("Cannot rename process to %s. Another process with that name already exists") % new_name
                 )
         return cleaned_data
 
@@ -156,7 +156,7 @@ class AddGraphForm(forms.Form):
     service_description = forms.CharField(max_length=100, required=False)
     metric_name = forms.CharField(max_length=100, required=True)
     notes = forms.CharField(max_length=100, required=False,
-                            help_text="Put here a friendly description of the graph")
+                            help_text=_("Put here a friendly description of the graph"))
 
     def __init__(self, instance, *args, **kwargs):
         self.bp = instance

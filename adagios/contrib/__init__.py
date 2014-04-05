@@ -19,7 +19,7 @@ def get_template_name(base_path, *args):
         path = os.path.normpath(path)
 
         if not path.startswith(base_path):
-            raise Exception("'%s' is outside contrib dir" % path)
+            raise Exception(_("'%s' is outside contrib dir") % path)
         elif os.path.isdir(path):
             continue
         elif os.path.isfile(path):
