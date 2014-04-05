@@ -26,7 +26,7 @@ def get_filelist(path):
             elif os.path.isdir(relative_path):
                 directories_to_check.append(relative_path)
             else:
-                print _("what am i?"), i
+                print "what am i?", i
     return files
 
 template_files = get_filelist('adagios')
