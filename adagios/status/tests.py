@@ -20,7 +20,7 @@ class LiveStatusTestCase(unittest.TestCase):
         livestatus = adagios.status.utils.livestatus(request=None)
         requests = livestatus.query('GET status', 'Columns: requests')
         self.assertEqual(
-            1, len(requests), "Could not get status.requests from livestatus")
+            1, len(requests), _("Could not get status.requests from livestatus"))
 
     def testLivestatusConfigured(self):
         config = pynag.Parsers.config(cfg_file=self.nagios_config)
@@ -29,16 +29,16 @@ class LiveStatusTestCase(unittest.TestCase):
             if k == "broker_module" and v.find('livestatus') > 1:
                 tmp = v.split()
                 self.assertFalse(
-                    len(tmp) < 2, ' We think livestatus is incorrectly configured. In nagios.cfg it looks like this: %s' % v)
+                    len(tmp) < 2, _(' We think livestatus is incorrectly configured. In nagios.cfg it looks like this: %s') % v)
                 module_file = tmp[0]
                 socket_file = tmp[1]
                 self.assertTrue(
-                    os.path.exists(module_file), ' Livestatus Broker module not found at "%s". Is nagios correctly configured?' % module_file)
+                    os.path.exists(module_file), _(' Livestatus Broker module not found at "%s". Is nagios correctly configured?') % module_file)
                 self.assertTrue(
-                    os.path.exists(socket_file), ' Livestatus socket file was not found (%s). Make sure nagios is running and that livestatus module is loaded' % socket_file)
+                    os.path.exists(socket_file), _(' Livestatus socket file was not found (%s). Make sure nagios is running and that livestatus module is loaded') % socket_file)
                 return
         self.assertTrue(
-            False, 'Nagios Broker module not found. Is livestatus installed and configured?')
+            False, _('Nagios Broker module not found. Is livestatus installed and configured?'))
 
     def testPageLoad(self):
         """ Loads a bunch of status pages, looking for a crash """
@@ -65,9 +65,9 @@ class LiveStatusTestCase(unittest.TestCase):
         try:
             c = Client()
             response = c.get(url)
-            self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
+            self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
         except Exception, e:
-            self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
+            self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(e)s") % {'url': url, 'e': e})
 
     def testSubmitCommand(self):
         """ Test adagios.rest.status.submit_check_results

@@ -73,7 +73,7 @@ def detail(request):
     elif servicegroup_name:
         return servicegroup_detail(request, servicegroup_name=servicegroup_name)
 
-    raise Exception("You have to provide an item via querystring so we know what to give you details for")
+    raise Exception(_("You have to provide an item via querystring so we know what to give you details for"))
 
 
 @adagios_decorator
@@ -205,7 +205,7 @@ def snippets_log(request):
     elif host_name:
         object_type = "host"
     else:
-        raise Exception("Need either a host_name or hostgroup_name parameter")
+        raise Exception(_("Need either a host_name or hostgroup_name parameter"))
 
     c = {'log':log}
     c['object_type'] = object_type
@@ -259,7 +259,7 @@ def service_detail(request, host_name, service_description):
         my_host['object_type'] = 'host'
         my_host['short_name'] = my_host['name']
     except IndexError:
-        c['errors'].append("Could not find any host named '%s'" % host_name)
+        c['errors'].append(_("Could not find any host named '%s'") % host_name)
         return error_page(request, c)
 
     if service_description is None:
@@ -283,7 +283,7 @@ def service_detail(request, host_name, service_description):
             #    host_name=host_name, service_description=service_description)
         except IndexError:
             c['errors'].append(
-                "Could not find any service named '%s'" % service_description)
+                _("Could not find any service named '%s'") % service_description)
             return error_page(request, c)
 
     c['my_object'] = primary_object

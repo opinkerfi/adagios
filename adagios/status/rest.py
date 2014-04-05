@@ -87,7 +87,7 @@ def acknowledge_many(hostlist, servicelist, sticky=1, notify=1, persistent=0, au
                 author=author,
                 comment=comment
         )
-    return "Success"
+    return _("Success")
 
 
 def acknowledge(host_name, service_description=None, sticky=1, notify=1, persistent=0, author='adagios', comment='acknowledged by Adagios'):
@@ -255,7 +255,7 @@ def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
         reschedule(request, host_name=host_name, service_description=service_description, check_time=check_time)
         #WaitObject = "{h};{s}".format(h=host_name, s=service_description)
         #task.add(wait, 'services', WaitObject, WaitCondition)
-    return {'message': "command sent successfully"}
+    return {'message': _("command sent successfully")}
 
 
 def reschedule(request, host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
@@ -503,7 +503,7 @@ def state_history(start_time=None, end_time=None, object_type=None, host_name=No
         hostnames = map(lambda x: x.host_name, hosts)
         log_entries = filter(lambda x: x['host_name'] in hostnames, log_entries)
     else:
-        raise Exception("Unsupported object type: %s" % object_type)
+        raise Exception(_("Unsupported object type: %s") % object_type)
 
     # Add some css-hints for and duration of each state history entry as percent of duration
     # this is used by all views that have state history and on top of it a progress bar which shows
@@ -554,7 +554,7 @@ def command_line(host_name, service_description=None):
         obj = _get_host_or_service(host_name, service_description)
         return obj.get_effective_command_line(host_name=host_name)
     except KeyError:
-        return "Could not resolve commandline. Object not found"
+        return _("Could not resolve commandline. Object not found")
 
 
 def _get_host_or_service(host_name, service_description=None):
@@ -570,7 +570,7 @@ def _get_host_or_service(host_name, service_description=None):
         for service in host.get_effective_services():
             if service.service_description == service_description:
                 return service
-    raise KeyError("Object not found")
+    raise KeyError(_("Object not found"))
 
 
 def update_check_command(host_name, service_description=None, **kwargs):
@@ -586,9 +586,9 @@ def update_check_command(host_name, service_description=None, **kwargs):
             if k.startswith("$_SERVICE") or k.startswith('$ARG') or k.startswith('$_HOST'):
                 obj.set_macro(k, v)
                 obj.save()
-        return "Object saved"
+        return _("Object saved")
     except KeyError:
-        raise Exception("Object not found")
+        raise Exception(_("Object not found"))
 
 
 def get_business_process_names():
@@ -678,7 +678,7 @@ def remove_acknowledgement(host_name, service_description=None):
     return "ok"
 
 
-def submit_check_result(request, host_name, service_description=None, autocreate=False, status_code=3, plugin_output="No message was entered", performance_data=""):
+def submit_check_result(request, host_name, service_description=None, autocreate=False, status_code=3, plugin_output=_("No message was entered"), performance_data=""):
     """ Submit a passive check_result for a given host or a service
 
     Arguments:
@@ -702,7 +702,7 @@ def submit_check_result(request, host_name, service_description=None, autocreate
         objects = livestatus.get_services(*args)
 
     if not objects and autocreate is True:
-        raise Exception("Autocreate not implemented yet")
+        raise Exception(_("Autocreate not implemented yet"))
     elif not objects:
         result['error'] = 'No %s with that name' % object_type
     else:
@@ -710,7 +710,7 @@ def submit_check_result(request, host_name, service_description=None, autocreate
             pynag.Control.Command.process_host_check_result(host_name, status_code, output)
         else:
             pynag.Control.Command.process_service_check_result(host_name, service_description, status_code, output)
-        result['message'] = "Command has been submitted."
+        result['message'] = _("Command has been submitted.")
     return result
 
 
@@ -764,13 +764,13 @@ def metric_names(request, **kwargs):
     return result
 
 def wait(table, WaitObject, WaitCondition=None, WaitTrigger='check', **kwargs):
-    print "Lets wait for", locals()
+    print _("Lets wait for"), locals()
     if not WaitCondition:
         WaitCondition = "last_check > %s" % int(time.time()-1)
     livestatus = adagios.status.utils.livestatus(None)
-    print "livestatus ok"
+    print _("livestatus ok")
     result = livestatus.get(table, 'Stats: state != 999', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
-    print "ok no more waiting for ", WaitObject
+    print _("ok no more waiting for "), WaitObject
     return result
 
 
