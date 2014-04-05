@@ -41,7 +41,7 @@ def index(request, contrib_dir=None):
     views = os.listdir(contrib_dir)
 
     if not views:
-        errors.append("Directory '%s' is empty" % contrib_dir)
+        errors.append(_("Directory '%s' is empty") % contrib_dir)
     return render_to_response("contrib_index.html", locals(), context_instance=RequestContext(request))
 
 

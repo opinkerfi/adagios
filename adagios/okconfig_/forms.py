@@ -10,13 +10,13 @@ from django.utils.translation import ugettext as _
 
 
 def get_all_hosts():
-    return [('', 'Select a host')] + map(lambda x: (x, x), helpers.get_host_names())
+    return [('', _('Select a host'))] + map(lambda x: (x, x), helpers.get_host_names())
 
 
 def get_all_templates():
     all_templates = okconfig.get_templates()
     service_templates = filter(lambda x: 'host' not in x, all_templates)
-    return map(lambda x: (x, "Standard " + x + " checks"), service_templates)
+    return map(lambda x: (x, _("Standard %(service_template)s checks") % {"service_template": x}), service_templates)
 
 
 def get_all_groups():
@@ -25,7 +25,7 @@ def get_all_groups():
 
 def get_inactive_services():
     """ List of all unregistered services (templates) """
-    inactive_services = [('', 'Select a service')]
+    inactive_services = [('', _('Select a service'))]
     inactive_services += map(lambda x: (x.name, x.name),
                              Model.Service.objects.filter(service_description__contains="", name__contains="", register="0"))
     inactive_services.sort()
@@ -40,12 +40,12 @@ class ScanNetworkForm(AdagiosForm):
         if addr.find('/') > -1:
             addr, mask = addr.split('/', 1)
             if not mask.isdigit():
-                raise ValidationError("not a valid netmask")
+                raise ValidationError(_("not a valid netmask"))
             if not self.isValidIPAddress(addr):
-                raise ValidationError("not a valid ip address")
+                raise ValidationError(_("not a valid ip address"))
         else:
             if not self.isValidIPAddress(addr):
-                raise ValidationError("not a valid ip address")
+                raise ValidationError(_("not a valid ip address"))
         return self.cleaned_data['network_address']
 
     def isValidHostname(self, hostname):
@@ -69,21 +69,21 @@ class ScanNetworkForm(AdagiosForm):
 
 
 class AddGroupForm(AdagiosForm):
-    group_name = forms.CharField(help_text="Example: databases")
-    alias = forms.CharField(help_text="Human friendly name for the group")
+    group_name = forms.CharField(help_text=_("Example: databases"))
+    alias = forms.CharField(help_text=_("Human friendly name for the group"))
     force = forms.BooleanField(
-        required=False, help_text="Overwrite group if it already exists.")
+        required=False, help_text=_("Overwrite group if it already exists."))
 
 
 class AddHostForm(AdagiosForm):
-    host_name = forms.CharField(help_text="Name of the host to add")
-    address = forms.CharField(help_text="IP Address of this host")
+    host_name = forms.CharField(help_text=_("Name of the host to add"))
+    address = forms.CharField(help_text=_("IP Address of this host"))
     group_name = forms.ChoiceField(
-        initial="default", help_text="host/contact group to put this host in")
+        initial="default", help_text=_("host/contact group to put this host in"))
     templates = forms.MultipleChoiceField(
-        required=False, help_text="Add standard template of checks to this host")
+        required=False, help_text=_("Add standard template of checks to this host"))
     force = forms.BooleanField(
-        required=False, help_text="Overwrite host if it already exists.")
+        required=False, help_text=_("Overwrite host if it already exists."))
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -98,20 +98,20 @@ class AddHostForm(AdagiosForm):
         for i in templates:
             if i not in okconfig.get_templates().keys():
                 self._errors['templates'] = self.error_class(
-                    ['template %s was not found' % i])
+                    [_('template %s was not found') % i])
         if not force and host_name in okconfig.get_hosts():
             self._errors['host_name'] = self.error_class(
-                ['Host name already exists. Use force to overwrite'])
+                [_('Host name already exists. Use force to overwrite')])
         return cleaned_data
 
 
 class AddTemplateForm(AdagiosForm):
     # Attributes
-    host_name = forms.ChoiceField(help_text="Add templates to this host")
+    host_name = forms.ChoiceField(help_text=_("Add templates to this host"))
     templates = forms.MultipleChoiceField(
-        required=False, help_text="Add standard template of checks to this host")
+        required=False, help_text=_("Add standard template of checks to this host"))
     force = forms.BooleanField(
-        required=False, help_text="Overwrites templates if they already exist")
+        required=False, help_text=_("Overwrites templates if they already exist"))
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -126,10 +126,10 @@ class AddTemplateForm(AdagiosForm):
         for i in templates:
             if i not in okconfig.get_templates().keys():
                 self._errors['templates'] = self.error_class(
-                    ['template %s was not found' % i])
+                    [_('template %s was not found') % i])
         if not force and host_name not in okconfig.get_hosts():
             self._errors['host_name'] = self.error_class(
-                ['Host name not found Use force to write template anyway'])
+                [_('Host name not found Use force to write template anyway')])
         return cleaned_data
 
     def save(self):
@@ -143,20 +143,20 @@ class AddTemplateForm(AdagiosForm):
 
 
 class InstallAgentForm(AdagiosForm):
-    remote_host = forms.CharField(help_text="Host or ip address")
+    remote_host = forms.CharField(help_text=_("Host or ip address"))
     install_method = forms.ChoiceField(
-        initial='ssh', help_text="Make sure firewalls are not blocking ports 22(for ssh) or 445(for winexe)",
-        choices=[('auto detect', 'auto detect'), ('ssh', 'ssh'), ('winexe', 'winexe')])
+        initial='ssh', help_text=_("Make sure firewalls are not blocking ports 22(for ssh) or 445(for winexe)"),
+        choices=[(_('auto detect'), _('auto detect')), ('ssh', 'ssh'), ('winexe', 'winexe')])
     username = forms.CharField(
-        initial='root', help_text="Log into remote machine with as this user")
+        initial='root', help_text=_("Log into remote machine with as this user"))
     password = forms.CharField(
-        required=False, widget=forms.PasswordInput, help_text="Leave empty if using kerberos or ssh keys")
+        required=False, widget=forms.PasswordInput, help_text=_("Leave empty if using kerberos or ssh keys"))
     windows_domain = forms.CharField(
-        required=False, help_text="If remote machine is running a windows domain")
+        required=False, help_text=_("If remote machine is running a windows domain"))
 
 
 class ChooseHostForm(AdagiosForm):
-    host_name = forms.ChoiceField(help_text="Select which host to edit")
+    host_name = forms.ChoiceField(help_text=_("Select which host to edit"))
 
     def __init__(self, service=Model.Service(), *args, **kwargs):
         super(forms.Form, self).__init__(*args, **kwargs)
@@ -165,9 +165,9 @@ class ChooseHostForm(AdagiosForm):
 
 class AddServiceToHostForm(AdagiosForm):
     host_name = forms.ChoiceField(
-        help_text="Select host which you want to add service check to")
+        help_text=_("Select host which you want to add service check to"))
     service = forms.ChoiceField(
-        help_text="Select which service check you want to add to this host")
+        help_text=_("Select which service check you want to add to this host"))
 
     def __init__(self, service=Model.Service(), *args, **kwargs):
         super(forms.Form, self).__init__(*args, **kwargs)

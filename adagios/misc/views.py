@@ -72,11 +72,11 @@ def settings(request):
         if form.is_valid():
             try:
                 form.save()
-                m.append("%s successfully saved." % form.adagios_configfile)
+                m.append(_("%s successfully saved.") % form.adagios_configfile)
             except IOError, exc:
                 e.append(exc)
     else:
-        raise Exception("We only support methods GET or POST")
+        raise Exception(_("We only support methods GET or POST"))
     c['form'] = form
     return render_to_response('settings.html', c, context_instance=RequestContext(request))
 
@@ -117,16 +117,16 @@ def gitlog(request):
             elif 'git_commit' in request.POST:
                 filelist = []
                 commit_message = request.POST.get(
-                    'git_commit_message', "bulk commit by adagios")
+                    'git_commit_message', _("bulk commit by adagios"))
                 for i in request.POST:
                     if i.startswith('commit_'):
                         filename = i[len('commit_'):]
                         git.add(filename)
                         filelist.append(filename)
                 if len(filelist) == 0:
-                    raise Exception("No files selected.")
+                    raise Exception(_("No files selected."))
                 git.commit(message=commit_message, filelist=filelist)
-                m.append("%s files successfully commited." % len(filelist))
+                m.append(_("%s files successfully commited.") % len(filelist))
         except Exception, e:
             c['errors'].append(e)
     # Check if nagiosdir has a git repo or not
@@ -228,22 +228,22 @@ def pnp4nagios(request):
             data=request.POST)
         if broker_form.is_valid():
             broker_form.save()
-            m.append("Broker Module updated in nagios.cfg")
+            m.append(_("Broker Module updated in nagios.cfg"))
     elif request.method == 'POST' and 'save_action_url' in request.POST:
         c['action_url'] = forms.PNPActionUrlForm(data=request.POST)
         if c['action_url'].is_valid():
             c['action_url'].save()
-            m.append('Action_url updated for %s services' %
+            m.append(_('Action_url updated for %s services') %
                      c['action_url'].total_services)
             if c['action_url'].error_services > 0:
                 e.append(
-                    "%s services could not be updated (check permissions?)" %
+                    _("%s services could not be updated (check permissions?)") %
                     c['action_url'].error_services)
     elif request.method == 'POST' and 'save_npcd_config' in request.POST:
         c['npcd_config'] = forms.PNPConfigForm(data=request.POST)
         if c['npcd_config'].is_valid():
             c['npcd_config'].save()
-            m.append("npcd.cfg updated")
+            m.append(_("npcd.cfg updated"))
 
     return render_to_response('pnp4nagios.html', c, context_instance=RequestContext(request))
 
@@ -290,7 +290,7 @@ def pnp4nagios_edit_template(request, filename):
         return edit_file(request, filename=filename)
     else:
         raise Exception(
-            "Security violation. You are not allowed to edit %s" % filename)
+            _("Security violation. You are not allowed to edit %s") % filename)
 
 
 @adagios_decorator
@@ -323,7 +323,7 @@ def icons(request, image_name=None):
             fsock = open("%s/%s" % (image_path, image_name,))
             return HttpResponse(fsock, mimetype=mime_type)
         else:
-            raise Exception("Not allowed to see this image")
+            raise Exception(_("Not allowed to see this image"))
 
 
 @adagios_decorator
@@ -356,12 +356,12 @@ def mail(request):
         host_object = adagios.status.utils.get_hosts(request, host_name=host_name)
         if not host_object:
             c['errors'].append(
-                "Host %s not found. Maybe a typo or you do not have access to it." % host_name
+                _("Host %s not found. Maybe a typo or you do not have access to it.") % host_name
             )
             continue
         for item in host_object:
             item['host_name'] = item['name']
-            item['description'] = "Host Status"
+            item['description'] = _("Host Status")
             c['form'].status_objects.append(item)
             c['form'].hosts.append(item)
 
@@ -374,14 +374,14 @@ def mail(request):
                                                         )
             if not service:
                 c['errors'].append(
-                    'Service "%s"" not found. Maybe a typo or you do not have access to it ?' % i)
+                    _('Service "%s"" not found. Maybe a typo or you do not have access to it ?') % i)
             for x in service:
                 c['form'].status_objects.append(x)
                 c['form'].services.append(x)
         except AttributeError, e:
-            c['errors'].append("AttributeError for '%s': %s" % (i, e))
+            c['errors'].append(_("AttributeError for '%(i)s': %(e)s") % {'i': i, 'e': e})
         except KeyError, e:
-            c['errors'].append("Error adding service '%s': %s" % (i, e))
+            c['errors'].append(_("Error adding service '%(i)s': %(e)s") % {'i': i, 'e': e})
 
     c['services'] = c['form'].services
     c['hosts'] = c['form'].hosts

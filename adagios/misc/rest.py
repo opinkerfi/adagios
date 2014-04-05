@@ -105,4 +105,4 @@ def get_task(task_id="someid"):
                 'task_status': task.status()
             }
             return current_task
-    raise KeyError("Task not '%s' Found" % task_id)
+    raise KeyError(_("Task not '%s' Found") % task_id)
