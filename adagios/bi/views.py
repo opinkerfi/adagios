@@ -56,11 +56,11 @@ def edit(request, process_name, process_type):
                 add_subprocess_form.save()
 
             else:
-                errors.append("failed to add subprocess")
+                errors.append(_("failed to add subprocess"))
                 add_subprocess_failed = True
         else:
             errors.append(
-                "I don't know what submit button was clicked. please file a bug.")
+                _("I don't know what submit button was clicked. please file a bug."))
 
         # Load the process again, since any of the above probably made changes
         # to it.
@@ -91,7 +91,7 @@ def add_graph(request):
     for graph in graphs:
         tmp = graph.split(',')
         if len(tmp) != 3:
-            c['errors'].append("Invalid graph string: %s" % (tmp))
+            c['errors'].append(_("Invalid graph string: %s") % (tmp))
         graph_dict = {}
         graph_dict['host_name'] = tmp[0]
         graph_dict['service_description'] = tmp[1]
@@ -105,7 +105,7 @@ def add_graph(request):
     if request.method == 'POST':
         if not name:
             raise Exception(
-                "Booh! you need to supply name= to the querystring")
+                _("Booh! you need to supply name= to the querystring"))
         for graph in c['graphs']:
             form = adagios.bi.forms.AddGraphForm(instance=bp, data=graph)
             if form.is_valid():
@@ -202,7 +202,7 @@ def add_subprocess(request):
     if request.method == 'POST':
         if 'name' not in request.POST:
             raise Exception(
-                "You must specify which subprocess to add all these objects to")
+                _("You must specify which subprocess to add all these objects to"))
         parameters.pop('name')
         bp = adagios.bi.get_business_process(request.POST.get('name'))
         # Find all subprocesses in the post, can for each one call add_process
@@ -228,7 +228,7 @@ def add(request):
     c['messages'] = []
     c['errors'] = []
     import adagios.businessprocess
-    bp = adagios.bi.BusinessProcess("New Business Process")
+    bp = adagios.bi.BusinessProcess(_("New Business Process"))
     if request.method == 'GET':
         form = adagios.bi.forms.BusinessProcessForm(
             instance=bp, initial=bp.data)
@@ -294,7 +294,7 @@ def _business_process_parse_querystring(request):
     elif request.method == 'POST':
         data = request.POST
     else:
-        raise Exception("Booh, use either get or POST")
+        raise Exception(_("Booh, use either get or POST"))
     parameters = {}
     process_list = []
     for key in data:

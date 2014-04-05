@@ -137,7 +137,7 @@ class TestBusinessProcess(TestCase):
         try:
             c = Client()
             response = c.get(url)
-            self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
+            self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
         except Exception, e:
             self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
 
@@ -154,35 +154,35 @@ class TestBusinessProcessLogic(TestCase):
     def testBestAndWorstState(self):
         s = BusinessProcess("example process")
         s.status_method = 'use_worst_state'
-        self.assertEqual(3, s.get_status(), "Empty bi process should have status unknown")
+        self.assertEqual(3, s.get_status(), _("Empty bi process should have status unknown"))
 
         s.add_process(process_name="always_ok", process_type="businessprocess", status_method='always_ok')
-        self.assertEqual(0, s.get_status(), "BI process with one ok subitem, should have state OK")
+        self.assertEqual(0, s.get_status(), _("BI process with one ok subitem, should have state OK"))
 
         s.add_process("fail subprocess", status_method="always_major")
-        self.assertEqual(2, s.get_status(), "BI process with one failed item should have a critical state")
+        self.assertEqual(2, s.get_status(), _("BI process with one failed item should have a critical state"))
 
         s.status_method = 'use_best_state'
-        self.assertEqual(0, s.get_status(), "BI process using use_best_state should be returning OK")
+        self.assertEqual(0, s.get_status(), _("BI process using use_best_state should be returning OK"))
 
     def testBusinessRules(self):
         s = BusinessProcess("example process")
-        self.assertEqual(3, s.get_status(), "Empty bi process should have status unknown")
+        self.assertEqual(3, s.get_status(), _("Empty bi process should have status unknown"))
 
         s.add_process(process_name="always_ok", process_type="businessprocess", status_method='always_ok')
-        self.assertEqual(0, s.get_status(), "BI process with one ok subitem, should have state OK")
+        self.assertEqual(0, s.get_status(), _("BI process with one ok subitem, should have state OK"))
 
         s.add_process("untagged process", status_method="always_major")
-        self.assertEqual(0, s.get_status(), "BI subprocess that is untagged should yield an ok state")
+        self.assertEqual(0, s.get_status(), _("BI subprocess that is untagged should yield an ok state"))
 
         s.add_process("not critical process", status_method="always_major", tags="not critical")
-        self.assertEqual(1, s.get_status(), "A Non critical subprocess should yield 'minor problem'")
+        self.assertEqual(1, s.get_status(), _("A Non critical subprocess should yield 'minor problem'"))
 
         s.add_process("critical process", status_method="always_major", tags="mission critical")
-        self.assertEqual(2, s.get_status(), "A critical process in failed state should yield major problem")
+        self.assertEqual(2, s.get_status(), _("A critical process in failed state should yield major problem"))
 
         s.add_process("another noncritical process", status_method="always_major", tags="not critical")
-        self.assertEqual(2, s.get_status(), "Adding another non critical subprocess should still yield a critical state")
+        self.assertEqual(2, s.get_status(), _("Adding another non critical subprocess should still yield a critical state"))
 
 
 class TestDomainProcess(TestCase):
@@ -215,7 +215,7 @@ class TestHostProcess(TestCase):
         try:
             self.livestatus.query('GET timeperiods')
         except Exception, e:
-            print "%s while trying to read livestatus: %s" % (type(e), e)
+            print _("%(typee)s while trying to read livestatus: %(e)s") % {'typee': type(e), 'e': e}
             print os.listdir(self.tempdir)
             print os.listdir(self.tempdir + "conf.d")
             if os.path.exists(self.tempdir + "nagios.log"):
@@ -282,7 +282,7 @@ class TestHostProcess(TestCase):
             command_string = ' '.join(command)
             if os.path.exists(self.tempdir + "nagios.log"):
                 print open(self.tempdir + "nagios.log").read()
-            raise Exception("Failed to start nagios. Command: %s\nexit codecode=%s\nstdout=%s\nstderr=%s" % (command_string, result[0], result[1], result[2]))
+            raise Exception(_("Failed to start nagios. Command: %(command_string)s\nexit codecode=%(result0)s\nstdout=%(result1)s\nstderr=%(result2)s") % {'command_string': command_string, 'result0': result[0], 'result1': result[1], 'result2': result[2]})
 
     def stopNagiosEnvironment(self):
         # Stop nagios service
@@ -299,12 +299,12 @@ class TestHostProcess(TestCase):
 
     def testNonExistingHost(self):
         host = get_business_process('non-existant host', process_type='host')
-        self.assertEqual(3, host.get_status(), "non existant host processes should have unknown status")
+        self.assertEqual(3, host.get_status(), _("non existant host processes should have unknown status"))
 
     def testExistingHost(self):
         #localhost = self.livestatus.get_hosts('Filter: host_name = ok_host')
         host = get_business_process('ok_host', process_type='host')
-        self.assertEqual(0, host.get_status(), "the host ok_host should always has status ok")
+        self.assertEqual(0, host.get_status(), _("the host ok_host should always has status ok"))
 
     def testDomainProcess(self):
         domain = get_business_process(process_name='oksad.is', process_type='domain')
