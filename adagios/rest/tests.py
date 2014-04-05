@@ -30,10 +30,10 @@ class LiveStatusTestCase(unittest.TestCase):
             c = Client()
             response = c.post(path=path, data=data)
             json_data = json.loads(response.content)
-            self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % path)
-            self.assertEqual(True, 'addresslist' in json_data, "Expected 'addresslist' to appear in response")
+            self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
+            self.assertEqual(True, 'addresslist' in json_data, _("Expected 'addresslist' to appear in response"))
         except KeyError, e:
-            self.assertEqual(True, "Unhandled exception while loading %s: %s" % (path, e))
+            self.assertEqual(True, _("Unhandled exception while loading %s: %s") % (path, e))
 
 
     def loadPage(self, url):
@@ -41,6 +41,6 @@ class LiveStatusTestCase(unittest.TestCase):
         try:
             c = Client()
             response = c.get(url)
-            self.assertEqual(response.status_code, 200, "Expected status code 200 for page %s" % url)
+            self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
         except Exception, e:
-            self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
+            self.assertEqual(True, _("Unhandled exception while loading %s: %s") % (url, e))

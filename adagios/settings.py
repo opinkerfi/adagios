@@ -201,11 +201,11 @@ if not django_secret_key:
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
     SECRET_KEY = get_random_string(50, chars)
     try:
-        data = "\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n" % SECRET_KEY
+        data = _("\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n") % SECRET_KEY
         with open(adagios_configfile, "a") as config_fh:
             config_fh.write(data)
     except Exception, e:
-        print("ERROR: Got %s while trying to save django secret_key in %s" % (type(e), adagios_configfile))
+        print(_("ERROR: Got %s while trying to save django secret_key in %s") % (type(e), adagios_configfile))
 
 else:
     SECRET_KEY = django_secret_key
