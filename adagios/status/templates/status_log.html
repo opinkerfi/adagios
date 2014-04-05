@@ -1,12 +1,12 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Status Log{% endblock %}
+{% block title %}{% trad "Status Log" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Status Log{% endblock %}
+{% block largeheader %}{% trad "Status Log" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_log %}">Log</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.status_log %}">{% trad "Log" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
@@ -32,7 +32,7 @@
         </div>
         <div class="pull-left" style="padding-left: 8px">
             <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search logs">
-            <button type="submit" name="submit" >Search</button>
+            <button type="submit" name="submit" >{% trans "Search" %}</button>
         </div>
         <div class="clearfix">
             <!-- <input type="text" class="slider" value=""> -->
@@ -40,25 +40,25 @@
     </form>
 
     <ul class="nav nav-tabs" id="objecttab">
-        <li class="active"><a href="#all" data-toggle="tab">All Logs</a></li>
-        <li><a href="#alerts" data-toggle="tab">State Changes</a></li>
-        <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
-        <li><a href="#warning" data-toggle="tab">Warnings</a></li>
-        <li><a href="#flapping" data-toggle="tab">Flapping Alerts</a></li>
-        <li><a href="#commands" data-toggle="tab" >External Commands</a></li>
-        <li><a href="#passive" data-toggle="tab" >Passive checks</a></li>
-        <li><a href="#unclassified" data-toggle="tab">Other</a></li>
+        <li class="active"><a href="#all" data-toggle="tab">{% trans "All Logs" %}</a></li>
+        <li><a href="#alerts" data-toggle="tab">{% trans "State Changes" %}</a></li>
+        <li><a href="#notifications_tab" data-toggle="tab">{% trans "Notifications" %}</a></li>
+        <li><a href="#warning" data-toggle="tab">{% trans "Warnings" %}</a></li>
+        <li><a href="#flapping" data-toggle="tab">{% trans "Flapping Alerts" %}</a></li>
+        <li><a href="#commands" data-toggle="tab" >{% trans "External Commands" %}</a></li>
+        <li><a href="#passive" data-toggle="tab" >{% trans "Passive checks" %}</a></li>
+        <li><a href="#unclassified" data-toggle="tab">{% trans "Other" %}</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane" id="alerts">
-            Last {{ logs.alerts|length }} state changes:
+            {% blocktrans %}Last {{ logs.alerts|length }} state changes:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed table-striped">
                 <thead>
-                <th>Time</th>
-                <th>Host</th>
-                <th>Service</th>
+                <th>{% trans "Time" %}</th>
+                <th>{% trans "Host" %}</th>
+                <th>{% trans "Service" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in logs.alerts %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -77,15 +77,15 @@
 
         </div>
         <div class="tab-pane " id="notifications_tab">
-            Last {{ logs.notification|length }} notifications:
+            {% blocktrans %}Last {{ logs.notification|length }} notifications:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed table-striped">
             <thead>
-            <th>Time</th>
-            <th>Contact</th>
-            <th>Host</th>
-            <th>Service</th>
+            <th>{% trans "Time" %}</th>
+            <th>{% trans "Contact" %}</th>
+            <th>{% trans "Host" %}</th>
+            <th>{% trans "Service" %}</th>
             <th></th>
-            <th>Message</th>
+            <th>{% trans "Message" %}</th>
             </thead>
             {% for line in logs.notification %}
                 {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -104,12 +104,12 @@
             </table>
         </div>
         <div class="tab-pane " id="flapping">
-            Last {{ logs.flapping|length }} Flapping alerts:
+            {% blocktrans %}Last {{ logs.flapping|length }} Flapping alerts:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
-                <th>Time</th>
+                <th>{% trans "Time" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in logs.flapping %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -125,12 +125,12 @@
             </table>
         </div>
         <div class="tab-pane " id="warning">
-            Last {{ logs.warning|length }} Warnings:
+            {% blocktrans %}Last {{ logs.warning|length }} Warnings:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
-                <th>Time</th>
+                <th>{% trans "Time" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in logs.warning %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -146,13 +146,13 @@
             </table>
         </div>
         <div class="tab-pane " id="commands">
-            Last {{ logs.command|length }} External commands:
+            {% blocktrans %}Last {{ logs.command|length }} External commands:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
-                <th>Time</th>
-                <th>Command</th>
+                <th>{% trans "Time" %}</th>
+                <th>{% trans "Command" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in logs.command %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -169,14 +169,14 @@
             </table>
         </div>
         <div class="tab-pane " id="passive">
-            Last {{ logs.passive|length }} passive check results:
+            {% blocktrans %}Last {{ logs.passive|length }} passive check results:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
-                <th>Time</th>
-                <th>Host</th>
-                <th>Service</th>
+                <th>{% trans "Time" %}</th>
+                <th>{% trans "Host" %}</th>
+                <th>{% trans "Service" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in logs.passive %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -194,12 +194,12 @@
             </table>
         </div>
         <div class="tab-pane " id="unclassified">
-            Last {{ logs.unclassified|length }} misc entries:
+            {% blocktrans %}Last {{ logs.unclassified|length }} misc entries:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
-                <th>Time</th>
+                <th>{% trans "Time" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in logs.unclassified %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -219,13 +219,13 @@
             </table>
         </div>
         <div class="tab-pane active" id="all">
-            Last {{ logs.all|length }} log entries:
+            {% blocktrans %}Last {{ logs.all|length }} log entries:{% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
-                <th>Time</th>
-                <th>Type</th>
+                <th>{% trans "Time" %}</th>
+                <th>{% trans "Type" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in logs.all %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
