@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Install Agent{% endblock %}
-{% block smallheader %}Install{% endblock %}
-{% block largeheader %}Agent{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.install_agent %}">Install Agent</a>{% endblock %}
+{% block title %}{% trans "Install Agent" %}${% endblock %}
+{% block smallheader %}{% trans "Install" %}{% endblock %}
+{% block largeheader %}{% trans "Agent" %}{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.install_agent %}">{% trans "Install Agent" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 {% block footer %}
     <script>
@@ -45,45 +45,45 @@
 
     {% if exit_status %}
         {% if exit_status == "0" %}
-            <div class="alert alert-success">Install Success. (exit status=0)</div>
+            <div class="alert alert-success">{% trans "Install Success." %} (exit status=0)</div>
         {% else %}
-            <div class="alert alert-danger">Install failed. (exit status={{ exit_status }})</div>
+            <div class="alert alert-danger">{% trans "Install failed." %} (exit status={{ exit_status }})</div>
         {% endif %}
     {% endif %}
 
     <!-- Friendly error messages -->
     <div id="friendly_error_messages">
         <div id="NT_STATUS_LOGON_FAILURE" class=hide>
-            <pre>Could not log in to server. Make sure you are using correct username and password.</pre>
+            <pre>{% trans "Could not log in to server. Make sure you are using correct username and password." %}</pre>
         </div>
 
         <div id="NT_STATUS_DUPLICATE_NAME" class=hide>
             <pre>
-The security settings on the remote windows host might forbid logins
+{% trans "The security settings on the remote windows host might forbid logins
 if the host name specified does not match the computername on the server.
 
-Try again with either correct hostname or the ip address of the server.</pre>
+Try again with either correct hostname or the ip address of the server." %}</pre>
         </div>
 
         <div id="NT_STATUS_ACCESS_DENIED" class=hide>
-            <pre>Make sure that the user is a local administrator on the windows host.</pre>
+            <pre>{% trans "Make sure that the user is a local administrator on the windows host." %}</pre>
         </div>
 
         <div id="nsclient_missing" class=hide>
-                Seems like there is no copy of nsclient installed on the remote server. Have you tried the following:
+                {% trans "Seems like there is no copy of nsclient installed on the remote server. Have you tried the following:" %}
 
                 <pre>
-# Get nsclient 32-bit and 64-bit copies from opinkerfi github repo:
+# {% trans "Get nsclient 32-bit and 64-bit copies from opinkerfi github repo:" %}
 cd /opt
 git clone http://github.com/opinkerfi/misc
 
-# Copy nsclient to where okconfig expects it to live:
+# {% trans "Copy nsclient to where okconfig expects it to live:" %}
 cp -r misc/nsclient/src {{ nsclient_installfiles }}/
 
-# Put the ip address of the nagios server in here:
+# {% trans "Put the ip address of the nagios server in here:" %}
 vim {{ nsclient_installfiles }}/datafiles/allowed_hosts.ini
                 </pre>
-                See more about this issue <a href="https://github.com/opinkerfi/okconfig/wiki/Deploying-nsclient-on-windows-servers">here</a>.
+                {% trans "See more about this issue" %} <a href="https://github.com/opinkerfi/okconfig/wiki/Deploying-nsclient-on-windows-servers">{% trans "here" %}</a>.
         </div>
     </div>
 
@@ -102,7 +102,7 @@ vim {{ nsclient_installfiles }}/datafiles/allowed_hosts.ini
         <form action="#" method="post" class="form-horizontal">{% csrf_token %}
             {% include "bootstrap_fields.html" with fields=form %}
             <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
             </div>
         </form>
     </div>

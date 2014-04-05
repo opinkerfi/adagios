@@ -1,30 +1,30 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Audit Log{% endblock %}
+{% block title %}{% trans "Audit Log" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Audit Log{% endblock %}
-{% block nav1 %}misc{% endblock %}
+{% block largeheader %}{% trans "Audit Log" %}{% endblock %}
+{% block nav1 %}{% trans "misc" %}{% endblock %}
 {% block toolbar %}{% endblock %}
 
 
 {% block content %}
     {% if no_git_repo_found %}
         <p class="lead">
-        No git repository found in {{ nagiosdir }}.</p>
+        {% blocktrans %}No git repository found in {{ nagiosdir }}.{% endblocktrans %}</p>
         <form method="post" class="form-horizontal">{% csrf_token %}
-        <button name="git_init" type="post" class="pull-right btn btn-success">Init a new git repo</button>
+        <button name="git_init" type="post" class="pull-right btn btn-success">{% trans "Init a new git repo" %}</button>
         </form>
     {% endif %}
     
     {% if uncommited_files %}
-        <div class="alert alert-warning">There are uncommited files in your git repo</div>
+        <div class="alert alert-warning">{% trans "There are uncommited files in your git repo" %}</div>
         <form method="post" class="form-horizontal">{% csrf_token %}
             <table class="gitlog well table table-condensed">
             <tr>
                 <th><input id="check_all" name="check_all" type="checkbox"/></th>
-                <th>status</th>
-                <th>filename</th>
+                <th>{% trans "status" %}</th>
+                <th>{% trans "filename" %}</th>
             </tr>
             {% for i in uncommited_files %}
                 <tr>
@@ -35,8 +35,8 @@
             {% endfor %}
             <tr><td colspan=3>
             <div id="form_control" class="pull-right">
-            <input id="git_commit_message" type="text" value="Bulk commit by adagios" name="git_commit_message" />
-            <button name="git_commit" type="post" class="btn btn-success">ok, commit selected files</button>
+            <input id="git_commit_message" type="text" value="{% trans "Bulk commit by adagios" %}" name="git_commit_message" />
+            <button name="git_commit" type="post" class="btn btn-success">{% trans "ok, commit selected files" %}</button>
             </div>
             </td></tr>
             </table>
@@ -45,14 +45,14 @@
     {% endif %}
     {% if commits %}
         <!-- List of recent commits -->
-        <h4>Previous changes (via git log)</h4>
+        <h4>{% trans "Previous changes (via git log)" %}</h4>
         <table class="gitlog table table-condensed" >
         <tr>
-            <th>Date</th>
-            <th>Summary</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Actions</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Summary" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Email" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
         {% for commit in commits %}
             <tr id="{{ commit.hash }}">
@@ -75,7 +75,7 @@
                     <table class="well table">
                         <thead>
                             <tr>
-                                <th>Diff</th>
+                                <th>{% trans "Diff" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -89,7 +89,7 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <pre>There is nothing in this commit</pre>
+                    <pre>{% trans "There is nothing in this commit" %}</pre>
                 {% endif %}
             </td>
             </tr>
@@ -98,7 +98,7 @@
         {% endfor %}
         </table>
     {% else %}
-        <h2>No git commits found in {{ nagiosdir }}</h2>
+        <h2>{% blocktrans %}No git commits found in {{ nagiosdir }}{% endblocktrans %}</h2>
     {% endif %}
  {% endblock %}
 

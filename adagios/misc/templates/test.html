@@ -1,10 +1,10 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Edit Check Command{% endblock %}
-{% block smallheader %}edit{% endblock %}
-{% block largeheader %}Check Command{% endblock %}
-{% block nav1 %}misc{% endblock %}
+{% block title %}{% trans "Edit Check Command" %}{% endblock %}
+{% block smallheader %}{% trans "edit" %}{% endblock %}
+{% block largeheader %}{% trans "Check Command" %}{% endblock %}
+{% block nav1 %}{% trans "misc" %}{% endblock %}
 
 {% block toolbar %}
 {% endblock %}
@@ -14,18 +14,18 @@
         <div class=row>
             <div class=span11>
             {% if form.results %}
-                <h4>Parsed Plugin Output</h4> <a href="{% url misc.views.test  %}">Click here for a new paste</a>
+                <h4>{% trans "Parsed Plugin Output" %}</h4> <a href="{% url misc.views.test  %}">{% trans "Click here for a new paste" %}</a>
                 <table class="table table-condensed" border=1>
                     <tr>
-                        <td>Plugin Summary</td>
+                        <td>{% trans "Plugin Summary" %}</td>
                         <td>{{ form.results.summary }}</td>
                     </tr>
                     <tr>
-                        <td>Long Output</td>
+                        <td>{% trans "Long Output" %}</td>
                         <td>{{ form.results.long_output }}</td>
                     </tr>
                     <tr>
-                        <td>Parsed Performance Data</td>
+                        <td>{% trans "Parsed Performance Data" %}</td>
                         <td>
                             {% if form.results.parsed_perfdata.metrics %}
                                 <table border=1 class=table style="border-color: #ffffff;" >
@@ -56,13 +56,13 @@
                                     {% endfor %}
                                 </table>
                             {% else %}
-                                No valid performance data found in this plugin.
+                                {% trans "No valid performance data found in this plugin." %}
                             {% endif %}
 
                         </td>
                     </tr>
                     <tr>
-                        <td>Raw Performance Data</td>
+                        <td>{% trans "Raw Performance Data" %}</td>
                         <td>{{ form.results.perfdata }}</td>
                     </tr>
 
@@ -78,7 +78,7 @@
 
             <!-- On get requests, let display a paste form -->
             <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-                    <h4>Paste the output of a nagios plugin below</h4>
+                    <h4>{% trans "Paste the output of a nagios plugin below" %}</h4>
                     <hr>
                     <textarea wrap="off" id="id_plugin_output" rows="10" class=span11 cols="80" name="plugin_output">test | load1=5</textarea>
                     <hr>

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Add Service{% endblock %}
-{% block smallheader %}add {% endblock %}
-{% block largeheader %}service {% endblock %}
+{% block title %}{% trans "Add Service" %}{% endblock %}
+{% block smallheader %}{% trans "add" %} {% endblock %}
+{% block largeheader %}{% trans "service" %} {% endblock %}
 {% block toolbar %}{% endblock %}
 {% block header %}
 {% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.addservice %}">Add Service</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.addservice %}">{% trans "Add Service" %}</a>{% endblock %}
 
 {% block content %}
 
@@ -16,7 +16,7 @@
 
                     <form action="#" id="add_service_to_host" method="POST" class="form-horizontal">{% csrf_token %}
                         <fieldset>
-                            <legend>Select host name and service</legend>
+                            <legend>{% trans "Select host name and service" %}</legend>
                             {% for field in form %}
                                 <label class="control-label" for="{{ field.name }}">{{ field.label }}{% if field.help %} <abbr rel="tooltip" title="{{ field.label }}" data-content="{{ field.help_text }}"><i class="icon-question-sign"></i></abbr> {% endif %}</label>
                                 <div class="controls" id="advanced_field">
@@ -38,7 +38,7 @@
                             </fieldset>
                         </div>
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Add service</button>
+                            <button class="btn btn-primary" type="submit">{% trans "Add service" %}</button>
                         </div>
                     </form>
                 {% endif %}

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Edit host{% endblock %}
-{% block smallheader %}Edit{% endblock %}
-{% block largeheader %}Host thresholds{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.choose_host %}">Edit Host</a>{% endblock %}
+{% block title %}{% trans "Edit host" %}{% endblock %}
+{% block smallheader %}{% trans "Edit" %}{% endblock %}
+{% block largeheader %}{% trans "Host thresholds" %}{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.choose_host %}">{% trans "Edit Host" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@ Please choose a host.
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Submit</button>
+            <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
         </div>
     </form>
 

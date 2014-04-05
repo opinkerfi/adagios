@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Edit Host{% endblock %}
-{% block smallheader %}Edit{% endblock %}
-{% block largeheader %}Host{% endblock %}
+{% block title %}{% trans "Edit Host" %}{% endblock %}
+{% block smallheader %}{% trans "Edit" %}{% endblock %}
+{% block largeheader %}{% trans "Host" %}{% endblock %}
 {% block toolbar %}{% endblock %}
 {% block content %}
 {% if okconfig_checks %}
@@ -12,8 +12,8 @@
 <div>
 	<table>
 	 <thead><tr>
-	  <th>Check</th>
-	  <th>Result</th>
+	  <th>{% trans "Check" %}</th>
+	  <th>{% trans "Result" %}</th>
 	 </tr></thead>
 	 <tbody>
 		{% for check,value in okconfig_checks.items %}

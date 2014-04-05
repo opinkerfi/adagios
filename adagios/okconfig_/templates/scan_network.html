@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Scan Network{% endblock %}
-{% block smallheader %}Scan{% endblock %}
-{% block largeheader %}Network{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.scan_network %}">Scan Network</a>{% endblock %}
+{% block title %}{% trans "Scan Network" %}{% endblock %}
+{% block smallheader %}{% trans "Scan" %}{% endblock %}
+{% block largeheader %}{% trans "Network" %}{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.scan_network %}">{% trans "Scan Network" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 {% block header %}
@@ -16,7 +16,7 @@
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
-            <button class="pull-right btn btn-success" type="submit">Scan Network</button>
+            <button class="pull-right btn btn-success" type="submit">{% trans "Scan Network" %}</button>
         </div>
     </form>
 
@@ -29,20 +29,20 @@
 <table class="table" id="scan_results">
   <thead>
 	<tr>
-	 <th>Add</th>
-	 <th>IP Address</th>
-	 <th>Host Name</th>
-	 <th>Is monitored</th>
-	 <th>Operating System</th>
-	 <th>Agent</th>
-	 <th>Webserver</th>
+	 <th>{% trans "Add" %}</th>
+	 <th>{% trans "IP Address" %}</th>
+	 <th>{% trans "Host Name" %}</th>
+	 <th>{% trans "Is monitored" %}</th>
+	 <th>{% trans "Operating System" %}</th>
+	 <th>{% trans "Agent" %}</th>
+	 <th>{% trans "Webserver" %}</th>
 	</tr>
   </thead>
   <tbody>
   {% for host in scan_results %}
 	<tr>
 	 {% if not host.ismonitored %}
-	 <td><a href="{% url okconfig_.views.addhost %}?host_name={{ host.hostname }}&address={{ host.ipaddress }}">Add</a></td>
+	 <td><a href="{% url okconfig_.views.addhost %}?host_name={{ host.hostname }}&address={{ host.ipaddress }}">{% trans "Add" %}</a></td>
 	 {% else %}
 	 <td></td>
 	 {% endif %}
