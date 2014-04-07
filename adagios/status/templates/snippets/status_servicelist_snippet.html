@@ -42,7 +42,7 @@
                     {% else %}
                         <div class="repeated_content hide">
                             <div title="{{ service.host_plugin_output }}" class="circle host state_{{ service.host_state }}"></div>
-                            <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='{% blocktrans %}Details for host {{ service.host_name }}'>{{ service.host_name }}</a>
+                            <a href="{% url status.views.detail%}?host_name={{ service.host_name }}" title='{% blocktrans %}Details for host {{ service.host_name }}{% endblocktrans %}'>{{ service.host_name }}</a>
                         </div>
                     {% endifchanged %}
                 </td>

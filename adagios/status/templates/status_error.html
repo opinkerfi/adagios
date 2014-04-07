@@ -17,8 +17,8 @@
             but to get the status part to work check the following:" %}
             <ul>
                 <li>{% blocktrans %}Is <a href="http://mathias-kettner.de/checkmk_livestatus.html\">mk-livestatus</a> installed ?{% endblocktrans %}</li>
-                <li>Does <a href="{% url objectbrowser.views.edit_nagios_cfg %}">nagios.cfg</a> have a broker_module= line that loads mk-livestatus ?</li>
-                <li>Are there any errors related to livestatus in  <a href="{% url status.views.status_log %}?search=livestatus">nagios logfiles</a> ?</li>
+                <li>{% url objectbrowser.views.edit_nagios_cfg as the_url %}{% blocktrans %}Does <a href="{{ the_url }}">nagios.cfg</a> have a broker_module= line that loads mk-livestatus ?{% endblocktrans %}</li>
+                <li>{% url status.views.status_log as the_url %}{% blocktrans %}Are there any errors related to livestatus in  <a href="{{ the_url }}?search=livestatus">nagios logfiles</a>{% endblocktrans %} ?</li>
             </ul>
 
             {% trans "Install instructions for rpm-based systems:" %}
@@ -45,13 +45,13 @@ service nagios3 reload
             </p>
             <ul>
                 <li>
-                    Please verify your <a href="{% url misc.views.settings %}">settings</a> and check all paths are valid.
+                    {% url url misc.views.settings as the_url %}{% blocktrans %}Please verify your <a href="{{ the_url }}">settings</a> and check all paths are valid.{% endblocktrans %}
                 </li>
                 <li>
                     {% trans "check that nagios is in fact running and sudoers.d is correctly configured." %}
                 </li>
                 <li>
-                    Try starting it by clicking <a href="{% url misc.views.nagios_service %}">here</a> and see if you are getting some sort of errors
+                    {% url misc.views.nagios_service as the_url %}{% blocktrans %}Try starting it by clicking <a href="{{ the_url }}">here</a> and see if you are getting some sort of errors{% endblocktrans %}
                 </li>
             </ul>
         {% endif %}
@@ -63,9 +63,9 @@ service nagios3 reload
             {% trans "So! Adagios is up and running. But you need to install and configure a monitoring engine." %}
             </p>
             <p>
-                If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already installed.
-                You should head over to <a href="{% url adagios.misc.views.settings %}">settings page</a> and
-                configure right paths.
+                {% url adagios.misc.views.settings as the_url %}{% blocktrans %}If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already installed.
+                You should head over to <a href="{ the_url  }}">settings page</a> and
+                configure right paths.{% endblocktrans %}
             </p>
             <p>
                 {% blocktrans %}If you don't have a monitoring engine installed you should take a look at our
@@ -76,7 +76,8 @@ service nagios3 reload
             {% if "Not a git repository" in exception %}
                 <p>{% trans "So! Seems like your configuration directory is not a git repository but Adagios was configured to that it uses git." %}</p>
                 <p>
-                    It's not a big deal, all you have to do is to visit <a href="{% url adagios.misc.views.gitlog %}">this page</a> and we will generate one for you.
+                    {% url adagios.misc.views.gitlog as the_url %}
+		    {% blocktrans %}It's not a big deal, all you have to do is to visit <a href="{{ the_url  }}">this page</a> and we will generate one for you.{% endblocktrans %}
                 </p>
                 <p>
                     {% trans "You configuration files should always be a git repository anyway, so this is for your own good :)" %}
