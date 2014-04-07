@@ -82,8 +82,8 @@
                 <td class="service_small hidden-phone">
                     {% if service.last_check != 0 %}
                         <span title="{{ service.last_check|timestamp|date:'Y-m-d H:i' }}">
-                            {% blocktrans %}{{ service.last_check|timestamp|timesince }} ago{% endblocktrans %}
-                        </span>
+                            {% blocktrans with lc=service.last_check|timestamp|timesince %}{{ lc }} ago{% endblocktrans %}
+			</span>
                     {% else %}
                     {% trans "never" %}
                     {% endif %}
