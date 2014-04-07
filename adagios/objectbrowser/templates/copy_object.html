@@ -4,7 +4,7 @@
 {% block title %}{% trans "Copy Object" %}{% endblock %}
 {% block smallheader %}{% trans "Copy" %}{% endblock %}
 {% block largeheader %}{{ object.object_type }}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
+{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 
@@ -14,8 +14,9 @@
             <div class="alert alert-success">
                 <button class="close" data-dismiss="alert">×</button>
                 <strong>{% trans "Success!" %}</strong>
-                {{ i.object_type }} <a href="{% url edit_object i.id  %}">"{{ i.description }}"</a>
-                was successfully saved to {{ i.filename }}.
+		{% url edit_object i.id as the_url %}
+                {% blocktrans %}{{ i.object_type }} <a href="{{ the_url }}">"{{ i.description }}"</a>
+                was successfully saved to {{ i.filename }}.{% endblocktrans %}
             </div>
         {% endfor %}
     {% else %}

@@ -68,7 +68,7 @@
                 {% if row.state  == 0 %}
                 <td class="alert alert-success">{% trans "Host UP" %}</td>
                 {% else %}
-                <td class="alert alert-danger">{% blocktrans %}{% if row.childs %}Network outage {% else %}Host Down {% endif %}{% endblocktrans %}</td>
+                <td class="alert alert-danger">{% if row.childs %}{% trans "Network outage" %} {% else %}{% trans "Host Down" %} {% endif %}</td>
                 {% endif %}
             {% endif %}
             <td>

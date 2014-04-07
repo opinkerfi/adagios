@@ -495,7 +495,7 @@
                         <li><a href="{{ pnp_url }}">pnp4nagios</a>{% trans " is installed and working" %}</li>
                         <li><i>{% trans "PNP Filepath" %}</i>{% trans " is correctly configured under " %}<a href="{% url misc.views.settings %}">{% trans "settings" %}</a></li>
                         <li>{% trans "User running nagios is a member of the unix groups apache or www-data" %}</li>
-                        <li>{% blocktrans %}Click <a href="{% url pnp.views.pnp "json" %}">here</a> to see pnp4nagios output{% endblocktrans %}</li>
+                        <li>{% url pnp.views.pnp "json" as the_url %} {% blocktrans %}Click <a href="{{ the_url }}">here</a> to see pnp4nagios output{% endblocktrans %}</li>
                         </ul>
                     {% endif %}
                     {% trans "No Performance data is available for this {{ my_object.object_type }}." %}
