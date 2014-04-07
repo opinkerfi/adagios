@@ -32,7 +32,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            {% transblock %}No subgroups in {{ bp.display_name }}{% endtransblock %}
+            {% blocktrans with name=bp.display_name %}No subgroups in {{ name }}{% endblocktrans %}
         {% endif %}
         <h4 class="dashboard_header">{% trans "Graphs" %}</h4>
         <div id="objecttab" class="tabbable"> <!-- Only required for left/right tabs -->

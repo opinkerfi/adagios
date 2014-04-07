@@ -175,12 +175,15 @@
 
         <div class="tab-pane" id="information">
             <p>
-              {% blocktrans %}  This {{ my_object.object_type }} is checked every <a href="#">{{ my_object.check_interval }}</a> minutes.
-
-                When a problem occurs it will be checked <a href="#">{{ my_object.max_check_attempts }}</a> times
-
-                every <a href="#">{{ my_object.retry_interval }}</a> minutes before going to
-                hard state and start sending out notifications.{% endblocktrans %}
+              {% blocktrans with ot=my_object.object_type ci=my_object.check_interval %}
+	      This {{ ot }} is checked every <a href="#">{{ ci }}</a> minutes.
+	      {% endblocktrans %}
+	      
+	      {% blocktrans with mca=my_object.max_check_attempts ri=my_object.retry_interval %}
+              When a problem occurs it will be checked <a href="#">{{ mca }}</a> times
+              every <a href="#">{{ ri }}</a> minutes before going to
+              hard state and start sending out notifications.
+	      {% endblocktrans %}
             </p>
 
             {% if my_object.notes %}
@@ -221,7 +224,7 @@
                         {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
-                            {% transblock %}(currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period){% endtransblock %}
+                            {% blocktrans %}(currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period){% endblocktrans %}
                         </span>
                     </td>
                 </tr>
@@ -234,7 +237,7 @@
                         {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
-                            {% transblock %}(currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period){% endtransblock %}
+                            {% blocktrans %}(currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period){% endblocktrans %}
                         </span>
                     </td>
                 </tr>
