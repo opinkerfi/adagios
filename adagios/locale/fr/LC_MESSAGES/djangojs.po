@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-07 11:12-0400\n"
+"POT-Creation-Date: 2014-04-07 12:11-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,4 +20,32 @@ msgstr ""
 
 #: media/js/adagios.js:155
 msgid "yyyy-mm-dd"
+msgstr ""
+
+#: media/js/adagios.js:409
+msgid "Pending"
+msgstr ""
+
+#: media/js/adagios.js:410
+msgid "Executing check plugin"
+msgstr ""
+
+#: media/js/adagios.js:458
+msgid "No data received on stdout"
+msgstr ""
+
+#: media/js/adagios.js:462
+msgid "Plugin output (standard error)"
+msgstr ""
+
+#: media/js/adagios.js:477
+msgid "Error fetching JSON"
+msgstr ""
+
+#: media/js/adagios.js:478
+msgid "Failed to fetch data"
+msgstr ""
+
+#: media/js/adagios.js:515
+msgid "Select an item"
 msgstr ""

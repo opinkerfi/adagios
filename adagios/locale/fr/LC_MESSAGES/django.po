@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # dchabalier <daphnee.chabalier@gmail.com>, 2014
 # matthieucan <matthieu.caneill@savoirfairelinux.com>, 2014
@@ -10,14 +10,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adagios\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-07 11:12-0400\n"
+"POT-Creation-Date: 2014-04-07 12:11-0400\n"
 "PO-Revision-Date: 2014-04-07 15:16+0000\n"
 "Last-Translator: matthieucan <matthieu.caneill@savoirfairelinux.com>\n"
-"Language-Team: French (http://www.transifex.com/projects/p/adagios/language/fr/)\n"
+"Language-Team: French (http://www.transifex.com/projects/p/adagios/language/"
+"fr/)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: context_processors.py:244
@@ -34,19 +35,11 @@ msgstr ""
 #: context_processors.py:273
 msgid ""
 "SELinux is enabled, which is likely to give your monitoring engine "
-"problems., see <a href=\"https://access.redhat.com/knowledge/docs/en-"
-"US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html"
-"#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-"
+"problems., see <a href=\"https://access.redhat.com/knowledge/docs/en-US/"
+"Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index."
+"html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-"
 "Disabling_SELinux\">here</a> for information on how to disable it."
 msgstr ""
-
-#: manage.py:7
-#, python-format
-msgid ""
-"Error: Can't find the file 'settings.py' in the directory containing %r. It appears you've customized things.\n"
-"You'll have to run django-admin.py, passing it your settings module.\n"
-"(If the file settings.py does indeed exist, it's causing an ImportError somehow.)\n"
-msgstr "Erreur : Le fichier 'settings.py' est introuvable dans le dossier contenant %r. Vous avez probablement modifié certaines choses. \nVous devrez exécuter django-admin.py, en lui passant votre module de paramètres.\n(Si le fichier settings.py existe déjà, il déclenche probablement une erreur lors de l'importation.)\n"
 
 #: utils.py:44
 msgid "Adding Task:"
@@ -60,63 +53,65 @@ msgstr ""
 msgid "Error occured, but no error messages provided, what happened?"
 msgstr ""
 
-#: bi/__init__.py:87
+#: bi/__init__.py:88
 #, python-format
 msgid "Unknown state calculation method %s"
 msgstr "Méthode de calcul d'état %s inconnue"
 
-#: bi/__init__.py:103
+#: bi/__init__.py:104
 #, python-format
 msgid "We have not implemented how to use status method %s"
 msgstr "Utilisation de la méthode d'état %s non implémentée"
 
-#: bi/__init__.py:239
+#: bi/__init__.py:240
 #, python-format
 msgid "Invalid macro in string. %s"
 msgstr "Macro invalide dans la chaîne %s"
 
-#: bi/__init__.py:253
+#: bi/__init__.py:254
 #, python-format
 msgid "Could not resolve macro '%s'"
 msgstr "Impossible de résoudre la macro'%s'"
 
-#: bi/__init__.py:294
+#: bi/__init__.py:295
 #, python-format
 msgid "Dont know how to resolve macro named '%s'"
 msgstr "Impossible de résoudre la macro '%s'"
 
-#: bi/__init__.py:390
+#: bi/__init__.py:391
 #, python-format
 msgid ""
 "Cannot rename process to %s. Another process with same name already exists"
-msgstr "Impossible de renommer le processus vers %s. Un autre processus existe avec le même nom."
+msgstr ""
+"Impossible de renommer le processus vers %s. Un autre processus existe avec "
+"le même nom."
 
-#: bi/__init__.py:453
+#: bi/__init__.py:454
 #, python-format
 msgid "This is the %s attribute for object definition"
 msgstr "Ceci est l'attribut %s pour la définition de l'objet"
 
-#: bi/__init__.py:517
+#: bi/__init__.py:518
 #, python-format
 msgid "You are looking at the hostgorup %s"
 msgstr "Ceci est le groupe d'hôtes %s"
 
-#: bi/__init__.py:633
+#: bi/__init__.py:634
 #, python-format
 msgid "service %(service)s on host %(host)s"
 msgstr "service %(service)s sur l'hôte %(host)s"
 
-#: bi/__init__.py:676
+#: bi/__init__.py:677
 #, python-format
 msgid "%s is not a status calculation method i know"
 msgstr "Méthode de calcul d'état %s inconnue"
 
-#: bi/__init__.py:709
+#: bi/__init__.py:710
 #, python-format
 msgid "Failed to create host %s"
 msgstr "Impossible de créer l'hôte %s"
 
-#: bi/__init__.py:733
+#: bi/__init__.py:734
 msgid "Host not found: "
 msgstr "Hôte non trouvé "
 
@@ -126,32 +121,45 @@ msgstr "Nom unique pour cette règle métier"
 
 #: bi/forms.py:52 status/forms.py:61
 msgid ""
-"This is the name that will be displayed to users on this process. Usually it"
-" is the name of the system this business group represents."
-msgstr "Ceci est le nom qui sera affiché aux utilisateurs pour cette règle métier. Habituellement, c'est le nom du système que ce groupe de règle métier représente."
+"This is the name that will be displayed to users on this process. Usually it "
+"is the name of the system this business group represents."
+msgstr ""
+"Ceci est le nom qui sera affiché aux utilisateurs pour cette règle métier. "
+"Habituellement, c'est le nom du système que ce groupe de règle métier "
+"représente."
 
 #: bi/forms.py:54 status/forms.py:63
 msgid ""
 "Here you can put in any description of the business process you are adding. "
 "Its a good idea to write down what the business process is about and who to "
 "contact in case of downtimes."
-msgstr "Vous pouvez inscrire ici toute description des règles métier que vous ajoutez. C'est une bonne idée de noter ce que fait la règle métier et qui contacter en cas d'interruption de service."
+msgstr ""
+"Vous pouvez inscrire ici toute description des règles métier que vous "
+"ajoutez. C'est une bonne idée de noter ce que fait la règle métier et qui "
+"contacter en cas d'interruption de service."
 
 #: bi/forms.py:56 status/forms.py:65
 msgid ""
 "Here you can choose which method is used to calculate the global status of "
 "this business process"
-msgstr "Vous pouvez choisir ici quelle méthode est utilisée pour calculer l'état global de cette règle métier"
+msgstr ""
+"Vous pouvez choisir ici quelle méthode est utilisée pour calculer l'état "
+"global de cette règle métier"
 
 #: bi/forms.py:58 status/forms.py:67
 msgid ""
 "Human friendly text for this respective state. You can type whatever you "
 "want but nagios style exit codes indicate that 0 should be 'ok'"
-msgstr "Texte compréhensible pour cet état particulier. Vous pouvez écrire ce que vous voulez, mais les codes de sortie Nagios indiquent que 0 correspond à 'ok'"
+msgstr ""
+"Texte compréhensible pour cet état particulier. Vous pouvez écrire ce que "
+"vous voulez, mais les codes de sortie Nagios indiquent que 0 correspond à "
+"'ok'"
 
 #: bi/forms.py:60 status/forms.py:69
 msgid "Typically used to represent warning or performance problems"
-msgstr "Utilisé normalement pour signaler des avertissements ou des problèmes de performance."
+msgstr ""
+"Utilisé normalement pour signaler des avertissements ou des problèmes de "
+"performance."
 
 #: bi/forms.py:62 status/forms.py:71
 msgid "Typically used to represent critical status"
@@ -165,56 +173,63 @@ msgstr "Utilisez ceci quand l'état est inconnu"
 #, python-format
 msgid ""
 "Cannot rename process to %s. Another process with that name already exists"
-msgstr "Impossible de renommer le processus vers %s. Un autre processus avec ce nom existe déjà"
+msgstr ""
+"Impossible de renommer le processus vers %s. Un autre processus avec ce nom "
+"existe déjà"
 
 #: bi/forms.py:150 status/forms.py:159
 msgid "Put here a friendly description of the graph"
 msgstr "Inscrivez ici une description explicite du graphique"
 
-#: bi/tests.py:140 rest/tests.py:33 rest/tests.py:44 status/tests.py:68
+#: bi/tests.py:141 rest/tests.py:34 rest/tests.py:45 status/tests.py:69
 #, python-format
 msgid "Expected status code 200 for page %s"
 msgstr "Code de retour 200 attendu pour la page %s"
 
-#: bi/tests.py:157 bi/tests.py:170
+#: bi/tests.py:158 bi/tests.py:171
 msgid "Empty bi process should have status unknown"
 msgstr "Les processus BI vides devraient avoir un état inconnu."
 
-#: bi/tests.py:160 bi/tests.py:173
+#: bi/tests.py:161 bi/tests.py:174
 msgid "BI process with one ok subitem, should have state OK"
-msgstr "Les processus BI avec un sous-élément en état OK devraient être en état OK"
+msgstr ""
+"Les processus BI avec un sous-élément en état OK devraient être en état OK"
 
-#: bi/tests.py:163
+#: bi/tests.py:164
 msgid "BI process with one failed item should have a critical state"
-msgstr "Les processus BI avec un élément en erreur devraient avoir un état critique"
+msgstr ""
+"Les processus BI avec un élément en erreur devraient avoir un état critique"
 
-#: bi/tests.py:166
+#: bi/tests.py:167
 msgid "BI process using use_best_state should be returning OK"
 msgstr "Les processus BI utilisant use_best_state devraient retourner OK"
 
-#: bi/tests.py:176
+#: bi/tests.py:177
 msgid "BI subprocess that is untagged should yield an ok state"
-msgstr "Le sous-processus BI qui n'est pas étiqueté devrait retourner un état OK"
+msgstr ""
+"Le sous-processus BI qui n'est pas étiqueté devrait retourner un état OK"
 
-#: bi/tests.py:179
+#: bi/tests.py:180
 msgid "A Non critical subprocess should yield 'minor problem'"
 msgstr "Un sous-processus non critique devrait retourner 'problème mineur'"
 
-#: bi/tests.py:182
+#: bi/tests.py:183
 msgid "A critical process in failed state should yield major problem"
 msgstr "Un processus en état critique devrait retourner un problème majeur"
 
-#: bi/tests.py:185
+#: bi/tests.py:186
 msgid ""
 "Adding another non critical subprocess should still yield a critical state"
-msgstr "L'ajout d'un autre sous-processus non critique devrait encore retourner un état critique"
+msgstr ""
+"L'ajout d'un autre sous-processus non critique devrait encore retourner un "
+"état critique"
 
-#: bi/tests.py:218
+#: bi/tests.py:219
 #, python-format
 msgid "%(typee)s while trying to read livestatus: %(e)s"
 msgstr ""
 
-#: bi/tests.py:285
+#: bi/tests.py:286
 #, python-format
 msgid ""
 "Failed to start nagios. Command: %(command_string)s\n"
@@ -223,11 +238,11 @@ msgid ""
 "stderr=%(result2)s"
 msgstr ""
 
-#: bi/tests.py:302
+#: bi/tests.py:303
 msgid "non existant host processes should have unknown status"
 msgstr ""
 
-#: bi/tests.py:307
+#: bi/tests.py:308
 msgid "the host ok_host should always has status ok"
 msgstr ""
 
@@ -643,16 +658,17 @@ msgstr ""
 #: contrib/lib/dashboards/raymii.html:84
 #, python-format
 msgid ""
-"Based on a dashboard by <a href=\"https://raymii.org\">Remy van Elst "
-"(code)</a> and <a href=\"https://github.com/JobV\">Job van der Voort "
-"(design)</a>.\" %%}"
+"Based on a dashboard by <a href=\"https://raymii.org\">Remy van Elst (code)</"
+"a> and <a href=\"https://github.com/JobV\">Job van der Voort (design)</a>.\" "
+"%%}"
 msgstr ""
 
 #: contrib/lib/dashboards/raymii.html:94
 #, python-format
 msgid ""
 "\n"
-"        <a href=\"%(the_url)s?host_name=HOST&service_description=SERVICE\"> #NUMBER <b>SERVICE</b> on <i>HOST</i></a> OUTPUT\n"
+"        <a href=\"%(the_url)s?host_name=HOST&service_description=SERVICE\"> "
+"#NUMBER <b>SERVICE</b> on <i>HOST</i></a> OUTPUT\n"
 "\t"
 msgstr ""
 
@@ -702,7 +718,8 @@ msgstr ""
 #: contrib/templates/contrib_index.html:17
 #, python-format
 msgid ""
-"Here you can see a list of user contributed views for Adagios. You can make your own\n"
+"Here you can see a list of user contributed views for Adagios. You can make "
+"your own\n"
 "        from <i>%(settings.contrib_dir)s</i>."
 msgstr ""
 
@@ -710,10 +727,6 @@ msgstr ""
 msgid ""
 "Please see the examples below for assistance on creating your own custom "
 "views."
-msgstr ""
-
-#: media/glyph.html:5
-msgid "en"
 msgstr ""
 
 #: misc/forms.py:34
@@ -788,8 +801,8 @@ msgstr ""
 
 #: misc/forms.py:104
 msgid ""
-"Path to you nagios init script. Adagios will use this when "
-"stopping/starting/reloading nagios"
+"Path to you nagios init script. Adagios will use this when stopping/starting/"
+"reloading nagios"
 msgstr ""
 
 #: misc/forms.py:106
@@ -800,8 +813,8 @@ msgstr ""
 
 #: misc/forms.py:108
 msgid ""
-"Path to MK Livestatus socket. If left empty Adagios will try to autodiscover"
-" from your nagios.cfg"
+"Path to MK Livestatus socket. If left empty Adagios will try to autodiscover "
+"from your nagios.cfg"
 msgstr ""
 
 #: misc/forms.py:112
@@ -814,15 +827,14 @@ msgstr ""
 
 #: misc/forms.py:117
 msgid ""
-"If set. Users in Status view will only see hosts/services they are a contact"
-" for. Unset means everyone will see everything."
+"If set. Users in Status view will only see hosts/services they are a contact "
+"for. Unset means everyone will see everything."
 msgstr ""
 
 #: misc/forms.py:120
 msgid ""
 "If set. Enable status view which is an alternative to nagios legacy web "
-"interface. You will need to restart web server for the changes to take "
-"effect"
+"interface. You will need to restart web server for the changes to take effect"
 msgstr ""
 
 #: misc/forms.py:123
@@ -1000,8 +1012,8 @@ msgstr ""
 #: misc/helpers.py:148
 #, python-format
 msgid ""
-"identifier must be in the form of "
-"host_name::service_description::attribute_name (got %s)"
+"identifier must be in the form of host_name::service_description::"
+"attribute_name (got %s)"
 msgstr ""
 
 #: misc/helpers.py:154
@@ -1101,7 +1113,8 @@ msgstr ""
 
 #: misc/views.py:377
 #, python-format
-msgid "Service \"%s\"\" not found. Maybe a typo or you do not have access to it ?"
+msgid ""
+"Service \"%s\"\" not found. Maybe a typo or you do not have access to it ?"
 msgstr ""
 
 #: misc/views.py:382
@@ -1133,8 +1146,8 @@ msgstr ""
 
 #: misc/templates/frontpage.html:31
 msgid ""
-"Edit Nagios configs in-place without a database backend (thanks <a "
-"href=\"http://pynag.org\">pynag</a>)"
+"Edit Nagios configs in-place without a database backend (thanks <a href="
+"\"http://pynag.org\">pynag</a>)"
 msgstr ""
 
 #: misc/templates/frontpage.html:32
@@ -1155,9 +1168,8 @@ msgstr ""
 
 #: misc/templates/frontpage.html:38
 msgid ""
-"Adagios also integrates nicely with <a "
-"href=\"https://github.com/opinkerfi/okconfig\">okconfig</a> offering "
-"features such as:"
+"Adagios also integrates nicely with <a href=\"https://github.com/opinkerfi/"
+"okconfig\">okconfig</a> offering features such as:"
 msgstr ""
 
 #: misc/templates/frontpage.html:40
@@ -1166,9 +1178,9 @@ msgstr ""
 
 #: misc/templates/frontpage.html:41
 msgid ""
-"Preconfigured templates (Windows, Linux, Oracle, Brocade, <a "
-"href=\"https://github.com/opinkerfi/okconfig/tree/master/usr/share/okconfig/templates\">and"
-" more...</a>)"
+"Preconfigured templates (Windows, Linux, Oracle, Brocade, <a href=\"https://"
+"github.com/opinkerfi/okconfig/tree/master/usr/share/okconfig/templates\">and "
+"more...</a>)"
 msgstr ""
 
 #: misc/templates/frontpage.html:42
@@ -1191,8 +1203,8 @@ msgstr ""
 
 #: misc/templates/frontpage.html:49
 msgid ""
-"Latest Stable version is</strong>: <a href=\"\" id=\"version_info\"><span "
-"id=\"latest_version\">Checking for latest version</span></a>"
+"Latest Stable version is</strong>: <a href=\"\" id=\"version_info\"><span id="
+"\"latest_version\">Checking for latest version</span></a>"
 msgstr ""
 
 #: misc/templates/frontpage.html:50
@@ -1205,8 +1217,8 @@ msgstr ""
 
 #: misc/templates/frontpage.html:56
 msgid ""
-"If you are looking for the project page, it is <a "
-"href=\"http://adagios.org\">right here</a>"
+"If you are looking for the project page, it is <a href=\"http://adagios.org"
+"\">right here</a>"
 msgstr ""
 
 #: misc/templates/gitlog.html:4 misc/templates/gitlog.html.py:6
@@ -1361,13 +1373,15 @@ msgstr ""
 #, python-format
 msgid ""
 "Something does not smell right. We ran %(command)s and got no output.\n"
-"                    Usually when this happens there is a problem with sudoers configuration."
+"                    Usually when this happens there is a problem with "
+"sudoers configuration."
 msgstr ""
 
 #: misc/templates/nagios_service.html:57
 msgid ""
 "Inspect webserver apache log and check if there are any sudo errors.\n"
-"                    Your <a>/etc/sudoers.d/adagios</a> should have something like this:"
+"                    Your <a>/etc/sudoers.d/adagios</a> should have something "
+"like this:"
 msgstr ""
 
 #: misc/templates/nagios_service.html:70
@@ -1409,8 +1423,7 @@ msgstr ""
 
 #: misc/templates/pnp4nagios.html:15
 msgid ""
-"This page helps you configure PNP using the so-called \"bulk npcmod\" "
-"method."
+"This page helps you configure PNP using the so-called \"bulk npcmod\" method."
 msgstr ""
 
 #: misc/templates/pnp4nagios.html:19
@@ -1435,8 +1448,8 @@ msgstr ""
 
 #: misc/templates/pnp4nagios.html:39
 msgid ""
-"This tab helps you configure your npcd.cfg file which controls the behaviour"
-" of npcd daemon."
+"This tab helps you configure your npcd.cfg file which controls the behaviour "
+"of npcd daemon."
 msgstr ""
 
 #: misc/templates/pnp4nagios.html:45
@@ -1451,8 +1464,8 @@ msgstr ""
 
 #: misc/templates/pnp4nagios.html:54
 msgid ""
-"Make sure permissions are correct and that config file path in Broker Module"
-" tab is correct"
+"Make sure permissions are correct and that config file path in Broker Module "
+"tab is correct"
 msgstr ""
 
 #: misc/templates/pnp4nagios.html:63
@@ -1797,8 +1810,7 @@ msgstr ""
 
 #: objectbrowser/help_text.py:38
 msgid ""
-"Network parents of this host. No notification will be sent if parent is "
-"down."
+"Network parents of this host. No notification will be sent if parent is down."
 msgstr ""
 
 #: objectbrowser/help_text.py:40
@@ -1902,8 +1914,8 @@ msgstr ""
 
 #: objectbrowser/help_text.py:122
 msgid ""
-"Enable if you want nagios to passively accept check results from an external"
-" source"
+"Enable if you want nagios to passively accept check results from an external "
+"source"
 msgstr ""
 
 #: objectbrowser/help_text.py:124
@@ -1989,8 +2001,7 @@ msgid "What command will be used to send host notifications to this contact"
 msgstr ""
 
 #: objectbrowser/help_text.py:188
-msgid ""
-"What command will be used to send service notifications to this contact"
+msgid "What command will be used to send service notifications to this contact"
 msgstr ""
 
 #: objectbrowser/help_text.py:190
@@ -2041,19 +2052,19 @@ msgstr ""
 msgid "Command line of the command that will be executed"
 msgstr ""
 
-#: objectbrowser/tests.py:17
+#: objectbrowser/tests.py:18
 #, python-format
 msgid ""
 "Parsed nagios.cfg, but found no objects, are you sure this is the right "
 "config file (%(config)s) ? "
 msgstr ""
 
-#: objectbrowser/tests.py:61
+#: objectbrowser/tests.py:62
 #, python-format
 msgid "Expected status code 200 for page %(url)s"
 msgstr ""
 
-#: objectbrowser/tests.py:63
+#: objectbrowser/tests.py:64
 #, python-format
 msgid "Unhandled exception while loading %(url)s: %(error)s"
 msgstr ""
@@ -2240,8 +2251,10 @@ msgstr ""
 #: objectbrowser/templates/add_object.html:19
 #, python-format
 msgid ""
-"If you are looking to add a %(object_type)s template, instead you should be adding a\n"
-"        <a href=\"%(the_url)s?object_type=%(object_type)s\">%(object_type)s template.</a>"
+"If you are looking to add a %(object_type)s template, instead you should be "
+"adding a\n"
+"        <a href=\"%(the_url)s?object_type=%(object_type)s\">%(object_type)s "
+"template.</a>"
 msgstr ""
 
 #: objectbrowser/templates/add_object.html:26
@@ -2351,6 +2364,7 @@ msgstr "Groupes d'hôtes"
 
 #: objectbrowser/templates/base_objectbrowser.html:174
 #: status/templates/status_servicegroups.html:4
+#: status/templates/status_servicegroups.html:7
 #: status/templates/status_servicegroups.html:11 templates/base.html:99
 msgid "Servicegroups"
 msgstr "Groupes de services"
@@ -2480,8 +2494,7 @@ msgstr ""
 
 #: objectbrowser/templates/bulk_delete.html:27
 msgid ""
-"You are about to delete multible objects. Are you sure you want to continue "
-"?"
+"You are about to delete multible objects. Are you sure you want to continue ?"
 msgstr ""
 
 #: objectbrowser/templates/bulk_delete.html:63
@@ -2517,7 +2530,8 @@ msgstr ""
 
 #: objectbrowser/templates/copy_object.html:24
 #, python-format
-msgid "You are about to copy %(object.object_type)s \"%(object.description)s\"."
+msgid ""
+"You are about to copy %(object.object_type)s \"%(object.description)s\"."
 msgstr ""
 
 #: objectbrowser/templates/copy_object.html:29
@@ -2633,8 +2647,10 @@ msgstr "Membres"
 #: objectbrowser/templates/edit_contactgroup.html:42
 #, python-format
 msgid ""
-"Following is a list of all contactgroups that <i>%(my_object.contactgroup_name)s</i> is a member of.\n"
-"                                Notifications sent to these groups will also go to %(my_object.contactgroup_name)s."
+"Following is a list of all contactgroups that <i>"
+"%(my_object.contactgroup_name)s</i> is a member of.\n"
+"                                Notifications sent to these groups will also "
+"go to %(my_object.contactgroup_name)s."
 msgstr ""
 
 #: objectbrowser/templates/edit_host.html:30
@@ -2699,8 +2715,7 @@ msgstr ""
 #: objectbrowser/templates/edit_servicegroup.html:63
 msgid ""
 "If you want to add specific services to this servicegroup. Use the advanced "
-"field or open that specific service and edit the \"servicegroups\" "
-"attribute."
+"field or open that specific service and edit the \"servicegroups\" attribute."
 msgstr ""
 
 #: objectbrowser/templates/error.html:4
@@ -2768,7 +2783,8 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            Perhaps you try browsing for what you were looking for <a href=\"%(the_url)s\">here</a>\n"
+"            Perhaps you try browsing for what you were looking for <a href="
+"\"%(the_url)s\">here</a>\n"
 "\t    "
 msgstr ""
 
@@ -3029,8 +3045,8 @@ msgstr ""
 #: okconfig_/views.py:228
 msgid ""
 "The security settings on the remote windows host might forbid logins if the "
-"host name specified does not match the computername on the server. Try again"
-" with either correct hostname or the ip address of the server."
+"host name specified does not match the computername on the server. Try again "
+"with either correct hostname or the ip address of the server."
 msgstr ""
 
 #: okconfig_/views.py:230
@@ -3263,8 +3279,8 @@ msgstr ""
 
 #: okconfig_/templates/install_agent.html:73
 msgid ""
-"Seems like there is no copy of nsclient installed on the remote server. Have"
-" you tried the following:"
+"Seems like there is no copy of nsclient installed on the remote server. Have "
+"you tried the following:"
 msgstr ""
 
 #: okconfig_/templates/install_agent.html:76
@@ -3333,54 +3349,53 @@ msgstr ""
 #: pnp/functions.py:56
 #, python-format
 msgid ""
-"Could not find pnp4nagios/index.php. Please specify it in "
-"adagios->settings->PNP. Tried %s"
+"Could not find pnp4nagios/index.php. Please specify it in adagios->settings-"
+">PNP. Tried %s"
 msgstr ""
 
-#: pnp/tests.py:22
+#: pnp/tests.py:23
 #, python-format
 msgid ""
 "We think pnp4nagios broker module is incorrectly configured. In nagios.cfg "
 "it looks like this: %s"
 msgstr ""
 
-#: pnp/tests.py:25
+#: pnp/tests.py:26
 #, python-format
 msgid ""
 "npcd broker_module module not found at \"%s\". Is nagios correctly "
 "configured?"
 msgstr ""
 
-#: pnp/tests.py:33
+#: pnp/tests.py:34
 msgid ""
 "npcd broker module has no config_file= argument. Is pnp4nagios correctly "
 "configured?"
 msgstr ""
 
-#: pnp/tests.py:35
+#: pnp/tests.py:36
 #, python-format
 msgid "PNP4nagios config file was not found (%s)."
 msgstr ""
 
-#: pnp/tests.py:38
-msgid ""
-"Nagios Broker module not found. Is pnp4nagios installed and configured?"
+#: pnp/tests.py:39
+msgid "Nagios Broker module not found. Is pnp4nagios installed and configured?"
 msgstr ""
 
-#: pnp/tests.py:43
+#: pnp/tests.py:44
 msgid "Tried to get json from pnp4nagios but result was improper"
 msgstr ""
 
-#: rest/tests.py:34
+#: rest/tests.py:35
 msgid "Expected 'addresslist' to appear in response"
 msgstr ""
 
-#: rest/tests.py:36
+#: rest/tests.py:37
 #, python-format
 msgid "Unhandled exception while loading %(path)s: %(exc)s"
 msgstr ""
 
-#: rest/tests.py:46
+#: rest/tests.py:47
 #, python-format
 msgid "Unhandled exception while loading %(url)s: %(exc)s"
 msgstr ""
@@ -3478,37 +3493,36 @@ msgstr ""
 msgid "ok no more waiting for "
 msgstr ""
 
-#: status/tests.py:23
+#: status/tests.py:24
 msgid "Could not get status.requests from livestatus"
 msgstr ""
 
-#: status/tests.py:32
+#: status/tests.py:33
 #, python-format
 msgid ""
 " We think livestatus is incorrectly configured. In nagios.cfg it looks like "
 "this: %s"
 msgstr ""
 
-#: status/tests.py:36
+#: status/tests.py:37
 #, python-format
 msgid ""
 " Livestatus Broker module not found at \"%s\". Is nagios correctly "
 "configured?"
 msgstr ""
 
-#: status/tests.py:38
+#: status/tests.py:39
 #, python-format
 msgid ""
 " Livestatus socket file was not found (%s). Make sure nagios is running and "
 "that livestatus module is loaded"
 msgstr ""
 
-#: status/tests.py:41
-msgid ""
-"Nagios Broker module not found. Is livestatus installed and configured?"
+#: status/tests.py:42
+msgid "Nagios Broker module not found. Is livestatus installed and configured?"
 msgstr ""
 
-#: status/tests.py:70
+#: status/tests.py:71
 #, python-format
 msgid "Unhandled exception while loading %(url)s: %(e)s"
 msgstr ""
@@ -3734,8 +3748,8 @@ msgstr ""
 
 #: status/templates/base_status.html:332
 msgid ""
-"We'd love to hear from you, but we cannot guarantee that your wish will come"
-" true."
+"We'd love to hear from you, but we cannot guarantee that your wish will come "
+"true."
 msgstr ""
 
 #: status/templates/base_status.html:335
@@ -4105,11 +4119,14 @@ msgstr ""
 #: status/templates/status_detail.html:178
 #, python-format
 msgid ""
-"  This %(my_object.object_type)s is checked every <a href=\"#\">%(my_object.check_interval)s</a> minutes.\n"
+"  This %(my_object.object_type)s is checked every <a href=\"#\">"
+"%(my_object.check_interval)s</a> minutes.\n"
 "\n"
-"                When a problem occurs it will be checked <a href=\"#\">%(my_object.max_check_attempts)s</a> times\n"
+"                When a problem occurs it will be checked <a href=\"#\">"
+"%(my_object.max_check_attempts)s</a> times\n"
 "\n"
-"                every <a href=\"#\">%(my_object.retry_interval)s</a> minutes before going to\n"
+"                every <a href=\"#\">%(my_object.retry_interval)s</a> minutes "
+"before going to\n"
 "                hard state and start sending out notifications."
 msgstr ""
 
@@ -4385,8 +4402,8 @@ msgstr ""
 #: status/templates/status_error.html:21
 #, python-format
 msgid ""
-"Are there any errors related to livestatus in  <a "
-"href=\"%(the_url)s?search=livestatus\">nagios logfiles</a>"
+"Are there any errors related to livestatus in  <a href=\"%(the_url)s?"
+"search=livestatus\">nagios logfiles</a>"
 msgstr ""
 
 #: status/templates/status_error.html:24
@@ -4430,15 +4447,19 @@ msgstr ""
 
 #: status/templates/status_error.html:66
 msgid ""
-"If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already installed.\n"
-"                You should head over to <a href=\"{ the_url  }}\">settings page</a> and\n"
+"If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already "
+"installed.\n"
+"                You should head over to <a href=\"{ the_url  }}\">settings "
+"page</a> and\n"
 "                configure right paths."
 msgstr ""
 
 #: status/templates/status_error.html:71
 msgid ""
-"If you don't have a monitoring engine installed you should take a look at our\n"
-"                <a href=\"http://adagios.org\">installation instructions</a> to get started."
+"If you don't have a monitoring engine installed you should take a look at "
+"our\n"
+"                <a href=\"http://adagios.org\">installation instructions</a> "
+"to get started."
 msgstr ""
 
 #: status/templates/status_error.html:77
@@ -4450,14 +4471,14 @@ msgstr ""
 #: status/templates/status_error.html:80
 #, python-format
 msgid ""
-"It's not a big deal, all you have to do is to visit <a "
-"href=\"%(the_url)s\">this page</a> and we will generate one for you."
+"It's not a big deal, all you have to do is to visit <a href=\"%(the_url)s"
+"\">this page</a> and we will generate one for you."
 msgstr ""
 
 #: status/templates/status_error.html:83
 msgid ""
-"You configuration files should always be a git repository anyway, so this is"
-" for your own good :)"
+"You configuration files should always be a git repository anyway, so this is "
+"for your own good :)"
 msgstr ""
 
 #: status/templates/status_error.html:98
@@ -4466,8 +4487,8 @@ msgstr ""
 
 #: status/templates/status_error.html:101
 msgid ""
-"<p>If you think this is a bug. Send the following information to the <a "
-"href=\"https://github.com/opinkerfi/adagios/issues\">developers</a>:</p>"
+"<p>If you think this is a bug. Send the following information to the <a href="
+"\"https://github.com/opinkerfi/adagios/issues\">developers</a>:</p>"
 msgstr ""
 
 #: status/templates/status_hostgroup.html:4
@@ -4580,9 +4601,11 @@ msgstr "Problèmes de service non gérés"
 #: status/templates/status_index.html:246
 #, python-format
 msgid ""
-"Adagios version: %(adagios_version)s. Latest: <span "
-"id=\"latest_version\">...</span>"
-msgstr "Version Adagios: %(adagios_version)s. Dernière: <span id=\"latest_version\">...</span>"
+"Adagios version: %(adagios_version)s. Latest: <span id=\"latest_version\">..."
+"</span>"
+msgstr ""
+"Version Adagios: %(adagios_version)s. Dernière: <span id=\"latest_version"
+"\">...</span>"
 
 #: status/templates/status_log.html:35
 msgid "Search"
@@ -4930,8 +4953,7 @@ msgid "comments"
 msgstr ""
 
 #: status/templates/test_livestatus.html:74
-msgid ""
-"a transparent access to the nagios logfiles (include archived ones)ones"
+msgid "a transparent access to the nagios logfiles (include archived ones)ones"
 msgstr ""
 
 #: status/templates/test_livestatus.html:74
@@ -5206,3 +5228,17 @@ msgstr "Paramètres"
 #: templates/snippets/top_navigation_bar.html:110
 msgid "PNP Integration"
 msgstr "Intégration PNP"
+
+#~ msgid ""
+#~ "Error: Can't find the file 'settings.py' in the directory containing %r. "
+#~ "It appears you've customized things.\n"
+#~ "You'll have to run django-admin.py, passing it your settings module.\n"
+#~ "(If the file settings.py does indeed exist, it's causing an ImportError "
+#~ "somehow.)\n"
+#~ msgstr ""
+#~ "Erreur : Le fichier 'settings.py' est introuvable dans le dossier "
+#~ "contenant %r. Vous avez probablement modifié certaines choses. \n"
+#~ "Vous devrez exécuter django-admin.py, en lui passant votre module de "
+#~ "paramètres.\n"
+#~ "(Si le fichier settings.py existe déjà, il déclenche probablement une "
+#~ "erreur lors de l'importation.)\n"
