@@ -123,7 +123,9 @@
                 </div>
                 <div class="tab-pane" id="macros">
                     <div class="well">
-                        {% blocktrans %}This tab contains custom macros (also called "custom variables") for this {{ my_object.object_type }}.{% endblocktrans %}
+                        {% blocktrans with type=my_object.object_type %}
+			This tab contains custom macros (also called "custom variables") for this {{ type }}.
+			{% endblocktrans %}
                     </div>
                     <fieldset>
                         {% for field in form %}

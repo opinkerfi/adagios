@@ -11,7 +11,7 @@
 {% load adagiostags %}
 
 {% block content %}
-    {% blocktrans %}Found {{ processes|length }} processes.{% endblocktrans %}
+    {% blocktrans with l=processes|length%}Found {{ l }} processes.{% endblocktrans %}
     <table class="table table-condensed well">
     <tr>
         <th>{% trans "Process Name" %}</th>

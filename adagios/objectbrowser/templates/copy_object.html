@@ -15,13 +15,16 @@
                 <button class="close" data-dismiss="alert">×</button>
                 <strong>{% trans "Success!" %}</strong>
 		{% url edit_object i.id as the_url %}
-                {% blocktrans %}{{ i.object_type }} <a href="{{ the_url }}">"{{ i.description }}"</a>
-                was successfully saved to {{ i.filename }}.{% endblocktrans %}
+                {% blocktrans with type=i.object_type desc=u.description file=i.filename %}
+		{{ type }} <a href="{{ the_url }}">"{{ desc }}"</a> was successfully saved to {{ file }}.
+		{% endblocktrans %}
             </div>
         {% endfor %}
     {% else %}
         <div class="alert alert-info">
-            {% blocktrans %}You are about to copy {{ object.object_type }} "{{ object.description }}".{% endblocktrans %}
+            {% blocktrans with type=i.object_type desc=u.description %}
+	    You are about to copy {{ type }} "{{ desc }}".
+	    {% endblocktrans %}
         </div>
         <p></p>
         <form  action="#" method="POST" class="form-horizontal">{% csrf_token %}

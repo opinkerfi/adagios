@@ -19,7 +19,7 @@ $(document).ready(function() {
 {% block content %}
 
     {% if objects %}
-        <h2>{% blocktrans %}{{ objects|length }} potential matches to what you were looking for{% endblocktrans %}</h2>
+        <h2>{% blocktrans with length=objects|length %}{{ length }} potential matches to what you were looking for{% endblocktrans %}</h2>
         <hr>
         <div class="objectbrowser_list_objects ui-tabs ui-widget ui-widget-content ui-corner-all">
 
@@ -53,7 +53,7 @@ $(document).ready(function() {
                 {% for i in services %}
                     <li>
                         <a href="{% url adagios.objectbrowser.views.edit_object object_id=i.id %}">
-                            {% blocktrans %}Edit service for all hosts in hostgroup {{ i.hostgroup_name }}{% endblocktrans %}
+                            {% blocktrans with name=i.hostgroup_name %}Edit service for all hosts in hostgroup {{ name }}{% endblocktrans %}
                         </a>
                     </li>
                     <li>

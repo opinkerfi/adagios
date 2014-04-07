@@ -49,7 +49,7 @@
                 <div class="well">
 
                 <p>
-                    {% blocktrans %}Sorry, but we could not read npcd config file {{ form.config_file.value }}.{% endblocktrans %}
+                    {% blocktrans with val=form.config_file.value %}Sorry, but we could not read npcd config file {{ val }}.{% endblocktrans %}
                 </p>
                 <p>{% trans "Make sure permissions are correct and that config file path in Broker Module tab is correct" %}</p>
                 </div>

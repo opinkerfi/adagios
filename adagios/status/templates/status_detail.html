@@ -224,7 +224,7 @@
                         {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
-                            {% blocktrans %}(currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period){% endblocktrans %}
+			    (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
                         </span>
                     </td>
                 </tr>
@@ -237,7 +237,7 @@
                         {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
-                            {% blocktrans %}(currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period){% endblocktrans %}
+                            (currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period)
                         </span>
                     </td>
                 </tr>

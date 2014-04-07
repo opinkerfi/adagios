@@ -26,7 +26,7 @@
         <div class="col-md-12">
             <h1 class="pull-left">{% trans "Status Dashboard" %}</h1>
             <div id="top-right" class="pull-right">
-                <div> {% blocktrans %}You are {{ request.META.REMOTE_USER }} coming from {{ request.META.REMOTE_ADDR }}.{% endblocktrans %} </div>
+                <div> {% blocktrans with user=request.META.REMOTE_USER addr=request.META.REMOTE_ADDR %}You are {{ user }} coming from {{ addr }}.{% endblocktrans %} </div>
                 <div id="information_dialog" class="dynamic"></div>
             </div>
         </div>
