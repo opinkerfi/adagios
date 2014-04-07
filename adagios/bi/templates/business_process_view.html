@@ -1,12 +1,12 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Business Process{% endblock %}
-{% block smallheader %}view{% endblock %}
-{% block largeheader %}Business Process{% endblock %}
+{% block title %}{% trans "Business Process" %}{% endblock %}
+{% block smallheader %}{% trans "view" %}{% endblock %}
+{% block largeheader %}{% trans "Business Process" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 

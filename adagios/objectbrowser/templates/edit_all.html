@@ -4,7 +4,7 @@
 {% block title %}Add new Object{% endblock %}
 {% block smallheader %}Add{% endblock %}
 {% block largeheader %}{{ object_type }}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
+{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser"%}</a>{% endblock %}
 
 {% block toolbar %}
 {% endblock %}
@@ -13,7 +13,7 @@
     <table class="table table-condensed well datatable">
     <thead>
     <tr>
-    <th>Short name</th>
+    <th>{% trans "Short name" %}</th>
     <th>{{ attribute_name }}</th>
     </tr>
     </thead>
@@ -53,7 +53,7 @@
 
             // Get the div right next to the input box for editing
             var message_div = $('#' + $(e.target).attr('name') + "_status");
-            message_div.html('<div class="pull-right"><div class="circle state_3"></div> Saving ...</div>');
+            message_div.html('<div class="pull-right"><div class="circle state_3"></div>' + gettext("Saving ...") + '</div>');
 
             tmp = adagios.status.change_attribute(
                     object_type,
@@ -62,17 +62,17 @@
                     new_value,
                     function(e) {
                         message_div.html(
-                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>undo </a>' +
+                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>' + gettext('undo') + '</a>' +
                         '<div class="pull-right">' +
-                        '<div class="circle state_0"></div>  Saved. ' +
+                        '<div class="circle state_0"></div>  ' + gettext('Saved.') + ' +
                         '</div> '
                         );
                     },
                     function(e) {
                         message_div.html(
-                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>undo </a>' +
+                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>' + gettext('undo') +'</a>' +
                         '<div class="pull-right">' +
-                        '<div class="circle state_2"></div>  Failed. ' +
+                        '<div class="circle state_2"></div>  ' + gettext('Failed.') + ' +
                         '</div> '
                         );
                     }

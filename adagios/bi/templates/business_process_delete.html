@@ -1,19 +1,19 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}Business Process{% endblock %}
-{% block smallheader %}view{% endblock %}
-{% block largeheader %}Business Process{% endblock %}
+{% block title %}{% trans "Business Process" %}{% endblock %}
+{% block smallheader %}{% trans "view" %}{% endblock %}
+{% block largeheader %}{% trans "Business Process" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
 {% block content %}
-    Are you sure you want to delete {{ bp }} ?
+    {% blocktrans %}Are you sure you want to delete {{ bp }} ?{% endblocktrans %}
     <form action="" method="post">{% csrf_token %}
-        <button type="submit" class="btn btn-danger">Yes, I am sure</button>
+        <button type="submit" class="btn btn-danger">{% trans "Yes, I am sure" %}</button>
     </form>
 {% endblock %}
 

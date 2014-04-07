@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}REST Interface{% endblock %}
-{% block nav1 %}rest{% endblock %}
-{% block smallheader %}rest{% endblock %}
+{% block title %}{% trans "REST Interface" %}{% endblock %}
+{% block nav1 %}{% trans "rest" %}{% endblock %}
+{% block smallheader %}{% trans "rest" %}{% endblock %}
 {% block largeheader %}{{ module_path }}{% endblock %}
 {% block sidebar %}{% endblock %}
 {% block toolbar %}{% endblock %}
 {% block content %}
     {% if rest_modules %}
-        <div class="alert alert-info">The following rest modules have been loaded:</div>
+        <div class="alert alert-info">{% trans "The following rest modules have been loaded:" %}</div>
         <ul>
             {% for k, v in rest_modules.items %}
             <li>

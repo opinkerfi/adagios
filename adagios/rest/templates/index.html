@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}REST Interface{% endblock %}
-{% block nav1 %}rest{% endblock %}
-{% block smallheader %}rest{% endblock %}
+{% block title %}{% trans "REST Interface" %}{% endblock %}
+{% block nav1 %}{% trans "rest" %}{% endblock %}
+{% block smallheader %}{% trans "rest" %}{% endblock %}
 {% block largeheader %}{{ module_path }}{% endblock %}
 {% block toolbar %}{% endblock %}
 {% block content %}
         {% if module_documenation %}
             <p>
-                The following is the documentation for the {{ module_path }} module:
+                {% blocktrans %}The following is the documentation for the {{ module_path }} module:{% endblocktrans %}
             </p>
             <pre class="alert alert-info">{{ module_documenation }}</pre>
         {% else %}
-            This module has no documentation.
+            {% trans "This module has no documentation." %}
         {% endif %}
 
         <div class=container-fluid>
@@ -22,7 +22,7 @@
         <div class=span6>
 
         {% if gets %}
-        <h2>Supported GET operations:</h2>
+        <h2>{% trans "Supported GET operations:" %}</h2>
         <table class="table well" >
             {% for i in gets %}
             <tr>
@@ -37,7 +37,7 @@
         </div>
 
         <div class=span6>
-        <h2>Supported POST operations</h2>
+        <h2>{% trans "Supported POST operations" %}</h2>
         <table class="table well">
             {% for i in puts %}
             <tr>

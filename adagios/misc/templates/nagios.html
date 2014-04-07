@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Monitor{% endblock %}
+{% block title %}{% trans "Monitor" %}{% endblock %}
 {% block page_content %}
 
 
 <iframe style="position: absolute;top: 40px; left: 0px" src="{{ nagios_url }}" width="100%" height="100%" >
-This iframe is supposed to display nagios url at {{ nagios_url }}
+{% blocktrans %}This iframe is supposed to display nagios url at {{ nagios_url }}{% endblocktrans %}
 </iframe>
 
 {% endblock %}

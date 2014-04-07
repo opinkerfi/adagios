@@ -6,14 +6,14 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url adagios.bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
 {% block content %}
     <ul class="nav nav-tabs" id="objecttab">
-        <li><a href="#bp" class="active" data-toggle="tab">Business Processes</a></li>
-        <li><a href="#thruk" class="" data-toggle="tab">Thruk Processes</a></li>
+        <li><a href="#bp" class="active" data-toggle="tab">{% trans "Business Processes" %}</a></li>
+        <li><a href="#thruk" class="" data-toggle="tab">{% trans "Thruk Processes" %}</a></li>
     </ul>
 
     <div class="tab-content">
@@ -21,12 +21,12 @@
             <ul id="processes"></ul>
         </div>
         <div class="tab-pane " id="thruk">
-            No thruk business processes are configured.
+            {% trans "No thruk business processes are configured." %}
         </div>
     </div>
 
 
-    <div id="total_count">You have 0 total business processes</div>
+    <div id="total_count">{% trans "You have 0 total business processes" %}</div>
 
     <!-- This div is used as a template on how to generate markup for a single business process -->
     <div class="hide" id="business-process-li-element">
@@ -43,7 +43,7 @@
             <span class="pull-right">
                                 <a href="__LOCATION__/edit/__PROCESS_TYPE__/__NAME__">edit</a>
 
-                <a href="__LOCATION__/delete/__PROCESS_TYPE__/__NAME__">delete</a>
+                <a href="__LOCATION__/delete/__PROCESS_TYPE__/__NAME__">{% trans "delete" %}</a>
             </span>
             </div>
             <ul id="__ID__-subprocesses"></ul>
@@ -62,7 +62,7 @@
 {% block action_buttons %}
     <div class="pull-left">
         <a class="btn" id="open_public_view" href="{% url adagios.bi.views.add %}">
-            <i class="glyph-circle-plus " title="Add new ..."> </i> Create new Business Process
+            <i class="glyph-circle-plus " title="Add new ..."> </i> {% trans "Create new Business Process" %}
         </a>
     </div>
 {% endblock %}
