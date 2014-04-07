@@ -19,7 +19,7 @@
 
                     <!-- Object Browser -->
                     <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
-                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-grey glyph-edit"></i> Configure</a>
+                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-grey glyph-edit"></i> {% trans "Configure" %}</a>
                     </li>
 
                     <!-- Nagios -->
@@ -85,9 +85,9 @@
                                 </li>
                             {% endif %}
                             {% if plugins.status %}
-                                <li><a href="{% url status.views.contact_detail remote_user %}">My Profile</a></li>
+                                <li><a href="{% url status.views.contact_detail remote_user %}">{% trans "My Profile" %}</a></li>
                             {% endif %}
-                            <li><a href="#" onclick="adagios.misc.logout(); return false;">Sign Out</a></li>
+                            <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -96,18 +96,18 @@
                            href="#"><i class="glyph-cogwheel glyph-grey"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="https://github.com/opinkerfi/adagios/issues">Report Bug</a></li>
-                            <li><a href="https://github.com/opinkerfi/adagios/issues">Make Suggestion</a></li>
-                            <li><a href="http://adagios.org/">Project Webpage</a></li>
+                            <li><a href="https://github.com/opinkerfi/adagios/issues">{% trans "Report Bug" %}</a></li>
+                            <li><a href="https://github.com/opinkerfi/adagios/issues">{% trans "Make Suggestion" %}</a></li>
+                            <li><a href="http://adagios.org/">{% trans "Project Webpage" %}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{%  url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
-                            <li><a href="{%  url objectbrowser.views.edit_nagios_cfg %}">Edit nagios.cfg</a></li>
-                            <li><a href="{%  url misc.views.nagios_service %}">Nagios Service</a></li>
-                            <li><a href="{%  url misc.views.gitlog %}">Object History</a></li>
-                            <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
-                            <li><a href="{%  url misc.views.settings %}">Settings</a></li>
+                            <li><a href="{%  url objectbrowser.views.show_plugins %}">{% trans "Missing Plugins" %}</a></li>
+                            <li><a href="{%  url objectbrowser.views.edit_nagios_cfg %}">{% trans "Edit nagios.cfg" %}</a></li>
+                            <li><a href="{%  url misc.views.nagios_service %}">{% trans "Nagios Service" %}</a></li>
+                            <li><a href="{%  url misc.views.gitlog %}">{% trans "Object History" %}</a></li>
+                            <li><a href="{%  url objectbrowser.views.config_health %}">{% trans "Config Health" %}</a></li>
+                            <li><a href="{%  url misc.views.settings %}">{% trans "Settings" %}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{%  url misc.views.pnp4nagios %}">PNP Integration</a></li>
+                            <li><a href="{%  url misc.views.pnp4nagios %}">{% trans "PNP Integration" %}</a></li>
                             <!-- Any extra plugins can put an entry in the menubar -->
                             {% for i in misc_menubar_items %}
                                 <!-- Plugin menubar for {{ i }} -->

@@ -6,11 +6,11 @@
     <table class="table well table-condensed table-striped searchtable"  style="font-size: 80%;" >
         <thead>
             <tr>
-                <th>Servicegroup</th>
-                <th>Alias</th>
-                <th>Number of services</th>
-                <th>Notes</th>
-                <th>urls</th>
+                <th>{% trans "Servicegroup" %}</th>
+                <th>{% trans "Alias" %}</th>
+                <th>{% trans "Number of services" %}</th>
+                <th>{% trans "Notes" %}</th>
+                <th>{% trans "urls" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -23,10 +23,10 @@
                 <td>{{ row.notes }}</td>
                 <td>
                     {% if row.notes_url %}
-                        <a href="{{ row.notes_url }}">notes</a><
+                        <a href="{{ row.notes_url }}">{% trans "notes" %}</a><
                     {% endif %}
                     {% if row.action_url %}
-                        <a href="{{ row.action_url }}">action url</a>
+                        <a href="{{ row.action_url }}">{% trans "action url" %}</a>
                     {% endif %}
             </tr>
         {% endfor %}

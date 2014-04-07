@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}Status Overview{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_index %}">Overview</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.status_index %}">{% trans "Overview" %}</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Status Overview{% endblock %}
 
@@ -16,14 +16,14 @@
             <table class="table  well table-condensed">
                 <thead>
                 <tr>
-                    <th>Status Overview</th>
+                    <th>{% trans "Status Overview" %}</th>
                     <th><span title="Unhandled Problems">#</span></th>
                     <th><i class="glyph-warning-sign" title="Unhandled Problems"></i></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Network Parents</td>
+                    <td>{% trans "Network Parents" %}</td>
                     <td><a href="{% url status.views.network_parents %}">{{ total_network_parents }}</a></td>
                     <td>
                         {% if  total_unhandled_network_problems == 0 %}
@@ -37,7 +37,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Hosts</td>
+                    <td>{% trans "Hosts" %}</td>
                     <td><a href="{% url status.views.hosts %}">{{ total_hosts }}</a></td>
                     <td>
                         {% if  unhandled_hosts == 0 %}
@@ -49,7 +49,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Services</td>
+                    <td>{% trans "Services" %}</td>
                     <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
                     <td>
                         {% if  unhandled_services == 0 %}
@@ -66,11 +66,11 @@
         <div class="span4" >
             <table class="table well table-condensed">
                 <thead>
-                <tr><th colspan="2">Current Health</th></tr>
+                <tr><th colspan="2">{% trans "Current Health" %}</th></tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td  style="white-space: nowrap" width=20px>All hosts</td>
+                    <td  style="white-space: nowrap" width=20px>{% trans "All hosts" %}</td>
                     <th>
                         <div class="progress">
                             <div class="bar bar-success" style=" width: {{ host_totals_percent.0 }}%;">{{ host_totals_percent.0|floatformat }}%</div>
@@ -82,7 +82,7 @@
                     </th>
                 </tr>
                 <tr>
-                    <td style="white-space: nowrap" width=20px>All services</td>
+                    <td style="white-space: nowrap" width=20px>{% trans "All services" %}</td>
                     <th>
                         <div class="progress">
                             <div class="bar bar-success" style=" width: {{ service_totals_percent.0 }}%;">{{ service_totals_percent.0|floatformat }}%</div>
@@ -101,19 +101,19 @@
             <table class="table-condensed well table" id="top_alert_producers">
                 <thead>
                     <tr>
-                        <th>Top Alert Producers</th>
-                        <th>Recent Alerts</th>
+                        <th>{% trans "Top Alert Producers" %}</th>
+                        <th>{% trans "Recent Alerts" %}</th>
                     </tr>
                 </thead>
                 <tr id="top_alert_producers_loading">
-                    <td id="top_alert_loading_message" colspan=2><img src="{% url media path="select2/spinner.gif" %}"> Loading...</td>
+                    <td id="top_alert_loading_message" colspan=2><img src="{% url media path="select2/spinner.gif" %}"> {% trans "Loading..." %}</td>
                 </tr>
             </table>
         </div>
     </div>
     <hr>
     <div id="servicelist_in_overview">
-        <h4>Unhandled service problems</h4>
+        <h4>{% trans "Unhandled service problems" %}</h4>
         {% include "snippets/status_servicelist_snippet.html" %}
     </div>
     <!--
@@ -230,12 +230,12 @@
     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
     <ul class="dropdown-menu">
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&unhandled"> Open Problems</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state__isnot=0"> All Problems</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state=0"> All OK</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&acknowledged=1"> All Acknowledged</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> All in Downtime</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}"> Everything</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&unhandled"> {% trans "Open Problems" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state__isnot=0"> {% trans "All Problems" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state=0"> {% trans "All OK" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&acknowledged=1"> {% trans "All Acknowledged" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> {% trans "All in Downtime" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}"> {% trans "Everything" %}</a></li>
     </ul>
 </div>
 {% endblock %}
@@ -243,7 +243,7 @@
 
 {% block bottom_left %}
     <div id="updates_avail">
-        Adagios version: {{ adagios_version }}. Latest: <span id="latest_version">...</span>
+        {% blocktrans %}Adagios version: {{ adagios_version }}. Latest: <span id="latest_version">...</span>{% endblocktrans %}
     </div>
 {% endblock bottom_left %}
 
