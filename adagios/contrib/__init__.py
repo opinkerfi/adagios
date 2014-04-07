@@ -1,5 +1,5 @@
 import os
-
+from django.utils.translation import ugettext as _
 
 def get_template_name(base_path, *args):
     """ Return a full path to a template named base_path/args[0]
