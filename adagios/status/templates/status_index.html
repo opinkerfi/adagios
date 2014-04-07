@@ -303,7 +303,8 @@
         function refreshPage() {
             checked_boxes = $( ".selectable :checked" );
             shown_modals = $("div .modal.in");
-            if (checked_boxes.length + shown_modals.length == 0) {
+            var searchbox_contents = $("#search_field").val();
+            if (checked_boxes.length + shown_modals.length + searchbox_contents.length == 0) {
                 console.log("Refreshing page...");
                 location.reload(true);
             }
