@@ -10,24 +10,24 @@
     {% if my_object %}
         <!-- wrapper for scrollable items -->
         <ul class="nav nav-tabs" id="objecttab">
-            <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+            <li><a href="#advanced" data-toggle="tab">{% trans "Advanced" %}</a></li>
         </ul>
             <div class="tab-content">
 
                 <div class="tab-pane" id="advanced">
                     <!-- All Attributes -->
-                    <h2>All Attributes</h2>
+                    <h2>{% trans "All Attributes" %}</h2>
                     <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                         {% include "bootstrap_fields.html" with fields=advanced_form %}
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                         </div>
                     </form>
                 </div> <!-- End of advanced tab -->
             </div>
 
     {% else %}
-        <p>Object not found </p>
+        <p>{% trans "Object not found" %} </p>
     {% endif %}
 
 {% endblock content %}

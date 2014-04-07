@@ -1,19 +1,19 @@
 {% extends "base_objectbrowser.html" %}
 {% load i18n %}
 
-{% block title %}Missing Plugins{% endblock %}
+{% block title %}{% trans "Missing Plugins" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Missing Plugins{% endblock %}
+{% block largeheader %}{% trans "Missing Plugins" %}{% endblock %}
 
 {% block content %}
 
 
-	<h3 id="missing_plugins">Missing plugins ({{ missing_plugins|length}})</h3>
+	<h3 id="missing_plugins">{% blocktrans %}Missing plugins ({{ missing_plugins|length}}){% endblocktrans %}</h3>
 	{% if missing_plugins %}
 	<table class="table">
         <tr>
-            <th>check_command</th>
-            <th>Plugin</th>
+            <th>{% trans "check_command" %}</th>
+            <th>{% trans "Plugin" %}</th>
         </tr>
         {% for check_command, command_line in missing_plugins %}
             <tr>
@@ -24,12 +24,12 @@
 	</table>
 	{% endif %}
 
-	<h3 id="existing_plugins">Existing plugins ({{ existing_plugins|length}})</h3>
+	<h3 id="existing_plugins">{% blocktrans %}Existing plugins ({{ existing_plugins|length}}){% endblocktrans %}</h3>
 	{% if existing_plugins %}
         <table class="table">
             <tr>
-                <th>check_command</th>
-                <th>Plugin</th>
+                <th>{% trans "check_command" %}</th>
+                <th>{% trans "Plugin" %}</th>
             </tr>
             {% for check_command, command_line in existing_plugins %}
         	    <tr>
@@ -45,9 +45,9 @@
 {% endblock %}
 
 {% block sidebar %}
-    <h5>Jump to</h5>
+    <h5>{% trans "Jump to" %}</h5>
     <ul class="nav nav-list">
-        <li><a href="#missing_plugins">Missing Plugins</a></li>
-        <li><a href="#existing_plugins">Existing Plugins</a></li>
+        <li><a href="#missing_plugins">{% trans "Missing Plugins" %}</a></li>
+        <li><a href="#existing_plugins">{% trans "Existing Plugins" %}</a></li>
     </ul>
 {% endblock %}

@@ -13,7 +13,7 @@
     {% if my_object %}
         <!-- wrapper for scrollable items -->
         <ul class="nav nav-tabs" id="objecttab">
-            <li><a href="#general" data-toggle="tab">General</a></li>
+            <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
         </ul>
         <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
@@ -24,7 +24,7 @@
                         {% include "bootstrap_field.html" with field=form.command_name %}
                         {% include "bootstrap_field.html" with field=form.command_line %}
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Submit</button>
+                            <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
                         </div>
                     </form>
                 </div> <!-- End of general tab -->
@@ -33,7 +33,7 @@
         </form>
 
     {% else %}
-        <p>Object not found </p>
+        <p>{% trans "Object not found" %} </p>
     {% endif %}
 
 {% endblock content %}

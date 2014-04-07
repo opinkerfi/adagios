@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Delete Object{% endblock %}
-{% block smallheader %}Delete{% endblock %}
+{% block title %}{% trans "Delete Object" %}{% endblock %}
+{% block smallheader %}{% trans "Delete" %}{% endblock %}
 {% block largeheader %}{{ object.object_type }}{% endblock %}
 {% block toolbar %}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
+{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser" %}</a>{% endblock %}
 
 
 
 {% block content %}
     <div class="alert alert-danger">
-        Are you sure you want to delete {{ object.object_type }} {{ object.description }} from file {{  object.filename }} ?
+        {% blocktrans %}Are you sure you want to delete {{ object.object_type }} {{ object.description }} from file {{  object.filename }} ?{% endblocktrans %}
     </div>
     <form action="#" method="POST" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
-        <button class="btn btn-danger" type="submit"><i class="icon-trash icon-white"></i> Yes, delete it</button>
+        <button class="btn btn-danger" type="submit"><i class="icon-trash icon-white"></i> {% trans "Yes, delete it" %}</button>
     </form>
 {% endblock %}

@@ -3,8 +3,8 @@
 
 {% block toolbar %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Object Configuration{% endblock %}
-{% block title %}Object Browser{% endblock %}
+{% block largeheader %}{% trans "Object Configuration" %}{% endblock %}
+{% block title %}{% trans "Object Browser" %}{% endblock %}
 {% block footer %}
     {{ block.super }}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
@@ -234,15 +234,15 @@
 {% block content %}
                 <div id="objectbrowser">
                     <ul class="nav nav-tabs" id="objecttabs">
-                        <li><a href="#host-tab" data-toggle="tab"><i class="glyph-computer-locked"></i> Hosts</a></li>
-                        <li><a href="#service-tab" data-toggle="tab"><i class="glyph-computer-service"></i> Services</a></li>
+                        <li><a href="#host-tab" data-toggle="tab"><i class="glyph-computer-locked"></i> {% trans "Hosts" %}</a></li>
+                        <li><a href="#service-tab" data-toggle="tab"><i class="glyph-computer-service"></i> {% trans "Services" %}</a></li>
                         <li><a href="#contact-tab" data-toggle="tab"><i class="icon-user"></i>Contacts</a></li>
-                        <li><a href="#command-tab" data-toggle="tab"><i class="glyph-computer-proces"></i> Commands</a></li>
-                        <li><a href="#timeperiod-tab" data-toggle="tab"><i class="glyph-clock"></i> Timeperiods</a></li>
+                        <li><a href="#command-tab" data-toggle="tab"><i class="glyph-computer-proces"></i> {% trans "Commands" %}</a></li>
+                        <li><a href="#timeperiod-tab" data-toggle="tab"><i class="glyph-clock"></i> {% trans "Timeperiods" %}</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="command-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="command-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -251,7 +251,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="contact-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="contact-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -260,7 +260,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="host-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="host-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -269,7 +269,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="service-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="service-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -278,7 +278,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="timeperiod-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="timeperiod-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -303,7 +303,7 @@
                     <table class="table table-condensed" id="objectoverview">
                         <thead>
                         <tr>
-                            <th>Object Statistics</th>
+                            <th>{% trans "Object Statistics" %}</th>
                             <th>#</th>
                         </tr>
                         </thead>

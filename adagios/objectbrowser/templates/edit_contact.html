@@ -14,10 +14,10 @@
     {% if my_object %}
             <!-- wrapper for scrollable items -->
             <ul class="nav nav-tabs" id="objecttab">
-                <li><a href="#general" data-toggle="tab">General</a></li>
-			    <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
-			    <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
-			    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+                <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
+			    <li><a href="#memberof" data-toggle="tab">{% trans "Member Of" %}</a></li>
+			    <li><a href="#notifications" data-toggle="tab">{% trans "Notifications" %}</a></li>
+			    <li><a href="#advanced" data-toggle="tab">{% trans "Advanced" %}</a></li>
 		    </ul>
         <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
@@ -34,7 +34,7 @@
                         </fieldset>
 
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                         </div>
                     </div>
 
@@ -45,9 +45,9 @@
                             <!-- Display All Contactgroups if this is that kind of an object -->
                             <div class="effective_contactgroups">
                             <fieldset id="id_effective_contactgroups" class="attribute_{{object_type}}">
-                              <legend>Effective Contactgroups for this contact</legend>
-                                    Group membership can be defined in multiple ways, for example by editing the contactgroups "members" attribute.
-                                    For your convenience following is a list of all contactgroups that this contact is "effectively" a member of.
+                              <legend>{% trans "Effective Contactgroups for this contact" %}</legend>
+                                    {% trans "Group membership can be defined in multiple ways, for example by editing the contactgroups "members" attribute.
+                                    For your convenience following is a list of all contactgroups that this contact is "effectively" a member of." %}
                                     <p></p>
                                     {% if effective_contactgroups %}
                                       <p>
@@ -62,7 +62,7 @@
                         </fieldset>
 
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                         </div>
                     </div>
 
@@ -78,17 +78,17 @@
                         </fieldset>
 
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                         </div>
                     </div>
                 </form>
                     <div class="tab-pane" id="advanced">
                         <!-- All Attributes -->
-                        <h2>All Attributes</h2>
+                        <h2>{% trans "All Attributes" %}</h2>
                         <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                             {% include "bootstrap_fields.html" with fields=advanced_form %}
                             <div class="form-actions">
-                                <button class="btn btn-primary" type="submit">Submit</button>
+                                <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
                             </div>
                         </form>
                     </div>
@@ -97,7 +97,7 @@
 
 
 {% else %}
-	<p>Object not found </p>
+	<p>{% trans "Object not found" %} </p>
 {% endif %}
 
 
