@@ -8,7 +8,7 @@
 {% block nav1 %}{% trans "Object Browser" %}{% endblock %}
 {%  block content %}
     <div class="alert alert-info">
-    {% blocktrans %}You are about to add {{ objects|length }} objects to a {{ group_type }} named:{% endblocktrans %}
+    {% blocktrans with length=objects|length %}You are about to add {{ length }} objects to a {{ group_type }} named:{% endblocktrans %}
     </div>
 
     <input class="pull-left" type="text" id="group_name" value="{{ group_name }}" placeholder="Please enter a group name"/>

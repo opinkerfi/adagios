@@ -8,7 +8,7 @@
 {% block content %}
 
 
-	<h3 id="missing_plugins">{% blocktrans %}Missing plugins ({{ missing_plugins|length}}){% endblocktrans %}</h3>
+	<h3 id="missing_plugins">{% blocktrans with length=plugins|length %}Missing plugins ({{ missing_length}}){% endblocktrans %}</h3>
 	{% if missing_plugins %}
 	<table class="table">
         <tr>
@@ -24,7 +24,7 @@
 	</table>
 	{% endif %}
 
-	<h3 id="existing_plugins">{% blocktrans %}Existing plugins ({{ existing_plugins|length}}){% endblocktrans %}</h3>
+	<h3 id="existing_plugins">{% blocktrans with length=plugins|length %}Existing plugins ({{ existing_length}}){% endblocktrans %}</h3>
 	{% if existing_plugins %}
         <table class="table">
             <tr>

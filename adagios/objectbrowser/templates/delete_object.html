@@ -11,7 +11,9 @@
 
 {% block content %}
     <div class="alert alert-danger">
-        {% blocktrans %}Are you sure you want to delete {{ object.object_type }} {{ object.description }} from file {{  object.filename }} ?{% endblocktrans %}
+        {% blocktrans with type=i.object_type desc=u.description file=i.filename %}
+	Are you sure you want to delete {{ type }} {{ desc }} from file {{ file }} ?
+	{% endblocktrans %}
     </div>
     <form action="#" method="POST" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}

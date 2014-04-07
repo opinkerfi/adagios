@@ -39,8 +39,10 @@
                         <!-- Display All Contactgroups if this is that kind of an object -->
                         <div class="effective_memberof">
                             <fieldset id="id_effective_memberof" class="attribute_{{object_type}}">
-                                {% blocktrans %}Following is a list of all contactgroups that <i>{{ my_object.contactgroup_name }}</i> is a member of.
-                                Notifications sent to these groups will also go to {{ my_object.contactgroup_name }}.{% endblocktrans %}
+                                {% blocktrans with name=my_object.contactgroup_name %}
+				Following is a list of all contactgroups that <i>{{ name }}</i> is a member of.
+                                Notifications sent to these groups will also go to {{ name }}.
+				{% endblocktrans %}
                                 <p></p>
                                 {% if effective_memberof %}
                                     <p>

@@ -14,8 +14,10 @@
 {% block content %}
     <div class="alert alert-info">
     <p>
-        {% blocktrans %}Here you can see a list of user contributed views for Adagios. You can make your own
-        from <i>{{ settings.contrib_dir }}</i>.{% endblocktrans %}
+        {% blocktrans with dir=settings.contrib_dir %}
+	Here you can see a list of user contributed views for
+	Adagios. You can make your own from <i>{{ dir }}</i>.
+	{% endblocktrans %}
     </p>
     <p>
         {% trans "Please see the examples below for assistance on creating your own custom views." %}
