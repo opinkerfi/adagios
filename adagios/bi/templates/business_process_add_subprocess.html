@@ -6,7 +6,7 @@
 {% block largeheader %}Sub item{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -16,10 +16,10 @@
         <table class="table table-condensed well">
         <tr>
             <th class="small"></th>
-            <th>Process Type</th>
-            <th>Process Name</th>
-            <th>Sub Processes</th>
-            <th>Actions</th>
+            <th>{% trans "Process Type" %}</th>
+            <th>{% trans "Process Name" %}</th>
+            <th>{% trans "Sub Processes" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
             {% for i in subprocesses %}
                 <tr>
@@ -43,7 +43,7 @@
         <input type="text" name="tags" value="not critical">
         <input type="text" name="status_method" value="use_business_rules">
     <input type="text" name="name" value="name of new business group">
-        <button type="submit">Submit</button>
+        <button type="submit">{% trans "Submit" %}</button>
     </form>
 
 {% endblock %}

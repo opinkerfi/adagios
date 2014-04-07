@@ -6,7 +6,7 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 

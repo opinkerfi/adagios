@@ -6,7 +6,7 @@
 {% block largeheader %}graphs{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -16,9 +16,9 @@
         <table class="table table-condensed well">
         <tr>
             <th class="small"></th>
-            <th>Host</th>
-            <th>Service</th>
-            <th>Performance metric</th>
+            <th>{% trans "Host" %}</th>
+            <th>{% trans "Service" %}</th>
+            <th>{% trans "Performance metric" %}</th>
         </tr>
             {% for i in graphs %}
                 <tr>
@@ -32,7 +32,7 @@
             {% endfor %}
         </table>
         <input type="text" name="name" placeholder="Enter name of a business group here" value="{{ name }}">
-        <button type="submit">Submit</button>
+        <button type="submit">{% trans "Submit" %}</button>
     </form>
 
 {% endblock %}

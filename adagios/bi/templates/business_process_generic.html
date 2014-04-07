@@ -6,18 +6,18 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
 {% block content %}
-    Found {{ processes|length }} processes.
+    {% blocktrans %}Found {{ processes|length }} processes.{% endblocktrans %}
     <table class="table table-condensed well">
     <tr>
-        <th>Process Name</th>
-        <th>Alias</th>
-        <th>Sub Processes</th>
-        <th>Actions</th>
+        <th>{% trans "Process Name" %}</th>
+        <th>{% trans "Alias" %}</th>
+        <th>{% trans "Sub Processes" %}</th>
+        <th>{% trans "Actions" %}</th>
     </tr>
         {% for i in processes %}
             <tr>
@@ -30,9 +30,9 @@
                 <td>{{ i.processes|length }}</td>
 
                 <td>
-                    <a class="btn btn-mini btn-primary" href="{% url bi.views.edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> edit </a>
-                    <a class="btn btn-mini btn-primary" href="{% url bi.views.view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> view</a>
-                    <a class="btn btn-mini btn-danger" href="{% url bi.views.delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> delete</a>
+                    <a class="btn btn-mini btn-primary" href="{% url bi.views.edit i.name %} "> <i class="icon-pencil icon-white" title="edit"></i> {% trans "edit" %} </a>
+                    <a class="btn btn-mini btn-primary" href="{% url bi.views.view i.name %} "><i class="glyph-eye-open glyph-white" title="view"> </i> {% trans "view" %}</a>
+                    <a class="btn btn-mini btn-danger" href="{% url bi.views.delete i.name %} "><i class="glyph-bin glyph-white" title="delete"></i> {% trans "delete" %}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -50,7 +50,7 @@
     <div>
 
         <a class="btn" id="open_public_view" href="{% url bi.views.add %}">
-            <i class="glyph-circle-plus " title="Add new ..."> </i> Create new Business Process
+            <i class="glyph-circle-plus " title="Add new ..."> </i> {% trans "Create new Business Process" %}
         </a>
 
     </div>

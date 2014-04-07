@@ -6,7 +6,7 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">Business Process</a>{% endblock %}
+{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -17,11 +17,11 @@
         }
     </style>
     <ul class="nav nav-tabs" id="objecttab">
-        <li><a href="#basic" class="active" data-toggle="tab">Basic Information</a></li>
-        <li><a href="#subprocesses" data-toggle="tab">Sub Processes</a></li>
-        <li><a href="#rules" data-toggle="tab">Business Rules</a></li>
-        <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
-        <li><a href="#other" data-toggle="tab">Other</a></li>
+        <li><a href="#basic" class="active" data-toggle="tab">{% trans "Basic Information" %}</a></li>
+        <li><a href="#subprocesses" data-toggle="tab">{% trans "Sub Processes" %}</a></li>
+        <li><a href="#rules" data-toggle="tab">{% trans "Business Rules" %}</a></li>
+        <li><a href="#graphs" data-toggle="tab">{% trans "Graphs" %}</a></li>
+        <li><a href="#other" data-toggle="tab">{% trans "Other" %}</a></li>
     </ul>
     <div class="tab-content">
 
@@ -31,11 +31,11 @@
                 <form action="" method="post" class="form-horizontal">{% csrf_token %}
                     {% include "bootstrap_fields.html" with fields=form %}
                     <div class="form-actions">
-                        <button name="save_process" class="btn btn-success" type="submit">Save</button>
+                        <button name="save_process" class="btn btn-success" type="submit">{% trans "Save" %}</button>
                     </div>
                 </form>
             {% else %}
-                Could not find Business process. {{ process_name }}
+                {% blocktrans %}Could not find Business process. {{ process_name }}{% endblocktrans %}
             {% endif %}
         </div>
 
@@ -44,7 +44,7 @@
             <div id="sub_processes">
                 <form action="{% url bi.views.add_subprocess %}" method="get">
                     <button class="pull-right btn btn-small enable_on_select" name=test>
-                        <i class="glyph-circle-plus " title="Add new ..."> </i> Add to another businessgroup
+                        <i class="glyph-circle-plus " title="Add new ..."> </i> {% trans "Add to another businessgroup" %}
                     </button>
 
                 <table class="well table table-condensed">
@@ -53,17 +53,17 @@
                             <div class="btn-group">
                                 <a data-toggle="dropdown" ><input type="checkbox" class="select_many"></a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="select_all"> All</a></li>
-                                    <li><a class="select_none"> None</a></li>
+                                    <li><a class="select_all"> {% trans "All" %}</a></li>
+                                    <li><a class="select_none"> {% trans "None" %}</a></li>
                                 </ul>
                             </div>
                         </th>
 
-                        <th>Name</th>
-                        <th>Alias</th>
-                        <th>Status Method</th>
-                        <th>Sub Processes</th>
-                        <th>Tags</th>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Alias" %}</th>
+                        <th>{% trans "Status Method" %}</th>
+                        <th>{% trans "Sub Processes" %}</th>
+                        <th>{% trans "Tags" %}</th>
                         <th><button name="remove_process" class="close status_ok" type="submit">×</button></th>
                     </tr>
                     {% for i in bp.get_processes %}
@@ -99,35 +99,35 @@
     <div class="tab-pane " id="rules">
         <table id="business_rules_table" class="well table table-condensed">
             <tr>
-                <th colspan="2">Trigger</th>
+                <th colspan="2">{% trans "Trigger" %}</th>
                 <th colspan="2"></th>
-                <th colspan="2">Action</th>
+                <th colspan="2">{% trans "Action" %}</th>
             </tr>
             {% for i in bp.rules %}
                 <tr>
 
                     <td>
-                        When a sub process with tag
+                        {% trans "When a sub process with tag" %}
                     </td>
                     <td>
                         <input type="text" class="input-medium" value="{{ i.0 }}"/>
                     </td>
                     <td>
-                        has at least
+                        {% trans "has at least" %}
                     </td>
                     <td>
-                        <input type="text" class="input-medium" value="{{ i.1 }}"> problems
+                        <input type="text" class="input-medium" value="{{ i.1 }}"> {% trans "problems" %}
                     </td>
 
                     <td >
-                        <span>Mark this business group as </span>
+                        <span>{% trans "Mark this business group as" %} </span>
                     </td>
                     <td>
                         <span style="background-color: transparent;">
                             <select style="width: 120px">
-                                <option value="ok" {% if i.2 == "ok" %}selected=selected{% endif %}>ok</option>
-                                <option value="minor" {% if i.2 == "minor" %}selected=selected{% endif %}>minor problem</option>
-                                <option value="major" {% if i.2 == "major" %}selected=selected{% endif %}>major problem</option>
+                                <option value="ok" {% if i.2 == "ok" %}selected=selected{% endif %}>{% trans "ok" %}</option>
+                                <option value="minor" {% if i.2 == "minor" %}selected=selected{% endif %}>{% trans "minor problem" %}</option>
+                                <option value="major" {% if i.2 == "major" %}selected=selected{% endif %}>{% trans "major problem" %}</option>
                             </select>
                         </span>
                     </td>
@@ -141,10 +141,10 @@
             <table class="table table-condensed">
                 <thead>
                     <tr>
-                        <th>Host</th>
-                        <th>Service</th>
-                        <th>Metric Name</th>
-                        <th>Notes</th>
+                        <th>{% trans "Host" %}</th>
+                        <th>{% trans "Service" %}</th>
+                        <th>{% trans "Metric Name" %}</th>
+                        <th>{% trans "Notes" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,7 +161,7 @@
 
             </table>
         {% else %}
-            No graphs have been added to this business process
+            {% trans "No graphs have been added to this business process" %}
         {% endif %}
     </div>
     <div class="tab-pane " id="other">
@@ -178,15 +178,15 @@
         <form class="form-horizontal" method="post" action="">{% csrf_token %}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Add sub process</h3>
+                <h3>{% trans "Add sub process" %}</h3>
             </div>
             <div class="modal-body">
-                <p>Ok lets add a new sub process.</p>
+                <p>{% trans "Ok lets add a new sub process." %}</p>
                 {% include "bootstrap_fields.html" with fields=add_subprocess_form %}
             </div>
             <div class="modal-footer">
-                <a href="" class="btn" onclick='$("#add_subprocess_modal").modal("hide");'>Cancel</a>
-                <button type="submit" id="add_subprocess_submit_button" name="add_subprocess_submit_button" class="btn btn-primary">Ok add this process</button>
+                <a href="" class="btn" onclick='$("#add_subprocess_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                <button type="submit" id="add_subprocess_submit_button" name="add_subprocess_submit_button" class="btn btn-primary">{% trans "Ok add this process" %}</button>
             </div>
         </form>
     </div>
@@ -198,15 +198,15 @@
             <form class="form-horizontal" method="post" action="">{% csrf_token %}
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3>Add graph to this business process</h3>
+                    <h3>{% trans "Add graph to this business process" %}</h3>
                 </div>
                 <div class="modal-body">
-                    <p>Ok, lets add some graphs to this business process</p>
+                    <p>{% trans "Ok, lets add some graphs to this business process" %}</p>
                     {% include "bootstrap_fields.html" with fields=add_graph_form %}
                 </div>
                 <div class="modal-footer">
-                    <a href="" class="btn" onclick='$("#add_graph_modal").modal("hide");'>Cancel</a>
-                    <button type="submit" id="add_graph_submit_button" name="add_graph_submit_button" class="btn btn-primary">Add Graph</button>
+                    <a href="" class="btn" onclick='$("#add_graph_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                    <button type="submit" id="add_graph_submit_button" name="add_graph_submit_button" class="btn btn-primary">{% trans "Add Graph" %}</button>
                 </div>
             </form>
         </div>
@@ -225,13 +225,13 @@
     <div class="pull-left">
 
     <a class="btn" id="open_subprocess_modal" data-toggle="modal" data-target="#add_subprocess_modal" href="#">
-        <i class="glyph-circle-plus " title="Add new ..."> </i> Add sub item
+        <i class="glyph-circle-plus " title="Add new ..."> </i> {% trans "Add sub item" %}
     </a>
     <a class="btn" id="open_public_view" href="{% url bi.views.view bp.process_type bp.name  %}">
-        <i class="glyph-eye-open " title="Add new ..."> </i> Public view for this process
+        <i class="glyph-eye-open " title="Add new ..."> </i> {% trans "Public view for this process" %}
     </a>
     <a class="btn" id="open_graphs_modal" data-toggle="modal" data-target="#add_graph_modal" href="#">
-        <i class="glyph-circle-plus " title="Add new ..."> </i> Add graphs
+        <i class="glyph-circle-plus " title="Add new ..."> </i> {% trans "Add graphs" %}
     </a>
 
     </div>
