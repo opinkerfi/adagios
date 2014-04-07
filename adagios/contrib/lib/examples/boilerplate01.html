@@ -21,8 +21,8 @@
 <!-- Main contents go in here -->
 {% block content %}
     <p>
-    Stuff the main content of your view in here. Your main content should go in here.
+    {% trans "Stuff the main content of your view in here. Your main content should go in here." %}
     </p>
 {% endblock content %}
 
-{% block toolbar %}<div class="alert alert-info">Toolbar goes here</div>{% endblock toolbar %}
+{% block toolbar %}<div class="alert alert-info">{% trans "Toolbar goes here" %}</div>{% endblock toolbar %}

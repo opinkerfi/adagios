@@ -5,11 +5,11 @@
 <table class="table table-condensed well searchtable" id="commentstable" style="font-size:12px;">
     <thead>
     <tr>
-        <th>Time</th>
-        <th colspan=2>Author</th>
-        <th colspan=2>Host</th>
-        <th colspan=2>Service</th>
-        <th>Comment</th>
+        <th>{% trans "Time" %}</th>
+        <th colspan=2>{% trans "Author" %}</th>
+        <th colspan=2>{% trans "Host" %}</th>
+        <th colspan=2>{% trans "Service" %}</th>
+        <th>{% trans "Comment" %}</th>
     </tr>
 
     </thead>
@@ -21,16 +21,16 @@
             <td class="small">
                 <!-- Entry type: 1 is user, 2 is downtime, 3 is flap and 4 is acknowledgement -->
                 {% if i.entry_type == 1 %}
-                    <i class="glyph-chat" title="User Comment"> </i>
+                    <i class="glyph-chat" title="{% trans 'User Comment' %}"> </i>
                 {% endif %}
                 {% if i.entry_type == 2 %}
-                    <i class="glyph-stopwatch" title="Downtime"> </i>
+                    <i class="glyph-stopwatch" title="{% trans 'Downtime' %}"> </i>
                 {% endif %}
                 {% if i.entry_type == 3 %}
-                    <i class="glyph-random" title="Flap"> </i>
+                    <i class="glyph-random" title="{% trans 'Flap' %}"> </i>
                 {% endif %}
                 {% if i.entry_type == 4 %}
-                    <i class="glyph-ok-2" title="Acknowledgement"> </i>
+                    <i class="glyph-ok-2" title="{% trans 'Acknowledgement' %}"> </i>
                 {% endif %}
             </td>
             <td>
@@ -54,7 +54,7 @@
             </td>
             <td>{{ i.comment }}</td>
             <td>
-                <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.id }}" onclick="remove_acknowledgement('{{ i.host_name }}', '{{ i.service_description }}', '{{ i.id }}');">
+                <button class="close delete_comment" data-dismiss="alert" title="{% trans 'Delete comment' %} {{ i.id }}" onclick="remove_acknowledgement('{{ i.host_name }}', '{{ i.service_description }}', '{{ i.id }}');">
                     <i class="glyph-bin"></i>
                 </button>
             </td>
