@@ -1,28 +1,29 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Add new Object{% endblock %}
-{% block smallheader %}Add{% endblock %}
+{% block title %}{% trans "Add new Object" %}{% endblock %}
+{% block smallheader %}{% trans "Add" %}{% endblock %}
 {% block largeheader %}{{ object_type }}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
+{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 
 
 {% block content %}
     <p>
-    Alright, before adding a new {{  object_type }} we need some basic info:
+    {% blocktrans %}Alright, before adding a new {{  object_type }} we need some basic info:{% endblocktrans %}
     </p>
     {% if object_type != "template" %}
     <div class="alert alert-info">
-    If you are looking to add a {{ object_type }} template, instead you should be adding a
-        <a href="{% url objectbrowser.views.add_object "template" %}?object_type={{ object_type }}">{{ object_type }} template.</a>
+    {% url objectbrowser.views.add_object "template" as the_url %}
+    {% blocktrans %}If you are looking to add a {{ object_type }} template, instead you should be adding a
+        <a href="{{ the_url }}?object_type={{ object_type }}">{{ object_type }} template.</a>{% endblocktrans %}
     </div>
     {% endif %}
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Save {{ object_type }} and let me edit it further</button>
+            <button class="btn btn-primary" type="submit">{% blocktrans %}Save {{ object_type }} and let me edit it further{% endblocktrans %}</button>
         </div>
     </form>
     <div id="template_services">

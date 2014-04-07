@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Objectbrowser - Object not found{% endblock %}
+{% block title %}{% trans "Objectbrowser - Object not found" %}{% endblock %}
 {% block toolbar %}{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}{% endblock %}
@@ -20,11 +20,11 @@
           </div>
            {% if error_type == "object not found" or error_summary == "Unable to get object" %}
                <p>
-                   On rare occations this can happen if you just made changes to your object and its
-                   object id changed because it now looks differently in the config files.
+                   {% trans "On rare occations this can happen if you just made changes to your object and its
+                   object id changed because it now looks differently in the config files." %}
                </p>
                <p>
-                   In any case, you can try browsing for your object in the <a href="{% url adagios.objectbrowser.views.list_object_types %}">objectbrowser</a>
+                   {% trans "In any case, you can try browsing for your object in the <a href="{% url adagios.objectbrowser.views.list_object_types %}">objectbrowser</a>" %}
                </p>
             {% endif %}
         </div>

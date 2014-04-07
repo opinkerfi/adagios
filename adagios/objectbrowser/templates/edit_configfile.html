@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}{{ filename }}{% endblock %}
-{% block smallheader %}Edit Config{% endblock %}
+{% block smallheader %}{% trans "Edit Config" %}{% endblock %}
 {% block largeheader %}{{ filename }}{% endblock %}
 
 {% block content %}
@@ -32,12 +32,12 @@
                             {% autoescape off %}
                                 <span class="help-block">{{ k.doc }}</span>
                                 {% if k.format %}
-                                    <h5>Format:</h5>
+                                    <h5>{% trans "Format:" %}</h5>
                                     <ul><li>
                                         {{ k.format }}</li></ul>
                                 {% endif %}
                                 {% if k.options %}
-                                    <h5>Options:</h5>
+                                    <h5>{% trans "Options:" %}</h5>
                                     <ul>
                                         {% for e in k.options %}
                                             <li>{{ e }}</li>
@@ -46,7 +46,7 @@
                                 {% endif %}
 
                                 {% if k.examples %}
-                                    <h5>Examples:</h5>
+                                    <h5>{% trans "Examples:" %}</h5>
                                     <ul>
                                         {% for e in k.examples %}
                                             <li>{{ e }}</li>
@@ -62,7 +62,7 @@
         {% endfor %}
     </form>
 {% else %}
-	<p>Config File not found </p>
+	<p>{% trans "Config File not found" %} </p>
 {% endif %}
 
 {% endblock %}
@@ -113,8 +113,8 @@
 {% endblock %}
 
 {% block sidebar %}
-    <h5>Actions</h5>
+    <h5>{% trans "Actions" %}</h5>
     <ul class="nav nav-list">
-        <li><a href="{%  url misc.views.edit_nagios_cfg  %}" >Geek Edit</a></li>
+        <li><a href="{%  url misc.views.edit_nagios_cfg  %}" >{% trans "Geek Edit" %}</a></li>
     </ul>
 {% endblock %}

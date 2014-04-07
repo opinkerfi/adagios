@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Bulk edit{% endblock %}
-{% block smallheader %}add{% endblock %}
+{% block title %}{% trans "Bulk edit" %}{% endblock %}
+{% block smallheader %}{% trans "add" %}{% endblock %}
 {% block largeheader %}to {{ group_type }}{% endblock %}
 {% block toolbar %}{% endblock %}
-{% block nav1 %}Object Browser{% endblock %}
+{% block nav1 %}{% trans "Object Browser" %}{% endblock %}
 {%  block content %}
     <div class="alert alert-info">
-    You are about to add {{ objects|length }} objects to a {{ group_type }} named:
+    {% blocktrans %}You are about to add {{ objects|length }} objects to a {{ group_type }} named:{% endblocktrans %}
     </div>
 
     <input class="pull-left" type="text" id="group_name" value="{{ group_name }}" placeholder="Please enter a group name"/>
-    <button class="pull-left btn btn-primary" onclick="add_to_group();" id="add_to_group_button" type="submit">OK, sounds good</button>
+    <button class="pull-left btn btn-primary" onclick="add_to_group();" id="add_to_group_button" type="submit">{% trans "OK, sounds good" %}</button>
 
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
 
@@ -21,9 +21,9 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>Object Type</th>
-                    <th>Description</th>
-                    <th>Status</th>
+                    <th>{% trans "Object Type" %}</th>
+                    <th>{% trans "Description" %}</th>
+                    <th>{% trans "Status" %}</th>
                 </tr>
                 </thead>
                 <tbody>
