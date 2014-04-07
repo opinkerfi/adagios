@@ -7,6 +7,7 @@ Replace these with more appropriate tests for your application.
 
 from django.utils import unittest
 from django.test.client import Client
+from django.utils.translation import ugettext as _
 import json
 
 
