@@ -101,6 +101,6 @@ coffee:
 
 trad: coffee
 	cd adagios && \
-	django-admin.py makemessages --all -e py && \
+	django-admin.py makemessages --all -e py,html && \
 	django-admin.py makemessages --all -d djangojs && \
 	django-admin.py compilemessages
