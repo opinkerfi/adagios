@@ -251,64 +251,67 @@
     {{ block.super }}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
-    $(document).ready(function() {
-        // Hide the action buttons
-        //$('#action_buttons').hide();
+        $(document).ready(function() {
+            // Update top_alert_producers
+            update_top_alert_producers(3);
 
-        // Update top_alert_producers
-        update_top_alert_producers(3);
+            // Get latest adagios version:
+            $('#latest_version').adagios_version();
 
-    });
-    // Fetch information about top_alert_producers ajax style and update table
-    // with id "top_alert_producers"
-    function update_top_alert_producers(limit) {
-        var url = '{% url rest/status %}json/top_alert_producers?limit=' + limit;
-        var table=document.getElementById("top_alert_producers");
-        var top_alert_producers = $.getJSON(url)
-        .done( function(data) {
-            // Hide the loading message
-            $('#top_alert_producers_loading').hide();
-            var host_name;
-            var number_of_alerts;
-            for (i=0;i<data.length;i++){
-                row = data[i];
-                host_name = row[0];
-                number_of_alerts = row[1];
-
-                // Add a new row to our table
-                var row=table.insertRow(i+1);
-                var cell1=row.insertCell(0);
-                var cell2=row.insertCell(1);
-                cell1_html = '<a href="{% url status.views.detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
-                cell2_html = '<a href="{% url status.views.detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
-                cell1.innerHTML=cell1_html;
-                cell2.innerHTML=cell2_html;
-            }
-        })
-        .fail( function(data) {
-            // Fail scenario
-            var td = document.getElementById("top_alert_loading_message");
-            td.innerHTML = "update_top_alert_producers() failed";
-            return data;
+            // Set a reload in 30 seconds
+            timedRefresh(30000);
         });
 
+        // Fetch information about top_alert_producers ajax style and update table
+        // with id "top_alert_producers"
+        function update_top_alert_producers(limit) {
+            var table=document.getElementById("top_alert_producers");
 
-    }
-    </script>
+            adagios.rest.status.top_alert_producers({'limit': limit})
+                    .done( function(data) {
+                        // Hide the loading message
+                        $('#top_alert_producers_loading').hide();
+                        var host_name;
+                        var number_of_alerts;
+                        var cell1_html;
+                        var cell2_html;
 
-    <script>
+                        for (var i=0;i<data.length;i++){
+                            row = data[i];
+                            host_name = row[0];
+                            number_of_alerts = row[1];
 
-        function timedRefresh(timeoutPeriod) {
-            var interval = setInterval(refreshPage, timeoutPeriod);
+                            // Add a new row to our table
+                            var row=table.insertRow(i+1);
+                            var cell1=row.insertCell(0);
+                            var cell2=row.insertCell(1);
+                            cell1_html = '<a href="{% url status.views.detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
+                            cell2_html = '<a href="{% url status.views.detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
+                            cell1.innerHTML=cell1_html;
+                            cell2.innerHTML=cell2_html;
+                        }
+                    })
+                    .fail( function(data) {
+                        // Fail scenario
+                        var td = document.getElementById("top_alert_loading_message");
+                        td.innerHTML = "update_top_alert_producers() failed";
+                        return data;
+                    });
         }
 
+        // Configure a timed refresh of our page.
+        function timedRefresh(timeoutPeriod) {
+            setInterval(refreshPage, timeoutPeriod);
+        }
+
+        // conditional reload of page. Reload only if user is not interacting with it currently.
         function refreshPage() {
             var checked_boxes = $( ".selectable :checked" );
             var shown_modals = $("div .modal.in");
             var searchbox_contents = $("#search_field").val();
             if (checked_boxes.length + shown_modals.length + searchbox_contents.length == 0) {
                 console.log("Refreshing page...");
-                location.reload(true);
+                location.reload();
             }
             else {
                 console.log("Canceled auto-refresh of page because input boxes or modals have been edited");
@@ -316,10 +319,6 @@
             }
         }
 
-        $(document).ready(function() {
-               $('#latest_version').adagios_version();
-            timedRefresh(30000);
-        });
     </script>
 {% endblock %}
 
