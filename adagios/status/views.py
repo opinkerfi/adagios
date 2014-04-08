@@ -1053,8 +1053,11 @@ def servicegroup_detail(request, servicegroup_name):
     c['errors'] = []
     c['servicegroup_name'] = servicegroup_name
 
-    c['services'] = adagios.status.utils.get_services(request, groups__has_field=servicegroup_name)
-    return render_to_response('status_services.html', c, context_instance=RequestContext(request))
+    search_conditions = request.GET.copy()
+    search_conditions.pop('servicegroup_name')
+
+    c['services'] = adagios.status.utils.get_services(request, groups__has_field=servicegroup_name, **search_conditions)
+    return render_to_response('status_servicegroup.html', c, context_instance=RequestContext(request))
 
 @adagios_decorator
 def contactgroups(request):
