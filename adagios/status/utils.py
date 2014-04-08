@@ -243,6 +243,14 @@ def get_services(request=None, tags=None, fields=None, *args, **kwargs):
     return result
 
 
+def get_contacts(request, *args, **kwargs):
+    l = livestatus(request)
+    return l.get_contacts(*args, **kwargs)
+
+def get_contactgroups(request, *args, **kwargs):
+    l = livestatus(request)
+    return l.get_contactgroups(*args, **kwargs)
+
 def get_statistics(request, *args, **kwargs):
     """ Return a list of dict. That contains various statistics from mk_livestatus (like service totals and host totals)
     """
