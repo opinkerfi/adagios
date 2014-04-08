@@ -1,12 +1,12 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}{% trad "Status Log" %}{% endblock %}
+{% block title %}{% trans "Status Log" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}{% trad "Status Log" %}{% endblock %}
+{% block largeheader %}{% trans "Status Log" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_log %}">{% trad "Log" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.status_log %}">{% trans "Log" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
@@ -206,8 +206,8 @@
             </table>
         </div>
         <div class="tab-pane " id="unclassified">
-            {% blocktrans with length=logs.unclassified|length %
-	    }Last {{ length }} misc entries:
+            {% blocktrans with length=logs.unclassified|length %}
+	    Last {{ length }} misc entries:
 	    {% endblocktrans %}
             <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
