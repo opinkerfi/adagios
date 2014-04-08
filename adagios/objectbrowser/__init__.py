@@ -13,7 +13,7 @@ def startup():
     pynag.Model.pynag_directory = settings.destination_directory
 
     # Pre load objects on startup
-    pynag.Model.ObjectDefinition.objects.get_all()
+    #pynag.Model.ObjectDefinition.objects.get_all()
 
     from pynag.Model import EventHandlers
     if settings.enable_githandler == True:
