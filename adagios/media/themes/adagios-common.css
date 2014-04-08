@@ -1,14 +1,3 @@
-
-@import url(../bootstrap/css/bootstrap.min.css);
-@import url(../bootstrap/css/bootstrap-responsive.min.css);
-@import url(glyph-free.css);
-@import url(../datatables/css/jquery.dataTables.css);
-@import url(../datatables/DT_bootstrap.css);
-@import url(../select2/select2.css);
-@import url(../datepicker/css/datepicker.css);
-@import url(bootstrap-backports.css);
-
-
 body {
     /* We push body down so it appears below top_navigation_bar */
     padding-top: 40px;
