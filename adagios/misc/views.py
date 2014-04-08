@@ -391,49 +391,6 @@ def mail(request):
         c['form'].save()
     return render_to_response('misc_mail.html', c, context_instance=RequestContext(request))
 
-def get_access_level(request):
-    """ Return the access level of current user.
-
-    Returns the following in order:
-        "administrator" - if user is an belongs to administrators group
-        "operator" - if user belongs to operators group
-        "auditor" - if user belongs to auditors group
-        "contact" - if user is defined as a contact
-        None - if user is not defined at all
-
-    """
-    user = request.META.get('REMOTE_USER', 'anonymous')
-    admins = adagios.settings.administrators.split(',')
-    operators = adagios.settings.operators.split(',')
-    auditors = adagios.settings.auditors.split(',')
-
-    if user in admins:
-        return "administrator"
-    if user in operators:
-        return "operator"
-    if user in auditors:
-        return "auditor"
-
-    # Check if this user has any contactgroups that grant him privileges
-    contactgroups = adagios.status.utils.get_contactgroups(
-        request,
-        'Columns: name',
-        'Filter: members >= %s' % user,
-    )
-    for group in contactgroups:
-        group_name = group['name']
-        if group_name in admins:
-            return "administrator"
-        if group_name in operators:
-            return "operator"
-        if group_name in auditors:
-            return "auditor"
-
-    # Check if this user is defined as a contact
-    contacts = adagios.status.utils.get_contacts(request, name=user)
-    if contacts:
-        return "contact"
-    return None
 
 
 @adagios_decorator

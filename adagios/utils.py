@@ -5,7 +5,7 @@ import adagios.status.utils
 import time
 import adagios
 import pynag.Model
-
+import adagios.exceptions
 
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
     livestatus = adagios.status.utils.livestatus(None)
@@ -75,3 +75,76 @@ def update_eventhandlers(request):
             adagios.settings.nagios_config), auto_init=False, author_name=remote_user)
     except Exception:
         pass
+
+
+def get_access_level(request):
+    """ Return the access level of current user.
+
+    Returns the following in order:
+        "administrator" - if user is an belongs to administrators group
+        "operator" - if user belongs to operators group
+        "auditor" - if user belongs to auditors group
+        "contact" - if user is defined as a contact
+        None - if user is not defined at all
+
+    """
+    user = request.META.get('REMOTE_USER', 'anonymous')
+    admins = adagios.settings.administrators.split(',')
+    operators = adagios.settings.operators.split(',')
+    auditors = adagios.settings.auditors.split(',')
+
+    if user in admins:
+        return "administrator"
+    if user in operators:
+        return "operator"
+    if user in auditors:
+        return "auditor"
+
+    # Check if this user has any contactgroups that grant him privileges
+    contactgroups = adagios.status.utils.get_contactgroups(
+        request,
+        'Columns: name',
+        'Filter: members >= %s' % user,
+    )
+    for group in contactgroups:
+        group_name = group['name']
+        if group_name in admins:
+            return "administrator"
+        if group_name in operators:
+            return "operator"
+        if group_name in auditors:
+            return "auditor"
+
+    # Check if this user is defined as a contact
+    contacts = adagios.status.utils.get_contacts(request, name=user)
+    if contacts:
+        return "contact"
+    return None
+
+
+def require_administrator(request):
+    """ Raises AccessDenied if user is not an administrator """
+    access_required = "administrator"
+    access_level = get_access_level(request)
+    username = request.META.get('REMOTE_USER', 'anonymous')
+
+    if access_level != access_required:
+        raise adagios.exceptions.AccessDenied(
+            username=username,
+            access_level=access_level,
+            access_required=access_required,
+        )
+
+
+class AuthorizationMiddleWare(object):
+
+    def process_request(self, request):
+        return None
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        module_name = view_func.__module__
+        print view_func.__module__
+        print view_func.__name__
+        if not adagios.settings.enable_authorization:
+            return None
+        raise Exception("boom")
