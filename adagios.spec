@@ -21,7 +21,7 @@ Prefix: %{_prefix}
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: pynag >= 0.8.1
+Requires: pynag >= 0.8.4
 Requires: httpd
 Requires: mod_wsgi
 Requires: Django
