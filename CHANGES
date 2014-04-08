@@ -1,3 +1,22 @@
+Changes in version 1.4.1
+========================
+Start maintaining a changelog again.
+
+Adagios has changed a lot since 1.2.2. Please the commit log for 
+details.
+
+Summary of features:
+
+* Major overhaul of bug fixes and layout issues
+* Performance improvements, in correlation with newer pynag version
+* Slightly modified style
+* Business Intelligence Module
+* /contrib module for custom views
+* Configuration module moved to current style
+
+added lines: 34743 removed lines : 55573 total lines: -20830
+
+
 Changes in version 1.2.2
 ======================== 
 We have a lot of bugfixes and lot of performance improvements. In this version.
