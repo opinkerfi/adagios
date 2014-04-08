@@ -7,7 +7,7 @@
 %define release 1
 
 Name: adagios
-Version: 1.4.0
+Version: 1.4.1
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
