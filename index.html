@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Adagios - Nagios Web Configuration Made Easy</title>
+    <title>Adagios by opinkerfi</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -64,7 +64,7 @@
 <li>Rest interface for viewing and modifying configuration</li>
 <li>Full audit of any changes made</li>
 </ul><h1>
-<a name="design-principals" class="anchor" href="#design-principals"><span class="octicon octicon-link"></span></a>Design principals</h1>
+<a name="design-principles" class="anchor" href="#design-principles"><span class="octicon octicon-link"></span></a>Design principles</h1>
 
 <ul>
 <li>Useful for both novices and nagios experts</li>
@@ -82,122 +82,9 @@
 </ul><h1>
 <a name="install-instructions" class="anchor" href="#install-instructions"><span class="octicon octicon-link"></span></a>Install Instructions</h1>
 
-<h3>
-<a name="rpm-installation" class="anchor" href="#rpm-installation"><span class="octicon octicon-link"></span></a>RPM Installation</h3>
+<p>Adagios has packages for most recent versions of redhat/fedora and debian/ubuntu.</p>
 
-<p>These installation instructions apply for rhel6. If running Fedora, please modify yum repos as needed.</p>
-
-<pre><code># For RHEL6/CentOS6 you must install epel yum repository (fedora users skip this step):
-rpm -Uvh http://download.fedoraproject.org/pub/epel/6/$HOSTTYPE/epel-release-6-8.noarch.rpm
-
-# Next step is to install OK yum repository:
-rpm -Uhv http://opensource.is/repo/ok-release-10-1.el6.noarch.rpm
-
-# Install needed packages:
-yum --enablerepo=ok-testing install -y nagios git adagios
-</code></pre>
-
-<p>Install okconfig (optional). Okconfig is a collection of plugins and templates for monitoring enterprise equipment. If installed Adagios will have options such as network scan and remote installation of clients.</p>
-
-<pre><code>yum --enablerepo=ok-testing install -y okconfig
-</code></pre>
-
-<p>After packages are in, a little bit of configuration is required:</p>
-
-<pre><code># If you don't know how to configure SElinux, put it in permissive mode:
-
-sed -i "s/SELINUX=enforcing/SELINUX=permissive/" /etc/sysconfig/selinux
-setenforce 0
-
-# If you plan to access adagios through apache, make sure it is started:
-service httpd restart
-chkconfig httpd on
-
-
-# Same goes for nagios, it needs to be running
-service nagios restart
-chkconfig nagios on
-</code></pre>
-
-<h3>
-<a name="installing-on-debian-based-systems" class="anchor" href="#installing-on-debian-based-systems"><span class="octicon octicon-link"></span></a>Installing on debian-based systems</h3>
-
-<p>Debian based platforms are known to work, but installation is a little more cumbersome.</p>
-
-<p>If you want to experiment with adagios on debian/ubuntu, read the instructions on the <a href="https://github.com/opinkerfi/adagios/wiki/Install-guide">wiki</a></p>
-
-<h3>
-<a name="source-installation" class="anchor" href="#source-installation"><span class="octicon octicon-link"></span></a>Source Installation</h3>
-
-<pre><code>git clone https://github.com/opinkerfi/adagios.git
-cd adagios
-python setup.py
-sudo mkdir /etc/adagios
-sudo cp adagios/etc/adagios.conf /etc/adagios/
-</code></pre>
-
-<h4>
-<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h4>
-
-<p>If you have pip installed</p>
-
-<pre><code>pip install -r requirements.txt
-</code></pre>
-
-<p>Otherwise please read <a href="https://github.com/opinkerfi/adagios/blob/master/requirements.txt">requirements.txt</a> for the list of python prerequisites.</p>
-
-<h3>
-<a name="nagios-configuration" class="anchor" href="#nagios-configuration"><span class="octicon octicon-link"></span></a>Nagios Configuration</h3>
-
-<h4>
-<a name="git-repo" class="anchor" href="#git-repo"><span class="octicon octicon-link"></span></a>Git Repo</h4>
-
-<p>It is strongly recommended that you create a git repository in /etc/nagios/ and additionally give ownership of
-everything in /etc/nagios to the nagios user.</p>
-
-<pre><code>cd /etc/nagios/
-git init
-git add .
-git commit -a -m "Initial commit"
-# Make sure nagios group will always have write access to the configuration files:
-chown -R nagios /etc/nagios/* /etc/nagios/.git
-setfacl -R -m group:nagios:rwx /etc/nagios/
-setfacl -R -m d:group:nagios:rwx /etc/nagios/
-</code></pre>
-
-<h4>
-<a name="adagios-destination" class="anchor" href="#adagios-destination"><span class="octicon octicon-link"></span></a>Adagios destination</h4>
-
-<p>By default objects created by adagios will go to /etc/nagios/adagios so make sure that this directory exists and
-nagios.cfg contains a reference to this directory.</p>
-
-<pre><code>mkdir -p /etc/nagios/adagios
-pynag config --append cfg_dir=/etc/nagios/adagios
-</code></pre>
-
-<p>Congratulations! You are now ready to browse through adagios through http://$servername/adagios/. By default it
-will use same authentication mechanism as nagios. (on rhel default is nagiosadmin/nagiosadmin and can be 
-changed in /etc/nagios/passwd)</p>
-
-<h1>
-<a name="using-the-status-view" class="anchor" href="#using-the-status-view"><span class="octicon octicon-link"></span></a>Using the Status view</h1>
-
-<p>Adagios has an experimental status view intended to partially replace the classical nagios web interface. If you want to try it out hen you need mk_livestatus and pnp4nagios broker modules installed:</p>
-
-<pre><code>yum install -y pnp4nagios mk-livestatus --enablerepo=ok-testing
-pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
-pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus"
-pynag config --set "process_performance_data=1"
-
-# Add nagios to apache group so it has permissions to pnp4nagios's session files
-usermod -G apache nagios
-
-# We need to restart both apache and nagios so new changes take effect
-service nagios restart
-service httpd restart
-service npcd restart
-chkconfig npcd on
-</code></pre>
+<p>Install takes about 5 minutes following our <a href="https://github.com/opinkerfi/adagios/wiki/Install-guide">Install Guide</a></p>
 
 <h1>
 <a name="support-us" class="anchor" href="#support-us"><span class="octicon octicon-link"></span></a>Support us</h1>
@@ -219,7 +106,14 @@ chkconfig npcd on
 <li>Mailing list: <a href="http://groups.google.com/group/adagios">http://groups.google.com/group/adagios</a>
 </li>
 <li>IRC: #adagios on irc.freenode.net</li>
-</ul>
+</ul><h1>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>GNU AFFERO GENERAL PUBLIC LICENSE Version 3</p>
+
+<p>The GNU Affero General Public License is a free, copyleft license for
+software and other kinds of works, specifically designed to ensure
+cooperation with the community in the case of network server software.</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/opinkerfi">opinkerfi</a></p>
