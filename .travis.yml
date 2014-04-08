@@ -19,7 +19,6 @@ install:
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - sudo pip install okconfig
-  - sudo pip install git+https://github.com/pynag/pynag.git
   - pip install -r requirements.txt
   - python setup.py build
   - python setup.py install
