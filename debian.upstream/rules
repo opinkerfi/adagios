@@ -22,7 +22,7 @@ override_dh_auto_install:
 	sed -i 's|pnp_filepath.*|pnp_filepath="/usr/share/pnp4nagios/html/index.php"|g' debian/adagios/etc/adagios/adagios.conf
 	
 	# copy sudoers.d file and modify paths
-	sed -i 's|/etc/init.d/nagios|/etc/init.d/nagios3|' debian/adagios/etc/sudoers.d/adagios 
+	sed -i 's|/etc/init.d/nagios|/etc/init.d/nagios3|' debian/adagios/usr/lib/python2.7/dist-packages/adagios/etc/sudoers.d 
 	
 	
 override_dh_auto_build:
