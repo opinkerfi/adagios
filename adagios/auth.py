@@ -14,20 +14,36 @@ administrators += operators + auditors
 
 access_map = list()
 
-access_map.append(('adagios.rest.views.javascript', "everyone"))
 access_map.append(('django.views.static.serve', "everyone"))
 
+access_map.append(('adagios.rest.views.index', "administrators"))
+access_map.append(('adagios.rest.status', "everyone"))
 
+# Access to rest interface
+access_map.append(('adagios.misc.rest', "everyone"))
+access_map.append(('adagios.rest.status', "everyone"))
+access_map.append(('adagios.rest.status.edit', "operators"))
+access_map.append(('adagios.misc.helpers', "administrators"))
+access_map.append(('adagios.rest', "everyone"))  # Everyone can browse the rest interface
+
+# Restrict access that directly allow editing of objects
 access_map.append(('adagios.objectbrowser', "administrators"))
 access_map.append(('adagios.okconfig_', "administrators"))
 access_map.append(('adagios.misc.views.settings', "administrators"))
-access_map.append(('adagios.misc.helpers', "administrators"))
-access_map.append(('adagios.misc.helpers.needs_reload', "users"))
-access_map.append(('adagios.misc.rest', "users"))
+
+# This is required for users to properly browse the status interface
+access_map.append(('adagios.misc.views.gitlog', "operators"))
+access_map.append(('adagios.misc.views.service', "operators"))
+
+access_map.append(('adagios.status', "everyone"))
+access_map.append(('adagios.pnp', "everyone"))
+access_map.append(('adagios.contrib', "everyone"))
+access_map.append(('adagios.bi', "everyone"))
+access_map.append(('adagios.misc.helpers.needs_reload', "everyone"))
 
 
 # If no other rule matches, then the default is to allow access to logged in users
-access_map.append(('', "users"))
+access_map.append(('', "administrator"))
 
 
 def check_access_to_path(request, path):
