@@ -60,3 +60,15 @@ def index(request):
         return redirect('status_index', permanent=True)
     else:
         return redirect('objectbrowser', permanent=True)
+
+
+def http_403(request, exception=None):
+    context = {}
+    context['exception'] = exception
+
+    t = loader.get_template('403.html')
+    c = template.Context(context)
+    t = t.render(c)
+    response = HttpResponse(t, content_type="text/html")
+    response.status_code = 403
+    return response
