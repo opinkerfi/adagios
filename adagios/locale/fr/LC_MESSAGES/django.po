@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: adagios\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-08 10:55-0400\n"
+"POT-Creation-Date: 2014-04-09 15:47-0400\n"
 "PO-Revision-Date: 2014-04-07 15:16+0000\n"
 "Last-Translator: matthieucan <matthieu.caneill@savoirfairelinux.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/adagios/language/"
@@ -39,18 +39,6 @@ msgid ""
 "Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index."
 "html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-"
 "Disabling_SELinux\">here</a> for information on how to disable it."
-msgstr ""
-
-#: utils.py:44
-msgid "Adding Task:"
-msgstr ""
-
-#: utils.py:54
-msgid "{done}/{total} done."
-msgstr ""
-
-#: views.py:45
-msgid "Error occured, but no error messages provided, what happened?"
 msgstr ""
 
 #: bi/__init__.py:88
@@ -294,10 +282,10 @@ msgstr ""
 #: bi/templates/business_process_edit.html:144
 #: okconfig_/templates/addhost.html:6 okconfig_/templates/edittemplate.html:6
 #: okconfig_/templates/verify_okconfig.html:6
-#: status/templates/state_history.html:23
+#: status/templates/state_history.html:27
 #: status/templates/status_dashboard.html:159
-#: status/templates/status_log.html:60 status/templates/status_log.html:89
-#: status/templates/status_log.html:188
+#: status/templates/status_log.html:35 status/templates/status_log.html:64
+#: status/templates/status_log.html:163
 #: status/templates/snippets/status_acknowledgements_snippet.html:10
 #: status/templates/snippets/status_commentlist_snippet.html:10
 #: status/templates/snippets/status_downtimelist_snippet.html:10
@@ -311,8 +299,8 @@ msgstr "Hôte"
 #: bi/templates/business_process_edit.html:145
 #: status/templates/status_dashboard.html:160
 #: status/templates/status_detail.html:10 status/templates/status_dt.html:19
-#: status/templates/status_log.html:61 status/templates/status_log.html:90
-#: status/templates/status_log.html:189
+#: status/templates/status_log.html:36 status/templates/status_log.html:65
+#: status/templates/status_log.html:164
 #: status/templates/snippets/status_acknowledgements_snippet.html:11
 #: status/templates/snippets/status_commentlist_snippet.html:11
 #: status/templates/snippets/status_downtimelist_snippet.html:11
@@ -327,18 +315,18 @@ msgstr ""
 
 #: bi/templates/business_process_add_graph.html:35
 #: bi/templates/business_process_add_subprocess.html:46
-#: objectbrowser/templates/bulk_edit.html:63
+#: objectbrowser/templates/bulk_edit.html:62
 #: objectbrowser/templates/edit_command.html:27
-#: objectbrowser/templates/edit_contact.html:91
-#: objectbrowser/templates/edit_contactgroup.html:98
+#: objectbrowser/templates/edit_contact.html:90
+#: objectbrowser/templates/edit_contactgroup.html:97
 #: objectbrowser/templates/edit_host.html:115
-#: objectbrowser/templates/edit_hostgroup.html:95
+#: objectbrowser/templates/edit_hostgroup.html:94
 #: objectbrowser/templates/edit_service.html:148
-#: objectbrowser/templates/edit_servicegroup.html:95
+#: objectbrowser/templates/edit_servicegroup.html:94
 #: okconfig_/templates/addgroup.html:15 okconfig_/templates/addhost.html:15
 #: okconfig_/templates/addtemplate.html:17
 #: okconfig_/templates/choosehost.html:15
-#: okconfig_/templates/install_agent.html:105
+#: okconfig_/templates/install_agent.html:104
 msgid "Submit"
 msgstr ""
 
@@ -398,7 +386,7 @@ msgid "Graphs"
 msgstr ""
 
 #: bi/templates/business_process_edit.html:24
-#: status/templates/status_log.html:50
+#: status/templates/status_log.html:25
 msgid "Other"
 msgstr ""
 
@@ -965,7 +953,9 @@ msgid ""
 msgstr ""
 
 #: misc/forms.py:353
-msgid "-1"
+msgid ""
+"Nagios's default of -1 is recommended here. PNP Documentation says you will "
+"need at least bits 2 and 3. Only change this if you know what you are doing."
 msgstr ""
 
 #: misc/forms.py:355
@@ -1104,7 +1094,7 @@ msgstr ""
 msgid "Host %s not found. Maybe a typo or you do not have access to it."
 msgstr ""
 
-#: misc/views.py:364 status/templates/state_history.html:40
+#: misc/views.py:364 status/templates/state_history.html:43
 #: status/templates/status_hostgroup.html:63
 #: status/templates/snippets/status_hostlist_snippet.html:26
 msgid "Host Status"
@@ -1139,82 +1129,95 @@ msgstr ""
 msgid "Adagios"
 msgstr ""
 
-#: misc/templates/frontpage.html:29
+#: misc/templates/frontpage.html:19
+msgid ""
+"Adagios is a web based Nagios configuration interface built to be simple and "
+"intuitive in design, exposing less of the clutter under the hood in Nagios."
+msgstr ""
+
+#: misc/templates/frontpage.html:22
+msgid ""
+"This is a tech preview and there are a lot of known bugs. We would really "
+"like <a href=\"mailto:opensource@ok.is\">your feedback</a> to help us "
+"develop this app."
+msgstr ""
+
+#: misc/templates/frontpage.html:26
 msgid "Features"
 msgstr ""
 
-#: misc/templates/frontpage.html:31
+#: misc/templates/frontpage.html:28
 msgid ""
 "Edit Nagios configs in-place without a database backend (thanks <a href="
 "\"http://pynag.org\">pynag</a>)"
 msgstr ""
 
-#: misc/templates/frontpage.html:32
+#: misc/templates/frontpage.html:29
 msgid "Audit of configuration changes (aka git integration)"
 msgstr ""
 
-#: misc/templates/frontpage.html:33
+#: misc/templates/frontpage.html:30
 msgid "Bulk edit/copy/delete objects"
 msgstr ""
 
-#: misc/templates/frontpage.html:35
+#: misc/templates/frontpage.html:32
 msgid "REST interface"
 msgstr ""
 
-#: misc/templates/frontpage.html:36
+#: misc/templates/frontpage.html:33
 msgid "Start/stop/reload Nagios service"
 msgstr ""
 
-#: misc/templates/frontpage.html:38
+#: misc/templates/frontpage.html:35
 msgid ""
 "Adagios also integrates nicely with <a href=\"https://github.com/opinkerfi/"
 "okconfig\">okconfig</a> offering features such as:"
 msgstr ""
 
-#: misc/templates/frontpage.html:40
+#: misc/templates/frontpage.html:37
 msgid "Template support"
 msgstr ""
 
-#: misc/templates/frontpage.html:41
+#: misc/templates/frontpage.html:38
 msgid ""
 "Preconfigured templates (Windows, Linux, Oracle, Brocade, <a href=\"https://"
 "github.com/opinkerfi/okconfig/tree/master/usr/share/okconfig/templates\">and "
 "more...</a>)"
 msgstr ""
 
-#: misc/templates/frontpage.html:42
+#: misc/templates/frontpage.html:39
 msgid ""
 "Remotely push Nagios agent to clients (Windows, RHEL, Debian and SUSE are "
 "supported)"
 msgstr ""
 
-#: misc/templates/frontpage.html:43
+#: misc/templates/frontpage.html:40
 msgid "Network scan to find unmonitored hosts"
 msgstr ""
 
-#: misc/templates/frontpage.html:44
+#: misc/templates/frontpage.html:41
 msgid "Easy changes to plugin thresholds via Nagios macros"
 msgstr ""
 
-#: misc/templates/frontpage.html:47
+#: misc/templates/frontpage.html:44
 msgid "Version Information"
 msgstr ""
 
-#: misc/templates/frontpage.html:49
+#: misc/templates/frontpage.html:46
 msgid ""
 "Latest Stable version is</strong>: <a href=\"\" id=\"version_info\"><span id="
 "\"latest_version\">Checking for latest version</span></a>"
 msgstr ""
 
-#: misc/templates/frontpage.html:50
+#: misc/templates/frontpage.html:47
 msgid "You are running"
 msgstr ""
 
-#: misc/templates/frontpage.html:54
+#: misc/templates/frontpage.html:51
 msgid "Project Page"
 msgstr ""
 
-#: misc/templates/frontpage.html:56
+#: misc/templates/frontpage.html:53
 msgid ""
 "If you are looking for the project page, it is <a href=\"http://adagios.org"
 "\">right here</a>"
@@ -1466,26 +1469,32 @@ msgid ""
 "tab is correct"
 msgstr ""
 
-#: misc/templates/pnp4nagios.html:63
+#: misc/templates/pnp4nagios.html:61
+msgid ""
+"To make PNP graphs easily accessable from your Nagios web interface. You can "
+"set the 'action_url' attribute on your hosts and services."
+msgstr ""
+
+#: misc/templates/pnp4nagios.html:62
 msgid ""
 "Here you can reset action_url of all your services (first applying them to "
 "templates)"
 msgstr ""
 
-#: misc/templates/pnp4nagios.html:68
+#: misc/templates/pnp4nagios.html:67
 msgid "Apply this action url to every object"
 msgstr ""
 
-#: misc/templates/pnp4nagios.html:74
+#: misc/templates/pnp4nagios.html:73
 msgid "Manage the templates used to generate performance graphs."
 msgstr ""
 
-#: misc/templates/pnp4nagios.html:80
+#: misc/templates/pnp4nagios.html:79
 #, python-format
 msgid "Edit %(file)s"
 msgstr ""
 
-#: misc/templates/pnp4nagios.html:92
+#: misc/templates/pnp4nagios.html:91
 #: templates/snippets/top_navigation_bar.html:104
 msgid "Edit nagios.cfg"
 msgstr "Éditer nagios.cfg"
@@ -1533,9 +1542,9 @@ msgid "Paste the output of a nagios plugin below"
 msgstr ""
 
 #: misc/templates/test2.html:19 objectbrowser/templates/add_to_group.html:24
-#: objectbrowser/templates/bulk_copy.html:39
+#: objectbrowser/templates/bulk_copy.html:38
 #: objectbrowser/templates/bulk_delete.html:35
-#: objectbrowser/templates/bulk_edit.html:39
+#: objectbrowser/templates/bulk_edit.html:38
 #: objectbrowser/templates/search_objects.html:30
 msgid "Object Type"
 msgstr ""
@@ -2281,9 +2290,9 @@ msgid "OK, sounds good"
 msgstr ""
 
 #: objectbrowser/templates/add_to_group.html:25
-#: objectbrowser/templates/bulk_copy.html:40
+#: objectbrowser/templates/bulk_copy.html:39
 #: objectbrowser/templates/bulk_delete.html:36
-#: objectbrowser/templates/bulk_edit.html:40
+#: objectbrowser/templates/bulk_edit.html:39
 #: objectbrowser/templates/suggestions.html:31
 #: status/templates/test_livestatus.html:39
 msgid "Description"
@@ -2413,7 +2422,7 @@ msgid "Pending"
 msgstr ""
 
 #: objectbrowser/templates/base_objectbrowser.html:215
-#: status/templates/status_log.html:163
+#: status/templates/status_log.html:138
 msgid "Command"
 msgstr ""
 
@@ -2442,18 +2451,18 @@ msgstr ""
 
 #: objectbrowser/templates/base_objectbrowser.html:257
 #: objectbrowser/templates/edit_contact.html:37
-#: objectbrowser/templates/edit_contact.html:65
-#: objectbrowser/templates/edit_contact.html:81
+#: objectbrowser/templates/edit_contact.html:64
+#: objectbrowser/templates/edit_contact.html:80
 #: objectbrowser/templates/edit_contactgroup.html:33
 #: objectbrowser/templates/edit_contactgroup.html:60
-#: objectbrowser/templates/edit_contactgroup.html:88
+#: objectbrowser/templates/edit_contactgroup.html:87
 #: objectbrowser/templates/edit_host.html:48
 #: objectbrowser/templates/edit_host.html:66
 #: objectbrowser/templates/edit_host.html:82
 #: objectbrowser/templates/edit_host.html:103
 #: objectbrowser/templates/edit_hostgroup.html:33
 #: objectbrowser/templates/edit_hostgroup.html:57
-#: objectbrowser/templates/edit_hostgroup.html:85
+#: objectbrowser/templates/edit_hostgroup.html:84
 #: objectbrowser/templates/edit_object.html:23
 #: objectbrowser/templates/edit_service.html:47
 #: objectbrowser/templates/edit_service.html:106
@@ -2461,7 +2470,7 @@ msgstr ""
 #: objectbrowser/templates/edit_service.html:138
 #: objectbrowser/templates/edit_servicegroup.html:33
 #: objectbrowser/templates/edit_servicegroup.html:57
-#: objectbrowser/templates/edit_servicegroup.html:85
+#: objectbrowser/templates/edit_servicegroup.html:84
 #: objectbrowser/templates/edit_timeperiod.html:33
 msgid "Save changes"
 msgstr ""
@@ -2482,17 +2491,25 @@ msgstr ""
 msgid "You are about to copy multible objects"
 msgstr ""
 
-#: objectbrowser/templates/bulk_copy.html:41
+#: objectbrowser/templates/bulk_copy.html:28
+#: objectbrowser/templates/bulk_edit.html:27
+msgid ""
+"Fill in Attribue Name and New Value and they will be changed on all selected "
+"items. If object does not currently have this value defined it will be added "
+"anyway."
+msgstr ""
+
+#: objectbrowser/templates/bulk_copy.html:40
 #: objectbrowser/templates/bulk_delete.html:37
-#: objectbrowser/templates/bulk_edit.html:41
+#: objectbrowser/templates/bulk_edit.html:40
 #: objectbrowser/templates/search_objects.html:32
 #: objectbrowser/templates/suggestions.html:53
 msgid "Filename"
 msgstr ""
 
-#: objectbrowser/templates/bulk_copy.html:66
+#: objectbrowser/templates/bulk_copy.html:65
 #: objectbrowser/templates/bulk_delete.html:69
-#: objectbrowser/templates/bulk_edit.html:67
+#: objectbrowser/templates/bulk_edit.html:66
 msgid "Hey we didn't find any objects that match what you were looking for :("
 msgstr ""
 
@@ -2590,12 +2607,12 @@ msgid "General"
 msgstr ""
 
 #: objectbrowser/templates/edit_command.html:36
-#: objectbrowser/templates/edit_contact.html:100
-#: objectbrowser/templates/edit_contactgroup.html:107
-#: objectbrowser/templates/edit_hostgroup.html:104
+#: objectbrowser/templates/edit_contact.html:99
+#: objectbrowser/templates/edit_contactgroup.html:106
+#: objectbrowser/templates/edit_hostgroup.html:103
 #: objectbrowser/templates/edit_object.html:30
 #: objectbrowser/templates/edit_service.html:155
-#: objectbrowser/templates/edit_servicegroup.html:104 status/rest.py:573
+#: objectbrowser/templates/edit_servicegroup.html:103 status/rest.py:573
 #: status/rest.py:591
 msgid "Object not found"
 msgstr ""
@@ -2630,7 +2647,7 @@ msgstr ""
 
 #: objectbrowser/templates/edit_contact.html:19
 #: objectbrowser/templates/edit_host.html:31
-#: status/templates/status_detail.html:287 status/templates/status_log.html:45
+#: status/templates/status_detail.html:287 status/templates/status_log.html:20
 msgid "Notifications"
 msgstr ""
 
@@ -2647,7 +2664,14 @@ msgstr ""
 msgid "Effective Contactgroups for this contact"
 msgstr ""
 
-#: objectbrowser/templates/edit_contact.html:87
+#: objectbrowser/templates/edit_contact.html:49
+msgid ""
+"Group membership can be defined in multiple ways, for example by editing the "
+"contactgroups \"members\" attribute. For your convenience following is a "
+"list of all contactgroups that this contact is \"effectively\" a member of."
+msgstr ""
+
+#: objectbrowser/templates/edit_contact.html:86
 #: objectbrowser/templates/edit_host.html:111
 #: objectbrowser/templates/edit_object.html:19
 msgid "All Attributes"
@@ -2670,6 +2694,13 @@ msgid ""
 "                                Notifications sent to these groups will also "
 "go to %(name)s.\n"
 "\t\t\t\t"
+msgstr ""
+
+#: objectbrowser/templates/edit_contactgroup.html:74
+msgid ""
+"Group membership can be defined in multiple ways, for example by editing the "
+"contact and editing the \"contactgroups\" attribute. For your convenience, "
+"here is a list of all contacts for this contactgroup."
 msgstr ""
 
 #: objectbrowser/templates/edit_host.html:30
@@ -2709,6 +2740,13 @@ msgstr ""
 msgid "Effective Members of this group"
 msgstr ""
 
+#: objectbrowser/templates/edit_hostgroup.html:71
+msgid ""
+"Group membership can be defined in multiple ways, for example by editing the "
+"host and editing the \"hostgroups\" attribute. For your convenience, here is "
+"a list of all hosts for this hostgroup."
+msgstr ""
+
 #: objectbrowser/templates/edit_service.html:9
 msgid "on host"
 msgstr ""
@@ -2739,11 +2777,25 @@ msgid ""
 "field or open that specific service and edit the \"servicegroups\" attribute."
 msgstr ""
 
+#: objectbrowser/templates/edit_servicegroup.html:71
+msgid ""
+"Group membership can be defined in multiple ways, for example by editing the "
+"service and editing the \"servicegroups\" attribute. For your convenience, "
+"here is a list of all services in this servicegroup."
+msgstr ""
+
 #: objectbrowser/templates/error.html:4
 msgid "Objectbrowser - Object not found"
 msgstr ""
 
-#: objectbrowser/templates/error.html:27
+#: objectbrowser/templates/error.html:23
+msgid ""
+"On rare occations this can happen if you just made changes to your object "
+"and its object id changed because it now looks differently in the config "
+"files."
+msgstr ""
+
+#: objectbrowser/templates/error.html:26
 msgid "In any case, you can try browsing for your object in the <a href="
 msgstr ""
 
@@ -3018,7 +3070,7 @@ msgstr ""
 msgid "Select which service check you want to add to this host"
 msgstr ""
 
-#: okconfig_/tests.py:17
+#: okconfig_/tests.py:18
 #, python-format
 msgid "Failed on test: %s"
 msgstr ""
@@ -3294,33 +3346,43 @@ msgid ""
 "password."
 msgstr ""
 
-#: okconfig_/templates/install_agent.html:69
+#: okconfig_/templates/install_agent.html:62
+msgid ""
+"The security settings on the remote windows host might forbid logins if the "
+"host name specified does not match the computername on the server."
+msgstr ""
+
+#: okconfig_/templates/install_agent.html:64
+msgid "Try again with either correct hostname or the ip address of the server."
+msgstr ""
+
+#: okconfig_/templates/install_agent.html:68
 msgid "Make sure that the user is a local administrator on the windows host."
 msgstr ""
 
-#: okconfig_/templates/install_agent.html:73
+#: okconfig_/templates/install_agent.html:72
 msgid ""
 "Seems like there is no copy of nsclient installed on the remote server. Have "
 "you tried the following:"
 msgstr ""
 
-#: okconfig_/templates/install_agent.html:76
+#: okconfig_/templates/install_agent.html:75
 msgid "Get nsclient 32-bit and 64-bit copies from opinkerfi github repo:"
 msgstr ""
 
-#: okconfig_/templates/install_agent.html:80
+#: okconfig_/templates/install_agent.html:79
 msgid "Copy nsclient to where okconfig expects it to live:"
 msgstr ""
 
-#: okconfig_/templates/install_agent.html:83
+#: okconfig_/templates/install_agent.html:82
 msgid "Put the ip address of the nagios server in here:"
 msgstr ""
 
-#: okconfig_/templates/install_agent.html:86
+#: okconfig_/templates/install_agent.html:85
 msgid "See more about this issue"
 msgstr ""
 
-#: okconfig_/templates/install_agent.html:86
+#: okconfig_/templates/install_agent.html:85
 msgid "here"
 msgstr ""
 
@@ -3367,7 +3429,7 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
-#: pnp/functions.py:56
+#: pnp/functions.py:58
 #, python-format
 msgid ""
 "Could not find pnp4nagios/index.php. Please specify it in adagios->settings-"
@@ -3548,17 +3610,17 @@ msgstr ""
 msgid "Unhandled exception while loading %(url)s: %(e)s"
 msgstr ""
 
-#: status/utils.py:352
+#: status/utils.py:361
 #, python-format
 msgid "Business Process %s"
 msgstr "Règle métier %s"
 
-#: status/utils.py:546
+#: status/utils.py:555
 #, python-format
 msgid "Could not load a BusinessProcess with name: %s"
 msgstr "Impossible de charger la règle métier nommée : %s"
 
-#: status/utils.py:621
+#: status/utils.py:630
 #, python-format
 msgid "Business process of type %s not found"
 msgstr "Règle métier du type %s introuvable"
@@ -3729,11 +3791,11 @@ msgid "To:"
 msgstr ""
 
 #: status/templates/base_status.html:263
-#: status/templates/status_contact.html:43 status/templates/status_log.html:63
-#: status/templates/status_log.html:92 status/templates/status_log.html:118
-#: status/templates/status_log.html:141 status/templates/status_log.html:165
-#: status/templates/status_log.html:191 status/templates/status_log.html:216
-#: status/templates/status_log.html:244
+#: status/templates/status_contact.html:43 status/templates/status_log.html:38
+#: status/templates/status_log.html:67 status/templates/status_log.html:93
+#: status/templates/status_log.html:116 status/templates/status_log.html:140
+#: status/templates/status_log.html:166 status/templates/status_log.html:191
+#: status/templates/status_log.html:219
 #: status/templates/snippets/status_statehistory_snippet.html:38
 msgid "Message"
 msgstr ""
@@ -3786,36 +3848,36 @@ msgstr ""
 msgid "State History"
 msgstr "Historique de l'état"
 
-#: status/templates/state_history.html:13
+#: status/templates/state_history.html:17
 msgid " lines in logfile"
 msgstr ""
 
-#: status/templates/state_history.html:16
+#: status/templates/state_history.html:20
 msgid "Start Time: "
 msgstr ""
 
-#: status/templates/state_history.html:17
+#: status/templates/state_history.html:21
 msgid "End Time: "
 msgstr ""
 
-#: status/templates/state_history.html:18
+#: status/templates/state_history.html:22
 msgid "Total Duration: "
 msgstr ""
 
-#: status/templates/state_history.html:24
+#: status/templates/state_history.html:28
 msgid "Service "
 msgstr ""
 
-#: status/templates/state_history.html:25
+#: status/templates/state_history.html:29
 #, python-format
 msgid "SLA %%"
 msgstr ""
 
-#: status/templates/state_history.html:26
+#: status/templates/state_history.html:30
 msgid "# alerts"
 msgstr ""
 
-#: status/templates/state_history.html:27
+#: status/templates/state_history.html:31
 msgid "Timeline"
 msgstr ""
 
@@ -3876,11 +3938,11 @@ msgstr ""
 msgid "%(contact_name)s is not tagged in any current problems."
 msgstr ""
 
-#: status/templates/status_contact.html:40 status/templates/status_log.html:59
-#: status/templates/status_log.html:87 status/templates/status_log.html:116
-#: status/templates/status_log.html:139 status/templates/status_log.html:162
-#: status/templates/status_log.html:187 status/templates/status_log.html:214
-#: status/templates/status_log.html:241
+#: status/templates/status_contact.html:40 status/templates/status_log.html:34
+#: status/templates/status_log.html:62 status/templates/status_log.html:91
+#: status/templates/status_log.html:114 status/templates/status_log.html:137
+#: status/templates/status_log.html:162 status/templates/status_log.html:189
+#: status/templates/status_log.html:216
 #: status/templates/snippets/status_acknowledgements_snippet.html:8
 #: status/templates/snippets/status_commentlist_snippet.html:8
 #: status/templates/snippets/status_downtimelist_snippet.html:8
@@ -3889,7 +3951,7 @@ msgid "Time"
 msgstr "Temps"
 
 #: status/templates/status_contact.html:41
-#: status/templates/status_log.html:242
+#: status/templates/status_log.html:217
 #: status/templates/test_livestatus.html:38
 msgid "Type"
 msgstr ""
@@ -3985,7 +4047,7 @@ msgstr ""
 
 #: status/templates/status_dashboard.html:43
 #: status/templates/status_detail.html:369
-#: status/templates/status_detail.html:556
+#: status/templates/status_detail.html:555
 #: status/templates/status_index.html:26
 #: status/templates/status_parents.html:4
 #: status/templates/status_parents.html:5
@@ -4122,7 +4184,6 @@ msgid "unit"
 msgstr ""
 
 #: status/templates/status_detail.html:112
-#: status/templatetags/adagiostags.py:54 status/templatetags/foo.py:41
 msgid "min"
 msgstr ""
 
@@ -4224,7 +4285,7 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: status/templates/status_detail.html:267 status/templates/status_log.html:49
+#: status/templates/status_detail.html:267 status/templates/status_log.html:24
 msgid "Passive checks"
 msgstr ""
 
@@ -4268,136 +4329,142 @@ msgstr ""
 msgid "This {{ my_object.object_type }} has no configured network parents."
 msgstr ""
 
-#: status/templates/status_detail.html:403
-#: status/templates/status_detail.html:431
+#: status/templates/status_detail.html:395
+msgid ""
+"Some checks have custom variables defined. These can be defined for example "
+"to define warning/critical thresholds for custom plugins."
+msgstr ""
+
+#: status/templates/status_detail.html:402
+#: status/templates/status_detail.html:430
 msgid "Variable Name"
 msgstr ""
 
-#: status/templates/status_detail.html:406
-#: status/templates/status_detail.html:434
+#: status/templates/status_detail.html:405
+#: status/templates/status_detail.html:433
 msgid "Value"
 msgstr ""
 
-#: status/templates/status_detail.html:423
+#: status/templates/status_detail.html:422
 msgid "This check has no custom variables defined."
 msgstr ""
 
-#: status/templates/status_detail.html:447
+#: status/templates/status_detail.html:446
 msgid "Configure check command"
 msgstr ""
 
-#: status/templates/status_detail.html:452
+#: status/templates/status_detail.html:451
 msgid "This tab should update when the tab is clicked"
 msgstr ""
 
-#: status/templates/status_detail.html:460
+#: status/templates/status_detail.html:459
 #: status/templates/snippets/business_process_view_snippet.html:40
 msgid "4 Hours"
 msgstr ""
 
-#: status/templates/status_detail.html:461
+#: status/templates/status_detail.html:460
 #: status/templates/snippets/business_process_view_snippet.html:41
 msgid "25 Hours"
 msgstr ""
 
-#: status/templates/status_detail.html:462
+#: status/templates/status_detail.html:461
 #: status/templates/snippets/business_process_view_snippet.html:42
 msgid "One Week"
 msgstr ""
 
-#: status/templates/status_detail.html:463
+#: status/templates/status_detail.html:462
 #: status/templates/snippets/business_process_view_snippet.html:43
 msgid "One Month"
 msgstr ""
 
-#: status/templates/status_detail.html:464
+#: status/templates/status_detail.html:463
 #: status/templates/snippets/business_process_view_snippet.html:44
 msgid "One Year"
 msgstr ""
 
-#: status/templates/status_detail.html:494
+#: status/templates/status_detail.html:493
 msgid ""
 "We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}"
 msgstr ""
 
-#: status/templates/status_detail.html:496
+#: status/templates/status_detail.html:495
 msgid "Please check that:"
 msgstr ""
 
-#: status/templates/status_detail.html:498
+#: status/templates/status_detail.html:497
 msgid " is installed and working"
 msgstr ""
 
-#: status/templates/status_detail.html:499
+#: status/templates/status_detail.html:498
 msgid "PNP Filepath"
 msgstr ""
 
-#: status/templates/status_detail.html:499
+#: status/templates/status_detail.html:498
 msgid " is correctly configured under "
 msgstr ""
 
-#: status/templates/status_detail.html:499
+#: status/templates/status_detail.html:498
 msgid "settings"
 msgstr ""
 
-#: status/templates/status_detail.html:500
+#: status/templates/status_detail.html:499
 msgid "User running nagios is a member of the unix groups apache or www-data"
 msgstr ""
 
-#: status/templates/status_detail.html:501
+#: status/templates/status_detail.html:500
 #, python-format
 msgid "Click <a href=\"%(the_url)s\">here</a> to see pnp4nagios output"
 msgstr ""
 
-#: status/templates/status_detail.html:504
+#: status/templates/status_detail.html:503
 msgid "No Performance data is available for this {{ my_object.object_type }}."
 msgstr ""
 
-#: status/templates/status_detail.html:513
+#: status/templates/status_detail.html:512
 msgid "Services on this host"
 msgstr ""
 
-#: status/templates/status_detail.html:527
+#: status/templates/status_detail.html:526
 msgid "External Links"
 msgstr ""
 
-#: status/templates/status_detail.html:530
+#: status/templates/status_detail.html:529
 msgid "Extra Actions"
 msgstr ""
 
-#: status/templates/status_detail.html:534
+#: status/templates/status_detail.html:533
 msgid "Extra Notes"
 msgstr ""
 
-#: status/templates/status_detail.html:538
+#: status/templates/status_detail.html:537
 msgid "Host Actions"
 msgstr ""
 
-#: status/templates/status_detail.html:542
+#: status/templates/status_detail.html:541
 msgid "Host Notes"
 msgstr ""
 
-#: status/templates/status_detail.html:547
+#: status/templates/status_detail.html:546
 msgid "Is a member of hostgroup:"
 msgstr ""
 
-#: status/templates/status_detail.html:569
+#: status/templates/status_detail.html:568
 msgid "Is a member of hostgroups"
 msgstr ""
 
-#: status/templates/status_detail.html:578
+#: status/templates/status_detail.html:577
 msgid "Is a member of contactgroups"
 msgstr ""
 
-#: status/templates/status_detail.html:587
+#: status/templates/status_detail.html:586
 msgid "Is a member of servicegroups"
 msgstr ""
 
-#: status/templates/status_detail.html:658
+#: status/templates/status_detail.html:657
 msgid "Failed to load check_command."
 msgstr ""
 
-#: status/templates/status_detail.html:767
+#: status/templates/status_detail.html:766
 msgid "Image preview"
 msgstr ""
 
@@ -4413,66 +4480,77 @@ msgstr ""
 msgid "Oh no, something went wrong ☹"
 msgstr ""
 
-#: status/templates/status_error.html:19
+#: status/templates/status_error.html:16
+msgid ""
+"Adagios cannot connect to livestatus. Don't worry, you can still use the "
+"other parts of Adagios, but to get the status part to work check the "
+"following:"
+msgstr ""
+
+#: status/templates/status_error.html:18
 msgid ""
 "Is <a href=\"http://mathias-kettner.de/checkmk_livestatus.html\\\">mk-"
 "livestatus</a> installed ?"
 msgstr ""
 
-#: status/templates/status_error.html:20
+#: status/templates/status_error.html:19
 #, python-format
 msgid ""
 "Does <a href=\"%(the_url)s\">nagios.cfg</a> have a broker_module= line that "
 "loads mk-livestatus ?"
 msgstr ""
 
-#: status/templates/status_error.html:21
+#: status/templates/status_error.html:20
 #, python-format
 msgid ""
 "Are there any errors related to livestatus in  <a href=\"%(the_url)s?"
 "search=livestatus\">nagios logfiles</a>"
 msgstr ""
 
-#: status/templates/status_error.html:24
+#: status/templates/status_error.html:23
 msgid "Install instructions for rpm-based systems:"
 msgstr ""
 
-#: status/templates/status_error.html:30
+#: status/templates/status_error.html:29
 msgid "Install instructions for debian-based systems:"
 msgstr ""
 
-#: status/templates/status_error.html:44
+#: status/templates/status_error.html:40
+msgid "Is our monitoring engine even running ? If so we cant detect it."
+msgstr ""
+
+#: status/templates/status_error.html:43
 msgid ""
 "Don't worry you can still configure stuff but you might want to start it so "
 "you can start monitoring stuff."
 msgstr ""
 
-#: status/templates/status_error.html:48
+#: status/templates/status_error.html:47
 #, python-format
 msgid ""
 "Please verify your <a href=\"%(the_url)s\">settings</a> and check all paths "
 "are valid."
 msgstr ""
 
-#: status/templates/status_error.html:51
+#: status/templates/status_error.html:50
 msgid ""
 "check that nagios is in fact running and sudoers.d is correctly configured."
 msgstr ""
 
-#: status/templates/status_error.html:54
+#: status/templates/status_error.html:53
 #, python-format
 msgid ""
 "Try starting it by clicking <a href=\"%(the_url)s\">here</a> and see if you "
 "are getting some sort of errors"
 msgstr ""
 
-#: status/templates/status_error.html:63
+#: status/templates/status_error.html:62
 msgid ""
 "So! Adagios is up and running. But you need to install and configure a "
 "monitoring engine."
 msgstr ""
 
-#: status/templates/status_error.html:66
+#: status/templates/status_error.html:65
 msgid ""
 "If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already "
 "installed.\n"
@@ -4481,7 +4559,7 @@ msgid ""
 "                configure right paths."
 msgstr ""
 
-#: status/templates/status_error.html:71
+#: status/templates/status_error.html:70
 msgid ""
 "If you don't have a monitoring engine installed you should take a look at "
 "our\n"
@@ -4489,30 +4567,30 @@ msgid ""
 "to get started."
 msgstr ""
 
-#: status/templates/status_error.html:77
+#: status/templates/status_error.html:76
 msgid ""
 "So! Seems like your configuration directory is not a git repository but "
 "Adagios was configured to that it uses git."
 msgstr ""
 
-#: status/templates/status_error.html:80
+#: status/templates/status_error.html:79
 #, python-format
 msgid ""
 "It's not a big deal, all you have to do is to visit <a href=\"%(the_url)s"
 "\">this page</a> and we will generate one for you."
 msgstr ""
 
-#: status/templates/status_error.html:83
+#: status/templates/status_error.html:82
 msgid ""
 "You configuration files should always be a git repository anyway, so this is "
 "for your own good :)"
 msgstr ""
 
-#: status/templates/status_error.html:98
+#: status/templates/status_error.html:97
 msgid "show debug information"
 msgstr ""
 
-#: status/templates/status_error.html:101
+#: status/templates/status_error.html:100
 msgid ""
 "<p>If you think this is a bug. Send the following information to the <a href="
 "\"https://github.com/opinkerfi/adagios/issues\">developers</a>:</p>"
@@ -4642,31 +4720,27 @@ msgstr ""
 msgid "Log"
 msgstr "Journal"
 
-#: status/templates/status_log.html:35
-msgid "Search"
-msgstr ""
-
-#: status/templates/status_log.html:43
+#: status/templates/status_log.html:18
 msgid "All Logs"
 msgstr ""
 
-#: status/templates/status_log.html:44
+#: status/templates/status_log.html:19
 msgid "State Changes"
 msgstr ""
 
-#: status/templates/status_log.html:46
+#: status/templates/status_log.html:21
 msgid "Warnings"
 msgstr ""
 
-#: status/templates/status_log.html:47
+#: status/templates/status_log.html:22
 msgid "Flapping Alerts"
 msgstr ""
 
-#: status/templates/status_log.html:48
+#: status/templates/status_log.html:23
 msgid "External Commands"
 msgstr ""
 
-#: status/templates/status_log.html:54
+#: status/templates/status_log.html:29
 #, python-format
 msgid ""
 "\n"
@@ -4674,7 +4748,7 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: status/templates/status_log.html:82
+#: status/templates/status_log.html:57
 #, python-format
 msgid ""
 "\n"
@@ -4682,11 +4756,11 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: status/templates/status_log.html:88
+#: status/templates/status_log.html:63
 msgid "Contact"
 msgstr ""
 
-#: status/templates/status_log.html:111
+#: status/templates/status_log.html:86
 #, python-format
 msgid ""
 "\n"
@@ -4694,7 +4768,7 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: status/templates/status_log.html:134
+#: status/templates/status_log.html:109
 #, python-format
 msgid ""
 "\n"
@@ -4702,7 +4776,7 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: status/templates/status_log.html:157
+#: status/templates/status_log.html:132
 #, python-format
 msgid ""
 "\n"
@@ -4710,7 +4784,7 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: status/templates/status_log.html:182
+#: status/templates/status_log.html:157
 #, python-format
 msgid ""
 "\n"
@@ -4718,7 +4792,7 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: status/templates/status_log.html:209
+#: status/templates/status_log.html:184
 #, python-format
 msgid ""
 "\n"
@@ -4726,7 +4800,7 @@ msgid ""
 "\t    "
 msgstr ""
 
-#: status/templates/status_log.html:236
+#: status/templates/status_log.html:211
 #, python-format
 msgid ""
 "\n"
@@ -5164,21 +5238,21 @@ msgstr "Vérification de service"
 msgid "Details for host %(host)s"
 msgstr "service %(service)s sur l'hôte %(host)s"
 
-#: status/templates/snippets/status_servicelist_snippet.html:58
+#: status/templates/snippets/status_servicelist_snippet.html:57
 #, python-format
 msgid "%(status)s for the past %(last_change)s"
 msgstr ""
 
-#: status/templates/snippets/status_servicelist_snippet.html:85
+#: status/templates/snippets/status_servicelist_snippet.html:84
 #, python-format
 msgid "%(lc)s ago"
 msgstr ""
 
-#: status/templates/snippets/status_servicelist_snippet.html:88
+#: status/templates/snippets/status_servicelist_snippet.html:87
 msgid "never"
 msgstr ""
 
-#: status/templates/snippets/status_servicelist_snippet.html:96
+#: status/templates/snippets/status_servicelist_snippet.html:95
 #, python-format
 msgid "%(length)s objects found."
 msgstr ""
@@ -5202,71 +5276,6 @@ msgstr ""
 
 #: status/templates/snippets/status_statehistory_snippet.html:65
 msgid " to search in older logs."
-msgstr ""
-
-#: status/templatetags/adagiostags.py:50 status/templatetags/foo.py:37
-msgid "No duration"
-msgstr "Aucune durée"
-
-#: status/templatetags/adagiostags.py:52 status/templatetags/foo.py:39
-msgid "day"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:52 status/templatetags/foo.py:39
-msgid "days"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:53 status/templatetags/foo.py:40
-msgid "hr"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:53 status/templatetags/foo.py:40
-msgid "hrs"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:53 status/templatetags/foo.py:40
-msgid "hour"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:53 status/templatetags/foo.py:40
-msgid "hours"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:54 status/templatetags/foo.py:41
-msgid "mins"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:54 status/templatetags/foo.py:41
-msgid "minute"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:54 status/templatetags/foo.py:41
-msgid "minutes"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:55 status/templatetags/foo.py:42
-msgid "sec"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:55 status/templatetags/foo.py:42
-msgid "secs"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:55 status/templatetags/foo.py:42
-msgid "second"
-msgstr ""
-
-#: status/templatetags/adagiostags.py:55 status/templatetags/foo.py:42
-msgid "seconds"
-msgstr ""
-
-#. Translators: this is a separator (followed by a space, in english typo)
-#: status/templatetags/adagiostags.py:60 status/templatetags/foo.py:47
-msgid ", "
-msgstr ""
-
-#: status/templatetags/adagiostags.py:61 status/templatetags/foo.py:48
-msgid "and"
 msgstr ""
 
 #: templates/404.html:5
@@ -5352,6 +5361,9 @@ msgstr "Paramètres"
 #: templates/snippets/top_navigation_bar.html:110
 msgid "PNP Integration"
 msgstr "Intégration PNP"
+
+#~ msgid "No duration"
+#~ msgstr "Aucune durée"
 
 #~ msgid ""
 #~ "Error: Can't find the file 'settings.py' in the directory containing %r. "

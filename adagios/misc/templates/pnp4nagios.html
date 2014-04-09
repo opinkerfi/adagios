@@ -58,8 +58,7 @@
 
         </div>
         <div class="tab-pane" id="action_url">
-            <p>{% trans "To make PNP graphs easily accessable from your Nagios web interface. You can set the 'action_url' attribute
-            on your hosts and services." %}</p>
+            <p>{% trans "To make PNP graphs easily accessable from your Nagios web interface. You can set the 'action_url' attribute on your hosts and services." %}</p>
             <p>{% trans "Here you can reset action_url of all your services (first applying them to templates)" %}</p>
             {% if action_url %}
                 <form action="#" method="post" class="form-horizontal">{% csrf_token %}
