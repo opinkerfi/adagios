@@ -10,6 +10,10 @@
 {% load adagiostags %}
 {% block toolbar %}{% endblock %}
 {% block content %}
+    <div id="log_datetime">
+    {% include "snippets/status_datepicker_snippet.html" %}
+    </div>
+
     {{ log|length }}{% trans " lines in logfile" %}
     <table class="table">
     <tr>
@@ -27,8 +31,7 @@
         <th>{% trans "Timeline" %}</th>
     </tr>
 
-    {% for service in services.values %}
-        {% if service.num_problems > 1 %}
+    {% for service in services.values %}{% if service.num_problems > 0 %}
         <tr>
         <td>
             <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
@@ -48,8 +51,7 @@
             {% for line in service.log %}
                 {%  if line.time != line.end_time or 1 == 1 %}
                 <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}"  class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
-                {% endif %}
-            {% endfor %}
+                {% endif %}{% endfor %}
 
             </div>
         <!--
@@ -76,4 +78,29 @@
 {% endblock %}
 
 
-{% block footer %} {{ block.super }} {% endblock %}
+{% block footer %} {{ block.super }}
+    <script type="text/javascript">
+
+            $(document).ready(function() {
+                var start_time = new Date();
+                if ("{{ start_time }}" != "None") {
+                    start_time = {{ start_time }};
+                } else {
+                    start_time.setDate(start_time.getDate() - 1);
+                    start_time = start_time.valueOf() / 1000;
+                }
+
+                var end_time = new Date();
+                if ("{{ end_time }}" != "None") {
+                    end_time = {{ end_time }};
+                } else {
+                    end_time.setHours(23);
+                    end_time.setMinutes(59);
+                    end_time.setSeconds(59);
+                    end_time = end_time.valueOf() / 1000;
+                }
+                $("form[name='datetimepicker']").adagios_datetimepicker(start_time, end_time);
+            });
+    </script>
+
+{% endblock %}
