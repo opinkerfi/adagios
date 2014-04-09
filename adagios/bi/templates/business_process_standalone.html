@@ -143,7 +143,7 @@
 
             if (my_element.childElementCount == 0) {
                 var spinner = document.createElement( 'img');
-                spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
+                spinner.setAttribute("src", "{% url media path="external/select2/spinner.gif" %}");
                 my_element.appendChild( spinner );
                 var url = '{% url bi.views.graphs_json bp.name %}';
                 $.getJSON(url)

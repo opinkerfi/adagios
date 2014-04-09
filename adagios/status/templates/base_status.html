@@ -43,13 +43,13 @@
                 {% block action_buttons %}
                     <div class="pull-left" id="action_buttons" >
 
-                        <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> {% trans "Running..." %}</span>' id="reschedule_button" onclick="adagios.status.reschedule();">
+                        <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="external/select2/spinner.gif" %}"> <span id="reschedule_text"> {% trans "Running..." %}</span>' id="reschedule_button" onclick="adagios.status.reschedule();">
                             <i class="glyph-refresh" > </i> <span class="hide visible-desktop" id="reschedule_text">{% trans "Recheck" %}</span>
                         </button>
-                        <button class="btn btn-small adagios_service_multi" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> {% trans "Running..." %}</span>'>
+                        <button class="btn btn-small adagios_service_multi" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="external/select2/spinner.gif" %}"> <span id="acknowledge_text"> {% trans "Running..." %}</span>'>
                             <i class="glyph-check" > </i><span  class="hide visible-desktop" id="acknowledge_text"> {% trans "Acknowledge" %}</span>
                         </button>
-                        <button class="btn btn-small adagios_service_multi" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="downtime_text"> {% trans "Running..." %}</span>'>
+                        <button class="btn btn-small adagios_service_multi" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="external/select2/spinner.gif" %}"> <span id="downtime_text"> {% trans "Running..." %}</span>'>
                             <i class="glyph-clock" > </i> <span  class="hide visible-desktop">{% trans "Downtime" %}</span>
                         </button>
                         <button class="btn btn-small adagios_service_multi" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
