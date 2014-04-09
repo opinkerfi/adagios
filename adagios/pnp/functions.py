@@ -5,6 +5,8 @@ from pynag.Utils import PynagError
 from adagios import settings
 import subprocess
 
+from django.utils.translation import ugettext as _
+
 
 def run_pnp(pnp_command, **kwargs):
     """ Run a specific pnp command
@@ -53,4 +55,4 @@ def find_pnp_path():
         if os.path.isfile(i):
             return i
     raise PynagError(
-        "Could not find pnp4nagios/index.php. Please specify it in adagios->settings->PNP. Tried %s" % possible_paths)
+        _("Could not find pnp4nagios/index.php. Please specify it in adagios->settings->PNP. Tried %s") % possible_paths)

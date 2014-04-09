@@ -73,7 +73,7 @@ def handle_request(request, module_name, module_path, attribute, format):
                 arguments['request'] = request
             result = item(**arguments)
     else:
-        raise BaseException("Unsupported operation: %s" % (request.method, ))
+        raise BaseException(_("Unsupported operation: %s") % (request.method, ))
     # Everything below is just about formatting the results
     if format == 'json':
         result = simplejson.dumps(
@@ -90,7 +90,7 @@ def handle_request(request, module_name, module_path, attribute, format):
         mimetype = 'text/plain'
     else:
         raise BaseException(
-            "Unsupported format: '%s'. Valid formats: json xml txt" %
+            _("Unsupported format: '%s'. Valid formats: json xml txt") %
             format)
     return HttpResponse(result, mimetype=mimetype)
 

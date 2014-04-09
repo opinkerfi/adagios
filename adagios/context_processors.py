@@ -14,6 +14,8 @@ import time
 import datetime
 from adagios import __version__
 
+from django.utils.translation import ugettext as _
+
 def on_page_load(request):
     """ Collection of actions that take place every page load """
     results = {}
@@ -239,10 +241,10 @@ def check_destination_directory(request):
             dest_dir_was_found = True
     if not dest_dir_was_found:
         add_notification(level="warning", notification_id="dest_dir",
-                         message="Destination for new objects (%s) is not defined in nagios.cfg" % dest)
+                         message=_("Destination for new objects (%s) is not defined in nagios.cfg") % dest)
     elif not os.path.isdir(dest):
         add_notification(level="warning", notification_id="dest_dir",
-                         message="Destination directory for new objects (%s) is not found. Please create it." % dest)
+                         message=_("Destination directory for new objects (%s) is not found. Please create it.") % dest)
     else:
         clear_notification(notification_id="dest_dir")
     return {}
@@ -268,7 +270,7 @@ def check_selinux(request):
             if open('/sys/fs/selinux/enforce', 'r').readline().strip() == "1":
                 add_notification(
                     level="warning",
-                    message='SELinux is enabled, which is likely to give your monitoring engine problems., see <a href="https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Disabling_SELinux">here</a> for information on how to disable it.',
+                    message=_('SELinux is enabled, which is likely to give your monitoring engine problems., see <a href="https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Disabling_SELinux">here</a> for information on how to disable it.'),
                     notification_id=notification_id,
                 )
         except Exception:

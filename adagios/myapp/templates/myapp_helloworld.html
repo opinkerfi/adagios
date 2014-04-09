@@ -10,9 +10,9 @@ You probably want at some point to create your own base_myapp.html
 
 
 {%block content %}
-	Insert your content in this box.
+	{% trans "Insert your content in this box." %}
 {% endblock %}
 
 
-{% block smallheader %} hello {% endblock %}
-{% block largeheader %} world :) {% endblock %}
+{% block smallheader %} {% trans "hello" %} {% endblock %}
+{% block largeheader %} {% trans "world :)" %} {% endblock %}

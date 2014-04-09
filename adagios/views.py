@@ -3,6 +3,7 @@ import traceback
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, loader
 from django import template
+from django.utils.translation import ugettext as _
 import time
 import logging
 import adagios.settings
@@ -41,7 +42,7 @@ def error_page(request, context=None):
     if context is None:
         context = {}
         context['errors'] = []
-        context['errors'].append('Error occured, but no error messages provided, what happened?')
+        context['errors'].append(_('Error occured, but no error messages provided, what happened?'))
     t = loader.get_template('status_error.html')
 
     c = template.Context(context)

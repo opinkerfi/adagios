@@ -23,6 +23,8 @@ This is a rest interface used by the "/rest/" module that affects adagios direct
 
 from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
+from django.utils.translation import ugettext as _
+
 version = __version__
 
 
@@ -103,4 +105,4 @@ def get_task(task_id="someid"):
                 'task_status': task.status()
             }
             return current_task
-    raise KeyError("Task not '%s' Found" % task_id)
+    raise KeyError(_("Task not '%s' Found") % task_id)

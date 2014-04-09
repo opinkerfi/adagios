@@ -1,20 +1,21 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
 {% block title %}{{ contactgroup_name }}{% endblock %}
 {% block smallheader %}contactgroup{% endblock %}
 {% block largeheader %}{{ contactgroup_name }} ({{ contactgroup.alias }}){% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.contact_list %}#tab_contactgroups">Contactgroups</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}#tab_contactgroups">{% trans "Contactgroups" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
 
     <ul class="nav nav-tabs" id="objecttab">
-        <li><a href="#history" data-toggle="tab">History</a></li>
-        <li><a href="#contacts" data-toggle="tab">Members</a></li>
-        <li><a href="#services" data-toggle="tab">Services</a></li>
-        <li><a href="#debug" data-toggle="tab">Debug</a></li>
+        <li><a href="#history" data-toggle="tab">{% trans "History" %}</a></li>
+        <li><a href="#contacts" data-toggle="tab">{% trans "Members" %}</a></li>
+        <li><a href="#services" data-toggle="tab">{% trans "Services" %}</a></li>
+        <li><a href="#debug" data-toggle="tab">{% trans "Debug" %}</a></li>
         <!-- <li><a href="#problems" data-toggle="tab">Comment Feed</a></li> -->
         <!-- <li><a href="#debug" data-toggle="tab">Debug</a></li> -->
     </ul>
@@ -24,24 +25,24 @@
 
         <div class="tab-pane" id="contactgroups">
             {% if contacts %}
-                {{ contactgroup_name }} Has the following members:
+                {% blocktrans %}{{ contactgroup_name }} Has the following members:{% endblocktrans %}
                 {% include "snippets/status_contactlist_snippet.html" %}
             {% else %}
-                {{ contactgroup_name }} Has no contacts.
+                {% blocktrans %}{{ contactgroup_name }} Has no contacts.{% endblocktrans %}
             {% endif %}
         </div>
 
         <div class="tab-pane" id="services">
             {% if services %}
-                {{ contactgroup_name }} is a contact for the following services:
+                {% blocktrans %}{{ contactgroup_name }} is a contact for the following services:{% endblocktrans %}
                 {% include "snippets/status_servicelist_snippet.html" %}
             {% else %}
-                {{ contactgroup_name }} is not a contact for any services.
+                {% blocktrans %}{{ contactgroup_name }} is not a contact for any services.{% endblocktrans %}
             {% endif %}
         </div>
 
         <div class="tab-pane" id="debug">
-            <h4>Information available via livestatus:</h4>
+            <h4>{% trans "Information available via livestatus:" %}</h4>
             <table class="table-condensed table">
                 {% for k,v in contactgroup.items %}
                     <tr>
