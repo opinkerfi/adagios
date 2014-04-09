@@ -1,5 +1,5 @@
 import os
-
+from django.utils.translation import ugettext as _
 
 def get_template_name(base_path, *args):
     """ Return a full path to a template named base_path/args[0]
@@ -19,7 +19,7 @@ def get_template_name(base_path, *args):
         path = os.path.normpath(path)
 
         if not path.startswith(base_path):
-            raise Exception("'%s' is outside contrib dir" % path)
+            raise Exception(_("'%(path)s' is outside contrib dir") % {'path': path})
         elif os.path.isdir(path):
             continue
         elif os.path.isfile(path):

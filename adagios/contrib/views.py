@@ -27,6 +27,7 @@ from adagios.views import adagios_decorator, error_page
 from django.template import RequestContext
 from adagios.contrib import get_template_name
 from django import template
+from django.utils.translation import ugettext as _
 
 
 @adagios_decorator
@@ -40,7 +41,7 @@ def index(request, contrib_dir=None):
     views = os.listdir(contrib_dir)
 
     if not views:
-        errors.append("Directory '%s' is empty" % contrib_dir)
+        errors.append(_("Directory '%s' is empty") % contrib_dir)
     return render_to_response("contrib_index.html", locals(), context_instance=RequestContext(request))
 
 

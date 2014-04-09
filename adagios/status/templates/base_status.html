@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+
+{% load i18n %}
+
 {% block title %}{{ block.super }}{% endblock title %}
 {% block smallheader %}{{ block.super }}{% endblock smallheader %}
 {% block largeheader %}{{ block.super }}{% endblock largeheader %}
@@ -8,7 +11,7 @@
 {% block nav2 %}{{ block.super }}{% endblock nav2 %}
 {% block header %}{{ block.super }}{% endblock header %}
 {% block nav1 %}
-    <a href="{% url adagios.status.views.status_index %}">Status</a>
+    <a href="{% url adagios.status.views.status_index %}">{% trans "Status" %} </a>
 {% endblock nav1 %}
 
 
@@ -25,12 +28,12 @@
                     <a class="btn btn-small dropdown-toggle " data-toggle="dropdown" href="#">
                         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="?q={{ request.GET.q }}&unhandled"> Open Problems</a></li>
-                        <li><a href="?q={{ request.GET.q }}&state__isnot=0"> All Problems</a></li>
-                        <li><a href="?q={{ request.GET.q }}&acknowledged=1"> All Acknowledged</a></li>
-                        <li><a href="?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> All in Downtime</a></li>
-                        <li><a href="?q={{ request.GET.q }}&state=0"> All OK</a></li>
-                        <li><a href="?q={{ request.GET.q }}"> Everything</a></li>
+                        <li><a href="?q={{ request.GET.q }}&unhandled"> {% trans "Open Problems" %}</a></li>
+                        <li><a href="?q={{ request.GET.q }}&state__isnot=0"> {% trans "All Problems" %}</a></li>
+                        <li><a href="?q={{ request.GET.q }}&acknowledged=1"> {% trans "All Acknowledged" %}</a></li>
+                        <li><a href="?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> {% trans "All in Downtime" %}</a></li>
+                        <li><a href="?q={{ request.GET.q }}&state=0"> {% trans "All OK" %}</a></li>
+                        <li><a href="?q={{ request.GET.q }}"> {% trans "Everything" %}</a></li>
                     </ul>
                 </div>
                 {% endblock %}
@@ -40,14 +43,14 @@
                 {% block action_buttons %}
                     <div class="pull-left" id="action_buttons" >
 
-                        <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> Running...</span>' id="reschedule_button" onclick="adagios.status.reschedule();">
-                            <i class="glyph-refresh" > </i> <span class="hide visible-desktop" id="reschedule_text">Recheck</span>
+                        <button class="btn btn-small adagios_service_multi" title="Recheck - Execute selected checks immediately" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="reschedule_text"> {% trans "Running..." %}</span>' id="reschedule_button" onclick="adagios.status.reschedule();">
+                            <i class="glyph-refresh" > </i> <span class="hide visible-desktop" id="reschedule_text">{% trans "Recheck" %}</span>
                         </button>
-                        <button class="btn btn-small adagios_service_multi" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> Running...</span>'>
-                            <i class="glyph-check" > </i><span  class="hide visible-desktop" id="acknowledge_text"> Acknowledge</span>
+                        <button class="btn btn-small adagios_service_multi" title="Acknowledge - selected items will be hidden from unhandled and notifications will no longer be sent out" data-toggle="modal" data-target="#acknowledge_modal" id="acknowledge_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="acknowledge_text"> {% trans "Running..." %}</span>'>
+                            <i class="glyph-check" > </i><span  class="hide visible-desktop" id="acknowledge_text"> {% trans "Acknowledge" %}</span>
                         </button>
-                        <button class="btn btn-small adagios_service_multi" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="downtime_text"> Running...</span>'>
-                            <i class="glyph-clock" > </i> <span  class="hide visible-desktop">Downtime</span>
+                        <button class="btn btn-small adagios_service_multi" title="Downtime - Selected items will be hidden from unhandled and notifications will not be sent until downtime is over" data-toggle="modal" data-target="#downtime_modal" id="downtime_button" data-loading-text='<img src="{% url media path="select2/spinner.gif" %}"> <span id="downtime_text"> {% trans "Running..." %}</span>'>
+                            <i class="glyph-clock" > </i> <span  class="hide visible-desktop">{% trans "Downtime" %}</span>
                         </button>
                         <button class="btn btn-small adagios_service_multi" title="Send out mail for selected items" id="mail_button" data-toggle="modal" data-target="#mail_modal">
                             <i class="glyph-envelope" > </i>
@@ -73,27 +76,27 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="enable_on_select" title="Add to businesgroup" id="add_to_businessprocess_button" onclick="adagios.bi.add_to_business_process();">
-                                    Add to business process
+                                    {% trans "Add to business process" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="enable_on_select" title="Add to contactgroup" onclick="add_to_group('contactgroup');">
-                                    Add to contactgroup
+                                    {% trans "Add to contactgroup" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="enable_on_select" title="Add to servicegroup" onclick="add_to_group('servicegroup');">
-                                    Add to servicegroup
+                                    {% trans "Add to servicegroup" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="enable_on_select" title="Remove acknowledgement" onclick="adagios.status.remove_acknowledgements();">
-                                    Remove Acknowledgement
+                                    {% trans "Remove Acknowledgement" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="enable_on_select" title="Remove Active Downtimes" onclick="adagios.status.remove_active_downtimes();">
-                                    Remove active downtimes
+                                    {% trans "Remove active downtimes" %}
                                 </a>
                             </li>
                         </ul>
@@ -131,13 +134,13 @@
             <form class="form-horizontal" onsubmit='$("#acknowledge_modal").modal("hide");  adagios.status.acknowledge(); return false;' >
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3>Acknowledge problem</h3>
+                    <h3>{% trans "Acknowledge problem" %}</h3>
                 </div>
                 <div class="modal-body">
-                    <p>Acknowledge means that someone is handling this problem. It will no longer be marked as unhandled and Nagios will stop sending notifications about it until it goes back to OK status.</p>
+                    <p>{% trans "Acknowledge means that someone is handling this problem. It will no longer be marked as unhandled and Nagios will stop sending notifications about it until it goes back to OK status." %}</p>
                     <div class="control-group">
                         <label class="control-label" for="id_acknowledgement_author">
-                            Author
+                            {% trans "Author" %}
                         </label>
                         <div class="controls" id="author_field">
                             <input id="id_acknowledgement_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
@@ -149,13 +152,13 @@
                         </label>
                         <div class="controls" id="host_name_field">
                             <input id="id_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
-                            <label class="help-block">Other people looking at this service will see this comment.</label>
+                            <label class="help-block">{% trans "Other people looking at this service will see this comment" %}.</label>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>Cancel</a>
-                    <button type="submit" id="acknowledge_submit_button" class="btn btn-primary">Acknowledge Problem</button>
+                    <a href="#" class="btn" onclick='$("#acknowledge_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                    <button type="submit" id="acknowledge_submit_button" class="btn btn-primary">{% trans "Acknowledge Problem" %}</button>
                 </div>
             </form>
         </div>
@@ -166,13 +169,13 @@
             <form name="downtime" class="form-horizontal">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3>Schedule Downtime</h3>
+                    <h3>{% trans "Schedule Downtime" %}</h3>
                 </div>
                 <div class="modal-body">
-                    <p>Putting hosts and services into scheduled downtime means they are expected to fail during that period. Nagios will not send out any notifications during scheduled downtime and problems will not show up as unhandled problems.</p>
+                    <p>{% trans "Putting hosts and services into scheduled downtime means they are expected to fail during that period. Nagios will not send out any notifications during scheduled downtime and problems will not show up as unhandled problems." %}</p>
                     <div class="control-group">
                         <label class="control-label" for="id_downtime_author">
-                            Author
+                            {% trans "Author" %}
                         </label>
                         <div class="controls" id="downtime_author_field">
                             <input id="id_downtime_author" type="text" class="required" disabled=disabled value="{{ remote_user }}" name="author" />
@@ -180,7 +183,7 @@
                     </div>
                     <div class="control-group">
                         <label class="control-label" for="id_downtime_start_time">
-                            Start Time
+                            {% trans "Start Time" %}
                         </label>
                         <div class="controls" id="downtime_start_time_field">
                             <div id="datepicker_start_time" class="date pull-left">
@@ -195,7 +198,7 @@
                     </div>
                     <div class="control-group">
                         <label class="control-label" for="id_downtime_end_time">
-                            End Time
+                            {% trans "End Time" %}
                         </label>
                         <div class="controls" id="id_downtime_end_time_field">
                             <div id="datepicker_end_time" class="date pull-left">
@@ -210,11 +213,11 @@
                     </div>
                     <div class="control-group">
                         <label class="control-label" for="id_downtime_comment">
-                            Comment
+                            {% trans "Comment" %}
                         </label>
                         <div class="controls" id="downtime_comment_field">
-                            <input id="id_downtime_comment" type="text" class="required" placeholder="Write some comment" name="comment" />
-                            <label class="help-block">Other people looking at this service will see this comment.</label>
+                            <input id="id_downtime_comment" type="text" class="required" placeholder="{% trans "Write some comment" %}" name="comment" />
+                            <label class="help-block">{% trans "Other people looking at this service will see this comment." %}</label>
                         </div>
                     </div>
                     <div class="control-group">
@@ -222,15 +225,15 @@
                         </label>
                         <div class="controls" id="id_downtime_recursive_field">
                             <input type="checkbox" name="recursive" id="id_downtime_recursive" />
-                            Apply to selected hosts and all their services
+                            {% trans "Apply to selected hosts and all their services" %}
                         </div>
                     </div>
 
                 </div>
 
                 <div class="modal-footer">
-                    <a href="#" class="btn" onclick='$("#downtime_modal").modal("hide");'>Cancel</a>
-                    <button type="submit" class="btn btn-primary">Schedule Downtime</button>
+                    <a href="#" class="btn" onclick='$("#downtime_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                    <button type="submit" class="btn btn-primary">{% trans "Schedule Downtime" %}</button>
                 </div>
             </form>
         </div>
@@ -240,14 +243,14 @@
         <div class="modal hide fade" id="mail_modal">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3>Mail</h3>
+                    <h3>{% trans "Mail" %}</h3>
                 </div>
                 <div class="modal-body">
-                    <p>You can send manual e-mail notification to a specified email address.</p>
+                    <p>{% trans "You can send manual e-mail notification to a specified email address." %}</p>
 
                     <div class="control-group">
                         <label class="control-label" for="id_mail_to">
-                            To:
+                            {% trans "To:" %}
                         </label>
                         <div class="controls" id="mail_to_field">
                             <input id="id_mail_to" type="text" class="required" value="" name="to" style="width: 100%" />
@@ -257,10 +260,11 @@
 
                     <div class="control-group">
                         <label class="control-label" for="id_mail_message">
-                            Message
+                            {% trans "Message" %}
                         </label>
                         <div class="controls" id="id_mail_message_field">
-                            <textarea id="id_mail_message"  class="required" placeholder="Hey everyone, please check the link and services below." name="message" ></textarea>
+                            <textarea id="id_mail_message"
+                            class="required" placeholder="{% trans "Hey everyone, please check the link and services below." %}" name="message" ></textarea>
                         </div>
                     </div>
 
@@ -269,7 +273,7 @@
                         </label>
                         <div class="controls" id="id_add_myself_to_cc_field">
                             <input type="checkbox" checked="checked" name="add_myself_to_cc" value="on" id="id_add_myself_to_cc" />
-                            Add myself to CC
+                            {% trans "Add myself to CC" %}
                         </div>
                     </div>
 
@@ -279,15 +283,15 @@
                         </label>
                         <div class="controls" id="id_acknowledge_all_problems_field">
                             <input type="checkbox" checked="checked" name="acknowledge_all_problems" value="on" id="id_acknowledge_all_problems" />
-                            Acknowledge Unhandled Problems
+                            {% trans "Acknowledge Unhandled Problems" %}
                         </div>
                     </div>
 
 
                 </div>
                 <div class="modal-footer">
-                    <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>Cancel</a>
-                    <button type="submit" class="btn btn-primary" onclick='$("#mail_modal").modal("hide"); adagios.status.send_mail();'>Send</button>
+                    <a href="#" class="btn" onclick='$("#mail_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                    <button type="submit" class="btn btn-primary" onclick='$("#mail_modal").modal("hide"); adagios.status.send_mail();'>{% trans "Send" %}</button>
                 </div>
         </div>
         <!-- Mail modal ends -->
@@ -305,7 +309,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>Close</a>
+                    <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>{% trans "Close" %}</a>
                 </div>
             </form>
         </div>
@@ -316,27 +320,27 @@
             <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3>Make a wish</h3>
+                    <h3>{% trans "Make a wish" %}</h3>
                 </div>
                 <div class="modal-body">
-                    <p>Anything cool you think Adagios could be doing for you?
+                    <p>{% trans "Anything cool you think Adagios could be doing for you?" %}
                     </p>
                     <p>
-                    Sweet! Ask for it here, and we'll see what we can do.
+                    {% trans "Sweet! Ask for it here, and we'll see what we can do." %}
                     </p>
                     <p>
-                            We'd love to hear from you, but we cannot guarantee that your wish will come true.
+                            {% trans "We'd love to hear from you, but we cannot guarantee that your wish will come true." %}
                     </p>
                     <label class="hide" for="wish_textarea"></label>
-                    <textarea  id="wish_textarea" style="width:100%;" cols="200" rows="10" name="wish" placeholder="I wish this page could..."></textarea>
+                    <textarea  id="wish_textarea" style="width:100%;" cols="200" rows="10" name="wish" placeholder="{% trans "I wish this page could..." %}"></textarea>
                     <hr>
                     <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
-                    <label class="pull-left" for="id_bribes">I'll back it up with bribes.</label>
+                    <label class="pull-left" for="id_bribes">{% trans "I'll back it up with bribes." %}</label>
                 </div>
 
                 <div class="modal-footer">
-                    <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>Cancel</a>
-                    <button type="submit" id="wish_submit_button" class="btn">Make a wish</button>
+                    <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                    <button type="submit" id="wish_submit_button" class="btn">{% trans "Make a wish" %}</button>
                 </div>
             </form>
         </div>
@@ -449,7 +453,7 @@
                             $("#id_mail_to").select2({
                                 tags:data,
                                 tokenSeparators: [","],
-                                placeholder:"Comma seperated list of email addresses to send to"
+                                placeholder:"gettext(Comma seperated list of email addresses to send to)"
                             });
                         });
             });
@@ -481,7 +485,7 @@
             $('#acknowledge_modal').modal('hide');
             var comment = document.getElementById("id_comment").value;
             if (comment == '') {
-                comment = "No comment was entered...";
+                comment = gettext("No comment was entered...");
             }
             var selected_objects = adagios.status.get_selected_objects();
             var objects_done = 0;
@@ -509,14 +513,14 @@
                 "persistent":"0",
                 "notify":"1"
             };
-            adagios.misc.info("Sending Command to server", 'acknowledgement');
+            adagios.misc.info(gettext("Sending Command to server"), 'acknowledgement');
             adagios.rest.status.acknowledge_many(my_data)
                     .done(function(data) {
-                        adagios.misc.success("Acknowledgement has been set. You should reload your browser.", "acknowledgement", 5000);
+                        adagios.misc.success(gettext("Acknowledgement has been set. You should reload your browser."), "acknowledgement", 5000);
                         adagios.status.clear_all_selections();
                     })
                     .fail(function(data) {
-                        adagios.misc.error("Error while sending acknowledge command to the server.", "acknowledgement");
+                        adagios.misc.error(gettext("Error while sending acknowledge command to the server."), "acknowledgement");
                     })
                     .always(function(data) {
                     });
@@ -567,13 +571,13 @@
                 "start_time":start_time,
                 "end_time":end_time
             };
-            adagios.misc.info("Sending downtime command to server.", 'downtime');
+            adagios.misc.info(gettext("Sending downtime command to server."), 'downtime');
             adagios.rest.status.downtime_many(my_data)
                     .done(function(data) {
-                        adagios.misc.success("Downtime command has been sent. You should refresh your browser.", 'downtime');
+                        adagios.misc.success(gettext("Downtime command has been sent. You should refresh your browser."), 'downtime');
                     })
                     .fail(function(data) {
-                        adagios.misc.error("Could not send downtime command to the server.", 'downtime');
+                        adagios.misc.error(gettext("Could not send downtime command to the server."), 'downtime');
                     });
 
         };
@@ -609,10 +613,10 @@
                 data: my_data,
                 async: true,
                 success: function(data) {
-                    adagios.misc.success("Mail has been sent", "mail_sent", 5000);
+                    adagios.misc.success(gettext("Mail has been sent"), "mail_sent", 5000);
                 },
                 error: function(data) {
-                  adagios.misc.error("Error sending mail", "mail_sent");
+                  adagios.misc.error(gettext("Error sending mail"), "mail_sent");
                 },
                 contentType: "application/json"
             });
@@ -623,7 +627,7 @@
         // Send a comment about specific service to our monitoring engine
         adagios.status.comment = function(comment,host_name, service_description, persistent ) {
             if (comment == '') {
-                comment = "No comment was entered...";
+                comment = gettext("No comment was entered...");
             }
             if (service_description == '_HOST_')
                 service_description = undefined;
@@ -636,11 +640,11 @@
             };
             return adagios.rest.status.comment(my_data)
                     .done(function(data) {
-                        adagios.misc.success("Comment has been sent to server.");
+                        adagios.misc.success(gettext("Comment has been sent to server."));
 
                     })
                     .fail(function(data) {
-                        adagios.misc.error("Problem sending comment to server.")
+                        adagios.misc.error(gettext("Problem sending comment to server."))
                     });
 
         }

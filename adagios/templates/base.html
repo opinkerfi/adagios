@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load ssi from future %}
+{% load i18n %}
 
 <html lang="en">
 
@@ -35,6 +36,9 @@
     <script>
         var BASE_URL = "{% url home %}";
     </script>
+    <script type="text/javascript"
+	    src="{% url django.views.i18n.javascript_catalog %}"></script>
+
 </head>
 
 <body>
@@ -65,44 +69,44 @@
     <!-- block left_sidebar starts -->
     {% block left_sidebar %}
     <div class="pull-left visible-desktop container-fluid well" id="left_sidebar">
-        <h5>Shortcuts</h5>
+        <h5>{% trans "Shortcuts" %}</h5>
         <ul class="nav nav-list">
-            <li><a href="{% url status.views.status_index %}">Status Overview </a></li>
+            <li><a href="{% url status.views.status_index %}">{% trans "Status Overview" %} </a></li>
             <li >
-                <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">Open Problems {% if num_problems_unhandled %}<span class="pull-right">({{ num_problems_unhandled }})</span>{% endif %}</a>
+                <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">{% trans "Open Problems" %} {% if num_problems_unhandled %}<span class="pull-right">({{ num_problems_unhandled }})</span>{% endif %}</a>
             </li>
             <li >
-                <a href="{% url status.views.problems %}">All Problems  {% if num_problems_all %}<span class="pull-right">({{ num_problems_all }})</span>{% endif %}</a>
+                <a href="{% url status.views.problems %}">{% trans "All Problems" %} {% if num_problems_all %}<span class="pull-right">({{ num_problems_all }})</span>{% endif %}</a>
             </li>
-            <li><a href="{% url status.views.hosts %}">Hosts</a></li>
-            <li><a href="{% url status.views.services %}">Services </a></li>
-            <li><a href="{% url status.views.contact_list %}">Contacts</a></li>
-            <li><a href="{% url status.views.network_parents %}">Network Parents </a></li>
-            <li><a href="{% url objectbrowser.views.list_object_types %}">Configuration</a></li>
+            <li><a href="{% url status.views.hosts %}">{% trans "Hosts" %}</a></li>
+            <li><a href="{% url status.views.services %}">{% trans "Services" %} </a></li>
+            <li><a href="{% url status.views.contact_list %}">{% trans "Contacts" %}</a></li>
+            <li><a href="{% url status.views.network_parents %}">{% trans "Network Parents" %} </a></li>
+            <li><a href="{% url objectbrowser.views.list_object_types %}">{% trans "Configuration" %}</a></li>
         </ul>
 
-        <h5>Reports</h5>
+        <h5>{% trans "Reports" %}</h5>
         <ul class="nav nav-list">
-            <li><a href="{% url status.views.state_history %}">State History </a></li>
-            <li><a href="{% url status.views.status_log %}">Log</a></li>
-            <li><a href="{% url status.views.comment_list %}">Comments</a></li>
-            <li><a href="{% url status.views.downtime_list %}">Downtimes</a></li>
+            <li><a href="{% url status.views.state_history %}">{% trans "State History" %} </a></li>
+            <li><a href="{% url status.views.status_log %}">{% trans "Log" %}</a></li>
+            <li><a href="{% url status.views.comment_list %}">{% trans "Comments" %}</a></li>
+            <li><a href="{% url status.views.downtime_list %}">{% trans "Downtimes" %}</a></li>
         </ul>
 
-        <h5>Groups</h5>
+        <h5>{% trans "Groups" %}</h5>
         <ul class="nav nav-list">
-            <li><a href="{% url status.views.status_hostgroups %}">Hostgroups</a></li>
-            <li><a href="{% url status.views.status_servicegroups %}">Servicegroups</a></li>
-            <li><a href="{% url status.views.contactgroups %}">Contactgroups</a></li>
+            <li><a href="{% url status.views.status_hostgroups %}">{% trans "Hostgroups" %}</a></li>
+            <li><a href="{% url status.views.status_servicegroups %}">{% trans "Servicegroups" %}</a></li>
+            <li><a href="{% url status.views.contactgroups %}">{% trans "Contactgroups" %}</a></li>
         </ul>
 
-        <h5>Experimental</h5>
+        <h5>{% trans "Experimental" %}</h5>
         <ul class="nav nav-list">
-            <li><a href="{% url status.views.map_view %}">Map</a></li>
-            <li><a href="{% url status.views.perfdata %}">Performance Data 1</a></li>
-            <li><a href="{% url status.views.perfdata2 %}">Performance Data 2</a></li>
-            <li><a href="{% url bi.views.index %}">Business Intelligence</a></li>
-            <li><a href="{% url status.views.dashboard %}">Dashboard</a></li>
+            <li><a href="{% url status.views.map_view %}">{% trans "Map" %}</a></li>
+            <li><a href="{% url status.views.perfdata %}">{% trans "Performance Data 1" %}</a></li>
+            <li><a href="{% url status.views.perfdata2 %}">{% trans "Performance Data 2" %}</a></li>
+            <li><a href="{% url bi.views.index %}">{% trans "Business Intelligence" %}</a></li>
+            <li><a href="{% url status.views.dashboard %}">{% trans "Dashboard" %}</a></li>
         </ul>
     </div>
     {% endblock left_sidebar %}
@@ -151,7 +155,7 @@
         <div class="pull-right" id="make_a_wish" >
             <label class=hide for="id_wish_input"></label>
             <input id=id_wish_input type="text" class="input-large" placeholder="I wish this page could..." onclick='$("#wish_modal").modal("show");'/>
-            <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>Make a wish</button>
+            <button class="btn btn-" style="margin-bottom: 9px;" onclick='$("#wish_modal").modal("show");'>{% trans "Make a wish" %}</button>
         </div>
     </div>
 {% endblock page_footer %}
@@ -168,7 +172,7 @@
         {%  for error in errors %}
             <div class="alert">
                 <button class="close" data-dismiss="alert">×</button>
-                <strong>Warning!</strong> {{ error }}
+                <strong>{% trans "Warning!" %}</strong> {{ error }}
             </div>
         {%  endfor %}
     {% endif %}
@@ -176,11 +180,11 @@
         {%  for message in messages  %}
             <div class="alert alert-success">
                 <button class="close" data-dismiss="alert">×</button>
-                <strong>Info!</strong> {{ message }}
+                <strong>{% trans "Info!" %}</strong> {{ message }}
             </div>
         {%  endfor %}
     {% endif %}
-    <div id="nagios_is_reloading" class="hide alert alert-success"><img src="{% url media path="select2/spinner.gif" %}"> Nagios is reloading...</div>
+    <div id="nagios_is_reloading" class="hide alert alert-success"><img src="{% url media path="select2/spinner.gif" %}"> {% trans "Nagios is reloading..." %}</div>
 </div>
 
 

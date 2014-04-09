@@ -6,6 +6,8 @@ import time
 import adagios
 import pynag.Model
 
+from django.utils.translation import ugettext as _
+
 
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
     livestatus = adagios.status.utils.livestatus(None)
@@ -39,7 +41,7 @@ class Task(object):
         self._pool = ThreadPool(processes=num_processes)
 
     def add(self, function, *args, **kwargs):
-        print "Adding Task:", locals()
+        print _("Adding Task:"), locals()
         result = self._pool.apply_async(function, args, kwargs)
         self._tasks.append(result)
         #print result.get()
@@ -49,7 +51,7 @@ class Task(object):
         for i in all_tasks:
             print i.ready()
         completed_tasks = filter(lambda x: x.ready(), all_tasks)
-        return "{done}/{total} done.".format(done=len(completed_tasks), total=len(all_tasks))
+        return _("{done}/{total} done.").format(done=len(completed_tasks), total=len(all_tasks))
 
     def get_id(self):
         return hash(self)

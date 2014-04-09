@@ -42,6 +42,16 @@ Adagios has packages for most recent versions of redhat/fedora and debian/ubuntu
 Install takes about 5 minutes following our [Install Guide](https://github.com/opinkerfi/adagios/wiki/Install-guide)
 
 
+Translations
+============
+
+  - handled by gettext, and stored in adagios/locale/
+  - .po files are editable with standart text editors or po-specific ones
+  - to add a language, run 'mkdir adagios/locale/<language-code>',
+    e.g. mkdir adagios/locale/de for German
+  - to create/update/compile .po files, run 'make trad'
+
+
 Support us
 ===================
 

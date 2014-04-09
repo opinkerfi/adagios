@@ -349,7 +349,7 @@ class BusinessProcess(object):
         return status
 
     def __repr__(self):
-        return "Business Process %s" % (self.display_name or self.name)
+        return _("Business Process %s") % (self.display_name or self.name)
 
     def add_process(self, business_process):
         if not self.processes:
@@ -543,7 +543,7 @@ class CustomBP(BusinessProcess):
                     self.processes.append(bp)
                 return
         raise Exception(
-            "Could not load a BusinessProcess with name: %s" % self.name)
+            _("Could not load a BusinessProcess with name: %s") % self.name)
 
     def save(self, filename=None):
         """ Saves this business process in a json format  to file
@@ -618,7 +618,7 @@ def get_business_process(process_type, name):
             pass
         return c
     else:
-        raise Exception("Business process of type %s not found" % process_type)
+        raise Exception(_("Business process of type %s not found") % process_type)
 
 
 
