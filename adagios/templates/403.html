@@ -14,4 +14,14 @@
         to access <b>{{ exception.path }}</b>
     {% endif %}
 {% endif %}
+
+This is a work in progress! So if you are having problems, here are a few pointers:
+    <ul>
+    <li>You can disable the feature by putting <b>enable_authorization=False</b> in adagios.conf</li>
+    <li>give your self administrator privileges by putting <b>administrators = "{{ exception.username }}"</b> in adagios.conf</li>
+    <li>administrators="" is a comma seperated list of either usernames, contactgroups or "everyone"</li>
+    <li>If you are running through apache, remember to reload apache after making changes to adagios.conf</li>
+    <li>If you are not using any authentication, add "anonymous" to the administrators group</li>
+    <li>Access control logic is defined as an access_map in adagios/auth.py. It might get user configurable later</li>
+    </ul>
 {% endblock content %}

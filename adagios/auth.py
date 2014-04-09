@@ -112,6 +112,10 @@ def has_role(request, role):
     if user in users_and_groups:
         return True
 
+    # If it is specifically stated that "everyone" belongs to the group
+    if "everyone" in users_and_groups:
+        return True
+
     # Check if user belongs to any contactgroup that has access
     contactgroups = adagios.status.utils.get_contactgroups(None, 'Columns: name', 'Filter: members >= %s' % user)
 
