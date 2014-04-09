@@ -494,9 +494,9 @@
             var servicelist = '';
 
             $.each(selected_objects, function(i, item) {
-                host_name =  item['host_name'];
-                service_description = item['service_description'];
-                object_type = item['object_type'];
+                var host_name =  item['host_name'];
+                var service_description = item['service_description'];
+                var object_type = item['object_type'];
                 if (object_type == 'host') {
                     hostlist += ';' + host_name;
                 }
@@ -586,7 +586,7 @@
         // This function sends email to selected recipients for all selected rows
         adagios.status.send_mail = function() {
             $('#mail_modal').modal('hide');
-            my_data = {
+            var my_data = {
                 "to":document.getElementById("id_mail_to").value,
                 "csrfmiddlewaretoken": window.csrftoken,
                 "add_myself_to_cc": document.getElementById("id_add_myself_to_cc").checked,
@@ -597,7 +597,8 @@
             };
 
             var selected_objects = adagios.status.get_selected_objects();
-            for (i=0;i<selected_objects.length;i++){
+            var shortname;
+            for (var i=0;i<selected_objects.length;i++){
                 if (selected_objects[i]['object_type'] == 'service') {
                     shortname = selected_objects[i]["host_name"] + "/" + selected_objects[i]["service_description"];
                     my_data['service'].push( shortname);
@@ -631,7 +632,7 @@
             }
             if (service_description == '_HOST_')
                 service_description = undefined;
-            my_data  = {
+            var my_data  = {
                 "host_name":host_name,
                 "service_description":service_description,
                 "comment":comment,

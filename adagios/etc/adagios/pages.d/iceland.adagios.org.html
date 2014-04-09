@@ -58,7 +58,7 @@
             }
             var dom_id;
             var doms_to_hide = querystring('hide');
-            for (i in doms_to_hide) {
+            for (var i in doms_to_hide) {
                 dom_id = '#' + doms_to_hide[i];
                 $(dom_id).hide();
             }
@@ -69,16 +69,17 @@
         $('#graphs_ul').click(function(event){
             var anchor = event.target.href.split('#')[1];
             var title = event.target.text;
-            my_element = document.getElementById(anchor);
+            var my_element = document.getElementById(anchor);
 
 
             if (my_element.childElementCount == 0) {
-                spinner = document.createElement( 'img');
+                var spinner = document.createElement( 'img');
                 spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
                 my_element.appendChild( spinner );
                 var url = '{{ graphs_url }}';
                 $.getJSON(url)
                         .done( function(data) {
+                            var graph_row, div_notes, div_last_value, new_img;
                             $.each(data, function(i, item) {
                                         if (item['title'] == title) {
                                             graph_row = document.createElement( 'div');

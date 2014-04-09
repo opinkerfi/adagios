@@ -769,7 +769,7 @@ adagios.misc.turn_tables_into_datatables = function() {
     var oTable = $('.datatable').dataTable( {
         "bPaginate": true,
         "iDisplayLength": 100,
-        "sPaginationType": "bootstrap",
+        "sPaginationType": "bootstrap"
     });
     $('.dataTables_length').hide();
 

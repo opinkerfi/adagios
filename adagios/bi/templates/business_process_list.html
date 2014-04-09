@@ -110,6 +110,7 @@
         adagios.rest.status.get_business_process({'process_name':process_name})
         .done( function(data) {
                     var result = '';
+                    var process_id;
                     for (var i in data) {
                         process_id = destination_id + "_" + i;
                         result += business_process_to_html(template_string, process_id, data[i]);

@@ -52,7 +52,7 @@
 
         // When use field is updated, automatically fill out service description
         $('#id_use').change(function() {
-            selected_parents = '';
+            var selected_parents = '';
             $('#id_use :selected').each( function(i) {
                 var query = {
                     'name': this.text,

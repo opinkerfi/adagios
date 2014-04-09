@@ -13,8 +13,7 @@
     <div id="friendly_livestatus_message" class=hide>
 
         {% if exception_type == "LivestatusNotConfiguredException" or nagios_running and not num_problems %}
-            {% trans "Adagios cannot connect to livestatus. Don't worry, you can still use the other parts of Adagios,
-            but to get the status part to work check the following:" %}
+            {% trans "Adagios cannot connect to livestatus. Don't worry, you can still use the other parts of Adagios, but to get the status part to work check the following:" %}
             <ul>
                 <li>{% blocktrans %}Is <a href="http://mathias-kettner.de/checkmk_livestatus.html\">mk-livestatus</a> installed ?{% endblocktrans %}</li>
                 <li>{% url objectbrowser.views.edit_nagios_cfg as the_url %}{% blocktrans %}Does <a href="{{ the_url }}">nagios.cfg</a> have a broker_module= line that loads mk-livestatus ?{% endblocktrans %}</li>
@@ -38,7 +37,7 @@ service nagios3 reload
         {% if not nagios_running %}
             <hr>
             <p>
-                {% trans "Is our monitoring engine even running ? If so we cant detect it." &}
+                {% trans "Is our monitoring engine even running ? If so we cant detect it." %}
             </p>
             <p>
                 {% trans "Don't worry you can still configure stuff but you might want to start it so you can start monitoring stuff." %}
@@ -64,7 +63,7 @@ service nagios3 reload
             </p>
             <p>
                 {% url adagios.misc.views.settings as the_url %}{% blocktrans %}If Nagios (or a compatible engine like Icinga, Shinken or Naemon) is already installed.
-                You should head over to <a href="{ the_url  }}">settings page</a> and
+                You should head over to <a href="{{ the_url  }}">settings page</a> and
                 configure right paths.{% endblocktrans %}
             </p>
             <p>

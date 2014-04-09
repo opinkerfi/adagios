@@ -685,16 +685,17 @@
         $('#graphs_ul').click(function(event){
                     var anchor = event.target.href.split('#')[1];
                     var title = event.target.text;
-                    my_element = document.getElementById(anchor);
+                    var my_element = document.getElementById(anchor);
 
 
                     if (my_element.childElementCount == 0) {
-                        spinner = document.createElement( 'img');
+                        var spinner = document.createElement( 'img');
                         spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
                         my_element.appendChild( spinner );
                         var url = '{% url pnp.views.pnp 'json' %}?host={{ host_name }}&srv={{ service_description }}';
                         $.getJSON(url)
                                 .done( function(data) {
+                                    var new_img;
                                     $.each(data, function(i, item) {
                                         if (item['title'] == title) {
                                             new_img = document.createElement( 'img');
@@ -717,7 +718,7 @@
         // When enter is pressed in comment form. Post a new comment.
         $('#write_a_comment').keyup(function (e) {
             if (e.keyCode === 13) {
-                my_comment = this.value;
+                var my_comment = this.value;
                 if (my_comment == '')
                     return;
                 adagios.status.comment(my_comment,"{{ host_name }}", "{{ service_description }}")
