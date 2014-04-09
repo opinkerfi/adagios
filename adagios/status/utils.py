@@ -20,9 +20,9 @@ def livestatus(request):
     """ Returns a new pynag.Parsers.mk_livestatus() object with authauser automatically set from request.META['remoteuser']
     """
 
-    if request == None:
+    if request is None:
         authuser = None
-    elif adagios.settings.enable_authorization == True:
+    elif adagios.settings.enable_authorization and not adagios.auth.has_role(request, 'administrators') and not adagios.auth.has_role(request, 'operators'):
         authuser = request.META.get('REMOTE_USER', None)
     else:
         authuser = None
@@ -45,6 +45,7 @@ def get_hostgroups(request, *args, **kwargs):
     """
     l = livestatus(request)
     return l.get_hostgroups(*args, **kwargs)
+
 
 def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     """ Get a list of hosts from mk_livestatus

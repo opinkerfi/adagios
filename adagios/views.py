@@ -26,25 +26,14 @@ def adagios_decorator(view_func):
             time_now = time.ctime()
             duration = end_time - start_time
             return result
+        except AccessDenied, e:
+            return http_403(request, exception=e)
         except Exception, e:
             c = {}
             c['exception'] = str(e)
             c['exception_type'] = str(type(e).__name__)
             c['traceback'] = traceback.format_exc()
             return error_page(request, context=c)
-    wrapper.__name__ = view_func.__name__
-    wrapper.__module__ = view_func.__module__
-    return wrapper
-
-
-def require_administrator(view_func):
-    """ python decorator that raises exception if user is not administrator """
-    def wrapper(request, *args, **kwargs):
-        try:
-            adagios.utils.require_administrator(request)
-            return view_func(request, *args, **kwargs)
-        except AccessDenied, e:
-            return http_403(request)
     wrapper.__name__ = view_func.__name__
     wrapper.__module__ = view_func.__module__
     return wrapper
@@ -63,7 +52,6 @@ def error_page(request, context=None):
     response.status_code = 500
     return response
 
-@require_administrator
 def index(request):
     """ This view is our frontpage """
     # If status view is enabled, redirect to frontpage of the status page:
@@ -73,11 +61,9 @@ def index(request):
         return redirect('objectbrowser', permanent=True)
 
 
-def http_403(request):
+def http_403(request, exception=None):
     context = {}
-
-    context['access_level'] = adagios.utils.get_access_level(request)
-    context['username'] = request.META.get('REMOTE_USER', 'anonymous')
+    context['exception'] = exception
 
     t = loader.get_template('403.html')
     c = template.Context(context)

@@ -1,4 +1,5 @@
-__author__ = 'palli'
+""" Exceptions that Adagios uses and raises
+"""
 
 
 class AdagiosError(Exception):
@@ -8,10 +9,9 @@ class AdagiosError(Exception):
 
 class AccessDenied(AdagiosError):
     """ This exception is raised whenever a user tries to access a page he does not have access to. """
-    def __init__(self, username, access_required, access_level, *args, **kwargs):
+    def __init__(self, username, access_required, message, path=None, *args, **kwargs):
         self.username = username
         self.access_required = access_required
-        self.access_level = access_level
-        message = "Access Denied. {username} needs to be part of {access_required}."
-        message = message.format(**locals())
+        self.message = message
+        self.path = path
         super(AccessDenied, self).__init__(message, *args, **kwargs)
