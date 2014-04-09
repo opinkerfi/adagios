@@ -7,14 +7,13 @@ import adagios.views
 
 auditors = []
 operators = []
-administrators = ["anonymous"]
+administrators = []
 
 # administrator belongs to all the other groups
 administrators += operators + auditors
 
 access_map = list()
 
-access_map.append(('adagios.status.views.dashboard', "everyone"))
 access_map.append(('adagios.rest.views.javascript', "everyone"))
 access_map.append(('django.views.static.serve', "everyone"))
 
