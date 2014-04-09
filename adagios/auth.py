@@ -14,7 +14,8 @@ administrators += operators + auditors
 
 access_map = list()
 
-access_map.append(('django.views.static.serve', "everyone"))
+access_map.append(('django.views.static', "everyone"))
+access_map.append(('django.views.i18n', "everyone"))
 
 access_map.append(('adagios.rest.views.index', "administrators"))
 access_map.append(('adagios.rest.status', "everyone"))
@@ -56,6 +57,7 @@ def check_access_to_path(request, path):
             if has_role(request, role):
                 return None
             else:
+                print "problem with", path
                 user = request.META.get('REMOTE_USER', 'anonymous')
                 message = "You do not have permission to access %s" % (path, )
                 raise adagios.exceptions.AccessDenied(user, access_required=role, message=message, path=path)
