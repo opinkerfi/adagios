@@ -17,25 +17,26 @@ access_map = list()
 access_map.append(('django.views.static', "everyone"))
 access_map.append(('django.views.i18n', "everyone"))
 
-access_map.append(('adagios.rest.views.index', "administrators"))
-access_map.append(('adagios.rest.status', "everyone"))
-
 # Access to rest interface
-access_map.append(('adagios.misc.rest', "everyone"))
+access_map.append(('adagios.rest.views', "everyone"))
 access_map.append(('adagios.rest.status', "everyone"))
-access_map.append(('adagios.rest.status.edit', "operators"))
-access_map.append(('adagios.misc.helpers', "administrators"))
-access_map.append(('adagios.rest', "everyone"))  # Everyone can browse the rest interface
+access_map.append(('adagios.misc.rest', "everyone"))
 
-# Restrict access that directly allow editing of objects
+
+# Explicitly grant configuration access only to admins
 access_map.append(('adagios.objectbrowser', "administrators"))
 access_map.append(('adagios.okconfig_', "administrators"))
+access_map.append(('adagios.misc.helpers', "administrators"))
 access_map.append(('adagios.misc.views.settings', "administrators"))
 
-# This is required for users to properly browse the status interface
-access_map.append(('adagios.misc.views.gitlog', "operators"))
-access_map.append(('adagios.misc.views.service', "operators"))
 
+# Limited write access that might later be downgraded to "operators"
+access_map.append(('adagios.misc.views.gitlog', "administrators"))
+access_map.append(('adagios.misc.views.service', "administrators"))
+access_map.append(('adagios.rest.status.edit', "administrators"))
+
+
+# These modules should more or less be considered "safe"
 access_map.append(('adagios.status', "everyone"))
 access_map.append(('adagios.pnp', "everyone"))
 access_map.append(('adagios.contrib', "everyone"))
@@ -43,8 +44,8 @@ access_map.append(('adagios.bi', "everyone"))
 access_map.append(('adagios.misc.helpers.needs_reload', "everyone"))
 
 
-# If no other rule matches, then the default is to allow access to logged in users
-access_map.append(('', "administrator"))
+# If no other rule matches, assume administrators have access
+access_map.append(('', "administrators"))
 
 
 def check_access_to_path(request, path):
