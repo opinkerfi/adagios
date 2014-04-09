@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block toolbar %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}403 - Access denied :({% endblock %}
+{% block title %}403 - Access denied :({% endblock %}
+{% block content %}
+<div class="alert alert-danger">
+    Sorry mate. Seems like you don't have access. to this page.
+</div>
+
+{% if exception %}
+    <b>{{ exception.username }}</b> needs to be part of <b>{{ exception.access_required }}</b>
+    {% if exception.path %}
+        to access <b>{{ exception.path }}</b>
+    {% endif %}
+{% endif %}
+{% endblock content %}

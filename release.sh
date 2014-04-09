@@ -151,7 +151,7 @@ update_debian_changelog() {
 
 git_commit() {
     ask "Commit changes to git and tag release ?" || return 0
-    git commit Makefile ${project_name}/__init__.py rel-eng/packages/${project_name} ${project_name}.spec debian.upstream/changelog -m "Bumped version number to $new_version" > /dev/null
+    git commit Makefile CHANGES ${project_name}/__init__.py rel-eng/packages/${project_name} ${project_name}.spec debian.upstream/changelog -m "Bumped version number to $new_version" > /dev/null
     git tag ${project_name}-${new_version}-${current_release} -a -m "Bumped version number to $new_version"
 }
 

@@ -5,7 +5,7 @@ import adagios.status.utils
 import time
 import adagios
 import pynag.Model
-
+import adagios.exceptions
 
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
     livestatus = adagios.status.utils.livestatus(None)
@@ -75,3 +75,5 @@ def update_eventhandlers(request):
             adagios.settings.nagios_config), auto_init=False, author_name=remote_user)
     except Exception:
         pass
+
+
