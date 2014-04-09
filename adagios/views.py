@@ -66,9 +66,6 @@ def http_403(request, exception=None):
     context = {}
     context['exception'] = exception
 
-    t = loader.get_template('403.html')
-    c = template.Context(context)
-    t = t.render(c)
-    response = HttpResponse(t, content_type="text/html")
+    response = render_to_response('403.html', context, context_instance=RequestContext(request))
     response.status_code = 403
     return response
