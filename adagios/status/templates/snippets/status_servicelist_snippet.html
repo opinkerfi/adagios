@@ -54,8 +54,7 @@
                         <span class="pull-right right-of-host"></span>
                     </div>
                     <!-- Here is the service description -->
-                    <a href="{% url status.views.detail %}?host_name={{ service.host_name }}&service_description={{
-                        service.description }}" title='{% blocktrans with status=service.status last_change=service.last_state_change|timestamp|timesince %}{{ status }} for the past {{ last_change }}{% endblocktrans %}'>
+                    <a href="{% url status.views.detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}" title='{% blocktrans with status=service.status last_change=service.last_state_change|timestamp|timesince %}{{ status }} for the past {{ last_change }}{% endblocktrans %}'>
                         <div class="circle circle_{{ service.unhandled }}  state_{{ service.state }}{{ service.unhandled }}"> </div> {{ service.description }}
                     </a>
 
