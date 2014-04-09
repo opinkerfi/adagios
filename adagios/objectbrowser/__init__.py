@@ -23,10 +23,6 @@ def startup():
     # Pre load objects on startup
     pynag.Model.ObjectDefinition.objects.get_all()
 
-    if settings.save_services_with_hosts:
-        for serv in pynag.Model.Service.objects.all:
-            serv.merge_service_to_host()
-
     if settings.enable_githandler == True:
         from pynag.Model import EventHandlers
         pynag.Model.eventhandlers.append(
