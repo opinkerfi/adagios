@@ -2,6 +2,7 @@
 
 from django.utils import unittest
 from django.test.client import Client
+from django.utils.translation import ugettext as _
 
 import okconfig
 import adagios.settings

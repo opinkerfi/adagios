@@ -350,7 +350,7 @@ class PNPBrokerModuleForm(forms.Form):
     config_file = forms.CharField(
         help_text=_("Full path to your npcd.cfg that shipped with your pnp4nagios installation"))
     event_broker_options = forms.IntegerField(
-        initial=_("-1"), help_text="Nagios's default of -1 is recommended here. PNP Documentation says you will need at least bits 2 and 3. Only change this if you know what you are doing.")
+        initial="-1", help_text=_("Nagios's default of -1 is recommended here. PNP Documentation says you will need at least bits 2 and 3. Only change this if you know what you are doing."))
     process_performance_data = forms.BooleanField(
         required=False, initial=True, help_text=_("PNP Needs the nagios option process_performance_data enabled to function. Make sure it is enabled."))
     #apply_action_url = forms.BooleanField(required=False,initial=True,help_text="If set, apply action_url to every service object in nagios")
