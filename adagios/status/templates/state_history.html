@@ -30,8 +30,7 @@
         <th>Timeline</th>
     </tr>
 
-    {% for service in services.values %}
-        {% if service.num_problems > 1 %}
+    {% for service in services.values %}{% if service.num_problems > 0 %}
         <tr>
         <td>
             <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
@@ -51,8 +50,7 @@
             {% for line in service.log %}
                 {%  if line.time != line.end_time or 1 == 1 %}
                 <div title="{{ line.time|timestamp|date:'Y-m-d H:i' }} - {{ line.status }} - {{ line.plugin_output }}"  class="bar bar-{{ line.bootstrap_status }}" style=" width: {{ line.duration_percent }}%;"></div>
-                {% endif %}
-            {% endfor %}
+                {% endif %}{% endfor %}
 
             </div>
         <!--
