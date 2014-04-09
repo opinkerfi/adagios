@@ -30,8 +30,8 @@
         <th>{% trans "# alerts" %}</th>
         <th>{% trans "Timeline" %}</th>
     </tr>
-
-    {% for service in services.values %}{% if service.num_problems > 0 %}
+    {# Only show services that have any service alerts for the day. #}
+    {% for service in services.values %}{% if service.num_problems > 1 %}
         <tr>
         <td>
             <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
