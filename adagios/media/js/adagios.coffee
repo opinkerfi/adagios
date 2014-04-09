@@ -150,7 +150,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $this.find("input[name='#{which}_time_picker']").each ->
         $dateobj = $this.data "#{which}_time_obj"
         $(this).val root.dateStr $dateobj
-        $(this).datepicker(format: "yyyy-mm-dd" ).on 'changeDate', (ev) ->
+        $(this).datepicker(format: gettext("yyyy-mm-dd") ).on 'changeDate', (ev) ->
           $dateobj.setYear ev.date.getFullYear()
           $dateobj.setMonth ev.date.getMonth()
           $dateobj.setDate ev.date.getDate()
@@ -464,8 +464,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $("#run_check_plugin #state").removeClass "label-important"
     $("#run_check_plugin #state").removeClass "label-warning"
     $("#run_check_plugin #state").removeClass "label-success"
-    $("#run_check_plugin #state").html "Pending"
-    $("#run_check_plugin #output pre").html "Executing check plugin"
+    $("#run_check_plugin #state").html gettext("Pending")
+    $("#run_check_plugin #output pre").html gettext("Executing check plugin")
     plugin_execution_time = $("#run_check_plugin div.progress").attr("data-timer")
     if plugin_execution_time > 1
       updateTimer = ->
@@ -519,10 +519,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
       if data[1]
         run_check_plugin_div.find("div#output pre").text data[1]
       else
-        run_check_plugin_div.find("#output pre").html "No data received on stdout"
+        run_check_plugin_div.find("#output pre").html gettext("No data received on stdout")
       if data[2]
         run_check_plugin_div.find("#error #error_content").text data[2]
-        run_check_plugin_div.find("#error #error_title").text "Plugin output (standard error)"
+        run_check_plugin_div.find("#error #error_title").text gettext("Plugin output (standard error)")
         run_check_plugin_div.find("div#error").show()
       else
         run_check_plugin_div.find("#error pre").text = ""
@@ -537,8 +537,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     ).error (jqXHR) ->
       run_check_plugin_div = $("div#run_check_plugin")
-      run_check_plugin_div.find("#error_title").text "Error fetching JSON"
-      run_check_plugin_div.find("#error_content").text "Failed to fetch data: URL: \"" + @url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.statusText + "\""
+      run_check_plugin_div.find("#error_title").text gettext("Error fetching JSON")
+      run_check_plugin_div.find("#error_content").text gettext("Failed to fetch data") + ": URL: \"" + @url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.statusText + "\""
       run_check_plugin_div.find("#error").show()
       run_check_plugin_div.find("div#plugin_output").hide()
       run_check_plugin_div.find("dl").hide()
@@ -583,7 +583,7 @@ $(document).ready ->
   $("[rel=tooltip]").popover()
   $("#popover").popover()
   $("select").select2({
-    placeholder: "Select an item",
+    placeholder: gettext("Select an item"),
     containerCssClass: "select2field"
   })
 

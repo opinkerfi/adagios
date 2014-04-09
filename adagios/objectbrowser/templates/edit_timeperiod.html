@@ -1,4 +1,6 @@
 {% extends "edit_object.html" %}
+{% load i18n %}
+
 {% block title %}{{  block.super }}{% endblock %}
 
 {% block header %}{{ block.super }} {% endblock %}
@@ -25,16 +27,16 @@
                             <fieldset id="id_geek_edit" class="objectbrowser_geek_edit">
                                 {{ geek_edit }}
                             </fieldset>
-                            <strong>Filename:</strong> {{ my_object.filename }}
+                            <strong>{% trans "Filename:" %}</strong> {{ my_object.filename }}
 
                             <div class="form-actions">
-                                <button class="btn btn-primary" type="submit">Save changes</button>
+                                <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                             </div>
                          </form>
                     </div>
                 </div>
 {% else %}
-	<p>Object not found </p>
+	<p>{% trans "Object not found " %}</p>
 {% endif %}
 
 

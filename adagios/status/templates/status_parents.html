@@ -1,11 +1,12 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
-{% block title %}Network Parents{% endblock %}
-{% block nav2 %}<a href="{% url status.views.network_parents %}">Network Parents</a>{% endblock %}
+{% block title %}{% trans "Network Parents" %}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.network_parents %}">{% trans "Network Parents" %}</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}
 
-Network Parents
+{% trans "Network Parents" %}
 {% endblock %}
 
 {% load adagiostags %}
@@ -22,20 +23,20 @@ Network Parents
                     <input style="margin-left: -2px; padding: 0px;" type="checkbox">
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href=""> All</a></li>
-                    <li><a href=""> None</a></li>
-                    <li><a href=""> Unhandled Problems</a></li>
-                    <li><a href=""> All Problems</a></li>
+                    <li><a href=""> {% trans "All" %}</a></li>
+                    <li><a href=""> {% trans "None" %}</a></li>
+                    <li><a href=""> {% trans "Unhandled Problems" %}</a></li>
+                    <li><a href=""> {% trans "All Problems" %}</a></li>
                 </ul>
             </div>
         </td>
-        <th>Host Name</th>
-        <th>Address</th>
-        <th>Children</th>
-        <th>Duration</th>
-        <th>Last Check</th>
-        <th>Status</th>
-        <th>Child Host Health</th>
+        <th>{% trans "Host Name" %}</th>
+        <th>{% trans "Address" %}</th>
+        <th>{% trans "Children" %}</th>
+        <th>{% trans "Duration" %}</th>
+        <th>{% trans "Last Check" %}</th>
+        <th>{% trans "Status" %}</th>
+        <th>{% trans "Child Host Health" %}</th>
     </tr>
     </thead>
     <tbody>
@@ -95,7 +96,7 @@ Network Parents
     </table>
 
 {% else %}
-    No Network parents found.
+    {% trans "No Network parents found." %}
 {% endif %}
 
 {% endblock %}

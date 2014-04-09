@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-04-08 10:55-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: media/js/adagios.js:155
+msgid "yyyy-mm-dd"
+msgstr ""
+
+#: media/js/adagios.js:409
+msgid "Pending"
+msgstr ""
+
+#: media/js/adagios.js:410
+msgid "Executing check plugin"
+msgstr ""
+
+#: media/js/adagios.js:458
+msgid "No data received on stdout"
+msgstr ""
+
+#: media/js/adagios.js:462
+msgid "Plugin output (standard error)"
+msgstr ""
+
+#: media/js/adagios.js:477
+msgid "Error fetching JSON"
+msgstr ""
+
+#: media/js/adagios.js:478
+msgid "Failed to fetch data"
+msgstr ""
+
+#: media/js/adagios.js:515
+msgid "Select an item"
+msgstr ""

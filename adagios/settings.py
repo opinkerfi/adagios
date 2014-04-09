@@ -76,11 +76,21 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     #'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     #'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
+)
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('fr', 'French'),
+)
+
+LOCALE_PATHS = (
+    "%s/locale/" % (djangopath),
 )
 
 ROOT_URLCONF = 'adagios.urls'
@@ -118,7 +128,22 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages")
 
- 
+
+# Themes options #
+# To rapidly switch your theme, update THEME_DEFAULT and leave the rest.
+
+# folders in which themes files will be looked up
+THEMES_FOLDER = 'themes' # in 'media/'
+
+# default theme in use, it should be present in the THEMES_FOLDER
+# (or at least through a symbolic link)
+THEME_DEFAULT = 'default'
+
+# CSS entry-point, in the theme folder
+THEME_ENTRY_POINT = 'style.css'
+
+# generated location of
+THEME_CSS = os.path.join(THEMES_FOLDER, THEME_DEFAULT, THEME_ENTRY_POINT)
 
 
 # Adagios specific configuration options. These are just the defaults,

@@ -9,7 +9,7 @@
                     &nbsp;<input name="start_hours" style="width: 40px" type="text">
                 </div>
                 <div class="pull-left">
-                    &nbsp;To&nbsp;
+                    &nbsp;{% trans "To" %}&nbsp;
                 </div>
 
                 <div class="date pull-left">
@@ -21,8 +21,8 @@
 
             </div>
             <div class="pull-left" style="padding-left: 8px">
-                <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search logs">
-                <button type="submit" name="submit" >Search</button>
+                <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search">
+                <button type="submit" name="submit" >{% trans "Search" %}Search</button>
             </div>
             <div class="clearfix">
                 <!-- <input type="text" class="slider" value=""> -->
