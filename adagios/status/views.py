@@ -773,11 +773,9 @@ def state_history(request):
     c['messages'] = []
     c['errors'] = []
 
+    livestatus = adagios.status.utils.livestatus(request)
     start_time = request.GET.get('start_time', None)
     end_time = request.GET.get('end_time', None)
-    host_name = request.GET.get('host_name', None)
-    service_description = request.GET.get('service_description', None)
-
     if end_time is None:
         end_time = time.time()
     end_time = int(end_time)
@@ -786,14 +784,8 @@ def state_history(request):
         seconds_today = end_time % seconds_in_a_day  # midnight of today
         start_time = end_time - seconds_today
     start_time = int(start_time)
-
-
     l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    c['log'] = log = l.get_state_history(
-                            start_time=start_time,
-                            end_time=end_time,
-                            host_name=host_name,
-                            service_description=service_description)
+    c['log'] = log = l.get_state_history()
     total_duration = end_time - start_time
     c['total_duration'] = total_duration
     css_hint = {}
