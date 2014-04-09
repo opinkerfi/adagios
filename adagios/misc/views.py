@@ -393,6 +393,7 @@ def mail(request):
     return render_to_response('misc_mail.html', c, context_instance=RequestContext(request))
 
 
+
 @adagios_decorator
 def test(request):
     """ Generic test view, use this as a sandbox if you like
@@ -401,6 +402,8 @@ def test(request):
     c['messages'] = []
     c.update(csrf(request))
     # Get some test data
+
+    print "you are: ", get_access_level(request)
 
     if request.method == 'POST':
         c['form'] = forms.PluginOutputForm(data=request.POST)

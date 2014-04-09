@@ -8,6 +8,7 @@ import time
 import logging
 import adagios.settings
 import adagios.utils
+from adagios.exceptions import AccessDenied
 
 
 def adagios_decorator(view_func):
@@ -42,7 +43,7 @@ def error_page(request, context=None):
     if context is None:
         context = {}
         context['errors'] = []
-        context['errors'].append(_('Error occured, but no error messages provided, what happened?'))
+        context['errors'].append('Error occured, but no error messages provided, what happened?')
     t = loader.get_template('status_error.html')
 
     c = template.Context(context)

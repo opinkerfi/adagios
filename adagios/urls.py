@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     # Example:
     url(r'^$', 'adagios.views.index', name="home"),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name="media"),
+    url(r'^403', 'adagios.views.http_403'),
     url(r'^objectbrowser', include('adagios.objectbrowser.urls')),
     url(r'^misc', include('adagios.misc.urls')),
     url(r'^pnp', include('adagios.pnp.urls')),
