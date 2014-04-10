@@ -68,45 +68,42 @@
     <!-- block left_sidebar starts -->
     {% block left_sidebar %}
     <div class="pull-left visible-desktop container-fluid well" id="left_sidebar">
-        <h5>{% trans "Shortcuts" %}</h5>
-        <ul class="nav nav-list">
-            <li><a href="{% url status.views.status_index %}">{% trans "Status Overview" %} </a></li>
-            <li >
-                <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">{% trans "Open Problems" %} {% if num_problems_unhandled %}<span class="pull-right">({{ num_problems_unhandled }})</span>{% endif %}</a>
-            </li>
-            <li >
-                <a href="{% url status.views.problems %}">{% trans "All Problems" %} {% if num_problems_all %}<span class="pull-right">({{ num_problems_all }})</span>{% endif %}</a>
-            </li>
-            <li><a href="{% url status.views.hosts %}">{% trans "Hosts" %}</a></li>
-            <li><a href="{% url status.views.services %}">{% trans "Services" %} </a></li>
-            <li><a href="{% url status.views.contact_list %}">{% trans "Contacts" %}</a></li>
-            <li><a href="{% url status.views.network_parents %}">{% trans "Network Parents" %} </a></li>
-            <li><a href="{% url objectbrowser.views.list_object_types %}">{% trans "Configuration" %}</a></li>
-        </ul>
-
-        <h5>{% trans "Reports" %}</h5>
-        <ul class="nav nav-list">
-            <li><a href="{% url status.views.state_history %}">{% trans "State History" %} </a></li>
-            <li><a href="{% url status.views.log %}">{% trans "Log" %}</a></li>
-            <li><a href="{% url status.views.comment_list %}">{% trans "Comments" %}</a></li>
-            <li><a href="{% url status.views.downtime_list %}">{% trans "Downtimes" %}</a></li>
-        </ul>
-
-        <h5>{% trans "Groups" %}</h5>
-        <ul class="nav nav-list">
-            <li><a href="{% url status.views.status_hostgroups %}">{% trans "Hostgroups" %}</a></li>
-            <li><a href="{% url status.views.status_servicegroups %}">{% trans "Servicegroups" %}</a></li>
-            <li><a href="{% url status.views.contactgroups %}">{% trans "Contactgroups" %}</a></li>
-        </ul>
-
-        <h5>{% trans "Experimental" %}</h5>
-        <ul class="nav nav-list">
-            <li><a href="{% url status.views.map_view %}">{% trans "Map" %}</a></li>
-            <li><a href="{% url status.views.perfdata %}">{% trans "Performance Data 1" %}</a></li>
-            <li><a href="{% url status.views.perfdata2 %}">{% trans "Performance Data 2" %}</a></li>
-            <li><a href="{% url bi.views.index %}">{% trans "Business Intelligence" %}</a></li>
-            <li><a href="{% url status.views.dashboard %}">{% trans "Dashboard" %}</a></li>
-        </ul>
+      <ul class="nav nav-list">
+        <li class="nav-header" style="color: black;">{% trans "Shortcuts" %}</li>
+	
+        <li{% if urlname == 'status_index' %} class="active"{% endif %}><a href="{% url status.views.status_index %}">{% trans "Status Overview" %} </a></li>
+        <li{% if urlname == 'adagios.status.views.problems' and 'unhandled' in request.GET %} class="active"{% endif %}>
+          <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">{% trans "Open Problems" %} {% if num_problems_unhandled %}<span class="pull-right">({{ num_problems_unhandled }})</span>{% endif %}</a>
+        </li>
+        <li{% if urlname == 'adagios.status.views.problems' and 'unhandled' not in request.GET %} class="active"{% endif %}>
+          <a href="{% url status.views.problems %}">{% trans "All Problems" %} {% if num_problems_all %}<span class="pull-right">({{ num_problems_all }})</span>{% endif %}</a>
+        </li>
+        <li{% if urlname == 'adagios.status.views.hosts' %} class="active"{% endif %}><a href="{% url status.views.hosts %}">{% trans "Hosts" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.services' %} class="active"{% endif %}><a href="{% url status.views.services %}">{% trans "Services" %} </a></li>
+        <li{% if urlname == 'adagios.status.views.contact_list' %} class="active"{% endif %}><a href="{% url status.views.contact_list %}">{% trans "Contacts" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.network_parents' %} class="active"{% endif %}><a href="{% url status.views.network_parents %}">{% trans "Network Parents" %} </a></li>
+        <li{% if urlname == 'objectbrowser' %} class="active"{% endif %}><a href="{% url objectbrowser.views.list_object_types %}">{% trans "Configuration" %}</a></li>
+	
+        <li class="nav-header" style="color: black;">{% trans "Reports" %}</li>
+	
+        <li{% if urlname == 'adagios.status.views.state_history' %} class="active"{% endif %}><a href="{% url status.views.state_history %}">{% trans "State History" %} </a></li>
+        <li{% if urlname == 'adagios.status.views.log' %} class="active"{% endif %}><a href="{% url status.views.log %}">{% trans "Log" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.comment_list' %} class="active"{% endif %}><a href="{% url status.views.comment_list %}">{% trans "Comments" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.downtime_list' %} class="active"{% endif %}><a href="{% url status.views.downtime_list %}">{% trans "Downtimes" %}</a></li>
+	
+        <li class="nav-header" style="color: black;">{% trans "Groups" %}</li>
+	
+        <li{% if urlname == 'adagios.status.views.status_hostgroups' %} class="active"{% endif %}><a href="{% url status.views.status_hostgroups %}">{% trans "Hostgroups" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.status_servicegroups' %} class="active"{% endif %}><a href="{% url status.views.status_servicegroups %}">{% trans "Servicegroups" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.contactgroups' %} class="active"{% endif %}><a href="{% url status.views.contactgroups %}">{% trans "Contactgroups" %}</a></li>
+	
+        <li class="nav-header" style="color: black;">{% trans "Experimental" %}</li>
+	
+        <li{% if urlname == 'adagios.status.views.map_view' %} class="active"{% endif %}><a href="{% url status.views.map_view %}">{% trans "Map" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.perfdata' %} class="active"{% endif %}><a href="{% url status.views.perfdata %}">{% trans "Performance Data 1" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.perfdata2' %} class="active"{% endif %}><a href="{% url status.views.perfdata2 %}">{% trans "Performance Data 2" %}</a></li>
+        <li{% if urlname == 'adagios.bi.views.index' %} class="active"{% endif %}><a href="{% url bi.views.index %}">{% trans "Business Intelligence" %}</a></li>
+        <li{% if urlname == 'adagios.status.views.dashboard' %} class="active"{% endif %}><a href="{% url status.views.dashboard %}">{% trans "Dashboard" %}</a></li>
     </div>
     {% endblock left_sidebar %}
     <!-- block left_sidebar ends -->
