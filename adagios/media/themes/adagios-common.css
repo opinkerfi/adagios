@@ -526,3 +526,20 @@ button.close.notification {
 .ssi-overwrite, .ssi-append {
     display: none;
 }
+
+
+/* Space between footer sections (.pull-left) */
+div#page_footer div.pull-left {
+    padding-right: 32px;
+}
+
+/* Space between footer sections (.pull-right) */
+div#page_footer div.pull-right {
+    padding-left: 32px;
+}
+
+/* Glyphicons footer */
+div#glyphicons-attribution,
+div#glyphicons-attribution a {
+    color: #666;
+}
