@@ -937,3 +937,19 @@ adagios.misc.modal_resize = function() {
         $(this).find('div.modal-body').css({'max-width': ($( window ).width() * 0.9)+"px" });
     });
 };
+
+// Delete a single host or service comment
+adagios.status.delete_comment = function(object_type, comment_id) {
+    var parameters = {};
+    parameters['comment_id'] = comment_id;
+    //parameters['is_service'] = (object_type == 'host');
+    return adagios.rest.status.delete_comment(parameters);
+};
+
+// Delete a single host or service downtime
+adagios.status.delete_downtime = function(object_type, downtime_id) {
+    var parameters = {};
+    parameters['downtime_id'] = downtime_id;
+    parameters['is_service'] = (object_type == 'host');
+    return adagios.rest.status.delete_downtime(parameters);
+};
