@@ -980,10 +980,7 @@ def contact_list(request):
     c = {}
     c['messages'] = []
     c['errors'] = []
-    l = adagios.status.utils.livestatus(request)
-    c['contacts'] = l.query('GET contacts')
-    c['contacts'] = pynag.Utils.grep(c['contacts'], **request.GET)
-    c['contactgroups'] = l.query('GET contactgroups')
+    c['contacts'] = adagios.status.utils.get_contacts(request, **request.GET)
     return render_to_response('status_contacts.html', c, context_instance=RequestContext(request))
 
 
