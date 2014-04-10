@@ -312,13 +312,13 @@ def comment(author, comment, host_name, service_description=None, persistent=1):
     return "ok"
 
 
-def delete_comment(comment_id, host_name, service_description=None):
+def delete_comment(comment_id, object_type=None, host_name=None, service_description=None):
     """
     """
     if not host_name:
         # TODO host_name is not used here, why do we need it ?
         pass
-    if service_description in (None, '', u'', '_HOST_'):
+    if object_type == "host" or service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.del_host_comment(comment_id=comment_id)
     else:
         pynag.Control.Command.del_svc_comment(comment_id=comment_id)

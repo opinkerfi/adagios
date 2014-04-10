@@ -72,7 +72,7 @@
                 url = "{% url objectbrowser.views.add_to_group %}/" + group_type + "/" + group_name;
                 url = url.split("?")[0];
                 url = url + "?" + object_type + '=' + description;
-                data = {}
+                data = {};
                 data["csrfmiddlewaretoken"] = window.csrftoken;
                 data['object_type'] = object_type;
                 data['description'] = description;

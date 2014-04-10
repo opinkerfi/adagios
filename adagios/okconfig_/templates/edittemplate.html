@@ -105,61 +105,59 @@
     <script>
     $(document).ready(function() {
         {% if myhost %}
-        $.getJSON('{% url rest/pynag %}json/run_check_command',
-                { object_id: '{{ myhost.id }}' },
-                function(data) {
-                    var host_status = $('span#host_status');
-                    var host_status_output = $('span#host_status_output');
-                    host_status_output.text(data[1]);
-                    host_status.addClass('label-success');
-                    if (parseInt(data[0]) < 1) {
-                        host_status.text('UP');
-                        host_status.addClass('label-success');
-                    } else {
-                        host_status.text('DOWN');
-                        host_status.addClass('label-danger');
-                    }
+            var parameters = { object_id: '{{ myhost.id }}' };
+            adagios.rest.pynag.run_check_command(parameters)
+                    .done( function(data) {
+                        var host_status = $('span#host_status');
+                        var host_status_output = $('span#host_status_output');
+                        host_status_output.text(data[1]);
+                        if (parseInt(data[0]) < 1) {
+                            host_status.text('UP');
+                            host_status.addClass('label-success');
+                        } else {
+                            host_status.text('DOWN');
+                            host_status.addClass('label-danger');
+                        }
                 }).error(function() {
                     host_status.text('Unknown');
                 });
         {% endif %}
         $('a.service_status.run_check_command').each(function() {
             var $this = $(this);
-            $.getJSON('{% url rest/pynag %}json/run_check_command',
-                    { object_id: $this.attr('data-object-id') },
-                    function(data) {
-                        var returncode = parseInt(data[0]);
-                        var output = "";
-                        if (data[1]) {
-                            output += data[1];
-                        } else {
-                            output += '{% trans "No data returned on stdout" %}';
-                        }
-                        if (data[2]) {
-                            output += "<br/><br/><strong>{% trans "Stderr Output:" %}</strong><br/>" + data[2];
-                        }
-                        $this.attr('data-content', output);
+            var parameters = { object_id: $this.attr('data-object-id') };
+            adagios.rest.pynag.run_check_command(parameters)
+                    .done( function(data) {
+                                    var returncode = parseInt(data[0]);
+                                    var output = "";
+                                    if (data[1]) {
+                                        output += data[1];
+                                    } else {
+                                        output += '{% trans "No data returned on stdout" %}';
+                                    }
+                                    if (data[2]) {
+                                        output += "<br/><br/><strong>{% trans "Stderr Output:" %}</strong><br/>" + data[2];
+                                    }
+                                    $this.attr('data-content', output);
 
-                        if (returncode == 0) {
-                            $this.text('OK');
-                            $this.addClass('btn-success');
-                            return true;
-                        }
-                        if (returncode == 1) {
-                            $this.text('Warning');
-                            $this.addClass('btn-warning');
-                            return true;
-                        }
-                        if (returncode == 2) {
-                            $this.text('Critical');
-                            $this.addClass('btn-danger');
-                            return true;
-                        }
-                        $this.text('Unknown');
-                        $this.addClass('btn-inverse');
-                        return true;
-                    }
-            );
+                                    if (returncode == 0) {
+                                        $this.text('OK');
+                                        $this.addClass('btn-success');
+                                        return true;
+                                    }
+                                    if (returncode == 1) {
+                                        $this.text('Warning');
+                                        $this.addClass('btn-warning');
+                                        return true;
+                                    }
+                                    if (returncode == 2) {
+                                        $this.text('Critical');
+                                        $this.addClass('btn-danger');
+                                        return true;
+                                    }
+                                    $this.text('Unknown');
+                                    $this.addClass('btn-inverse');
+                                    return true;
+                    });
 
         });
         $('a[rel="popover"]').popover();

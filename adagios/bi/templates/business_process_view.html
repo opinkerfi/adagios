@@ -43,13 +43,6 @@
                 while ((m=re.exec(document.location.search)) != null) r.push(m[1]);
                 return r;
             }
-            var dom_id;
-            var doms_to_hide = querystring('hide');
-            var i;
-            for (i in doms_to_hide) {
-                dom_id = '#' + doms_to_hide[i];
-                $(dom_id).hide();
-            }
 
         });
 

@@ -25,11 +25,10 @@
     <script>
         $('#id_host_name').focusout(function() {
             if ($('#id_address').val() == "") {
-                $.getJSON('{% url rest/pynag %}json/dnslookup',
-                        {
-                            host_name: $(this).val()
-                        },
-                        function(data) {
+                var parameters = {};
+                parameters['host_name'] = $(this).val();
+                adagios.rest.pynag.dnslookup(parameters)
+                        .done( function(data) {
                             $('#id_address').val(data['addresslist'][0]);
                         }
                 );

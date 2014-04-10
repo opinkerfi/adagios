@@ -62,7 +62,7 @@
 </table>
 <script>
     function remove_downtime(downtime_id, is_service) {
-        var args = {}
+        var args = {};
         args['downtime_id'] = downtime_id;
         args['is_service'] = is_service;
         adagios.rest.status.delete_downtime(args)

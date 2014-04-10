@@ -647,8 +647,10 @@
             {% endif %}
 
             // Fetch the effective check command for this object
-            var url = '{% url rest/status %}json/command_line?host_name={{ host_name }}&service_description={{ service_description }}';
-            $.getJSON(url)
+            var parameters = {};
+            parameters['host_name'] = "{{ host_name }}";
+            parameters['service_description'] = "{{ service_description }}";
+            adagios.rest.status.command_line(parameters)
                     .done( function(data) {
                         $('#effective_check_command').text(data);
                     })
@@ -729,15 +731,16 @@
         // When an editable field is change, lets update configuration
         $('.editable_field').focus(function(e) {
             $(e.target).data('orig-value', "" + $(e.target).val());
-        })
+        });
         $('.editable_field').blur(function(e) {
             var old_value = "" + $(e.target).data('orig-value');
             var new_value = "" + $(e.target).val();
             var attribute_name = "" + $(e.target).attr('name');
             var object_type = "{{ my_object.object_type }}";
             var short_name = "{{ my_object.short_name }}";
-            if (old_value == new_value)
+            if (old_value == new_value) {
                 return false;
+            }
 
             // Get the div right next to the input box for editing
             var message_div = $('#' + $(e.target).attr('name') + "_status");
@@ -754,7 +757,7 @@
 
                     });
 
-
+            return true;
         });
 
         // Perfomance Graph Preview on hover

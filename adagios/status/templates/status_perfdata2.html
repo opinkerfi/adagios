@@ -153,7 +153,7 @@
         }
 
         function querystring() {
-            var qs = (function(a) {
+            return (function(a) {
                 if (a == "") return {};
                 var b = {};
                 for (var i = 0; i < a.length; ++i)
@@ -164,7 +164,6 @@
                 }
                 return b;
             })(window.location.search.substr(1).split('&'));
-            return qs;
         }
     function reload_page_with_new_querystring()
     {

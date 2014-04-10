@@ -48,8 +48,9 @@
             var attribute_name = "" + $(e.target).data('attribute_name');
             var object_type = $(e.target).data('object_type');
             var short_name = $(e.target).data('short_name');
-            if (old_value == new_value)
+            if (old_value == new_value) {
                 return false;
+            }
 
             // Get the div right next to the input box for editing
             var message_div = $('#' + $(e.target).attr('name') + "_status");
@@ -76,6 +77,7 @@
                     }
 
             );
+            return true;
 
         });
 
