@@ -54,14 +54,14 @@
                     <li class="nagios_needs_reload">
                         <a  title="Nagios Service needs a reload for configuration changes to take effect." href="#">
                             <span id="nagios_needs_reload_button" class="hide">
-                            <i  class="glyph-white glyph-refresh" onclick="adagios.misc.reload_nagios();"></i>
+                            <i  class="glyph-grey glyph-refresh" onclick="adagios.misc.reload_nagios();"></i>
                             </span>
                         </a>
                     </li>
                     {% if num_problems and plugins.status  %}
                         <li style="color: red;">
                         <a style="color: red;" href="{% url status.views.problems %}?unhandled">
-                            <i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i>
+                            <i class="glyph-grey  glyph-warning-sign" title="You have unhandled problems"></i>
                             {{ num_problems }}
                         </a>
                         </li>
