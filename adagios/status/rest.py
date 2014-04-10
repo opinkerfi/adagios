@@ -650,7 +650,7 @@ def remove_downtime(request, host_name, service_description=None, downtime_id=No
         downtimes_to_remove.append(downtime_id)
     else:
         livestatus = adagios.status.utils.livestatus(request)
-        query_parameters = []
+        query_parameters = list()
         query_parameters.append('GET downtimes')
         query_parameters.append('Filter: host_name = {host_name}'.format(**locals()))
         if service_description:
