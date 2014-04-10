@@ -266,9 +266,6 @@ table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
     margin-top: 5px;
 }
 
-.hoverable:hover, .objecttable:hover {
-    background-color: #f6f6f6;
-}
 
 /*
     Is used to show different messages to our end-user
