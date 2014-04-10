@@ -397,7 +397,6 @@ def hostgroup_detail(request, hostgroup_name):
     return render_to_response('status_hostgroup.html', c, context_instance=RequestContext(request))
 
 
-@adagios_decorator
 def _add_statistics_to_hostgroups(hostgroups):
     """ Enriches a list of hostgroup dicts with information about subgroups and parentgroups
     """
