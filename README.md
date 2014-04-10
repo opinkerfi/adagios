@@ -68,7 +68,7 @@ If you need any help with getting adagios to work, feel free to open up an issue
 
   - Bug reports, feature requests: https://github.com/opinkerfi/adagios/issues
   - Mailing list: http://groups.google.com/group/adagios
-  - IRC: #adagios on irc.freenode.net
+  - IRC: #adagios on irc.freenode.net, https://webchat.freenode.net/?channels=#adagios
 
 
 License
