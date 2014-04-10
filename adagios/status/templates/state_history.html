@@ -44,7 +44,7 @@
             {% endif %}
         </td>
         <td>{{ service.sla|floatformat }}%</td>
-            <td><a href="{% url status.views.status_log %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.num_problems }}</a></td>
+            <td><a href="{% url status.views.log %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.num_problems }}</a></td>
             <td width=500px>
 
             <div width="500px" class="progress">

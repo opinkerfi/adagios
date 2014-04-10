@@ -912,7 +912,7 @@ def _status_log(request):
 
 
 @adagios_decorator
-def status_log(request):
+def log(request):
     c = _status_log(request)
     c['request'] = request
     c['log'].reverse()

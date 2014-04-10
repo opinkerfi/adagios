@@ -14,8 +14,6 @@ administrators += operators + auditors
 
 access_map = list()
 
-
-
 # Explicitly grant configuration access only to admins
 access_map.append(('adagios.objectbrowser', "administrators"))
 access_map.append(('adagios.okconfig_', "administrators"))
@@ -28,6 +26,7 @@ access_map.append(('adagios.rest.status.edit', "administrators"))
 access_map.append(('adagios.status.views.contact', "administrators"))
 access_map.append(('adagios.status.views.state_history', "administrators"))
 access_map.append(('adagios.status.views.log', "administrators"))
+access_map.append(('adagios.status.views.servicegroup', "administrators"))
 
 
 # Access to rest interface
@@ -64,7 +63,6 @@ def check_access_to_path(request, path):
             if has_role(request, role):
                 return None
             else:
-                print "problem with", path
                 user = request.META.get('REMOTE_USER', 'anonymous')
                 message = "You do not have permission to access %s" % (path, )
                 raise adagios.exceptions.AccessDenied(user, access_required=role, message=message, path=path)

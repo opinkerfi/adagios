@@ -17,7 +17,7 @@
             <ul>
                 <li>{% blocktrans %}Is <a href="http://mathias-kettner.de/checkmk_livestatus.html\">mk-livestatus</a> installed ?{% endblocktrans %}</li>
                 <li>{% url objectbrowser.views.edit_nagios_cfg as the_url %}{% blocktrans %}Does <a href="{{ the_url }}">nagios.cfg</a> have a broker_module= line that loads mk-livestatus ?{% endblocktrans %}</li>
-                <li>{% url status.views.status_log as the_url %}{% blocktrans %}Are there any errors related to livestatus in  <a href="{{ the_url }}?search=livestatus">nagios logfiles</a>{% endblocktrans %} ?</li>
+                <li>{% url status.views.log as the_url %}{% blocktrans %}Are there any errors related to livestatus in  <a href="{{ the_url }}?search=livestatus">nagios logfiles</a>{% endblocktrans %} ?</li>
             </ul>
 
             {% trans "Install instructions for rpm-based systems:" %}

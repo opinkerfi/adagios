@@ -21,7 +21,7 @@
 
     </div>
     <hr>
-    {% blocktrans with length=log|length %}Last {{ length }} state changes ({% endblocktrans %}<a href="{% url status.views.status_log %}?search={{ host_name }}#tab_all">{% trans "see all log entries for this host" %}</a>):
+    {% blocktrans with length=log|length %}Last {{ length }} state changes ({% endblocktrans %}<a href="{% url status.views.log %}?search={{ host_name }}#tab_all">{% trans "see all log entries for this host" %}</a>):
     <table style="font-size: 80%;" class="table well table-condensed">
         <thead>
             <tr>
@@ -62,7 +62,7 @@
     </tbody>
     </table>
 {% else %}
-    {% trans "Host has no recent log entries. Try " %}<a href="{% url status.views.status_log %}?search={{ host.name }}#tab_all">{% trans "Log view" %}</a>{% trans " to search in older logs." %}
+    {% trans "Host has no recent log entries. Try " %}<a href="{% url status.views.log %}?search={{ host.name }}#tab_all">{% trans "Log view" %}</a>{% trans " to search in older logs." %}
 {% endif %}
 
 
