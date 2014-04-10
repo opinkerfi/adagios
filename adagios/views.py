@@ -44,8 +44,12 @@ def error_page(request, context=None):
         context = {}
         context['errors'] = []
         context['errors'].append('Error occured, but no error messages provided, what happened?')
-
-    response = render_to_response('status_error.html', context, context_instance=RequestContext(request))
+    if request.META.get('CONTENT_TYPE') == 'application/json':
+        context.pop('request', None)
+        content = str(context)
+        response = HttpResponse(content=content, content_type='application/json')
+    else:
+        response = render_to_response('status_error.html', context, context_instance=RequestContext(request))
     response.status_code = 500
     return response
 
