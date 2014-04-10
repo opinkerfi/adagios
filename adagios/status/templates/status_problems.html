@@ -43,7 +43,7 @@
             var shown_modals = $("div .modal.in");
             if (checked_boxes.length + shown_modals.length == 0) {
                 console.log("Refreshing page...");
-                location.reload(true);
+                location.reload();
             }
             else {
                 console.log("Canceled auto-refresh of page because input boxes or modals have been edited");

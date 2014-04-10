@@ -43,7 +43,16 @@
     <div id="updates_avail">
         <h3>{% trans "Version Information" %}</h3>
         <ul>
-        <li><strong>{% trans 'Latest Stable version is</strong>: <a href="" id="version_info"><span id="latest_version">Checking for latest version</span></a>' %}</li>
+        <li>
+            <strong>
+                {% trans 'Latest Stable version is' %}
+            </strong>:
+            <a href="" id="version_info">
+                <span id="latest_version">
+                    {% trans 'Checking for latest version' %}
+                </span>
+            </a>
+        </li>
         <li><strong>{% trans 'You are running' %}</strong>: <span id="current_version">{{ version }}</span> </li>
         </ul>
     </div>

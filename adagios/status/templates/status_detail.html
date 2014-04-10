@@ -442,8 +442,7 @@
                 </table>
             {% else %}
             {% endif %}
-            See also <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type={{ object_type
-            }}&host_name={{ host_name }}{% if object_type == "service" %}&service_description={{ service_description }}{% endif %}#monitoring_tab">{% trans "Configure check command" %}</a>
+            See also <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type={{ object_type }}&host_name={{ host_name }}{% if object_type == "service" %}&service_description={{ service_description }}{% endif %}#monitoring_tab">{% trans "Configure check command" %}</a>
 
 
         </div>

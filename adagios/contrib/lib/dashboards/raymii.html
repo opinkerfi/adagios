@@ -160,11 +160,11 @@
 
     // Update the dialog which says how many seconds ago last load was.
     function update_last_loaded() {
-        $("#information_dialog").text(interpolate(gettext("Last update %d ago."), [timeSince(last_load)]);
+        $("#information_dialog").text(interpolate(gettext("Last update %d ago."), [timeSince(last_load)]));
     }
 
     function error_message(message) {
-        $("body").html(interpolate(gettext("<h1>Oh no, there was an error loading the page :/</h1> %s"), [message.responseText])));
+        $("body").html(interpolate(gettext("<h1>Oh no, there was an error loading the page :/</h1> %s"), [message.responseText]));
         console.error(message);
     }
 
