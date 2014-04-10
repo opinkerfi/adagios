@@ -14,13 +14,6 @@ administrators += operators + auditors
 
 access_map = list()
 
-access_map.append(('django.views.static', "everyone"))
-access_map.append(('django.views.i18n', "everyone"))
-
-# Access to rest interface
-access_map.append(('adagios.rest.views', "everyone"))
-access_map.append(('adagios.rest.status', "everyone"))
-access_map.append(('adagios.misc.rest', "everyone"))
 
 
 # Explicitly grant configuration access only to admins
@@ -29,14 +22,20 @@ access_map.append(('adagios.okconfig_', "administrators"))
 access_map.append(('adagios.misc.helpers', "administrators"))
 access_map.append(('adagios.misc.views.settings', "administrators"))
 
-
-# Limited write access that might later be downgraded to "operators"
 access_map.append(('adagios.misc.views.gitlog', "administrators"))
 access_map.append(('adagios.misc.views.service', "administrators"))
 access_map.append(('adagios.rest.status.edit', "administrators"))
 
 
+# Access to rest interface
+access_map.append(('adagios.rest.views', "everyone"))
+access_map.append(('adagios.rest.status', "everyone"))
+access_map.append(('adagios.misc.rest', "everyone"))
+
+
 # These modules should more or less be considered "safe"
+access_map.append(('django.views.static', "everyone"))
+access_map.append(('django.views.i18n', "everyone"))
 access_map.append(('adagios.status', "everyone"))
 access_map.append(('adagios.pnp', "everyone"))
 access_map.append(('adagios.contrib', "everyone"))
