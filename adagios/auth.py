@@ -25,6 +25,9 @@ access_map.append(('adagios.misc.views.settings', "administrators"))
 access_map.append(('adagios.misc.views.gitlog', "administrators"))
 access_map.append(('adagios.misc.views.service', "administrators"))
 access_map.append(('adagios.rest.status.edit', "administrators"))
+access_map.append(('adagios.status.views.contact', "administrators"))
+access_map.append(('adagios.status.views.state_history', "administrators"))
+access_map.append(('adagios.status.views.log', "administrators"))
 
 
 # Access to rest interface
@@ -36,10 +39,14 @@ access_map.append(('adagios.misc.rest', "everyone"))
 # These modules should more or less be considered "safe"
 access_map.append(('django.views.static', "everyone"))
 access_map.append(('django.views.i18n', "everyone"))
+access_map.append(('adagios.views', "everyone"))
 access_map.append(('adagios.status', "everyone"))
 access_map.append(('adagios.pnp', "everyone"))
 access_map.append(('adagios.contrib', "everyone"))
-access_map.append(('adagios.bi', "everyone"))
+access_map.append(('adagios.bi.views.index', "everyone"))
+access_map.append(('adagios.bi.views.view', "everyone"))
+access_map.append(('adagios.bi.views.json', "everyone"))
+access_map.append(('adagios.bi.views.graphs_json', "everyone"))
 access_map.append(('adagios.misc.helpers.needs_reload', "everyone"))
 
 
