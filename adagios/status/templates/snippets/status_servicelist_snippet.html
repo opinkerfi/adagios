@@ -60,9 +60,11 @@
 
                     <!-- Here is plugin output -->
                     <!-- TODO: Instead of all this slicing crap... proper ellipse effect in CSS -->
-                    <span style="overflow: hidden;" title="{{ service.plugin_output }}" class="visible-desktop service_description_short plugin_output">
+                    <span>
+		      <span style="overflow: hidden;" title="{{ service.plugin_output }}" class="visible-desktop service_description_short plugin_output">
                         {{ service.plugin_output|slice:"50" }}
-                    </span>
+                      </span>
+		    </span>
                     
                     <span class="pull-right right-of-service"></span>
                 </td>
