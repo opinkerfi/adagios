@@ -239,7 +239,7 @@ def get_services(request=None, tags=None, fields=None, *args, **kwargs):
             tags = [tags]
         if isinstance(tags, list):
             result = pynag.Utils.grep(result, tags__contains=tags)
-    except Exception, e:
+    except Exception:
         pass
     return result
 
@@ -327,7 +327,7 @@ def grep_to_livestatus(object_type, *args, **kwargs):
     result = []
     for key in kwargs:
         if hasattr(kwargs, 'getlist'):
-            values = kwargs(key)
+            values = kwargs.getlist(key)
         else:
             values = [kwargs.get(key)]
 

@@ -458,7 +458,8 @@ button.close.notification {
     background-color: #d3d3d3;
 }
 
-.table td {
+
+.table-condensed td {
     line-height: 10px;
 }
 .circle {

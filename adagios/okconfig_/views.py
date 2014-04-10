@@ -61,7 +61,6 @@ def addgroup(request):
         if f.is_valid():
             group_name = f.cleaned_data['group_name']
             alias = f.cleaned_data['alias']
-            #description = f.cleaned_data['description']
             force = f.cleaned_data['force']
             try:
                 c['filelist'] = okconfig.addgroup(
@@ -72,6 +71,8 @@ def addgroup(request):
                 c['errors'].append(_("error adding group: %s") % e)
         else:
             c['errors'].append(_('Could not validate input'))
+    else:
+        raise Exception("Sorry i only support GET or POST")
     c['form'] = f
     return render_to_response('addgroup.html', c, context_instance=RequestContext(request))
 
@@ -107,6 +108,8 @@ def addhost(request):
                 c['errors'].append(_("error adding host: %s") % e)
         else:
             c['errors'].append(_('Could not validate input'))
+    else:
+        raise Exception("Sorry i only support GET or POST")
     c['form'] = f
     return render_to_response('addhost.html', c, context_instance=RequestContext(request))
 

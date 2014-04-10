@@ -265,7 +265,7 @@ def service_detail(request, host_name, service_description):
     if service_description is None:
         tmp = request.GET.get('service_description')
         if tmp is not None:
-            return status_detail(request, host_name, service_description=tmp)
+            return service_detail(request, host_name, service_description=tmp)
         primary_object = my_host
         c['service_description'] = '_HOST_'
         #c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(

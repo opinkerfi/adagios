@@ -12,7 +12,6 @@
 {% block content %}
 
     <ul class="nav nav-tabs" id="objecttab">
-        <li><a href="#history" data-toggle="tab">{% trans "History" %}</a></li>
         <li><a href="#contacts" data-toggle="tab">{% trans "Members" %}</a></li>
         <li><a href="#services" data-toggle="tab">{% trans "Services" %}</a></li>
         <li><a href="#debug" data-toggle="tab">{% trans "Debug" %}</a></li>
@@ -23,7 +22,7 @@
 
 
 
-        <div class="tab-pane" id="contactgroups">
+        <div class="tab-pane" id="contacts">
             {% if contacts %}
                 {% blocktrans %}{{ contactgroup_name }} Has the following members:{% endblocktrans %}
                 {% include "snippets/status_contactlist_snippet.html" %}
