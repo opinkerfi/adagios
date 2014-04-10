@@ -515,7 +515,7 @@ class Hostgroup(BusinessProcess):
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
         self.display_name = self._hostgroup.get('alias')
         self.notes = self._hostgroup.get(
-            'notes') or _("You are looking at the hostgorup %s") % (self.name)
+            'notes') or _("You are looking at the hostgroup %s") % (self.name)
 
         # Get information about child hostgroups
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(

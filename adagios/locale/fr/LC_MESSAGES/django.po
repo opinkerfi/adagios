@@ -81,7 +81,7 @@ msgstr "Ceci est l'attribut %s pour la définition de l'objet"
 
 #: bi/__init__.py:518
 #, python-format
-msgid "You are looking at the hostgorup %s"
+msgid "You are looking at the hostgroup %s"
 msgstr "Ceci est le groupe d'hôtes %s"
 
 #: bi/__init__.py:634
