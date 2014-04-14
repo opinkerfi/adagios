@@ -44,10 +44,15 @@ def livestatus(request):
     else:
         authuser = None
 
-    livestatus = pynag.Parsers.mk_livestatus(
+    # TODO: Properly support multiple instances, using split here is not a good idea
+    backends = adagios.settings.livestatus_path or ''
+    backends = backends.split()
+    livestatus = pynag.Parsers.MultiSite(
         nagios_cfg_file=adagios.settings.nagios_config,
         livestatus_socket_path=adagios.settings.livestatus_path,
         authuser=authuser)
+    for i in backends:
+        livestatus.add_backend(path=i, name=i)
     return livestatus
 
 
