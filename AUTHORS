@@ -1,0 +1,54 @@
+# Generated with:
+# git shortlog -s -n --email --since 2014-01-01 --until 2014-04-15
+
+Core maintainers:
+    Pall Sigurdsson <palli@opensource.is>
+    Tomas Edwardsson <tommi@tommi.org>
+
+
+
+Contributors 2014 (last updated April 15)
+   439  Pall Sigurdsson <palli@opensource.is>
+    71  Matthieu Caneill <matthieu.caneill@savoirfairelinux.com>
+    53  Tomas Edwardsson <tommi@tommi.org>
+    19  Pall Sigurdsson <palli-github@minor.is>
+     8  hakong <hakon.gislason@gmail.com>
+     6  Stéphane Duchesneau <stephane.duchesneau@savoirfairelinux.com>
+     4  Jean Remond <cfengine@remond.re>
+     4  Thibault Cohen <thibault.cohen@savoirfairelinux.com>
+     2  Philippe Pepos Petitclerc <ppepos@savoirfairelinux.com>
+     1  Jodie Cunningham <jodie.cunningham@gmail.com>
+     1  Oerd Cukalla <rosaccu@gmail.com>
+     1  Thibault Cohen <titilambert@gmail.com>
+     1  davideagle <davideaglephotos@gmail.com>
+     1  haukurk <haukur@hauxi.is>
+     1  jonbn <jonn12@ru.is>
+
+Contributors in 2013:
+   429  Pall Sigurdsson <palli@opensource.is>
+    69  Tomas Edwardsson <tommi@tommi.org>
+    15  palli <palli-github@minor.is>
+    14  Pall Sigurdsson <palli@opensource.is>
+     6  Nathan Bird <nathan@acceleration.net>
+     2  Pall Valmundsson <pall.valmundsson@gmail.com>
+     1  Andres Riancho <andres.riancho@gmail.com>
+     1  David Gillies <daveg@dorja.com>
+     1  Mikecom32 <mikecom32@gmail.com>
+     1  Your Name <you@example.com>
+     1  andresriancho <andres.riancho@gmail.com>
+     1  hakong <hakon.gislason@gmail.com>
+
+Contributors in 2012:
+   342  Pall Sigurdsson <palli@opensource.is>
+   198  Tomas Edwardsson <tommi@tommi.org>
+    14  Tomas Edwardsson <tommi@opensource.is>
+     9  palli <palli@opensource.is>
+
+Contributors in 2011:
+   117  Pall Sigurdsson <palli@opensource.is>
+    71  Tomas Edwardsson <tommi@tommi.org>
+     1  Tomas Edwardsson <tommi@opensource.is>
+     1  root <root@slxnagios1.lsh.is>
+     1  root <root@slxvakt.lsh.is>
+
+
