@@ -1,3 +1,41 @@
+Changes in version 1.5.0
+========================
+There has been a lot of refactoring in the code with tons
+of patches from the awesome guys at Savoir-faire Linux. Big thanks!
+
+Summary of features:
+
+* Multi language Support:
+    Adagios now supports multiple languages, which can
+    Which can be set from settings.py. French translation
+    has already started and anyone can help with the translation
+    at https://www.transifex.com/projects/p/adagios/
+    
+    
+* Theme Support:
+    Adagios now supports using multiple themes, which at the
+    moment can be changed only by editing settings.py
+    
+    Also a proof of concept spacelab theme from Savoir-faire Linux 
+    
+    
+* Authorization support
+    Experimental support for authorization. Enable it by setting
+    enable_authorization=True in adagios.conf
+    
+    and put a comma seperated list of users (or contactgroups) in 
+    adagios.conf like so:
+    administrators="nagiosadmin,administrator,admins"
+
+* License clarifications
+    All references to licenses have been updated to AGPL which
+    is the correct license for adagios.
+
+* Bug fixes
+    We have a long list of bug fixes, which can be seen on
+    https://github.com/opinkerfi/adagios/issues
+
+
 Changes in version 1.4.1
 ========================
 Start maintaining a changelog again.
