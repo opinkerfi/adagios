@@ -104,8 +104,6 @@ MIDDLEWARE_CLASSES = (
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
-SESSION_FILE_PATH = '%s/sessiondata/' % (djangopath)
-
 LANGUAGES = (
     ('en', 'English'),
     ('fr', 'French'),
