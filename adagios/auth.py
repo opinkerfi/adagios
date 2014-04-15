@@ -44,6 +44,11 @@ access_map.append(('adagios.status.views.contact', "administrators"))
 access_map.append(('adagios.status.views.state_history', "administrators"))
 access_map.append(('adagios.status.views.log', "administrators"))
 access_map.append(('adagios.status.views.servicegroup', "administrators"))
+access_map.append(('adagios.rest.status.state_history', "administrators"))
+access_map.append(('adagios.rest.status.top_alert_producers', "administrators"))
+access_map.append(('adagios.rest.status.update_check_command', "administrators"))
+access_map.append(('adagios.rest.status.log_entries', "administrators"))
+
 
 
 # Access to rest interface
