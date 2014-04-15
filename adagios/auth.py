@@ -29,50 +29,50 @@ administrators = []
 # administrator belongs to all the other groups
 administrators += operators + auditors
 
-access_map = list()
+access_list = list()
 
 # Explicitly grant configuration access only to admins
-access_map.append(('adagios.objectbrowser', "administrators"))
-access_map.append(('adagios.okconfig_', "administrators"))
-access_map.append(('adagios.misc.helpers', "administrators"))
-access_map.append(('adagios.misc.views.settings', "administrators"))
+access_list.append(('adagios.objectbrowser', "administrators"))
+access_list.append(('adagios.okconfig_', "administrators"))
+access_list.append(('adagios.misc.helpers', "administrators"))
+access_list.append(('adagios.misc.views.settings', "administrators"))
 
-access_map.append(('adagios.misc.views.gitlog', "administrators"))
-access_map.append(('adagios.misc.views.service', "administrators"))
-access_map.append(('adagios.rest.status.edit', "administrators"))
-access_map.append(('adagios.status.views.contact', "administrators"))
-access_map.append(('adagios.status.views.state_history', "administrators"))
-access_map.append(('adagios.status.views.log', "administrators"))
-access_map.append(('adagios.status.views.servicegroup', "administrators"))
-access_map.append(('adagios.rest.status.state_history', "administrators"))
-access_map.append(('adagios.rest.status.top_alert_producers', "administrators"))
-access_map.append(('adagios.rest.status.update_check_command', "administrators"))
-access_map.append(('adagios.rest.status.log_entries', "administrators"))
+access_list.append(('adagios.misc.views.gitlog', "administrators"))
+access_list.append(('adagios.misc.views.service', "administrators"))
+access_list.append(('adagios.rest.status.edit', "administrators"))
+access_list.append(('adagios.status.views.contact', "administrators"))
+access_list.append(('adagios.status.views.state_history', "administrators"))
+access_list.append(('adagios.status.views.log', "administrators"))
+access_list.append(('adagios.status.views.servicegroup', "administrators"))
+access_list.append(('adagios.rest.status.state_history', "administrators"))
+access_list.append(('adagios.rest.status.top_alert_producers', "administrators"))
+access_list.append(('adagios.rest.status.update_check_command', "administrators"))
+access_list.append(('adagios.rest.status.log_entries', "administrators"))
 
 
 
 # Access to rest interface
-access_map.append(('adagios.rest.views', "everyone"))
-access_map.append(('adagios.rest.status', "everyone"))
-access_map.append(('adagios.misc.rest', "everyone"))
+access_list.append(('adagios.rest.views', "everyone"))
+access_list.append(('adagios.rest.status', "everyone"))
+access_list.append(('adagios.misc.rest', "everyone"))
 
 
 # These modules should more or less be considered "safe"
-access_map.append(('django.views.static', "everyone"))
-access_map.append(('django.views.i18n', "everyone"))
-access_map.append(('adagios.views', "everyone"))
-access_map.append(('adagios.status', "everyone"))
-access_map.append(('adagios.pnp', "everyone"))
-access_map.append(('adagios.contrib', "everyone"))
-access_map.append(('adagios.bi.views.index', "everyone"))
-access_map.append(('adagios.bi.views.view', "everyone"))
-access_map.append(('adagios.bi.views.json', "everyone"))
-access_map.append(('adagios.bi.views.graphs_json', "everyone"))
-access_map.append(('adagios.misc.helpers.needs_reload', "everyone"))
+access_list.append(('django.views.static', "everyone"))
+access_list.append(('django.views.i18n', "everyone"))
+access_list.append(('adagios.views', "everyone"))
+access_list.append(('adagios.status', "everyone"))
+access_list.append(('adagios.pnp', "everyone"))
+access_list.append(('adagios.contrib', "everyone"))
+access_list.append(('adagios.bi.views.index', "everyone"))
+access_list.append(('adagios.bi.views.view', "everyone"))
+access_list.append(('adagios.bi.views.json', "everyone"))
+access_list.append(('adagios.bi.views.graphs_json', "everyone"))
+access_list.append(('adagios.misc.helpers.needs_reload', "everyone"))
 
 
 # If no other rule matches, assume administrators have access
-access_map.append(('', "administrators"))
+access_list.append(('', "administrators"))
 
 
 def check_access_to_path(request, path):
@@ -80,7 +80,7 @@ def check_access_to_path(request, path):
 
     path in this case is a full path to a python module name for example: "adagios.objectbrowser.views.index"
     """
-    for search_path, role in access_map:
+    for search_path, role in access_list:
         if path.startswith(search_path):
             if has_role(request, role):
                 return None
@@ -98,7 +98,7 @@ def has_access_to_path(request, path):
      Arguments:
         path  -- string describing a path to a method or module, example: "adagios.objectbrowser.views.index"
     """
-    for search_path, role in access_map:
+    for search_path, role in access_list:
         if path.startswith(search_path):
             return has_role(request, role)
     else:
