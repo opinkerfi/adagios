@@ -807,7 +807,7 @@ def state_history(request):
     search_filter.pop('end_time_picker', None)
     search_filter.pop('end_hours', None)
     search_filter.pop('submit', None)
-    print search_filter
+
     log = pynag.Utils.grep(log, **search_filter)
     for i in log:
         short_name = "%s/%s" % (i['host_name'], i['service_description'])

@@ -405,8 +405,6 @@ def test(request):
     c.update(csrf(request))
     # Get some test data
 
-    print "you are: ", get_access_level(request)
-
     if request.method == 'POST':
         c['form'] = forms.PluginOutputForm(data=request.POST)
         if c['form'].is_valid():
