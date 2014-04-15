@@ -11,13 +11,7 @@
     <meta name="description" content="Adagios - Nagios Configuration Made Easy">
     <meta name="author" content="Tomas Edwardsson, Pall Sigurdsson">
     <meta http-equiv="X-UA-Compatible" content="IE=9">
-    {% if request.session.theme_css %}
-      <link href="{% url media path=request.session.theme_css %}" rel="stylesheet">
-    {% else %}
-      <link href="{% url media path=settings.THEME_CSS %}" rel="stylesheet">
-    {% endif %}
-
-
+    <link href="{% url media path=theme_path %}" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>

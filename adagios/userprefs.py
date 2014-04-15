@@ -109,13 +109,3 @@ class User(object):
 		translation.activate(self.language)
 	    except Exception as e:
 		pass
-	    
-	    # theme preference
-	    # maybe use a Template Context Preprocessor in the future?
-	    theme_css = os.path.join(settings.THEMES_FOLDER,
-				     self.theme,
-				     settings.THEME_ENTRY_POINT)
-	    try:
-		request.session['theme_css'] = theme_css
-	    except:
-		pass

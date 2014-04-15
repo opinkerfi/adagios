@@ -167,9 +167,6 @@ THEMES_AVAILABLE = ('default', 'spacelab',)
 # CSS entry-point, in the theme folder
 THEME_ENTRY_POINT = 'style.css'
 
-# generated location of
-THEME_CSS = os.path.join(THEMES_FOLDER, THEME_DEFAULT, THEME_ENTRY_POINT)
-
 # folder where users preferences are stored
 USER_PREFS_PATH = "%s/userdata" % (djangopath)
 
