@@ -330,9 +330,12 @@ button.close.notification {
     font-weight: bold;
 }
 
+#objectbrowser a.dis-object {
+    color: gray;
+}
+
 #base_objectbrowser .table tbody tr:hover td, #base_objectbrowser .table tbody tr:hover th {
     background-color: #f6f6f6;
-
 }
 
 

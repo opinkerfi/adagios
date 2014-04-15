@@ -73,14 +73,24 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     return true if cache_type is undefined
 
-    # We are showing templates and this is register=0
-    if aData[0] is "0" and cache_type is "2"
+    # Objects that are not pure templates
+    # * "Normal" objects (Registered and unnamed)
+    # * If they have a name but are registered
+    # * Or if they don't have a name and are unregistered (Will have custom style)
+    # Should all appear correctly
+    if cache_type is "0" and aData[2] is object_type
+      if aData[1] isnt null and aData[1] isnt undefined
+        if aData[0] isnt "0"
+          return true
+      else
+        return true
+
+    # Groups
+    else if cache_type is "1" and aData[2] is object_type+"group"
       return true
 
-    if cache_type is "1" and aData[1] is "#{object_type}group" and aData[0] != "0"
-      return true
-
-    if cache_type is "0" and aData[1] is object_type and aData[0] != "0"
+    # Everything that has a name is technically a template
+    else if cache_type is "2" and (aData[1] isnt null and aData[1] isnt undefined)
       return true
 
     # default no
@@ -192,6 +202,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
       sTitle: "register"
       bVisible: false
     ,
+      sTitle: "name"
+      bVisible: false
+    ,
       sTitle: "object_type"
       bVisible: false
     ,
@@ -212,7 +225,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $.each $this.fetch, (f, v) ->
       object_type = v["object_type"]
       console.log """Populating #{ object_type } #{ $this.attr("id") }<br/>"""
-      json_query_fields = ["id", "register"]
+      json_query_fields = ["id", "register", "name"]
       $.each v["rows"], (k, field) ->
         json_query_fields.push field["cName"]  if "cName" of field
         json_query_fields.push field["cAltName"]  if "cAltName" of field
@@ -226,13 +239,23 @@ $.extend $.fn.dataTableExt.oStdClasses,
         $.each data, (i, item) ->
           field_array = [
             item["register"],
+            item["name"],
             object_type,
             """<input id="ob_mass_select" name="#{ item["id"] }" type="checkbox">"""
           ]
           $.each v["rows"], (k, field) ->
+            cell = """<a href="id=#{ item["id"] }" """
+            cell += 'class="'
+            if item["register"] is "0" and (item["name"] is null or item["name"] is undefined)
+              cell += "dis-object"
+            cell += '">'
             cell = """<a href="edit/#{ item["id"] }">"""
             field_value = ""
-            cell += """<i class="#{ field.icon }"></i>"""  if "icon" of field
+            if "icon" of field
+              cell += """<i class="#{ field.icon }"""
+              if item["register"] is "0" and (item["name"] is null or item["name"] is undefined)
+                cell += """ glyph-grey"""
+              cell += """ "></i>"""
             if item[field["cName"]]
               field_value = item[field["cName"]]
             else
@@ -347,7 +370,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
         """
     if object_type == "command" or object_type == "timeperiod"
-      $("#view_filter").hide();
+        $("#view_filter").hide()
+        $("#view_filter_dis").hide()
 
     $("#actions #modify a").on "click", (e) ->
       checked = $("input#ob_mass_select:checked").length
@@ -416,6 +440,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     # When inputs are selected in toolbar, we call redraw on the datatable which calls the filtering routing
     #        above 
+
     $("[class^=\"toolbar_\"] div#view_filter.btn-group a").on "click", (e) ->
       $target = $(this)
       e.preventDefault()
@@ -432,9 +457,9 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $("div\##{object_type}_filter.dataTables_filter input").addClass "input-medium search-query"
 
     if object_type == "service"
-      dt.fnSort [[3, "asc"], [4, "asc"]]
+      dt.fnSort [[4, "asc"], [5, "asc"]]
     else
-      dt.fnSort [[3, "asc"]]
+      dt.fnSort [[4, "asc"]]
 
   
   #return this.each(function() {
