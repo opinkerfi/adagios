@@ -51,8 +51,11 @@ def livestatus(request):
         nagios_cfg_file=adagios.settings.nagios_config,
         livestatus_socket_path=adagios.settings.livestatus_path,
         authuser=authuser)
-    for i in backends:
-        livestatus.add_backend(path=i, name=i)
+    if not backends:
+        livestatus.add_backend(path=adagios.settings.livestatus_path, name="local")
+    else:
+        for i in backends:
+            livestatus.add_backend(path=i, name=i)
     return livestatus
 
 
