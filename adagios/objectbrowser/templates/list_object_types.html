@@ -1,7 +1,12 @@
-{% extends "base_deprecated.html" %}
+{% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Object Browser{% endblock %}
+{% block toolbar %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% trans "Object Configuration" %}{% endblock %}
+{% block title %}{% trans "Object Browser" %}{% endblock %}
 {% block footer %}
+    {{ block.super }}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
     var currenttab = '#host';
@@ -22,9 +27,9 @@
         if (anchor == undefined) {
             anchor = 'host';
         }
+        anchor = anchor.split('_tab')[0].split('-')[0];
 
 
-        $('#objecttabs').find('a[href="#' + anchor + '-tab"]').tab('show');
 
         $('table#service-table').adagios_ob_configure_dataTable(
                 [
@@ -189,17 +194,6 @@
             }
             return true;
         });
-        $('a[data-toggle="tab"]').on('shown', function (e) {
-            currenttab = $(e.target).attr('href');
-            var id = $(e.target).attr('href').split("-")[0];
-            currenttable = 'table' + id + "-table";
-            document.location.hash = id;
-            $('#log').append("Set current tab " + currenttable + '<br/>');
-            // e.target // activated tab
-            // e.relatedTarget // previous tab
-
-            return true;
-        });
 
         // Populate object statistics table
         populate_object_statistics_table();
@@ -213,7 +207,7 @@
                     var table=document.getElementById("objectoverview");
                     var object_type, total;
                     var row, cell1, cell2;
-                    for (i=0;i<data.length;i++){
+                    for (var i=0;i<data.length;i++){
                         object_type = data[i].object_type;
                         total = data[i].total;
 
@@ -227,41 +221,28 @@
                     }
                     $("#objectoverview_loading").hide();
 
+                })
+                .fail(function(data) {
+                    $("#objectoverview").text("Error getting object statistics.")
                 });
     }
 
     </script>
-{% endblock %}:
+{% endblock %}
+
+
 {% block content %}
-    <div class="row-fluid">
-        <div class="span12">
-            <div class="block">
-                <ul class="breadcrumb">
-                    <li>
-                        <a href="{% url home %}">Home</a> <span class="divider">/</span>
-                    </li>
-                </ul>
-                <h2>
-                    <i class="icon-th-large"></i> <small>Object</small> Browser
-                </h2>
-
-            </div>
-        </div>
-    </div>
-
-        <div class="row-fluid">
-            <div class="span9">
-                <div id="objectbrowser" class="block">
+                <div id="objectbrowser">
                     <ul class="nav nav-tabs" id="objecttabs">
-                        <li><a href="#host-tab" data-toggle="tab"><i class="glyph-computer-locked"></i> Hosts</a></li>
-                        <li><a href="#service-tab" data-toggle="tab"><i class="glyph-computer-service"></i> Services</a></li>
+                        <li><a href="#host-tab" data-toggle="tab"><i class="glyph-computer-locked"></i> {% trans "Hosts" %}</a></li>
+                        <li><a href="#service-tab" data-toggle="tab"><i class="glyph-computer-service"></i> {% trans "Services" %}</a></li>
                         <li><a href="#contact-tab" data-toggle="tab"><i class="icon-user"></i>Contacts</a></li>
-                        <li><a href="#command-tab" data-toggle="tab"><i class="glyph-computer-proces"></i> Commands</a></li>
-                        <li><a href="#timeperiod-tab" data-toggle="tab"><i class="glyph-clock"></i> Timeperiods</a></li>
+                        <li><a href="#command-tab" data-toggle="tab"><i class="glyph-computer-proces"></i> {% trans "Commands" %}</a></li>
+                        <li><a href="#timeperiod-tab" data-toggle="tab"><i class="glyph-clock"></i> {% trans "Timeperiods" %}</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" id="command-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="command-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -270,7 +251,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="contact-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="contact-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -279,7 +260,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="host-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="host-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -288,7 +269,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="service-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="service-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -297,7 +278,7 @@
                             </table>
                         </div>
                         <div class="tab-pane" id="timeperiod-tab">
-                            <div id="loading"><h3>Loading...</h3></div>
+                            <div id="loading"><h3>{% trans "Loading..." %}</h3></div>
                             <table id="timeperiod-table" class="table table-striped objecttable">
                                 <thead>
                                 </thead>
@@ -307,36 +288,32 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="span3">
-                    <form name="bulk" action="{% url bulk_edit %}" method="post" class="hide">
-                        {% csrf_token %}
-                    </form>
+    <!-- The form in side this div is used when multiple items are selected
+    and the user clicks an action button
+    -->
+    <div id="hidden_bulk_commit_form" class="hide">
+            <form name="bulk" action="{% url bulk_edit %}" method="post">
+                {% csrf_token %}
+            </form>
+    </div>
+{% endblock %}
 
-
-
-                <div class="block">
+{% block sidebar %}
                     <table class="table table-condensed" id="objectoverview">
                         <thead>
                         <tr>
-                            <th>Object Statistics</th>
+                            <th>{% trans "Object Statistics" %}</th>
                             <th>#</th>
                         </tr>
                         </thead>
                         <tbody id="objectoverview_body">
                             <tr id="objectoverview_loading">
-                            <td colspan=2><img src="{% url media path="select2/spinner.gif" %}"> Loading...</td>
+                            <td colspan=2><img src="{% url media path="external/select2/spinner.gif" %}"> Loading...</td>
                             </tr>
                        </tbody>
                     </table>
 
                 </div>
                 <div class="block hide" id="log" style="height: 150px;overflow: auto">
-
-                </div>
-            </div>
-
-        </div>
-
 {% endblock %}

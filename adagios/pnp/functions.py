@@ -1,9 +1,28 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 
 import pynag.Utils
 from pynag.Utils import PynagError
 from adagios import settings
 import subprocess
+
+from django.utils.translation import ugettext as _
 
 
 def run_pnp(pnp_command, **kwargs):
@@ -53,4 +72,4 @@ def find_pnp_path():
         if os.path.isfile(i):
             return i
     raise PynagError(
-        "Could not find pnp4nagios/index.php. Please specify it in adagios->settings->PNP. Tried %s" % possible_paths)
+        _("Could not find pnp4nagios/index.php. Please specify it in adagios->settings->PNP. Tried %s") % possible_paths)

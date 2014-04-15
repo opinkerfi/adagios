@@ -1,3 +1,20 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from pynag.Utils import PynagError, defaultdict
 
 __author__ = 'palli'
@@ -8,6 +25,8 @@ import pynag.Control
 import adagios.pnp.functions
 import adagios.settings
 import time
+import adagios.status.utils
+from django.utils.translation import ugettext as _
 
 class BusinessProcess(object):
 
@@ -83,7 +102,7 @@ class BusinessProcess(object):
         try:
             if self.status_method not in self.status_calculation_methods:
                 self.errors.append(
-                    "Unknown state calculation method %s" % str(self.status_method))
+                    _("Unknown state calculation method %s") % str(self.status_method))
                 return 3
             elif self.status_method == 'always_ok':
                 return 0
@@ -99,7 +118,7 @@ class BusinessProcess(object):
                 return self.run_business_rules()
             else:
                 self.errors.append(
-                    "We have not implemented how to use status method %s" % str(self.status_method))
+                    _("We have not implemented how to use status method %s") % str(self.status_method))
                 return 3
         except Exception, e:
             self.errors.append(e)
@@ -235,7 +254,7 @@ class BusinessProcess(object):
         try:
             return string.format(**all_macros)
         except KeyError, e:
-            raise PynagError("Invalid macro in string. %s" % str(e))
+            raise PynagError(_("Invalid macro in string. %s") % str(e))
 
     def resolve_macro(self, macroname, default='raise exception'):
         """ Returns the resolved value of a given macro.
@@ -249,7 +268,7 @@ class BusinessProcess(object):
         state_summary = self.get_state_summary()
         if macroname not in self.get_all_macros():
             if default == 'raise exception':
-                raise PynagError("Could not resolve macro '%s'" % macroname)
+                raise PynagError(_("Could not resolve macro '%s'") % macroname)
             else:
                 return default
         elif macroname == 'num_state_0':
@@ -290,7 +309,7 @@ class BusinessProcess(object):
             return self.get_human_friendly_status(resolve_macros=False)
         else:
             raise PynagError(
-                "Dont know how to resolve macro named '%s'" % macroname)
+                _("Dont know how to resolve macro named '%s'") % macroname)
 
     def add_process(self, process_name, process_type=None, **kwargs):
         """ Add one business process to self.data """
@@ -357,7 +376,7 @@ class BusinessProcess(object):
     def get_pnp_last_value(self, host_name, service_description, metric_name):
         """ Looks up current nagios perfdata via mk-livestatus and returns the last value for a specific metric (str)
         """
-        l = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        l = adagios.status.utils.livestatus(request=None)
         try:
             service = l.get_service(host_name, service_description)
         except Exception:
@@ -386,7 +405,7 @@ class BusinessProcess(object):
         # Precautions that we are not overwriting a current one
         if self.name != self._original_name and self.name in get_all_process_names():
             raise PynagError(
-                "Cannot rename process to %s. Another process with same name already exists" % (self.name))
+                _("Cannot rename process to %s. Another process with same name already exists") % (self.name))
         # Look for a json object that matches our name
         for i, data in enumerate(json_data):
             current_name = data.get('name', None)
@@ -449,7 +468,7 @@ class BusinessProcess(object):
         fget = lambda self: self.data.get(name)
         fset = lambda self, value: self.set(name, value)
         fdel = lambda self: self.set(name, None)
-        fdoc = "This is the %s attribute for object definition"
+        fdoc = _("This is the %s attribute for object definition")
         setattr(self.__class__, name, property(fget, fset, fdel, fdoc))
 
     def set(self, key, value):
@@ -509,11 +528,11 @@ class Hostgroup(BusinessProcess):
     subitem_method = 'host'
 
     def load(self):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        self._livestatus = adagios.status.utils.livestatus(request=None)
         self._hostgroup = self._livestatus.get_hostgroup(self.name)
         self.display_name = self._hostgroup.get('alias')
         self.notes = self._hostgroup.get(
-            'notes') or "You are looking at the hostgorup %s" % (self.name)
+            'notes') or _("You are looking at the hostgroup %s") % (self.name)
 
         # Get information about child hostgroups
         self._pynag_object = pynag.Model.Hostgroup.objects.get_by_shortname(
@@ -577,7 +596,7 @@ class Servicegroup(BusinessProcess):
     _default_status_calculation_method = 'worst_service_state'
 
     def __init__(self, name):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        self._livestatus = adagios.status.utils.livestatus(request=None)
 
         self._servicegroup = self._livestatus.get_servicegroup(name)
         self.servicegroup_name = name
@@ -625,12 +644,12 @@ class Service(BusinessProcess):
                 return
             host_name = tmp[0]
             service_description = tmp[1]
-            self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+            self._livestatus = adagios.status.utils.livestatus(request=None)
             self._service = self._livestatus.get_service(
                 host_name, service_description)
             self.notes = self._service.get('plugin_output', '')
-            display_name = "service %s on host %s"
-            self.display_name = display_name % (self._service.get('display_name', service_description), host_name)
+            self.display_name = _("service %(service)s on host %(host)s") % {'service': self._service.get('display_name', service_description),
+                                                              'host': host_name}
             perfdata = pynag.Utils.PerfData(self._service.get('perf_data', ''))
             for i in perfdata.metrics:
                 notes = '%s %s' % (service_description, i.label)
@@ -653,7 +672,7 @@ class Host(BusinessProcess):
     process_type = 'host'
 
     def load(self):
-            self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+            self._livestatus = adagios.status.utils.livestatus(request=None)
             self._host = self._livestatus.get_host(self.name)
             self.display_name = self._host.get('display_name') or self.name
             self.notes = self._host.get(
@@ -672,7 +691,7 @@ class Host(BusinessProcess):
             return self._host.get('state', 3)
         else:
             raise PynagError(
-                "%s is not a status calculation method i know" % method)
+                _("%s is not a status calculation method i know") % method)
 
     def get_processes(self):
         self.load()
@@ -697,7 +716,7 @@ class Domain(Host):
     _livestatus = None
 
     def load(self):
-        self._livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=pynag.Model.cfg_file)
+        self._livestatus = adagios.status.utils.livestatus(request=None)
         try:
             self._host = self._livestatus.get_host(self.name)
         except IndexError:
@@ -705,7 +724,7 @@ class Domain(Host):
             try:
                 self._host = self._livestatus.get_host(self.name)
             except IndexError:
-                raise Exception("Failed to create host %s" % self.name)
+                raise Exception(_("Failed to create host %s") % self.name)
 
         self.display_name = self._host.get('display_name') or self.name
         self.notes = self._host.get('notes') or 'You are looking at the host %s' % self.name
@@ -729,7 +748,7 @@ class Domain(Host):
             socket.gethostbyname(self.name)
         except Exception:
             self.host_not_found = True
-            self.errors.append("Host not found: " % self.name)
+            self.errors.append(_("Host not found: ") % self.name)
         all_hosts = pynag.Model.Host.objects.all
         all_hosts = map(lambda x: x.host_name, all_hosts)
         if self.name not in all_hosts:

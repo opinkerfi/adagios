@@ -1,4 +1,6 @@
 {% extends "edit_object.html" %}
+{% load i18n %}
+
 {% block title %}{{  block.super }}{% endblock %}
 
 {% block header %}{{ block.super }} {% endblock %}
@@ -11,10 +13,10 @@
     {% if my_object %}
         <!-- wrapper for scrollable items -->
         <ul class="nav nav-tabs" id="objecttab">
-            <li><a href="#general" data-toggle="tab">General</a></li>
-            <li><a href="#members_tab" data-toggle="tab">Members</a></li>
-            <li><a href="#memberof" data-toggle="tab">Member Of</a></li>
-            <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+            <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
+            <li><a href="#members" data-toggle="tab">{% trans "Members" %}</a></li>
+            <li><a href="#memberof" data-toggle="tab">{% trans "Member Of" %}</a></li>
+            <li><a href="#advanced" data-toggle="tab">{% trans "Advanced" %}</a></li>
         </ul>
         <form class="form-horizontal" action="#" method="POST">
             {% csrf_token %}
@@ -28,7 +30,7 @@
                     </fieldset>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
 
@@ -37,13 +39,15 @@
                         <!-- Display All Contactgroups if this is that kind of an object -->
                         <div class="effective_memberof">
                             <fieldset id="id_effective_memberof" class="attribute_{{object_type}}">
-                                Following is a list of all contactgroups that <i>{{ my_object.contactgroup_name }}</i> is a member of.
-                                Notifications sent to these groups will also go to {{ my_object.contactgroup_name }}.
+                                {% blocktrans with name=my_object.contactgroup_name %}
+				Following is a list of all contactgroups that <i>{{ name }}</i> is a member of.
+                                Notifications sent to these groups will also go to {{ name }}.
+				{% endblocktrans %}
                                 <p></p>
                                 {% if effective_memberof %}
                                     <p>
                                         {% for group in effective_memberof %}
-                                            <label><a href="id={{ group.id }}">{{group.contactgroup_name}}</a></label>
+                                            <label><a href="{% url adagios.objectbrowser.views.edit_object group.id %}">{{group.contactgroup_name}}</a></label>
                                         {% endfor %}
                                     </p>
                                 {% endif %}
@@ -53,12 +57,12 @@
                     </fieldset>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
 
 
-                <div class="tab-pane" id="members_tab">
+                <div class="tab-pane" id="members">
                     <fieldset>
                         {% include "bootstrap_field.html" with field=form.members %}
                         {% include "bootstrap_field.html" with field=form.contactgroup_members %}
@@ -67,13 +71,12 @@
                     <div class="effective_contacts">
                         <fieldset id="id_effective_contacts" class="attribute_{{object_type}}">
                             <legend>Effective Members of this group</legend>
-                            Group membership can be defined in multiple ways, for example by editing the contact and editing the "contactgroups"
-                            attribute. For your convenience, here is a list of all contacts for this contactgroup.
+                            {% trans 'Group membership can be defined in multiple ways, for example by editing the contact and editing the "contactgroups" attribute. For your convenience, here is a list of all contacts for this contactgroup.' %}
                             <p></p>
                             {% if effective_contacts %}
                                 <p>
                                     {% for i in effective_contacts %}
-                                        <label><a href="id={{ i.id }}">{{i.contact_name}}</a></label>
+                                        <label><a href="{% url adagios.objectbrowser.views.edit_object i.id %}">{{i.contact_name}}</a></label>
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -81,7 +84,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
         </form>
@@ -91,7 +94,7 @@
             <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                 {% include "bootstrap_fields.html" with fields=advanced_form %}
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Submit</button>
+                    <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
                 </div>
             </form>
         </div>
@@ -100,7 +103,7 @@
 
 
     {% else %}
-        <p>Object not found </p>
+        <p>{% trans "Object not found" %} </p>
     {% endif %}
 
 

@@ -7,11 +7,11 @@
 %define release 1
 
 Name: adagios
-Version: 1.3.1
+Version: 1.4.1
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
-License: GPLv2+
+License: AGPLv3
 URL: https://adagios.opensource.is/
 Source0: https://adagios.opensource.is/releases/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -21,7 +21,7 @@ Prefix: %{_prefix}
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: pynag >= 0.5.0
+Requires: pynag >= 0.8.4
 Requires: httpd
 Requires: mod_wsgi
 Requires: Django
@@ -34,7 +34,7 @@ Adagios is a web based Nagios configuration interface build to be simple and int
 %setup -qn %{name}-%{version} -n %{name}-%{version}
 VERSION=%{version}
 echo %{release} | grep -q git && VERSION=$VERSION-%{release}
-sed -i "s/__version__=.*/__version__='$VERSION'/" adagios/__init__.py
+sed -i "s/^__version__.*/__version__ = '$VERSION'/" adagios/__init__.py
 
 %build
 python setup.py build

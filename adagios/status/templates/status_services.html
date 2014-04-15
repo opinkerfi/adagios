@@ -1,13 +1,11 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
-{% block title %}Status Overview{% endblock %}
+{% block title %}{% trans "Status Overview" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block adagios_hausinn %}
-{% endblock %}
-{% block largeheader %}Service Overview
-{% endblock %}
+{% block largeheader %}{% trans "Service Overview" %}{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.services %}">Services</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.services %}">{% trans "Services" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block sidebar_outer %}
@@ -28,8 +26,8 @@
         }
 
         function refreshPage() {
-            checked_boxes = $( ".selectable :checked" );
-            shown_modals = $("div .modal.in");
+            var checked_boxes = $( ".selectable :checked" );
+            var shown_modals = $("div .modal.in");
             if (checked_boxes.length + shown_modals.length == 0) {
                 console.log("Refreshing page...");
                 location.reload(true);

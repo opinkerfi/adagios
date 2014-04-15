@@ -1,46 +1,16 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
-{% block title %}Contacts{% endblock %}
+{% block title %}{% trans "Contacts" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}Contacts{% endblock %}
+{% block largeheader %}{% trans "Contacts" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.contact_list %}">Contacts</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}">{% trans "Contacts" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
-    <ul class="nav nav-tabs" id="objecttab">
-        <li class="active"><a href="#contacts" data-toggle="tab">Contacts</a></li>
-        <li><a href="#contactgroups" data-toggle="tab">Contactgroups</a></li>
-    </ul>
-    <div class="tab-content">
-
-    <div class="tab-pane active" id="contacts">
-        {% include "snippets/status_contactlist_snippet.html" %}
-    </div>
-
-    <div class="tab-pane " id="contactgroups">
-        <table style="font-size: 80%;" class="table well table-condensed table-striped">
-            <thead>
-            <th>Group Name</th>
-            <th>Alias</th>
-            <th>Members</th>
-            </thead>
-            {% for i in contactgroups  %}
-                <tr>
-                    <td><a href="{% url adagios.status.views.services %}?contact_groups__has_field={{ i.name }}">{{ i.name }}<a/></td>
-                    <td>{{ i.alias }}</td>
-                    <td>
-                        {% for x in i.members %}
-                        <a href="{% url status.views.contact_detail x %}">{{ x }}</a>,
-                        {% endfor %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-
-    </div>
+    {% include "snippets/status_contactlist_snippet.html" %}
 {% endblock %}
 
 {% block view_buttons %}{% endblock %}

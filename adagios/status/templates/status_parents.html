@@ -1,12 +1,15 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
-{% block title %}Network Parents{% endblock %}
-{% block nav2 %}<a href="{% url status.views.network_parents %}">Network Parents</a>{% endblock %}
+{% block title %}{% trans "Network Parents" %}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.network_parents %}">{% trans "Network Parents" %}</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}
-Network Parents
+
+{% trans "Network Parents" %}
 {% endblock %}
 
+{% load adagiostags %}
 
 {% block content %}
 {% if hosts %}
@@ -14,24 +17,26 @@ Network Parents
     <table class="table table-condensed well" style="line-height:6px; font-size: 12px" >
     <thead>
         <tr>
-        <th>
+        <td>
             <div class="btn-group" class="select_bar">
                 <a class="" data-toggle="dropdown" href="#">
                     <input style="margin-left: -2px; padding: 0px;" type="checkbox">
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href=""> All</a></li>
-                    <li><a href=""> None</a></li>
-                    <li><a href=""> Unhandled Problems</a></li>
-                    <li><a href=""> All Problems</a></li>
+                    <li><a href=""> {% trans "All" %}</a></li>
+                    <li><a href=""> {% trans "None" %}</a></li>
+                    <li><a href=""> {% trans "Unhandled Problems" %}</a></li>
+                    <li><a href=""> {% trans "All Problems" %}</a></li>
                 </ul>
             </div>
-        </th>
-        <th>Host Name</th>
-        <th>Address</th>
-        <th>Status</th>
-        <th>Children</th>
-        <th>Child Host Health</th>
+        </td>
+        <th>{% trans "Host Name" %}</th>
+        <th>{% trans "Address" %}</th>
+        <th>{% trans "Children" %}</th>
+        <th>{% trans "Duration" %}</th>
+        <th>{% trans "Last Check" %}</th>
+        <th>{% trans "Status" %}</th>
+        <th>{% trans "Child Host Health" %}</th>
     </tr>
     </thead>
     <tbody>
@@ -44,17 +49,33 @@ Network Parents
                 </a>
             </td>
 
-            <td><a style="color: black" href="{% url status.views.status_detail %}?host_name={{ row.name }}">{{ row.name }}</a></td>
+            <td><a style="color: black" href="{% url status.views.detail %}?host_name={{ row.name }}">{{ row.name }}</a></td>
 
             <td>{{ row.address }}</td>
+            <td>
+                {{ row.childs|length }}
+            </td>
+            <td>
+                {% if row.last_state_change != 0 %}
+                    <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
+                        {{ row.last_state_change|timestamp|timesince }}
+                    </span>
+                {% endif %}
+            </td>
+            <td>
+            {% if row.last_check != 0 %}
+                <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
+                {{ row.last_check|timestamp|timesince }} ago
+                </span>
+            {% else %}
+                never
+            {% endif %}
+            </td>
             {% if row.state  == 0 %}
                 <td class="alert alert-success">UP</td>
             {% else %}
                 <td class="alert alert-danger">Down</td>
             {% endif %}
-            <td>
-                {{ row.childs|length }}
-            </td>
             <td>
                 <div class="progress">
                     <div class="bar bar-success" style="width: {{ row.percent_ok }}%;"></div>
@@ -66,7 +87,7 @@ Network Parents
         </tr>
             {% for i in row.child_hosts %}
                 <tr style="background-color: #fafaff; font-size: 90%;" class="{{ row.name }} host_{{ forloop.parentloop.counter }} hide">
-                    <td colspan=7><div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div> <a href="{% url status.views.status_detail  %}?host_name={{ i.name }}">{{ i.name }}</a></td>
+                    <td colspan=7><div style="margin-left: 10px;" class="circle state_{{ i.state }}"></div> <a href="{% url status.views.detail  %}?host_name={{ i.name }}">{{ i.name }}</a></td>
                 </tr>
             {% endfor %}
 
@@ -75,7 +96,7 @@ Network Parents
     </table>
 
 {% else %}
-    No Network parents found.
+    {% trans "No Network parents found." %}
 {% endif %}
 
 {% endblock %}

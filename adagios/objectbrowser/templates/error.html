@@ -1,21 +1,15 @@
-{% extends "base_deprecated.html" %}
-{% block title %}Objectbrowser - Object not found{% endblock %}
+{% extends "base.html" %}
+{% load i18n %}
 
+{% block title %}{% trans "Objectbrowser - Object not found" %}{% endblock %}
+{% block toolbar %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% endblock %}
 
 {% block content %}
 
 <div class="row-fluid">
-    <div class="span8">
-        <div class="block">
-            <ul class="breadcrumb">
-                <li>
-                    <a href="{% url home %}">Home</a> <span class="divider">/</span>
-                </li>
-                <li>
-                    <a href="{% url objectbrowser %}">Object Browser</a> <span class="divider">/</span>
-                </li>
-            </ul>
-          <br/>
+
           <div class="alert alert-error">
             <h2>
         		{{ error_summary }}
@@ -24,17 +18,14 @@
                 {{ error }}
             </p>
           </div>
-           {% if error_type == "object not found" %}
+           {% if error_type == "object not found" or error_summary == "Unable to get object" %}
                <p>
-                   On rare occations this can happen if you just made changes to your object and its
-                   object id changed because it now looks differently in the config files.
+                   {% trans "On rare occations this can happen if you just made changes to your object and its object id changed because it now looks differently in the config files." %}
                </p>
                <p>
-                   In any case, you can try browsing for your object in the <a href="{% url adagios.objectbrowser.views.list_object_types %}">objectbrowser</a>
+                   {% trans "In any case, you can try browsing for your object in the" %} <a href="{% url adagios.objectbrowser.views.list_object_types %}">objectbrowser</a>
                </p>
             {% endif %}
         </div>
-    </div>
-</div>
 
 {% endblock %}

@@ -1,0 +1,543 @@
+body {
+    /* We push body down so it appears below top_navigation_bar */
+    padding-top: 40px;
+}
+
+/* default style for links */
+a {
+    color: #4b4b4b;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Fix for dropdown buttons, height to small for some reason */
+.btn-group > .dropdown-toggle {
+    height: 18px;
+}
+
+[rel=tooltip] {
+    text-decoration: underline;
+}
+.form-horizontal .controls {
+    padding-bottom: 18px;
+}
+input.inherited  {
+    color: #888888;
+}
+
+#id_geek_edit textarea {
+    width: 520px;
+}
+
+
+.control-label {
+  font-weight: bold;
+}
+
+.breadcrumb {
+    border: 0;
+    margin: 0;
+    padding: 0 14px;
+    background: transparent none;
+}
+.block {
+  background: #fff;
+  margin: 6px;
+  padding: 6px;
+  -moz-box-shadow:    0 0 1px 0 #666;
+  -webkit-box-shadow: 0 0 1px 0 #666;
+  box-shadow:         0 0 1px 0 #666;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+}
+.block_nw {
+  background: #fff;
+  margin: 6px;
+  padding: 6px;
+  -moz-box-shadow:    1px 1px 2px 3px #666;
+  -webkit-box-shadow: 1px 1px 2px 3px #666;
+  box-shadow:         1px 1px 2px 3px #666;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+
+}
+
+.shadow {
+}
+
+.center {
+    text-align: center;
+
+}
+
+
+table.log {
+  width: 100%;
+
+}
+
+
+div.dataTables_length label {
+	float: left;
+	text-align: left;
+}
+
+div.dataTables_length select {
+	width: 75px;
+}
+
+div.dataTables_filter label {
+	float: right;
+}
+
+div.dataTables_info {
+	padding-top: 8px;
+}
+
+div.dataTables_paginate {
+	float: right;
+	margin: 0;
+}
+
+
+
+table.table thead .sorting,
+table.table thead .sorting_asc,
+table.table thead .sorting_desc,
+table.table thead .sorting_asc_disabled,
+table.table thead .sorting_desc_disabled {
+	cursor: pointer;
+	*cursor: hand;
+}
+
+
+table.dataTable th:active {
+	outline: none;
+}
+
+a.inactive {
+    color: #5c5c5c;
+}
+
+
+/*nav .nav-header {
+    background-color: #EEEEEE;
+    color: #404040;
+}*/
+
+.modal.wide {
+    width: 780px;
+    margin-left: -390px; /* -(width / 2) */
+}
+
+#run_check_plugin div.label,
+div.label.servicestate {
+    width: 100px;
+}
+
+/* Disable overflow in twitter bootstrap tabs */
+.tab-content {
+    overflow: visible;
+}
+
+.selectall .checkbox {
+    border: 1px solid #ccc;
+    padding: 3px 4px 5px 6px;
+    height: 98%;
+    background-color: #eeeeee;
+}
+
+.capitalize {
+    text-transform:capitalize;
+}
+
+div#objectbrowser .dataTables_wrapper {
+    min-height: 320px;
+}
+
+div#loading {
+    min-height: 320px;
+}
+
+.icon-copy {
+    background: url("../img/cp.png") no-repeat 0 0;
+    display: inline-block;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: text-top;
+    width: 16px;
+}
+
+[class^="toolbar_"] div div {
+    padding-right: 16px;
+}
+
+div#top_status_output {
+    overflow: hidden;
+}
+
+div.controls input:not([type="checkbox"]):not([type="radio"]),
+.select2field {
+    max-width: 490px;
+    width: 90%;
+
+}
+
+
+.navbar input[type="image"] {
+	margin-top: 10px;
+	width: auto;
+}
+
+.navbar form {
+    margin: 0;
+}
+
+textarea#id_filecontent {
+    width:95%
+}
+
+.glyph-grey {
+    background-image: url("../img/glyph-sprite-grey.png");
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+#id_mail_to {
+    width: 100%;
+}
+#id_mail_message {
+    width: 100%;
+    height: 100px;
+}
+
+
+/* Used in gitlog.html for diff files and history */
+table.gitlog tbody tr:hover td, table.gitlog tbody tr:hover th {
+    background-color: transparent;
+}
+
+
+.statustable input[type='checkbox'] {
+    margin-left: -2px;
+    padding: 0;
+}
+
+.statustable td {
+    white-space: nowrap;
+    font-size: 94%;
+    padding-bottom: 2px;
+    padding-top: 2px;
+}
+
+.statustable td.host {
+    white-space: nowrap;
+}
+.statustable td.service {
+    word-wrap: break-word;
+}
+.statustable td.service span.plugin_output {
+    font-size: 80%;
+    color: #808080;
+    font-weight: normal;
+
+}
+
+.statustable td.service_small {
+    white-space: nowrap;
+    font-size: 80%
+}
+
+
+
+.table tbody tr .businessprocess-subrow {
+    padding: 0;
+    border-top: 0;
+}
+.nomargin {
+    margin: 0;
+}
+#processes, #processes li ul {
+    list-style-type: none;
+    margin-top: 5px;
+}
+
+
+/*
+    Is used to show different messages to our end-user
+*/
+.message_overlay {
+    position:fixed;
+    top:42px;
+    right: 2px;
+    z-index:900;
+    min-width: 500px;
+}
+.message_overlay div {
+    margin: 2px;
+    /*padding: 2px;*/
+}
+button.close.notification {
+   /* right: 2px; */
+}
+
+
+#main_content {
+    min-height: 450px;
+    overflow: hidden;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+#page_footer {
+    clear:both;
+    overflow: hidden;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+#page_header {
+    margin-top: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+#left_sidebar {
+   padding-bottom: 0;
+   padding-right: 5px;
+   padding-top: 0;
+    margin-top: 20px;
+}
+
+.well {
+        background: url('../img/bak.jpg')
+}
+
+#base_objectbrowser {
+    background: url('../img/bak.jpg');
+    font-size: 13px;
+}
+
+#base_objectbrowser .well {
+    background: #f5f5f5 none;
+}
+#base_objectbrowser a,
+#objectbrowser a {
+    color: #b70000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#base_objectbrowser .table tbody tr:hover td, #base_objectbrowser .table tbody tr:hover th {
+    background-color: #f6f6f6;
+
+}
+
+
+
+
+/* Stuff related to the top part of the status view, toolbars and such...*/
+
+
+#toolbar {
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+
+#view_buttons {
+    margin-right: 15px;
+}
+
+#error_messages {
+    margin-left: 30px;
+}
+
+
+@media (max-width: 979px) {
+    body {
+        padding-top: 0;
+    }
+}
+
+/* Convenience classes */
+
+/* .status_* are used to make a text color change according to status */
+.status_ok, .status_0 {
+    color: #339966;
+}
+.status_warning, .status_1 {
+    color: #f29d50;
+}
+
+.status_critical, .status_2 {
+    color: #cc3300;
+}
+.state_pending {
+    color: #468847;
+    background-color: #eeeeee; /* DFF0D8 */
+}
+.state_0 {
+    color: #468847;
+    /* background-color: #468847; */
+    background-color: #90ee90; /* DFF0D8 */
+    background-image: -moz-radial-gradient(10px 10px, circle cover, green, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, green, white);
+    background-image: radial-gradient(10px 10px, circle cover, green, white);
+}
+
+.state_1 {
+    color: orange; /* yellow or orange */
+    background-color: #FCEFB0; /* yellow or orange */
+}
+.state_2 {
+    color: #B94A48;
+    background-color:  #F2DEDE; /* pink */
+}
+.state_3 {
+    color: #d3d3d3;
+    background-color: #d3d3d3;
+}
+
+.state_0unhandled {
+    color: #468847;
+    background-color: #468847;
+    background-image: -moz-radial-gradient(10px 10px, circle cover, green, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, green, white);
+    background-image: radial-gradient(10px 10px, circle cover, green, white);
+}
+.state_1unhandled {
+    color: orange; /* yellow or orange */
+    background-color: #FCEFB0; /* yellow or orange */
+    background-image: -moz-radial-gradient(10px 10px, circle cover, orange, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, orange, white);
+    background-image: radial-gradient(10px 10px, circle cover, orange, white);
+}
+.state_2unhandled {
+    color: #B94A48;
+    background-color:  #F2DEDE; /* pink */
+    background-image: -moz-radial-gradient(10px 10px, circle cover, red, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, red, white);
+    background-image: radial-gradient(10px 10px, circle cover, red, white);
+}
+.state_3unhandled {
+    color: #d3d3d3;
+    background-color: #d3d3d3;
+    background-image: -moz-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+    background-image: radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+}
+
+.circle.host.state_1.unhandled {
+    color: #B94A48;
+    background-color:  #F2DEDE; /* pink */
+    background-image: -moz-radial-gradient(10px 10px, circle cover, red, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, red, white);
+    background-image: radial-gradient(10px 10px, circle cover, red, white);
+}
+
+.circle.host.state_1 {
+    color: #B94A48;
+    background-color:  #F2DEDE; /* pink */
+}
+
+.circle.host.state_2.unhandled {
+    color: #d3d3d3;
+    background-color: #d3d3d3;
+    background-image: -moz-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+    background-image: -webkit-radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+    background-image: radial-gradient(10px 10px, circle cover, #d3d3d3, white);
+}
+
+.circle.host.state_2 {
+    color: #d3d3d3;
+    background-color: #d3d3d3;
+}
+
+
+.table-condensed td {
+    line-height: 10px;
+}
+.circle {
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border: 1px solid;
+}
+
+.row_selected {
+    background-color: lightblue;
+}
+
+
+#left_sidebar a {
+    font-weight: normal;
+}
+.small{
+    width: 1px;
+}
+.subrow {
+    background-color: #fafaff;
+    font-size: 90%;
+}
+
+.table tbody tr:hover td, .table tbody tr:hover th {
+    background-color: lightblue;
+}
+
+
+.dashboard.alert.alert-danger {
+  color: black;
+  background-color: rgba(255, 0, 0, 0.32);
+}
+
+.dashboard.alert.alert-warning {
+  color: black;
+    background-color: rgba(255, 255, 0, 0.61);
+}
+
+#status_toolbar_more_button {
+    margin-left: 4px;
+    padding-bottom: 3px;
+    font-weight: normal;
+}
+
+.dashboard_plugin_output {
+    font-size: 100%;
+    color: #3d3d3d;
+    font-weight: normal;
+}
+#status_dashboard {
+    padding-top: 20px;
+    padding-left: 50px;
+    padding-bottom: 20px;
+    background-color: #d5d8de;
+}
+
+#status_dashboard .alert {
+    margin-bottom: 0;
+    padding:  4px 4px 4px 14px;
+}
+
+.ssi-overwrite, .ssi-append {
+    display: none;
+}
+
+
+/* Space between footer sections (.pull-left) */
+div#page_footer div.pull-left {
+    padding-right: 32px;
+}
+
+/* Space between footer sections (.pull-right) */
+div#page_footer div.pull-right {
+    padding-left: 32px;
+}
+
+/* Glyphicons footer */
+div#glyphicons-attribution,
+div#glyphicons-attribution a {
+    color: #666;
+}

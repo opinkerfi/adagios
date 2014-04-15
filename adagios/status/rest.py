@@ -1,3 +1,19 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
 
@@ -9,13 +25,12 @@ with status of Nagios.
 import time
 import pynag.Control.Command
 import pynag.Model
-import django.core.mail
 import pynag.Utils
 import adagios.status.utils
 import pynag.Parsers
 import collections
-from pynag.Utils import PynagError
 
+from django.utils.translation import ugettext as _
 
 def hosts(request, fields=None, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
@@ -33,25 +48,32 @@ def services(request, fields=None, **kwargs):
     """
     return adagios.status.utils.get_services(request=request, fields=fields, **kwargs)
 
-def services_dt(fields=None, *args, **kwargs):
+def services_dt(request, fields=None, **kwargs):
     """ Similar to hosts(), is a wrapper around adagios.status.utils.get_services()
     """
-    return adagios.status.utils.get_services(fields=fields, *args, **kwargs)
+    services = adagios.status.utils.get_services(request=request, fields='host_name,description')
+
+    result = {
+        'sEcho': len(services),
+	'iTotalRecords': len(services),
+        'aaData': []
+    }
+    for service in services:
+        result['aaData'].append(service.values())
+    return result
 
 
-def contacts(fields=None, *args, **kwargs):
+def contacts(request, fields=None, *args, **kwargs):
     """ Wrapper around pynag.Parsers.mk_livestatus.get_contacts()
     """
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
     return l.get_contacts(*args, **kwargs)
 
 
-def emails(*args, **kwargs):
+def emails(request, *args, **kwargs):
     """ Returns a list of all emails of all contacts
     """
-    l = pynag.Parsers.mk_livestatus(
-        nagios_cfg_file=adagios.settings.nagios_config)
+    l = adagios.status.utils.livestatus(request)
     return map(lambda x: x['email'], l.get_contacts('Filter: email !='))
 
 
@@ -81,7 +103,7 @@ def acknowledge_many(hostlist, servicelist, sticky=1, notify=1, persistent=0, au
                 author=author,
                 comment=comment
         )
-    return "Success"
+    return _("Success")
 
 
 def acknowledge(host_name, service_description=None, sticky=1, notify=1, persistent=0, author='adagios', comment='acknowledged by Adagios'):
@@ -227,25 +249,32 @@ def downtime(host_name=None, service_description=None, start_time=None, end_time
             comment=comment,
         )
 
+import adagios.utils
 
-def reschedule_many(hostlist, servicelist, check_time=None, wait=0):
+
+def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
     """ Same as reschedule() but takes a list of hosts/services as input
 
     Arguments:
       hostlist    -- semicolon seperated list of hosts to schedule checks for. Same as multiple calls with host_name=
       servicelist -- Same as hostlist but for services. Format is: host_name,service_description;host_name,service_description
     """
+    #task = adagios.utils.Task()
+    #WaitCondition = "last_check > %s" % int(time.time()- 1)
     for i in hostlist.split(';'):
         if not i: continue
-        reschedule(host_name=i, service_description=None, check_time=check_time, wait=wait)
+        reschedule(request, host_name=i, service_description=None, check_time=check_time)
+        #task.add(wait, 'hosts', i, WaitCondition)
     for i in servicelist.split(';'):
         if not i: continue
         host_name,service_description = i.split(',')
-        reschedule(host_name=host_name, service_description=service_description, check_time=check_time, wait=wait)
-    return "ok"
+        reschedule(request, host_name=host_name, service_description=service_description, check_time=check_time)
+        #WaitObject = "{h};{s}".format(h=host_name, s=service_description)
+        #task.add(wait, 'services', WaitObject, WaitCondition)
+    return {'message': _("command sent successfully")}
 
 
-def reschedule(host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
+def reschedule(request, host_name=None, service_description=None, check_time=None, wait=0, hostlist='', servicelist=''):
     """ Reschedule a check of this service/host
 
     Arguments:
@@ -262,7 +291,7 @@ def reschedule(host_name=None, service_description=None, check_time=None, wait=0
         pynag.Control.Command.schedule_forced_host_check(
             host_name=host_name, check_time=check_time)
         if wait == "1":
-            livestatus = pynag.Parsers.mk_livestatus()
+            livestatus = adagios.status.utils.livestatus(request)
             livestatus.query("GET hosts",
                              "WaitObject: %s " % host_name,
                              "WaitCondition: last_check > %s" % check_time,
@@ -273,7 +302,7 @@ def reschedule(host_name=None, service_description=None, check_time=None, wait=0
         pynag.Control.Command.schedule_forced_svc_check(
             host_name=host_name, service_description=service_description, check_time=check_time)
         if wait == "1":
-            livestatus = pynag.Parsers.mk_livestatus()
+            livestatus = adagios.status.utils.livestatus(request)
             livestatus.query("GET services",
                              "WaitObject: %s %s" % (
                                  host_name, service_description),
@@ -299,13 +328,13 @@ def comment(author, comment, host_name, service_description=None, persistent=1):
     return "ok"
 
 
-def delete_comment(comment_id, host_name, service_description=None):
+def delete_comment(comment_id, object_type=None, host_name=None, service_description=None):
     """
     """
     if not host_name:
         # TODO host_name is not used here, why do we need it ?
         pass
-    if service_description in (None, '', u'', '_HOST_'):
+    if object_type == "host" or service_description in (None, '', u'', '_HOST_'):
         pynag.Control.Command.del_host_comment(comment_id=comment_id)
     else:
         pynag.Control.Command.del_svc_comment(comment_id=comment_id)
@@ -332,9 +361,9 @@ def edit(object_type, short_name, attribute_name, new_value):
     return str(my_obj)
 
 
-def get_map_data(host_name=None):
+def get_map_data(request, host_name=None):
     """ Returns a list of (host_name,2d_coords). If host_name is provided, returns a list with only that host """
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = adagios.status.utils.livestatus(request)
     all_hosts = livestatus.query('GET hosts', )
     hosts_with_coordinates = pynag.Model.Host.objects.filter(
         **{'2d_coords__exists': True})
@@ -395,22 +424,21 @@ def change_host_coordinates(host_name, latitude, longitude):
     host.save()
 
 
-def autocomplete(q):
+def autocomplete(request, q):
     """ Returns a list of {'hosts':[], 'hostgroups':[],'services':[]} matching search query q
     """
     if q is None:
         q = ''
     result = {}
-    hosts = pynag.Model.Host.objects.filter(host_name__contains=q)
-    services = pynag.Model.Service.objects.filter(
-        service_description__contains=q)
-    hostgroups = pynag.Model.Hostgroup.objects.filter(
-        hostgroup_name__contains=q)
-    result['hosts'] = sorted(set(map(lambda x: x.host_name, hosts)))
-    result['hostgroups'] = sorted(
-        set(map(lambda x: x.hostgroup_name, hostgroups)))
-    result['services'] = sorted(
-        set(map(lambda x: x.service_description, services)))
+
+    hosts = adagios.status.utils.get_hosts(request, host_name__contains=q)
+    services = adagios.status.utils.get_services(request, service_description__contains=q)
+    hostgroups = adagios.status.utils.get_hostgroups(request, hostgroup_name__contains=q)
+
+    result['hosts'] = sorted(set(map(lambda x: x['name'], hosts)))
+    result['hostgroups'] = sorted(set(map(lambda x: x['name'], hostgroups)))
+    result['services'] = sorted(set(map(lambda x: x['description'], services)))
+
     return result
 
 
@@ -469,7 +497,7 @@ def log_entries(*args, **kwargs):
     return l.get_log_entries(*args, **kwargs)
 
 
-def state_history(start_time=None, end_time=None, host_name=None, service_description=None):
+def state_history(start_time=None, end_time=None, object_type=None, host_name=None, service_description=None, hostgroup_name=None):
     """ Returns a list of dicts, with the state history of hosts and services. Parameters behaves similar to get_log_entries
 
     """
@@ -481,10 +509,39 @@ def state_history(start_time=None, end_time=None, host_name=None, service_descri
         host_name = None
     if service_description == '':
         service_description = None
-
     l = pynag.Parsers.LogFiles()
-    return l.get_state_history(start_time=start_time, end_time=end_time, host_name=host_name, service_description=service_description)
+    log_entries = l.get_state_history(start_time=start_time, end_time=end_time, host_name=host_name, service_description=service_description)
+    if object_type == 'host' or object_type == 'service':
+        pass
+    elif object_type == 'hostgroup':
+        hg = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
+        hosts = hg.get_effective_hosts()
+        hostnames = map(lambda x: x.host_name, hosts)
+        log_entries = filter(lambda x: x['host_name'] in hostnames, log_entries)
+    else:
+        raise Exception(_("Unsupported object type: %s") % object_type)
 
+    # Add some css-hints for and duration of each state history entry as percent of duration
+    # this is used by all views that have state history and on top of it a progress bar which shows
+    # Up/downtime totals.
+    c = {'log': log_entries }
+    if len(c['log']) > 0:
+        log = c['log']
+        c['start_time'] = start_time = log[0]['time']
+        c['end_time'] = log[-1]['time']
+        now = time.time()
+
+        total_duration = now - start_time
+        css_hint = {}
+        css_hint[0] = 'success'
+        css_hint[1] = 'warning'
+        css_hint[2] = 'danger'
+        css_hint[3] = 'info'
+        for i in log:
+            i['duration_percent'] = 100 * i['duration'] / total_duration
+            i['bootstrap_status'] = css_hint[i['state']]
+
+    return log_entries
 
 def _get_service_model(host_name, service_description=None):
     """ Return one pynag.Model.Service object for one specific service as seen
@@ -513,13 +570,13 @@ def command_line(host_name, service_description=None):
         obj = _get_host_or_service(host_name, service_description)
         return obj.get_effective_command_line(host_name=host_name)
     except KeyError:
-        return "Could not resolve commandline. Object not found"
+        return _("Could not resolve commandline. Object not found")
 
 
 def _get_host_or_service(host_name, service_description=None):
     """ Return a pynag.Model.Host or pynag.Model.Service or raise exception if none are found """
     host = pynag.Model.Host.objects.get_by_shortname(host_name)
-    if not service_description:
+    if not service_description or service_description == '_HOST_':
         return host
     else:
         search_result = pynag.Model.Service.objects.filter(host_name=host_name, service_description=service_description)
@@ -529,7 +586,7 @@ def _get_host_or_service(host_name, service_description=None):
         for service in host.get_effective_services():
             if service.service_description == service_description:
                 return service
-    raise KeyError("Object not found")
+    raise KeyError(_("Object not found"))
 
 
 def update_check_command(host_name, service_description=None, **kwargs):
@@ -545,9 +602,9 @@ def update_check_command(host_name, service_description=None, **kwargs):
             if k.startswith("$_SERVICE") or k.startswith('$ARG') or k.startswith('$_HOST'):
                 obj.set_macro(k, v)
                 obj.save()
-        return "Object saved"
+        return _("Object saved")
     except KeyError:
-        raise Exception("Object not found")
+        raise Exception(_("Object not found"))
 
 
 def get_business_process_names():
@@ -557,10 +614,10 @@ def get_business_process_names():
     return map(lambda x: x.name, adagios.businessprocess.get_all_processes())
 
 
-def get(object_type, *args, **kwargs):
+def get(request, object_type, *args, **kwargs):
     livestatus_arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     if not object_type.endswith('s'):
-        object_type = object_type + 's'
+        object_type += 's'
     if 'name__contains' in kwargs and object_type == 'services':
         name = str(kwargs['name__contains'])
         livestatus_arguments = filter(
@@ -568,7 +625,7 @@ def get(object_type, *args, **kwargs):
         livestatus_arguments.append('Filter: host_name ~ %s' % name)
         livestatus_arguments.append('Filter: description ~ %s' % name)
         livestatus_arguments.append('Or: 2')
-    livestatus = pynag.Parsers.mk_livestatus()
+    livestatus = adagios.status.utils.livestatus(request)
     results = livestatus.query('GET %s' % object_type, *livestatus_arguments)
 
     if object_type == 'service':
@@ -601,15 +658,15 @@ def get_business_process(process_name=None, process_type=None):
     return result
 
 
-def remove_downtime(host_name, service_description=None, downtime_id=None):
+def remove_downtime(request, host_name, service_description=None, downtime_id=None):
     """ Remove downtime for one specific host or service """
     downtimes_to_remove = []
     # If downtime_id is not provided, remove all downtimes of that service or host
     if downtime_id:
         downtimes_to_remove.append(downtime_id)
     else:
-        livestatus = pynag.Parsers.mk_livestatus(nagios_cfg_file=adagios.settings.nagios_config)
-        query_parameters = []
+        livestatus = adagios.status.utils.livestatus(request)
+        query_parameters = list()
         query_parameters.append('GET downtimes')
         query_parameters.append('Filter: host_name = {host_name}'.format(**locals()))
         if service_description:
@@ -637,7 +694,7 @@ def remove_acknowledgement(host_name, service_description=None):
     return "ok"
 
 
-def submit_check_result(request, host_name, service_description=None, autocreate=False, status_code=3, plugin_output="No message was entered", performance_data=""):
+def submit_check_result(request, host_name, service_description=None, autocreate=False, status_code=3, plugin_output=_("No message was entered"), performance_data=""):
     """ Submit a passive check_result for a given host or a service
 
     Arguments:
@@ -661,7 +718,7 @@ def submit_check_result(request, host_name, service_description=None, autocreate
         objects = livestatus.get_services(*args)
 
     if not objects and autocreate is True:
-        raise Exception("Autocreate not implemented yet")
+        raise Exception(_("Autocreate not implemented yet"))
     elif not objects:
         result['error'] = 'No %s with that name' % object_type
     else:
@@ -669,7 +726,7 @@ def submit_check_result(request, host_name, service_description=None, autocreate
             pynag.Control.Command.process_host_check_result(host_name, status_code, output)
         else:
             pynag.Control.Command.process_service_check_result(host_name, service_description, status_code, output)
-        result['message'] = "Command has been submitted."
+        result['message'] = _("Command has been submitted.")
     return result
 
 
@@ -677,4 +734,76 @@ def statistics(request, **kwargs):
     """ Returns a dict with various statistics on status data. """
     return adagios.status.utils.get_statistics(request, **kwargs)
 
+
+def metrics(request, **kwargs):
+    """ Returns a list of dicts which contain service perfdata metrics
+    """
+    result = []
+    fields = "host_name description perf_data state host_state".split()
+    services = adagios.status.utils.get_services(request, fields=fields, **kwargs)
+    for service in services:
+        metrics = pynag.Utils.PerfData(service['perf_data']).metrics
+        metrics = filter(lambda x: x.is_valid(), metrics)
+        for metric in metrics:
+            metric_dict = {
+                'host_name': service['host_name'],
+                'service_description': service['description'],
+                'state': service['state'],
+                'host_state': service['host_state'],
+                'label': metric.label,
+                'value': metric.value,
+                'uom': metric.uom,
+                'warn': metric.warn,
+                'crit': metric.crit,
+                'min': metric.min,
+                'max': metric.max,
+            }
+            result.append(metric_dict)
+    return result
+
+def metric_names(request, **kwargs):
+    """ Returns the names of all perfdata metrics that match selected request """
+    metric_names = set()
+    fields = "host_name description perf_data state host_state".split()
+    services = adagios.status.utils.get_services(request, fields=fields, **kwargs)
+    for service in services:
+        metrics = pynag.Utils.PerfData(service['perf_data']).metrics
+        metrics = filter(lambda x: x.is_valid(), metrics)
+        for metric in metrics:
+            metric_names.add(metric.label)
+
+    result = {
+        'services that match filter': len(services),
+        'filter': kwargs,
+        'metric_names': sorted(list(metric_names)),
+    }
+    return result
+
+def wait(table, WaitObject, WaitCondition=None, WaitTrigger='check', **kwargs):
+    print _("Lets wait for"), locals()
+    if not WaitCondition:
+        WaitCondition = "last_check > %s" % int(time.time()-1)
+    livestatus = adagios.status.utils.livestatus(None)
+    print _("livestatus ok")
+    result = livestatus.get(table, 'Stats: state != 999', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
+    print _("ok no more waiting for "), WaitObject
+    return result
+
+
+def wait_many(hostlist, servicelist, WaitCondition=None, WaitTrigger='check', **kwargs):
+    if not WaitCondition:
+        WaitCondition = "last_check > %s" % int(time.time()-1)
+    livestatus = adagios.status.utils.livestatus(None)
+    for host in hostlist.split(';'):
+        if not host:
+            continue
+        WaitObject = host
+        livestatus.get('hosts', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
+        print WaitObject
+    for service in servicelist.split(';'):
+        if not service:
+            continue
+        WaitObject = service.replace(',', ';')
+        livestatus.get('services', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
+        print WaitObject
 

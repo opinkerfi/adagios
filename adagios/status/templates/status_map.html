@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Map" %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% trans "Map" %}{% endblock %}
+{% block toolbar %}{% endblock %}
+
+
+
+{% block action_buttons %}
+    <button  class="button btn-small refreshmap" >
+        <i class="glyph-refresh" > </i>
+    </button>
+
+    <button  id="place_new_host_button" class="hide button btn-small" data-toggle="modal"  data-target="#addhost_modal">{% trans "Place new host here" %}</button>
+{% endblock %}
+
+{% block content %}
+    <div id="map" style="width: 100%; height: 580px;"></div>
+
+    <!-- place new host modal -->
+    <div class="modal hide fade" id="addhost_modal">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" >&times;</button>
+                <h3>{% trans "Host location here" %}</h3>
+            </div>
+            <div class="modal-body">
+                <p>{% trans "Pick a host from the list below. The host will from now on be at those coordinates on the map." %}</p>
+
+
+                <div class="control-group">
+                    <label class="control-label" for="id_latitude">
+                        {% trans "Latitude:" %}
+                    </label>
+                    <div class="controls" >
+                            <input id="id_latitude" type=text disabled=disabled placeholder="{% trans "Click on the map to get coordinates" %}" value=""/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="id_longitude">
+                        {% trans "Longitude:" %}
+                    </label>
+                    <div class="controls" >
+                        <input id="id_longitude" type=text disabled=disabled placeholder="{% trans "Click on the map to get coordinates" %}" value=""/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="id_host_name">
+                        {% trans "Host Name:" %}
+                    </label>
+                    <div class="controls" id="host_name_field">
+                        <select name="host_name" id="id_host_name">
+                            {% for i in hosts %}
+                                <option value="{{ i.name }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#addhost_modal").modal("hide");'>Cancel</a>
+                    <button id="change_host_coordinates" type="submit" onclick='$("#addhost_modal").modal("hide");' class="btn btn-primary">{% trans "Place this host here" %}</button>
+                </div>
+            </div>
+    </div>
+    <!-- addhost modal ends -->
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block footer %}
+    {{ block.super }}
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        // Updates coordinates on one specific host
+        function change_host_coordinates(map) {
+            var host_name = $('#id_host_name').val();
+            var latitude = $('#id_latitude').val();
+            var longitute = $('#id_longitude').val();
+
+            var my_data = {
+                "host_name":host_name,
+                "latitude":latitude,
+                "longitude":longitute
+            };
+            adagios.rest.status.change_host_coordinates(my_data)
+                    .done(function() {
+                        refresh(map);
+                    });
+
+
+        }
+        // Returns a new marker that is used for adding a new host
+        function newHostMarker(map, location) {
+            return new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "{% trans "Place a new host here" %}",
+                visible: false
+            });
+
+        }
+        // Place a specific host on the map
+        function placeHostMarker(map, host) {
+            var service, html, marker, service_url;
+            var icon = null;
+            var x = host.x_coordinates;
+            var y = host.y_coordinates;
+
+            if (host['state'] == 0)
+                icon = "http://maps.google.com/mapfiles/ms/micons/green.png";
+            if (host['state'] == 1)
+                icon = "http://maps.google.com/mapfiles/ms/micons/yellow.png";
+            if (host['state'] == 2)
+                icon = "http://maps.google.com/mapfiles/ms/micons/red.png";
+            if (host['state'] == 3)
+                icon = "http://maps.google.com/mapfiles/ms/micons/grey.png";
+
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(x,y),
+                map: map,
+                icon: icon,
+                title: host['name']
+            });
+            map.markers.push(marker);
+            // When user clicks on this host marker, lets open up a infowindow
+            var host_url = "{% url status.views.detail  %}"  + "?host_name=" + host.name;
+            html = '<div class="circle state_' + host.state +'"> </div>';
+            html = html + ' <a href="' + host_url + '">'+ host.name +'</a>';
+            html = html + " (" + host.address +")";
+            html = html + "<hr>";
+            // Do the services on this host
+            for (var i = 0; i < host.services_with_state.length; i++) {
+                service = host.services_with_state[i];
+                service_url = host_url + "&service_description=" +  service[0];
+                html = html + '<br> <div class="circle state_' + service[1] +'"> </div> ';
+                html = html + '<a href="' + service_url + '">' + service[0] + '</a>';
+            }
+            var infowindow = new google.maps.InfoWindow();
+            infowindow.setContent(html);
+            map.infowindows.push(infowindow);
+
+            google.maps.event.addListener(marker, 'click', (function(marker) {
+                return function() {
+                    // Close all other infowindows
+                    for(var i=0; i < map.infowindows.length; i++)
+                        map.infowindows[i].close();
+                    // And open this one
+                    infowindow.open(map, marker);
+                }
+            })(marker));
+        }
+        function refresh(map) {
+            console.log("refreshing map markers..." + map.markers.length);
+
+            // Hide the add button since the addhost marker is invisible
+            $('#place_new_host_button').hide();
+
+            // clear all current markers
+            for(var i=0; i < map.markers.length; i++){
+                map.markers[i].setMap(null);
+            }
+            map.markers = [];
+            map.infowindows = [];
+
+            // Create an invisble marker that you can place down for new hosts
+            var new_host_marker = newHostMarker(map, new google.maps.LatLng(0,0));
+            map.markers.push(new_host_marker);
+
+
+            var infowindow = new google.maps.InfoWindow();
+            var html = "<div><a href='#' onclick='showmodal();'>{% trans "Place new host here" %}</a></div>";
+            infowindow.setContent(html);
+            map.infowindows.push(infowindow);
+
+            google.maps.event.addListener(new_host_marker, 'click', function() {
+                // Close all other infowindows
+                for(var i=0; i < map.infowindows.length; i++)
+                    map.infowindows[i].close();
+                // And open this one
+                infowindow.open(map, new_host_marker);
+            });
+
+            // When a user clicks somewhere on the map, place a new marker.
+            google.maps.event.addListener(map, 'click', function(event) {
+                new_host_marker.setPosition(event.latLng);
+                new_host_marker.setVisible(true);
+                // Close all other infowindows
+                for(var i=0; i < map.infowindows.length; i++)
+                    map.infowindows[i].close();
+                // And open this one
+                infowindow.open(map, new_host_marker);
+                $("#id_latitude").val(event.latLng.lat());
+                $("#id_longitude").val(event.latLng.lng());
+                $("#action_buttons *").show();
+            });
+
+            // Get a list of of all hosts with positions
+            adagios.rest.status.get_map_data({})
+                    .done(function(data) {
+                        var hosts = data['hosts'];
+                        var connections = data['connections'];
+                        var host;
+                        for (var i = 0; i < hosts.length; i++) {
+                            host = hosts[i];
+                            // placeHostMarker is responsible for putting the
+                            // Host as a marker on the map
+                            placeHostMarker(map, host);
+                        }
+
+                        // If any connections returned from webservice, draw a polyline between host
+                        // and network parent
+                        for (i = 0; i < connections.length; i++) {
+                            placeConnection(map, connections[i]);
+                        }
+                    });
+
+
+
+
+        }
+        // Puts a Polyline on the map, indicating status between host and its network parent
+        function placeConnection(map, connection) {
+            var colour;
+            if (connection.state == 0) {
+                colour = 'green';
+            }
+            else if (connection.state == 1) {
+                colour = 'warning';
+            }
+            else if (connection.state == 1) {
+                colour = 'red';
+            }
+            else if (connection.state == 2) {
+                colour = 'red';
+            }
+            else if (connection.state == 3) {
+                colour = 'red';
+            }
+            else {
+                colour = "blue";
+            }
+            var points = [
+                new google.maps.LatLng(connection.parent_x_coordinates, connection.parent_y_coordinates),
+                new google.maps.LatLng(connection.child_x_coordinates, connection.child_y_coordinates)
+            ];
+            var polyline = new google.maps.Polyline({
+                path: points,
+                strokeColor: colour,
+                strokeOpacity: 0.3,
+                strokeWeight: 5
+            });
+
+            polyline.setMap(map);
+
+        }
+        function showmodal() {
+            $("#addhost_modal").modal("show");
+        }
+
+        // Create a new google map and hook events
+        function initilize_map() {
+            // Create map
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: {{ map_zoom }},
+                center: new google.maps.LatLng({{ map_center }}),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            map.markers = [];
+
+            $(".refreshmap").click( function() {
+                        refresh(map);
+            });
+            $("#change_host_coordinates").click( function() {
+                change_host_coordinates(map);
+            });
+
+            // Call refresh so markers are put in place
+            refresh(map);
+        }
+        $(document).ready(function() {
+            initilize_map();
+        });
+    </script>
+
+{% endblock %}

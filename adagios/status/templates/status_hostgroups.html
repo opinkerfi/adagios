@@ -1,89 +1,29 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
-{% block title %}Hostgroups{% endblock %}
+{% block title %}{% trans "Hostgroups" %}{% endblock %}
 {% block nav2 %}
-    <a href="{% url status.views.status_hostgroups %}">Hostgroups</a>
+    <a href="{% url status.views.status_hostgroups %}">{% trans "Hostgroups" %}</a>
     {% if hostgroup_name %}
     / {{ hostgroup_name }}
     {% else %}
     {% endif %}
 {% endblock %}
 {% block smallheader %}
-    {% if hostgroup_name %}hostgroup
+    {% if hostgroup_name %}{% trans "hostgroup" %}
     {% endif %}
 {% endblock %}
 {% block largeheader %}
     {% if hostgroup_name %}{{ hostgroup_name }}
     {% else %}
-    Hostgroups
+    {% trans "Hostgroups" %}
     {% endif %}
 {% endblock %}
 
+{% block view_buttons %}{% endblock %}
+
 {% block content %}
-
-    <ul class="nav nav-tabs" id="objecttabs">
-        <li ><a href="{% url status.views.hosts %}" data-toggle="tabs">Hosts {% if hosts %}<span class="muted">({{ hosts|length }})</span>{% endif %}</a></li>
-        <li class=active><a href="#hostgroups" data-toggle="tabs">Hostgroups {% if hostgroups %}<span class="muted">({{ hostgroups|length }})</span>{% endif %}</a></li>
-    </ul>
-    <div class="tab-content">
-
-        <div class="tab-pane active" id="hostgroups">
-
-        {% if hostgroups %}
-            {% include "snippets/status_hostgrouplist_snippet.html" %}
-        {% endif %}
-
-    {% if hostgroup_name %}
-
-        <div class="accordion" id="accordion2">
-            <div class="accordion-group">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                        <h4>Hostgroup {{ hostgroup_name }} has {{ hosts|length }} hosts</h4>
-                    </a>
-                </div>
-                <div id="collapseTwo" class="accordion-body ">
-                    <div class="accordion-inner">
-                        {% if hosts %}
-
-                            <table class="table well table-condensed" style="line-height:6px; font-size: 75%;" >
-                            <tr>
-                                <th>Host Name</th>
-                                <th>Address</th>
-                                <th>Status</th>
-                                <th>Service Status</th>
-                            </tr>
-
-                            {% for row in hosts %}
-                                <tr >
-                                    <td><a style="color: black" href="{% url status.views.status_detail %}?host_name={{ row.name  }}">{{ row.name }}</a></td>
-                                    <td>{{ row.address }}</td>
-                                    {% if row.state  == 0 %}
-                                        <td class="alert alert-success">UP</td>
-                                    {% else %}
-                                        <td class="alert alert-danger">Down</td>
-                                    {% endif %}
-                                    <td>
-                                        <div class="progress">
-                                            <div class="bar bar-success" style="width: {{ row.percent_ok }}%;"></div>
-                                            <div class="bar bar-warning" style="width: {{ row.percent_warn }}%;"></div>
-                                            <div class="bar bar-danger" style="width: {{ row.percent_crit }}%;"></div>
-                                            <div class="bar bar-unknown" style="width: {{ row.percent_unknown }}%;"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </table>
-                        {% else %}
-                            No hosts in this hostgroup.
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-</div>
+    {% include "snippets/status_hostgrouplist_snippet.html" %}
 {% endblock %}
 
 {% block header %} {{ block.super }}

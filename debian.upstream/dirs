@@ -1,0 +1,4 @@
+/etc/adagios/
+/etc/nagios3/adagios/
+/etc/apache2/conf.d
+/etc/sudoers.d

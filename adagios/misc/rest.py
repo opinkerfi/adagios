@@ -1,28 +1,32 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2012, Pall Sigurdsson <palli@opensource.is>
+# Adagios is a web based Nagios configuration interface
 #
-# This script is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Copyright (C) 2012, Pall Sigurdsson <palli@opensource.is>
 #
-# This script is distributed in the hope that it will be useful,
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-'''
+"""
 
 This is a rest interface used by the "/rest/" module that affects adagios directly.
 
-'''
+"""
 
-from adagios import __version__, notifications
+from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
+from django.utils.translation import ugettext as _
+
 version = __version__
 
 
@@ -68,7 +72,7 @@ def get_notifications(request):
         if i.get('user') and i.get('user') != request.META.get('remote_user'):
             continue # Skipt this message if it is meant for someone else
         elif i.get('notification_type') == 'show_once':
-            #del notifications[k]
+            del notifications[k]
             pass
         result.append(i)
     return result
@@ -78,3 +82,29 @@ def clear_all_notifications():
     """ Removes all notifications from adagios notification panel """
     notifications.clear()
     return "all notifications cleared"
+
+
+def list_tasks():
+    """
+
+    """
+    result = []
+    for task in tasks:
+        current_task = {
+            'task_id': task.get_id(),
+            'task_status': task.status()
+            }
+        result.append(current_task)
+    return result
+
+
+def get_task(task_id="someid"):
+    """ Return information about one specific background task """
+    for task in tasks:
+        if str(task.get_id) == str(task_id) or task_id:
+            current_task = {
+                'task_id': task.get_id(),
+                'task_status': task.status()
+            }
+            return current_task
+    raise KeyError(_("Task not '%s' Found") % task_id)

@@ -1,3 +1,20 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Create your views here.
 from django.shortcuts import render_to_response, redirect
 from django.core import serializers
@@ -7,7 +24,7 @@ from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext
 from django.core.urlresolvers import resolve
-
+from adagios.views import adagios_decorator
 
 import inspect
 from django import forms
@@ -23,6 +40,7 @@ def _load(module_path):
 
 
 @csrf_exempt
+@adagios_decorator
 def handle_request(request, module_name, module_path, attribute, format):
     m = _load(module_path)
     # TODO: Only allow function calls if method == POST
@@ -72,7 +90,7 @@ def handle_request(request, module_name, module_path, attribute, format):
                 arguments['request'] = request
             result = item(**arguments)
     else:
-        raise BaseException("Unsupported operation: %s" % (request.method))
+        raise BaseException(_("Unsupported operation: %s") % (request.method, ))
     # Everything below is just about formatting the results
     if format == 'json':
         result = simplejson.dumps(
@@ -89,11 +107,12 @@ def handle_request(request, module_name, module_path, attribute, format):
         mimetype = 'text/plain'
     else:
         raise BaseException(
-            "Unsupported format: '%s'. Valid formats: json xml txt" %
+            _("Unsupported format: '%s'. Valid formats: json xml txt") %
             format)
     return HttpResponse(result, mimetype=mimetype)
 
 
+@adagios_decorator
 def list_modules(request):
     """ List all available modules and their basic info
 
@@ -102,6 +121,7 @@ def list_modules(request):
     return render_to_response('list_modules.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def index(request, module_name, module_path):
     """ This view is used to display the contents of a given python module
     """

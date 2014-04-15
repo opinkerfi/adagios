@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2010, Pall Sigurdsson <palli@opensource.is>
+# Adagios is a web based Nagios configuration interface
 #
-# This script is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Copyright (C) 2010, Pall Sigurdsson <palli@opensource.is>
 #
-# This script is distributed in the hope that it will be useful,
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.shortcuts import render_to_response, redirect, HttpResponse, Http404
@@ -20,29 +22,35 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 import os
 from os.path import dirname
 
 from pynag.Model import ObjectDefinition, string_to_class
 from pynag import Model
 from pynag.Parsers import status
+import pynag.Utils
 from collections import defaultdict, namedtuple
 import pynag.Model
 
 from adagios import settings
 from adagios.objectbrowser.forms import *
+from adagios.views import adagios_decorator
 
 
+@adagios_decorator
 def home(request):
     return redirect('adagios')
 
 
+@adagios_decorator
 def list_object_types(request):
     """ Collects statistics about pynag objects and returns to template """
     c = {}
     return render_to_response('list_object_types.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def geek_edit(request, object_id):
     """ Function handles POST requests for the geek edit form """
     c = {}
@@ -63,7 +71,7 @@ def geek_edit(request, object_id):
                 o = i()
                 break
         else:
-            c['error_summary'] = 'Unable to find object'
+            c['error_summary'] = _('Unable to find object')
             c['error'] = e
             return render_to_response('error.html', c, context_instance=RequestContext(request))
     c['my_object'] = o
@@ -78,7 +86,7 @@ def geek_edit(request, object_id):
                 c['errors'].append(e)
                 return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
         else:
-            c['errors'].append("Problem with saving object")
+            c['errors'].append(_("Problem with saving object"))
             return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
     else:
         form = GeekEditObjectForm(
@@ -89,6 +97,7 @@ def geek_edit(request, object_id):
     return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': o.get_id()}))
 
 
+@adagios_decorator
 def advanced_edit(request, object_id):
     """ Handles POST only requests for the "advanced" object edit form. """
     c = {}
@@ -109,7 +118,7 @@ def advanced_edit(request, object_id):
                 o = i()
                 break
         else:
-            c['error_summary'] = 'Unable to get object'
+            c['error_summary'] = _('Unable to get object')
             c['error'] = e
             return render_to_response('error.html', c, context_instance=RequestContext(request))
 
@@ -120,18 +129,19 @@ def advanced_edit(request, object_id):
         if c['advanced_form'].is_valid():
             try:
                 c['advanced_form'].save()
-                m.append("Object Saved to %s" % o['filename'])
+                m.append(_("Object Saved to %(filename)s") % o)
             except Exception, e:
                 c['errors'].append(e)
                 return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
     else:
-            c['errors'].append("Problem reading form input")
+            c['errors'].append(_("Problem reading form input"))
             return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
 
     return HttpResponseRedirect(reverse('edit_object', args=[o.get_id()]))
 
 
-def new_edit(request, object_id=None):
+@adagios_decorator
+def edit_object(request, object_id=None):
     """ Brings up an edit dialog for one specific object.
 
         If an object_id is specified, bring us to that exact object.
@@ -139,137 +149,103 @@ def new_edit(request, object_id=None):
         Otherwise we expect some search arguments to have been provided via querystring
     """
     c = {}
+    c.update(csrf(request))
     c['messages'] = []
     c['errors'] = []
-    my_object = None
+    my_object = None  # This is where we store our item that we are editing
 
     # If object_id was not provided, lets see if anything was given to us in a querystring
-    if object_id:
-        try:
-            my_object = pynag.Model.ObjectDefinition.objects.get_by_id(object_id)
-        except KeyError:
-            c['error_summary'] = 'Could not find any object with id="%s" :/' % object_id
-            c['error_type'] = "object not found"
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
-    else:
+    if not object_id:
         objects = pynag.Model.ObjectDefinition.objects.filter(**request.GET)
         if len(objects) == 1:
             my_object = objects[0]
         else:
             return search_objects(request)
-
-    return edit_object(request, object_id=my_object.get_id())
-
-
-def edit_object(request, object_id=None, object_type=None, shortname=None):
-    """ View details about one specific pynag object """
-    c = {}
-    c.update(csrf(request))
-    c['messages'] = m = []
-    c['errors'] = []
-    c['nagios_url'] = settings.nagios_url
-    # Get our object
-    if object_id is not None:
-        # If object id was specified
-        try:
-            o = ObjectDefinition.objects.get_by_id(id=object_id)
-        except Exception, e:
-            # Not raising, handled by template
-            c['error_summary'] = 'Unable to get object'
-            c['error'] = e
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
-    elif object_type is not None and shortname is None:
-        # Specifying only object_type indicates this is a new object
-        otype = Model.string_to_class.get(object_type, Model.ObjectDefinition)
-        o = otype()
-        c['form'] = PynagForm(pynag_object=o, initial=request.GET)
-    elif object_type is not None and shortname is not None:
-        # Its also valid to specify object type and shortname
-        # TODO: if multiple objects are found, display a list
-        try:
-            otype = Model.string_to_class.get(
-                object_type, Model.ObjectDefinition)
-            o = otype.objects.get_by_shortname(shortname)
-        except Exception, e:
-            # Not raising, handled by template
-            c['error_summary'] = 'Unable to get object'
-            c['error'] = e
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
     else:
-        raise ValueError("Object not found")
+        try:
+            my_object = pynag.Model.ObjectDefinition.objects.get_by_id(object_id)
+        except KeyError:
+            c['error_summary'] = _('Could not find any object with id="%(object_id)s" :/') % {'object_id': object_id}
+            c['error_type'] = _("object not found")
+            return render_to_response('error.html', c, context_instance=RequestContext(request))
 
     if request.method == 'POST':
         # User is posting data into our form
         c['form'] = PynagForm(
-            pynag_object=o, initial=o._original_attributes, data=request.POST)
+            pynag_object=my_object,
+            initial=my_object._original_attributes,
+            data=request.POST
+        )
         if c['form'].is_valid():
             try:
                 c['form'].save()
-                m.append("Object Saved to %s" % o['filename'])
-                return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': o.get_id()}))
+                c['messages'].append(_("Object Saved to %(filename)s") % my_object)
+                return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': my_object.get_id()}))
             except Exception, e:
                 c['errors'].append(e)
         else:
-            c['errors'].append("Could not validate form input")
+            c['errors'].append(_("Could not validate form input"))
     if 'form' not in c:
-        c['form'] = PynagForm(pynag_object=o, initial=o._original_attributes)
-    c['my_object'] = o
+        c['form'] = PynagForm(pynag_object=my_object, initial=my_object._original_attributes)
+    c['my_object'] = my_object
     c['geek_edit'] = GeekEditObjectForm(
-        initial={'definition': o['meta']['raw_definition'], })
+        initial={'definition': my_object['meta']['raw_definition'], })
     c['advanced_form'] = AdvancedEditForm(
-        pynag_object=o, initial=o._original_attributes)
+        pynag_object=my_object, initial=my_object._original_attributes)
 
     try:
-        c['effective_hosts'] = o.get_effective_hosts()
+        c['effective_hosts'] = my_object.get_effective_hosts()
     except KeyError, e:
-        c['errors'].append("Could not find host: %s" % str(e))
+        c['errors'].append(_("Could not find host: %(error)s") % {'error': str(e)})
     except AttributeError:
         pass
 
     try:
-        c['effective_parents'] = o.get_effective_parents()
+        c['effective_parents'] = my_object.get_effective_parents(cache_only=True)
     except KeyError, e:
-        c['errors'].append("Could not find parent: %s" % str(e))
+        c['errors'].append(_("Could not find parent: %(error)s") % {'error': str(e)})
 
     # Every object type has some special treatment, so lets resort
     # to appropriate helper function
     if False:
         pass
-    elif o['object_type'] == 'servicegroup':
+    elif my_object['object_type'] == 'servicegroup':
         return _edit_servicegroup(request, c)
-    elif o['object_type'] == 'hostdependency':
+    elif my_object['object_type'] == 'hostdependency':
         return _edit_hostdependency(request, c)
-    elif o['object_type'] == 'service':
+    elif my_object['object_type'] == 'service':
         return _edit_service(request, c)
-    elif o['object_type'] == 'contactgroup':
+    elif my_object['object_type'] == 'contactgroup':
         return _edit_contactgroup(request, c)
-    elif o['object_type'] == 'hostgroup':
+    elif my_object['object_type'] == 'hostgroup':
         return _edit_hostgroup(request, c)
-    elif o['object_type'] == 'host':
+    elif my_object['object_type'] == 'host':
         return _edit_host(request, c)
-    elif o['object_type'] == 'contact':
+    elif my_object['object_type'] == 'contact':
         return _edit_contact(request, c)
-    elif o['object_type'] == 'command':
+    elif my_object['object_type'] == 'command':
         return _edit_command(request, c)
-    elif o['object_type'] == 'servicedependency':
+    elif my_object['object_type'] == 'servicedependency':
         return _edit_servicedependency(request, c)
-    elif o['object_type'] == 'timeperiod':
+    elif my_object['object_type'] == 'timeperiod':
         return _edit_timeperiod(request, c)
     else:
         return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_contact(request, c):
     """ This is a helper function to edit_object """
     try:
         c['effective_contactgroups'] = c[
             'my_object'].get_effective_contactgroups()
     except KeyError, e:
-        c['errors'].append("Could not find contact: %s" % str(e))
+        c['errors'].append(_("Could not find contact: %(error)s") % {'error': str(e)})
 
     return render_to_response('edit_contact.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_service(request, c):
     """ This is a helper function to edit_object """
     service = c['my_object']
@@ -306,30 +282,30 @@ def _edit_service(request, c):
     try:
         c['effective_servicegroups'] = service.get_effective_servicegroups()
     except KeyError, e:
-        c['errors'].append("Could not find servicegroup: %s" % str(e))
+        c['errors'].append(_("Could not find servicegroup: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contacts'] = service.get_effective_contacts()
     except KeyError, e:
-        c['errors'].append("Could not find contact: %s" % str(e))
+        c['errors'].append(_("Could not find contact: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contactgroups'] = service.get_effective_contact_groups()
     except KeyError, e:
-        c['errors'].append("Could not find contact_group: %s" % str(e))
+        c['errors'].append(_("Could not find contact_group: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_hostgroups'] = service.get_effective_hostgroups()
     except KeyError, e:
-        c['errors'].append("Could not find hostgroup: %s" % str(e))
+        c['errors'].append(_("Could not find hostgroup: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_command'] = service.get_effective_check_command()
     except KeyError, e:
         if service.check_command is not None:
-            c['errors'].append("Could not find check_command: %s" % str(e))
+            c['errors'].append(_("Could not find check_command: %(error)s") % {'error': str(e)})
         elif service.register != '0':
-            c['errors'].append("You need to define a check command")
+            c['errors'].append(_("You need to define a check command"))
 
     # For the check_command editor, we inject current check_command and a list
     # of all check_commands
@@ -339,16 +315,22 @@ def _edit_service(request, c):
     if c['check_command'] in (None, '', 'None'):
         c['check_command'] = ''
 
+    if service.hostgroup_name and service.hostgroup_name != 'null':
+        c['errors'].append(_("This Service is applied to every host in hostgroup %(hostgroup_name)s") % {'hostgroup_name': service.hostgroup_name})
+    host_name = service.host_name or ''
+    if ',' in host_name:
+        c['errors'].append(_("This Service is applied to multiple hosts"))
     return render_to_response('edit_service.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_contactgroup(request, c):
     """ This is a helper function to edit_object """
     try:
         c['effective_contactgroups'] = c[
             'my_object'].get_effective_contactgroups()
     except KeyError, e:
-        c['errors'].append("Could not find contact_group: %s" % str(e))
+        c['errors'].append(_("Could not find contact_group: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contacts'] = c['my_object'].get_effective_contacts()
@@ -363,6 +345,7 @@ def _edit_contactgroup(request, c):
     return render_to_response('edit_contactgroup.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_hostgroup(request, c):
     """ This is a helper function to edit_object """
     hostgroup = c['my_object']
@@ -370,7 +353,7 @@ def _edit_hostgroup(request, c):
         c['effective_services'] = sorted(
             hostgroup.get_effective_services(), key=lambda x: x.get_description())
     except KeyError, e:
-        c['errors'].append("Could not find service: %s" % str(e))
+        c['errors'].append(_("Could not find service: %(error)s") % {'error': str(e)})
     try:
         c['effective_memberof'] = Model.Hostgroup.objects.filter(
             hostgroup_members__has_field=c['my_object'].hostgroup_name)
@@ -379,6 +362,7 @@ def _edit_hostgroup(request, c):
     return render_to_response('edit_hostgroup.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_servicegroup(request, c):
     """ This is a helper function to edit_object """
     try:
@@ -389,26 +373,31 @@ def _edit_servicegroup(request, c):
     return render_to_response('edit_servicegroup.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_command(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_command.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_hostdependency(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_hostdepedency.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_servicedependency(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('_edit_servicedependency.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_timeperiod(request, c):
     """ This is a helper function to edit_object """
     return render_to_response('edit_timeperiod.html', c, context_instance=RequestContext(request))
 
 
+@pynag.Utils.cache_only
 def _edit_host(request, c):
     """ This is a helper function to edit_object """
     host = c['my_object']
@@ -428,30 +417,30 @@ def _edit_host(request, c):
         c['effective_services'] = sorted(
             host.get_effective_services(), key=lambda x: x.get_description())
     except KeyError, e:
-        c['errors'].append("Could not find service: %s" % str(e))
+        c['errors'].append(_("Could not find service: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_hostgroups'] = host.get_effective_hostgroups()
     except KeyError, e:
-        c['errors'].append("Could not find hostgroup: %s" % str(e))
+        c['errors'].append(_("Could not find hostgroup: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contacts'] = host.get_effective_contacts()
     except KeyError, e:
-        c['errors'].append("Could not find contact: %s" % str(e))
+        c['errors'].append(_("Could not find contact: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contactgroups'] = host.get_effective_contact_groups()
     except KeyError, e:
-        c['errors'].append("Could not find contact_group: %s" % str(e))
+        c['errors'].append(_("Could not find contact_group: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_command'] = host.get_effective_check_command()
     except KeyError, e:
         if host.check_command is not None:
-            c['errors'].append("Could not find check_command: %s" % str(e))
+            c['errors'].append(_("Could not find check_command: %(error)s") % {'error': str(e)})
         elif host.register != '0':
-            c['errors'].append("You need to define a check command")
+            c['errors'].append(_("You need to define a check command"))
     try:
         s = status()
         s.parse()
@@ -469,6 +458,7 @@ def _edit_host(request, c):
     return render_to_response('edit_host.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def config_health(request):
     """ Display possible errors in your nagios config
     """
@@ -485,9 +475,9 @@ def config_health(request):
     services_using_hostgroups = []
     services_without_icon_image = []
     c['booleans'][
-        'Nagios Service has been reloaded since last configuration change'] = not Model.config.needs_reload()
+        _('Nagios Service has been reloaded since last configuration change')] = not Model.config.needs_reload()
     c['booleans'][
-        'Adagios configuration cache is up-to-date'] = not Model.config.needs_reparse()
+        _('Adagios configuration cache is up-to-date')] = not Model.config.needs_reparse()
     for i in Model.config.errors:
         if i.item:
             Class = Model.string_to_class[i.item['meta']['object_type']]
@@ -496,9 +486,9 @@ def config_health(request):
     try:
         import okconfig
         c['booleans'][
-            'OKConfig is installed and working'] = okconfig.is_valid()
+            _('OKConfig is installed and working')] = okconfig.is_valid()
     except Exception:
-        c['booleans']['OKConfig is installed and working'] = False
+        c['booleans'][_('OKConfig is installed and working')] = False
     s['Parser errors'] = Model.config.errors
     s['Services with no "service_description"'] = services_no_description
     s['Hosts without any contacts'] = hosts_without_contacts
@@ -514,6 +504,7 @@ def config_health(request):
         return render_to_response('suggestions.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def show_plugins(request):
     """ Finds all command_line arguments, and shows missing plugins """
     c = {}
@@ -548,6 +539,7 @@ def show_plugins(request):
     return render_to_response('show_plugins.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit_nagios_cfg(request):
     """ This views is made to make modifications to nagios.cfg
     """
@@ -574,16 +566,17 @@ def edit_nagios_cfg(request):
     for key, v in Model.config.maincfg_values:
         if key not in main_config:
             c['content'].append({
-                'title': 'No documentation found',
+                'title': _('No documentation found'),
                 'key': key,
                 'values': [v],
-                'doc': 'This seems to be an undefined option and no documentation was found for it. Perhaps it is'
-                       'mispelled.'
+                'doc': _('This seems to be an undefined option and no documentation was found for it. Perhaps it is'
+                       'mispelled.')
             })
     c['content'] = sorted(c['content'], key=lambda cfgitem: cfgitem['key'])
     return render_to_response('edit_configfile.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def bulk_edit(request):
     """ Edit multiple objects with one post """
     c = {}
@@ -610,14 +603,16 @@ def bulk_edit(request):
                 c['form'].save()
                 for i in c['form'].changed_objects:
                     c['messages'].append(
-                        "saved changes to %s '%s'" % (i.object_type, i.get_description()))
+                        _("saved changes to %(object_type)s '%(description)s'") % {'object_type': i.object_type,
+                                                                                   'description': i.get_description(),
+                                                                                    })
                 c['success'] = "success"
             except IOError, e:
                 c['errors'].append(e)
 
     return render_to_response('bulk_edit.html', c, context_instance=RequestContext(request))
 
-
+@adagios_decorator
 def bulk_delete(request):
     """ Edit delete multiple objects with one post """
     c = {}
@@ -631,8 +626,14 @@ def bulk_delete(request):
     # object_type=shortname
     # i.e. timeperiod=24x7, timeperiod=workhours
     for i in _querystring_to_objects(request.GET or request.POST):
-        obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
-        objects.append(obj)
+        try:
+            obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
+            if obj not in objects:
+                objects.append(obj)
+        except KeyError:
+            c['errors'].append(_("Could not find %(object_type)s '%(description)s' "
+                                 "Maybe it has already been deleted.") % {'object_type': i.object_type, 
+                                                                          'description': i.description})
     if request.method == "GET" and len(objects) == 1:
         return HttpResponseRedirect(reverse('delete_object', kwargs={'object_id': objects[0].get_id()}), )
 
@@ -643,7 +644,8 @@ def bulk_delete(request):
             if i.startswith('change_'):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
-                objects.append(my_obj)
+                if my_obj not in objects:
+                    objects.append(my_obj)
 
         c['form'] = BulkDeleteForm(objects=objects, data=request.POST)
         if c['form'].is_valid():
@@ -658,7 +660,7 @@ def bulk_delete(request):
 
     return render_to_response('bulk_delete.html', c, context_instance=RequestContext(request))
 
-
+@adagios_decorator
 def bulk_copy(request):
     """ Copy multiple objects with one post """
     c = {}
@@ -672,9 +674,14 @@ def bulk_copy(request):
     # object_type=shortname
     # i.e. timeperiod=24x7, timeperiod=workhours
     for i in _querystring_to_objects(request.GET or request.POST):
-        obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
-        objects.append(obj)
-
+        try:
+            obj = pynag.Model.string_to_class[i.object_type].objects.get_by_shortname(i.description)
+            if obj not in objects:
+                objects.append(obj)
+        except KeyError:
+            c['errors'].append(_("Could not find %(object_type)s '%(description)s'") % {'object_type': i.object_type,
+                                                                                        'description': i.description,
+                                                                                       })
     if request.method == "GET" and len(objects) == 1:
         return HttpResponseRedirect(reverse('copy_object', kwargs={'object_id': objects[0].get_id()}), )
     elif request.method == "POST":
@@ -684,7 +691,8 @@ def bulk_copy(request):
             if i.startswith('change_'):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
-                objects.append(my_obj)
+                if my_obj not in objects:
+                    objects.append(my_obj)
 
         c['form'] = BulkCopyForm(objects=objects, data=request.POST)
         if c['form'].is_valid():
@@ -693,13 +701,14 @@ def bulk_copy(request):
                 c['success'] = "Success"
                 for i in c['form'].changed_objects:
                     c['messages'].append(
-                        "Successfully copied %s %s" % (i.object_type, i.get_description()))
+                        _("Successfully copied %(object_type)s %(description)s") % {'object_type': i.object_type,
+                                                                                    'description': i.get_description()})
             except IOError, e:
                 c['errors'].append(e)
 
     return render_to_response('bulk_copy.html', c, context_instance=RequestContext(request))
 
-
+@adagios_decorator
 def delete_object_by_shortname(request, object_type, shortname):
     """ Same as delete_object() but uses object type and shortname instead of object_id
     """
@@ -707,7 +716,7 @@ def delete_object_by_shortname(request, object_type, shortname):
     my_obj = obj_type.objects.get_by_shortname(shortname)
     return delete_object(request, object_id=my_obj.get_id())
 
-
+@adagios_decorator
 def delete_object(request, object_id):
     """ View to Delete a single object definition """
     c = {}
@@ -728,6 +737,7 @@ def delete_object(request, object_id):
     return render_to_response('delete_object.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def copy_object(request, object_id):
     """ View to Copy a single object definition """
     c = {}
@@ -750,6 +760,7 @@ def copy_object(request, object_id):
     return render_to_response('copy_object.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def add_object(request, object_type):
     """ Friendly wizard on adding a new object of any particular type
     """
@@ -767,7 +778,7 @@ def add_object(request, object_type):
     elif request.method == 'POST':
         c['form'] = AddObjectForm(object_type, data=request.POST)
     else:
-        c['errors'].append("Something went wrong while calling this form")
+        c['errors'].append(_("Something went wrong while calling this form"))
 
     # This is what happens in post regardless of which type of form it is
     if request.method == 'POST' and 'form' in c:
@@ -777,7 +788,7 @@ def add_object(request, object_type):
             object_id = c['form'].pynag_object.get_id()
             return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': object_id}), )
         else:
-            c['errors'].append('Could not validate form input')
+            c['errors'].append(_('Could not validate form input'))
 
     return render_to_response('add_object.html', c, context_instance=RequestContext(request))
 
@@ -833,11 +844,30 @@ def _querydict_to_objects(request, raise_on_not_found=False):
                 my_object = Class.objects.get_by_shortname(shortname)
                 result.append(my_object)
             except Exception, e:
+                # If a service was not found, check if it was registered in
+                # some unusual way
+                if object_type == 'service' and '/' in shortname:
+                    host_name,service_description = shortname.split('/', 1)
+                    result.append(_find_service(host_name, service_description))
                 if raise_on_not_found is True:
                     raise e
     return result
 
 
+def _find_service(host_name, service_description):
+    """ Returns pynag.Model.Service matching our search filter """
+    result = pynag.Model.Service.objects.filter(host_name__has_field=host_name, service_description=service_description)
+
+    if not result:
+        host = pynag.Model.Host.objects.get_by_shortname(host_name, cache_only=True)
+        for i in host.get_effective_services():
+            if i.service_description == service_description:
+                result = [i]
+                break
+    return result[0]
+
+
+@adagios_decorator
 def add_to_group(request, group_type=None, group_name=''):
     """ Add one or more objects into a group
     """
@@ -846,7 +876,7 @@ def add_to_group(request, group_type=None, group_name=''):
     messages = []
     errors = []
     if not group_type:
-        raise Exception("Please include group type")
+        raise Exception(_("Please include group type"))
     if request.method == 'GET':
         objects = _querystring_to_objects(request.GET)
     elif request.method == 'POST':
@@ -864,11 +894,14 @@ def add_to_group(request, group_type=None, group_name=''):
             except Exception, e:
                 errortype = e.__dict__.get('__name__') or str(type(e))
                 error = str(e)
-                return HttpResponse("Failed to add object: %s %s " % (errortype, error))
+                return HttpResponse(_("Failed to add object: %(errortype)s %(error)s ") % {'errortype': errortype,
+                                                                                           'error': error,
+                                                                                           })
 
     return render_to_response('add_to_group.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit_all(request, object_type, attribute_name):
     """  Edit many objects at once, changing only a single attribute
 
@@ -883,6 +916,7 @@ def edit_all(request, object_type, attribute_name):
 
 
 
+@adagios_decorator
 def search_objects(request, objects=None):
     """ Displays a list of pynag objects, search parameters can be entered via querystring
 
@@ -911,13 +945,13 @@ def search_objects(request, objects=None):
             host_name, service_description = shortname.split('/')
 
         # If at this point we have found some objects, then lets do a special workaround
-        services = pynag.Model.Service.objects.filter(service_description=service_description, hostgroup_name__exists=True)
-        errors.append('be careful')
-
+        services = [_find_service(host_name, service_description)]
+        errors.append(_('be careful'))
 
     return render_to_response('search_objects.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def copy_and_edit_object(request, object_id):
     """ Create a new object, and open up an edit dialog for it.
 

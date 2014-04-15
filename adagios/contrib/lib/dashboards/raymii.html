@@ -1,10 +1,14 @@
+{% load i18n %}
+
 <html><head> 
-    <title>Service Status Dashboard</title>
+    <title>{% trans "Service Status Dashboard" %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Remy van Elst">
     <meta name="author" content="Pall Sigurdsson">
     <meta http-equiv="refresh" content="30">
-    <link href="{% url adagios.contrib.views.index %}dashboards/raymii/css/bootstrap.min.css" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <link href="{% url home %}media/external/bootstrap/css/bootstrap-3.1.1.min.css" rel="stylesheet">
+    <script type="text/javascript"src="{% url django.views.i18n.javascript_catalog %}"></script>
     <style type="text/css">
         a {
             color: #333 !important;
@@ -21,21 +25,22 @@
 <body>
     <div class="row">
         <div class="col-md-12">
-            <h1 class="pull-left">Status Dashboard</h1>
-        <div id="information_dialog" class="pull-right dynamic">
-            Test
-        </div>
+            <h1 class="pull-left">{% trans "Status Dashboard" %}</h1>
+            <div id="top-right" class="pull-right">
+                <div> {% blocktrans with user=request.META.REMOTE_USER addr=request.META.REMOTE_ADDR %}You are {{ user }} coming from {{ addr }}.{% endblocktrans %} </div>
+                <div id="information_dialog" class="dynamic"></div>
+            </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-12">
-            <span id="total_hosts" class="dynamic">...</span> Hosts.
-            <span id="total_services" class="dynamic">...</span> Services.
+            <span id="total_hosts" class="dynamic">...</span> {% trans "Hosts." %}
+            <span id="total_services" class="dynamic">...</span> {% trans "Services." %}
             <div id="summary" class="alert">
                 <h2>
-                    <span id="unhandled_services" class="dynamic">...</span> Unhandled Service problems.
-                    <span id="unhandled_hosts" class="dynamic">...</span> Unhandled Host Problems!
+                    <span id="unhandled_services" class="dynamic">...</span> {% trans "Unhandled Service problems." %}
+                    <span id="unhandled_hosts" class="dynamic">...</span> {% trans "Unhandled Host Problems!" %}
                 </h2>
             </div>
         </div>
@@ -44,15 +49,15 @@
 <div class="row">
     <div class="col-md-6">
 
-        <h3>Hosts Down</h3>
+        <h3>{% trans "Hosts Down" %}</h3>
         <div id="hosts_down_unhandled" class="dynamic"></div>
 
 
-        <h3>Critical Issues</h3>
+        <h3>{% trans "Critical Issues" %}</h3>
         <div id="services_major_unhandled"  class="dynamic"></div>
 
 
-        <h3>Hosts Acknowledged Down</h3>
+        <h3>{% trans "Hosts Acknowledged Down" %}</h3>
         <div id="hosts_down_handled"  class="dynamic"></div>
 
 
@@ -61,13 +66,13 @@
 
     <div class="col-md-6">
 
-        <h3>Minor Issues </h3>
+        <h3>{% trans "Minor Issues" %} </h3>
         <div id="services_minor_unhandled"  class="dynamic"></div>
 
-        <h3>Acknowledged Criticals</h3>
+        <h3>{% trans "Acknowledged Criticals" %}</h3>
         <div id="services_major_handled"  class="dynamic"></div>
 
-        <h3>Acknowledged Minor Issues</h3>
+        <h3>{% trans "Acknowledged Minor Issues" %}</h3>
         <div id="services_minor_handled"  class="dynamic"></div>
 
     </div>
@@ -77,7 +82,7 @@
 
 <div class="row">
     <div class="container text-center">
-    <span>Based on a dashboard by <a href="https://raymii.org">Remy van Elst (code)</a> and <a href="https://github.com/JobV">Job van der Voort (design)</a>.</span>
+    <span>{% blocktrans %}Based on a dashboard by <a href="https://raymii.org">Remy van Elst (code)</a> and <a href="https://github.com/JobV">Job van der Voort (design)</a>." %}{% endblocktrans %}</span>
     </div>
 </div>
 
@@ -86,15 +91,17 @@
 <!-- This is a container for how to display a typical service problem -->
 <div class="hide" id="service_prototype">
     <div class="alert CSSHINT">
-        <a href="{% url adagios.status.views.status_detail %}?host_name=HOST&service_description=SERVICE">
-        #NUMBER <b>SERVICE</b> on <i>HOST</i></a> OUTPUT
+        {% url adagios.status.views.detail as the_url %}
+	{% blocktrans %}
+        <a href="{{ the_url }}?host_name=HOST&service_description=SERVICE"> #NUMBER <b>SERVICE</b> on <i>HOST</i></a> OUTPUT
+	{% endblocktrans %}
     </div>
 </div>
 
 <!-- The javascript below uses this div to populate an "ok" part of the dashboard -->
 <div class="hide" id="everything_is_ok_template">
     <div class="alert alert-success">
-        <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; Everything is looking good!
+        <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; <span class="glyphicon glyphicon-thumbs-up"> </span> &nbsp; {% trans "Everything is looking good!" %}
     </div>
 </div>
 
@@ -102,14 +109,15 @@
 <!-- This is a container for how to display a typical host problem -->
 <div class="hide" id="host_prototype">
     <div class="alert CSSHINT">
-        <a href="{% url adagios.status.views.status_detail %}?host_name=HOST">
-            #NUMBER <b>HOST</b>
-        </a> OUTPUT
+        {% url adagios.status.views.detail as the_url %}
+        {% blocktrans %}
+	<a href="{{ the_url }}?host_name=HOST"> #NUMBER <b>HOST</b> </a> OUTPUT
+	{% endblocktrans %}
     </div>
 </div>
 
 <div class="hide" id="loading_dialog">
-    Loading...
+    {% trans "Loading..." %}
 </div>
 
 
@@ -118,18 +126,19 @@
 <script src="{% url home %}rest/pynag.js"></script>
 <script src="{% url home %}rest/status.js"></script>
 <script src="{% url home %}rest/okconfig.js"></script>
+<script src="{% url home %}rest/adagios.js"></script>
 
-<script src="{% url media path="jquery/jquery-1.9.1.min.js" %}"></script>
-<script src="{% url media path="bootstrap/js/bootstrap.min.js" %}"></script>
+<script src="{% url media path="external/jquery/jquery-1.9.1.min.js" %}"></script>
+<script src="{% url media path="external/bootstrap/js/bootstrap.min.js" %}"></script>
 
-<script src="{% url media path="datatables/js/jquery.dataTables.min.js" %}"></script>
-<script src="{% url media path="datatables/DT_bootstrap.js" %}"></script>
+<script src="{% url media path="external/datatables/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% url media path="external/datatables/DT_bootstrap.js" %}"></script>
 
-<script src="{% url media path="select2/select2.min.js" %}" type="text/javascript"></script>
+<script src="{% url media path="external/select2/select2.min.js" %}" type="text/javascript"></script>
 <script src="{% url media path="js/adagios.js" %}"></script>
 <script src="{% url media path="js/adagios_status.js" %}"></script>
 
-<script src="{% url media path="datepicker/js/bootstrap-datepicker.js" %}"></script>
+<script src="{% url media path="external/datepicker/js/bootstrap-datepicker.js" %}"></script>
 
 
 <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
@@ -152,11 +161,11 @@
 
     // Update the dialog which says how many seconds ago last load was.
     function update_last_loaded() {
-        $("#information_dialog").text("Last update " + timeSince(last_load) + " ago.");
+        $("#information_dialog").text(interpolate(gettext("Last update %s ago."), [timeSince(last_load)]));
     }
 
     function error_message(message) {
-        $("body").html("<h1>Oh no, there was an error loading the page :/</h1>" + message.responseText);
+        $("body").html(interpolate(gettext("<h1>Oh no, there was an error loading the page :/</h1> %s"), [message.responseText]));
         console.error(message);
     }
 
@@ -255,7 +264,7 @@
                             services_major_handled.push(tmp);
                         }
                         else {
-                            error_message("There is a problem with classifying the following service problem:");
+                            error_message(gettext("There is a problem with classifying the following service problem:"));
                             error_message(tmp);
                         }
 
@@ -349,25 +358,25 @@
         var interval = Math.floor(seconds / 31536000);
 
         if (interval > 1) {
-            return interval + " years";
+            return interval + gettext(" years");
         }
         interval = Math.floor(seconds / 2592000);
         if (interval > 1) {
-            return interval + " months";
+            return interval + gettext(" months");
         }
         interval = Math.floor(seconds / 86400);
         if (interval > 1) {
-            return interval + " days";
+            return interval + gettext(" days");
         }
         interval = Math.floor(seconds / 3600);
         if (interval > 1) {
-            return interval + " hours";
+            return interval + gettext(" hours");
         }
         interval = Math.floor(seconds / 60);
         if (interval > 1) {
-            return interval + " minutes";
+            return interval + gettext(" minutes");
         }
-        return Math.floor(seconds) + " seconds";
+        return Math.floor(seconds) + gettext(" seconds");
     }
     // Return current querystring parameters as key-value pairs
     function get_querystring_dict() {

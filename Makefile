@@ -1,4 +1,4 @@
-VERSION		= 1.2.7
+VERSION		= 1.4.1
 RELEASE		= 1
 DATE		= $(shell date)
 NEWRELEASE	= $(shell echo $$(($(RELEASE) + 1)))
@@ -95,3 +95,12 @@ debs: build sdist
 	  cd adagios-${VERSION} ;\
 	  cp -r ../debian debian ;\
 	  debuild -i -us -uc -b
+
+coffee:
+	cd adagios/media/js/ && coffee -c adagios.coffee
+
+trad: coffee
+	cd adagios && \
+	django-admin.py makemessages --all -e py,html && \
+	django-admin.py makemessages --all -d djangojs && \
+	django-admin.py compilemessages

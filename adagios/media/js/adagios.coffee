@@ -160,7 +160,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       $this.find("input[name='#{which}_time_picker']").each ->
         $dateobj = $this.data "#{which}_time_obj"
         $(this).val root.dateStr $dateobj
-        $(this).datepicker(format: "yyyy-mm-dd" ).on 'changeDate', (ev) ->
+        $(this).datepicker(format: gettext("yyyy-mm-dd") ).on 'changeDate', (ev) ->
           $dateobj.setYear ev.date.getFullYear()
           $dateobj.setMonth ev.date.getMonth()
           $dateobj.setDate ev.date.getDate()
@@ -249,6 +249,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
             if item["register"] is "0" and (item["name"] is null or item["name"] is undefined)
               cell += "dis-object"
             cell += '">'
+            cell = """<a href="edit/#{ item["id"] }">"""
             field_value = ""
             if "icon" of field
               cell += """<i class="#{ field.icon }"""
@@ -262,7 +263,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
             field_value = field_value.replace("\"", "&quot;")
             field_value = field_value.replace(">", "&gt;")
             field_value = field_value.replace("<", "&lt;")
-            if "truncate" of field and field_value.length > (field["truncate"] + 3)
+            if "truncate" not of field
+                field["truncate"] = 50
+
+            if field_value.length > (field["truncate"] + 3)
               cell += """<abbr rel="tooltip" title=" #{ field_value }">#{ field_value.substr(0, field["truncate"]) } ...</abbr>"""
             else
               cell += " #{field_value}"
@@ -358,8 +362,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
           </div>
           <div id="modify" class="btn-group pull-left">
             <a rel="tooltip" id="copy" title="Copy" class="btn btn-important" data-target-bulk="bulk_copy" data-target="copy"><i class="icon-copy"></i></a>
-            <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit_object"><i class="glyph-pencil"></i></a>
-            <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete_object"><i class="glyph-bin"></i></a>
+            <a rel="tooltip" id="update" title="Edit" class="btn" data-target-bulk="bulk_edit" data-target="edit"><i class="glyph-pencil"></i></a>
+            <a rel="tooltip" id="delete" title="Delete" class="btn" data-target-bulk="bulk_delete" data-target="delete"><i class="glyph-bin"></i></a>
           </div>
           <div id="view_filter" class="btn-group pull-right"></div>
         </div>
@@ -387,7 +391,7 @@ $.extend $.fn.dataTableExt.oStdClasses,
       else if checked > 0
         where = $(this).attr('data-target')
         id = $("table tbody input:checked").attr('name')
-        window.location.href = window.location.href.split("#")[0] + "#{where}/id=#{id}"
+        window.location.href = window.location.href.split("#")[0] + "#{where}/#{id}"
       e.preventDefault()
 
     if (object_type != "command" and object_type != "timeperiod")
@@ -485,8 +489,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
     $("#run_check_plugin #state").removeClass "label-important"
     $("#run_check_plugin #state").removeClass "label-warning"
     $("#run_check_plugin #state").removeClass "label-success"
-    $("#run_check_plugin #state").html "Pending"
-    $("#run_check_plugin #output pre").html "Executing check plugin"
+    $("#run_check_plugin #state").html gettext("Pending")
+    $("#run_check_plugin #output pre").html gettext("Executing check plugin")
     plugin_execution_time = $("#run_check_plugin div.progress").attr("data-timer")
     if plugin_execution_time > 1
       updateTimer = ->
@@ -540,10 +544,10 @@ $.extend $.fn.dataTableExt.oStdClasses,
       if data[1]
         run_check_plugin_div.find("div#output pre").text data[1]
       else
-        run_check_plugin_div.find("#output pre").html "No data received on stdout"
+        run_check_plugin_div.find("#output pre").html gettext("No data received on stdout")
       if data[2]
         run_check_plugin_div.find("#error #error_content").text data[2]
-        run_check_plugin_div.find("#error #error_title").text "Plugin output (standard error)"
+        run_check_plugin_div.find("#error #error_title").text gettext("Plugin output (standard error)")
         run_check_plugin_div.find("div#error").show()
       else
         run_check_plugin_div.find("#error pre").text = ""
@@ -558,8 +562,8 @@ $.extend $.fn.dataTableExt.oStdClasses,
 
     ).error (jqXHR) ->
       run_check_plugin_div = $("div#run_check_plugin")
-      run_check_plugin_div.find("#error_title").text "Error fetching JSON"
-      run_check_plugin_div.find("#error_content").text "Failed to fetch data: URL: \"" + @url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.statusText + "\""
+      run_check_plugin_div.find("#error_title").text gettext("Error fetching JSON")
+      run_check_plugin_div.find("#error_content").text gettext("Failed to fetch data") + ": URL: \"" + @url + "\" Server Status: \"" + jqXHR.status + "\" Status: \"" + jqXHR.statusText + "\""
       run_check_plugin_div.find("#error").show()
       run_check_plugin_div.find("div#plugin_output").hide()
       run_check_plugin_div.find("dl").hide()
@@ -604,7 +608,7 @@ $(document).ready ->
   $("[rel=tooltip]").popover()
   $("#popover").popover()
   $("select").select2({
-    placeholder: "Select an item",
+    placeholder: gettext("Select an item"),
     containerCssClass: "select2field"
   })
 

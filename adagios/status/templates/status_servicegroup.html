@@ -1,0 +1,29 @@
+{% extends "base_status.html" %}
+{% load i18n %}
+
+
+{% block title %}Servicegroup Detail{% endblock %}
+{% block smallheader %}{% endblock %}
+
+{% block largeheader %}Servicegroup {{ servicegroup_name }}{% endblock %}
+
+{% block content %}
+    {% include "snippets/status_servicelist_snippet.html" %}
+{% endblock %}
+
+
+
+{% block view_buttons %}
+<div class="btn-group pull-left" id="view_buttons">
+    <a class="btn btn-small dropdown-toggle " data-toggle="dropdown" href="#">
+        <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+        <li><a href="?servicegroup_name={{ servicegroup_name }}&unhandled"> Open Problems</a></li>
+        <li><a href="?servicegroup_name={{ servicegroup_name }}&state__isnot=0"> All Problems</a></li>
+        <li><a href="?servicegroup_name={{ servicegroup_name }}&acknowledged=1"> All Acknowledged</a></li>
+        <li><a href="?servicegroup_name={{ servicegroup_name }}&scheduled_downtime_depth__isnot=0"> All in Downtime</a></li>
+        <li><a href="?servicegroup_name={{ servicegroup_name }}&state=0"> All OK</a></li>
+        <li><a href="?servicegroup_name={{ servicegroup_name }}"> Everything</a></li>
+    </ul>
+</div>
+{% endblock %}

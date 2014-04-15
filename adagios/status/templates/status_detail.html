@@ -1,23 +1,25 @@
 {% extends "base_status.html" %}
 {% load adagiostags %}
+{% load i18n %}
+
 {% block title %}{{ my_object.display_name }}{% endblock %}
 {% block smallheader %}
 {% endblock %}
 {% block largeheader %}
     {% if object_type == 'service' %}
-    Service
+    {% trans "Service" %}
             <div class="circle state_{{ my_object.state }}"></div>
-            <small>{{ service.display_name }}</small> on
+            <small>{{ service.display_name }}</small>{% trans " on" %}
     {% endif %}
 
-    host
+    {% trans "host" %}
 
     <div class="circle host state_{{ host.state }}"></div>
-    <a href="{% url status.views.status_detail %}?host_name={{ host.name }}">
+    <a href="{% url status.views.detail %}?host_name={{ host.name }}">
         <small>{{ host.display_name }}</small>
     </a>
 {% endblock %}
-{% block nav1 %}<a href="{% url status.views.services %}">status</a>{% endblock %}
+{% block nav1 %}<a href="{% url status.views.services %}">{% trans "status" %}</a>{% endblock %}
 {% block nav2 %}{{ host_name }} {% if primary_object.object_type == 'service' %}- {{ service_description }}{% endif %}{% endblock %}
 
 
@@ -27,12 +29,12 @@
     <div class="row-fluid">
     <div class="span9" id="maincontent_left_side">
         <ul class="nav nav-tabs" id="objecttab">
-            <li><a href="#general" data-toggle="tab">General</a></li>
-            <li><a href="#information" data-toggle="tab">Information</a></li>
-            <li><a href="#events" data-toggle="tab" id="history_link">History</a></li>
-            <li><a href="#graphs" data-toggle="tab" id="graphs_link">Graphs</a></li>
-            <li><a href="#custom_variables" data-toggle="tab">Custom Variables</a></li>
-            <li><a href="#other" data-toggle="tab">Debug</a></li>
+            <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
+            <li><a href="#information" data-toggle="tab">{% trans "Information" %}</a></li>
+            <li><a href="#events" data-toggle="tab" id="history_link">{% trans "History" %}</a></li>
+            <li><a href="#graphs" data-toggle="tab" id="graphs_link">{% trans "Graphs" %}</a></li>
+            <li><a href="#custom_variables" data-toggle="tab">{% trans "Custom Variables" %}</a></li>
+            <li><a href="#other" data-toggle="tab">{% trans "Debug" %}</a></li>
         </ul>
         <div class="tab-content">
 
@@ -40,23 +42,23 @@
         {% if my_object %}
             <table class="table">
                 <tr>
-                    <td>Status</td>
+                    <td class="hidden-phone">{% trans "Status" %}</td>
                     <td>
                         {% if my_object.last_check != 0 %}
                         <div class="circle {{ object_type }} state_{{ my_object.state }}"></div> {{ my_object.status }} for {{ my_object.last_state_change|timestamp|timesince }}
                           {% if my_object.state != 0 %}
-                            {% if my_object.acknowledged == 1 %}(has been acknowledged)
-                            {% else %}(not acknowledged)
+                            {% if my_object.acknowledged == 1 %}{% trans "(has been acknowledged)" %}
+                            {% else %}{% trans "(not acknowledged)" %}
                             {% endif %}
                           {% endif %}
                         {% else %}
-                        <div class="circle state_pending"></div> Pending
+                        <div class="circle state_pending"></div>{% trans " Pending" %}
                         {% endif %}
                     </td>
                 </tr>
                 <tr >
-                    <td>Host Name</td>
-                    <td><a href="{% url status.views.status_detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
+                    <td class="hidden-phone" >{% trans "Host Name" %}</td>
+                    <td><a href="{% url status.views.detail %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
                         {% if my_object.last_check != 0 %}
                         <div class="circle host state_{{ host.state }}"></div>
                         {% else %}
@@ -67,28 +69,29 @@
                     </td>
                 </tr>
                 <tr >
-                    <td>Host Address</td>
+                    <td class="hidden-phone">{% trans "Host Address" %}</td>
                     <td>{{ host.address }}</td>
                 </tr>
                 <tr>
-                    <td>Host Alias</td>
+                    <td class="hidden-phone">{% trans "Host Alias" %}</td>
                     <td>{{ host.alias }}</td>
                 </tr>
                 {% if service %}
                 <tr >
-                    <td>Service Name</td>
+                    <td class="hidden-phone">{% trans "Service Name" %}</td>
                     <td>{{ service.display_name }}</td>
                 </tr>
                 {% endif %}
                 <tr>
-                    <td>Check output</td>
+                    <td class="hidden-phone">{% trans "Check output" %}</td>
                     <td>
                         {% if my_object.last_check == 0 %}
-                        <div class="alert alert-info">Has not run yet.</div>
+                        <div class="alert alert-info">{% trans "Has not run yet." %}</div>
                         {% else %}
                             {% if my_object.long_plugin_output %}
                             <pre id="plugin_output">{{ my_object.plugin_output }}
-    {{ my_object.long_plugin_output }}</pre>
+
+{{ my_object.long_plugin_output }}</pre>
                             {% else %}
                             <pre id="plugin_output">{{ my_object.plugin_output }}</pre>
                             {% endif %}
@@ -96,20 +99,20 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Performance  Metrics</td>
+                    <td class="hidden-phone">{% trans "Performance  Metrics" %}</td>
                     <td >
                         {% if perfdata %}
                             <table border=1 class="small" style="font-size: 90%; border-color: #ffffff;" >
                                 <tr>
                                     <th></th>
-                                    <th>label</th>
-                                    <th>value</th>
-                                    <th>warn</th>
-                                    <th>crit</th>
-                                    <th>unit</th>
-                                    <th>min</th>
-                                    <th>max</th>
-                                    <th>pnp</th>
+                                    <th>{% trans "label" %}</th>
+                                    <th>{% trans "value" %}</th>
+                                    <th>{% trans "warn" %}</th>
+                                    <th>{% trans "crit" %}</th>
+                                    <th>{% trans "unit" %}</th>
+                                    <th>{% trans "min" %}</th>
+                                    <th>{% trans "max" %}</th>
+                                    <th>{% trans "pnp" %}</th>
                                 </tr>
                                 {% for i in perfdata %}
                                     <tr>
@@ -128,7 +131,7 @@
                                 {% endfor %}
                             </table>
                         {% else %}
-                            No Perfdata available.
+                            {% trans "No Perfdata available." %}
                         {% endif %}
 
                     </td>
@@ -140,7 +143,7 @@
         </div>
 
         <div class="tab-pane" id="other">
-            <h4>Information available via livestatus:</h4>
+            <h4>{% trans "Information available via livestatus:" %}</h4>
             <table class="table-condensed table">
                 {% for k,v in my_object.items %}
                 <tr>
@@ -154,12 +157,12 @@
             </table>
 
             <!-- servicestatus has to be here for the action buttons to work -->
-            <div  id="servicestatus">
+            <div  id="servicestatus" class="hide">
                 <table>
                     <tbody>
                     <tr>
                         <td class="selectable">
-                            <input class="chkbox {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="{{ my_object.object_type }}" value="{{ my_object.short_name }}" data-host_name="{{ host_name }}" data-service_description="{{ service_description }}" data-object_type={{ my_object.object_type }}>
+                            <input class="chkbox chkbox-primary {{ service.tags }}"  style="margin: -2px; padding: 0px;" type="checkbox" checked="checked" name="{{ my_object.object_type }}" value="{{ my_object.short_name }}" data-host_name="{{ host_name }}" data-service_description="{{ service_description }}" data-object_type={{ my_object.object_type }}>
                             <input type="hidden" class="input_hostname" name="host_name" value="{{ host_name }}">
                             <input type="hidden" class="input_service_description" name="service_description" value="{{ service_description }}">
 
@@ -173,63 +176,66 @@
 
         <div class="tab-pane" id="information">
             <p>
-                This {{ my_object.object_type }} is checked every <a href="#">{{ my_object.check_interval }}</a> minutes.
-
-                When a problem occurs it will be checked <a href="#">{{ my_object.max_check_attempts }}</a> times
-
-                every <a href="#">{{ my_object.retry_interval }}</a> minutes before going to
-                hard state and start sending out notifications.
+              {% blocktrans with ot=my_object.object_type ci=my_object.check_interval %}
+	      This {{ ot }} is checked every <a href="#">{{ ci }}</a> minutes.
+	      {% endblocktrans %}
+	      
+	      {% blocktrans with mca=my_object.max_check_attempts ri=my_object.retry_interval %}
+              When a problem occurs it will be checked <a href="#">{{ mca }}</a> times
+              every <a href="#">{{ ri }}</a> minutes before going to
+              hard state and start sending out notifications.
+	      {% endblocktrans %}
             </p>
 
             {% if my_object.notes %}
             <p>
-                <b>Notes:</b> {{ my_object.notes }}
+                <b>{% trans "Notes:" %}</b> {{ my_object.notes }}
             </p>
             {% endif %}
 
             <table class=table>
                 <tr>
-                    <td>Last Check</td>
+                    <td>{% trans "Last Check" %}</td>
                     <td>
                         {% if my_object.last_check %}
                             {{ my_object.last_check|timestamp|date:'Y-m-d H:i' }}
-                             <span class="pull-right">({{ my_object.last_check|timestamp|timesince  }} ago)</span>
+                             <span class="pull-right">({{ my_object.last_check|timestamp|timesince  }}{% trans " ago)" %}</span>
                         {% else %}
-                            check has never been executed.
+                            {% trans "check has never been executed." %}
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
-                    <td>Next Check</td>
+                    <td>{% trans "Next Check" %}</td>
                     <td>
                         {% if my_object.next_check %}
                             {{ my_object.next_check|timestamp|date:'Y-m-d H:i' }}
-                            <span class="pull-right">({{ my_object.next_check|timestamp|timeuntil }} from now)</span>
+                            <span class="pull-right">({{ my_object.next_check|timestamp|timeuntil }}{% trans " from now)" %}</span>
                         {% else %}
-                            Check is not scheduled to be executed.
+                            {% trans "Check is not scheduled to be executed." %}
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
-                    <td>Check Period</td>
+                    <td>{% trans "Check Period" %}</td>
                     <td>
                         {% if my_object.check_period %}
-                        <a href="{% url edit_by_shortname "timeperiod" my_object.check_period %}">{{ my_object.check_period }}</a>
+                        <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type=timeperiod&timeperiod_name={{ my_object.check_period }}">{{ my_object.check_period }}</a>
                         {% else %}
-                        Unknown
+                        {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
-                            (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
+			    (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
                         </span>
                     </td>
                 </tr>
                 <tr>
-                    <td>Notification Period</td>
+                    <td>{% trans "Notification Period" %}</td>
                     <td>
                         {% if my_object.notification_period %}
-                        <a href="{% url edit_by_shortname "timeperiod" my_object.notification_period %}">{{ my_object.notification_period }}</a>
+                        <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type=timeperiod&timeperiod_name={{ my_object.notification_period }}">{{ my_object.notification_period }}</a>
                         {% else %}
-                        Unknown
+                        {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
                             (currently {% if my_object.in_notification_period %}inside{% else %}outside{% endif %} notification period)
@@ -238,36 +244,101 @@
                 </tr>
                 <tr>
                     <td>
-                        Check command
+                        {% trans "Check command" %}
                     </td>
-                    <td id="effective_check_command"> Loading...</td>
+                    <td id="effective_check_command">{% trans " Loading..." %}</td>
                 </tr>
-                <tr></tr>
+                <tr>
+                    <td colspan="2">
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Active Checks" %}</td>
+                    <td>
+                        {% if my_object.active_checks_enabled == 1 %}
+                            {% trans "Enabled" %}
+                        {% else %}
+                            {% trans "Disabled" %}
+                        {% endif %}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Passive checks" %}</td>
+                    <td>
+                        {% if my_object.accept_passive_checks == 1 %}
+                            {% trans "Enabled" %}
+                        {% else %}
+                            {% trans "Disabled" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Obsessing" %}</td>
+                    <td>
+                        {% if my_object.host_obsess_over_host == 1 %}
+                            {% trans "Enabled" %}
+                        {% else %}
+                            {% trans "Disabled" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Notifications" %}</td>
+                    <td>
+                        {% if my_object.notifications_enabled == 1 %}
+                            {% trans "Enabled" %}
+                        {% else %}
+                            {% trans "Disabled" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Event Handler" %}</td>
+                    <td>
+                        {% if my_object.event_handler_enabled == 1 %}
+                            {% trans "Enabled" %}
+                        {% else %}
+                            {% trans "Disabled" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Flap Detection" %}</td>
+                    <td>
+                        {% if my_object.flap_detection_enabled == 1 %}
+                            {% trans "Enabled" %}
+                        {% else %}
+                            {% trans "Disabled" %}
+                        {% endif %}
+                    </td>
+                </tr>
                 <tr>
                     <td>
-                        Downtimes:
+                        {% trans "Downtimes:" %}
                     </td>
                     <td>
                         {% if my_object.downtimes_with_info %}
                             <div id="comments">
                                 {% for i in my_object.downtimes_with_info %}
                                     <div class="alert alert-info">
-                                        <button class="close delete_downtime" data-dismiss="alert" title="Delete Downtime {{ i.0 }}"
+                                        <button class="close delete_downtime" data-dismiss="alert" title="{% trans "Delete Downtime {{ i.0 }}" %}"
                                                 onclick="$.getJSON('{% url rest/status %}json/delete_downtime?downtime_id={{ i.0 }}{% if object_type == 'host' %}&is_service=False{% endif %}');">
                                             <i class="glyph-bin"></i></button>
-                                        <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
+                                        <i class="glyph-user"></i> <a href="{% url status.views.detail %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
                                     </div>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            No Downtimes are scheduled.
+                            {% trans "No Downtimes are scheduled." %}
                         {% endif %}
 
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        Comments:
+                        {% trans "Comments:" %}
                     </td>
                     <td>
                         <div id="downtimes">
@@ -276,11 +347,11 @@
                                     <div class="alert alert-info">
                                         <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
                                             <i class="glyph-bin"></i></button>
-                                        <i class="glyph-user"></i> <a href="{% url status.views.contact_detail i.1 %}">{{ i.1 }}</a>: {{ i.2 }}
+                                        <i class="glyph-user"></i> <a href="{% url status.views.detail %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
                                     </div>
                                 {% endfor %}
                             {% else %}
-                                <p>This {{ my_object.object_type }} has no comments.</p>
+                                <p>{% trans "This {{ my_object.object_type }} has no comments." %}</p>
                             {% endif %}
                             <div id="div_add_comment" class="alert alert-info">
                                         <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
@@ -289,14 +360,14 @@
                                             <input type="hidden" name="service_description" id="id_service_description" value='{{ service_description }}'/>
                                         {% endif %}
                                         <input type="hidden" name="persistent" value="0" id="id_persistent" />
-                                        <i class="glyph-user"></i> <a href="">{{ remote_user }}</a>: <input name=comment id="write_a_comment" placeholder="Write a comment...">
+                                        <i class="glyph-user"></i> <a href="">{{ remote_user }}</a>: <input name=comment id="write_a_comment" placeholder="{% trans "Write a comment..." %}">
                             </div>
                         </div>
 
                     </td>
                 </tr>
                 <tr>
-                    <td>Network Parents</td>
+                    <td>{% trans "Network Parents" %}</td>
                     <td>
                         {% if network_parents %}
                             <table>
@@ -306,7 +377,7 @@
                                         {% for parent in parent_level %}
                                             <td>
                                                 <div class="alert host state_{{ parent.state }}">
-                                                    <a href="{% url status.views.status_detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
+                                                    <a href="{% url status.views.detail %}?host_name={{ parent.name }}">{{ parent.name }}</a>
                                                 </div>
                                             </td>
                                         {% endfor %}
@@ -315,25 +386,24 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            This {{ my_object.object_type }} has no configured network parents.
+                            {% trans "This {{ my_object.object_type }} has no configured network parents." %}
                         {% endif %}
                 </tr>
             </table>
         </div>
 
         <div class="tab-pane" id="custom_variables">
-            Some checks have custom variables defined. These can be defined for example to define warning/critical thresholds
-            for custom plugins.
+            {% trans "Some checks have custom variables defined. These can be defined for example to define warning/critical thresholds for custom plugins." %}
             <p>
             </p>
             {% if my_object.custom_variables %}
             <table class="table table-condensed">
                 <tr>
                     <th>
-                        Variable Name
+                        {% trans "Variable Name" %}
                     </th>
                     <th>
-                        Value
+                        {% trans "Value" %}
                     </th>
                 </tr>
                 {% for k,v in my_object.custom_variables.items %}
@@ -350,18 +420,18 @@
                 {% endfor %}
             </table>
             {% else %}
-            This check has no custom variables defined.
+            {% trans "This check has no custom variables defined." %}
             {% endif %}
             <p></p>
             {% if my_object.host_custom_variables %}
-                Host <a href="{% url status.views.status_detail %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
+                Host <a href="{% url status.views.detail %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
                 <table class="table table-condensed">
                     <tr>
                         <th>
-                            Variable Name
+                            {% trans "Variable Name" %}
                         </th>
                         <th>
-                            Value
+                            {% trans "Value" %}
                         </th>
                     </tr>
                     {% for k,v in my_object.host_custom_variables.items %}
@@ -373,24 +443,24 @@
                 </table>
             {% else %}
             {% endif %}
-            See also <a href="{% url adagios.misc.views.edit_check_command %}?host_name={{ host_name }}&service_description={{ service_description }}&check_command={{ my_object.check_command }}">Configure check command</a>
+            See also <a href="{% url adagios.objectbrowser.views.edit_object %}?object_type={{ object_type }}&host_name={{ host_name }}{% if object_type == "service" %}&service_description={{ service_description }}{% endif %}#monitoring_tab">{% trans "Configure check command" %}</a>
 
 
         </div>
         <div class="tab-pane" id="events">
-            <div id="logdiv">This tab should update when the tab is clicked</div>
+            <div id="logdiv">{% trans "This tab should update when the tab is clicked" %}</div>
         </div>
 
 
         <div class="tab-pane" id="graphs">
                 {% if graph_urls %}
-                    <div id="graphs_tab" class="tabbable"> <!-- Only required for left/right tabs -->
+                    <div id="graphs2" class="tabbable"> <!-- Only required for left/right tabs -->
                         <ul  class="nav nav-pills" id="graphs_ul">
-                            <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">4 Hours</a></li>
-                            <li><a href="#day" data-toggle="tab" id="25hours">25 Hours</a></li>
-                            <li><a href="#week" data-toggle="tab">One Week</a></li>
-                            <li><a href="#month" data-toggle="tab">One Month</a></li>
-                            <li><a href="#year" data-toggle="tab">One Year</a></li>
+                            <li><a href="#hours" data-toggle="tab" id="test_id" name="test_name">{% trans "4 Hours" %}</a></li>
+                            <li><a href="#day" data-toggle="tab" id="25hours">{% trans "25 Hours" %}</a></li>
+                            <li><a href="#week" data-toggle="tab">{% trans "One Week" %}</a></li>
+                            <li><a href="#month" data-toggle="tab">{% trans "One Month" %}</a></li>
+                            <li><a href="#year" data-toggle="tab">{% trans "One Year" %}</a></li>
                         </ul>
 
                         <div class="tab-content" id="graphs_content">
@@ -420,30 +490,30 @@
                 {% else %}
                     {% if pnp4nagios_error %}
                         <div class="alert alert-warning">
-                            We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}
+                            {% trans "We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}" %}
                         </div>
-                        Please check that:
+                        {% trans "Please check that:" %}
                         <ul>
-                        <li><a href="{{ pnp_url }}">pnp4nagios</a> is installed and working</li>
-                        <li><i>PNP Filepath</i> is correctly configured under <a href="{% url misc.views.settings %}">settings</a></li>
-                        <li>User running nagios is a member of the unix groups apache or www-data</li>
-                        <li>Click <a href="{% url pnp.views.pnp "json" %}">here</a> to see pnp4nagios output</li>
+                        <li><a href="{{ pnp_url }}">pnp4nagios</a>{% trans " is installed and working" %}</li>
+                        <li><i>{% trans "PNP Filepath" %}</i>{% trans " is correctly configured under " %}<a href="{% url misc.views.settings %}">{% trans "settings" %}</a></li>
+                        <li>{% trans "User running nagios is a member of the unix groups apache or www-data" %}</li>
+                        <li>{% url pnp.views.pnp "json" as the_url %} {% blocktrans %}Click <a href="{{ the_url }}">here</a> to see pnp4nagios output{% endblocktrans %}</li>
                         </ul>
                     {% endif %}
-                    No Performance data is available for this {{ my_object.object_type }}.
+                    {% trans "No Performance data is available for this {{ my_object.object_type }}." %}
                 {% endif %}
         </div>
         </div>
     </div>
 
-    <div class="span3" id="maincontent_right_side">
+    <div class="span3 visible-desktop" id="maincontent_right_side">
     {% if host.services_with_info %}
      <div id="host_services">
-        <h5>Services on this host</h5>
+        <h5>{% trans "Services on this host" %}</h5>
         <ul class="nav nav-list">
             {% for i in host.services_with_info %}
                 <li >
-                    <a title="{{ i.3 }}" href="{% url status.views.status_detail %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
+                    <a title="{{ i.3 }}" href="{% url status.views.detail %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
                         <div class="circle state_pending"></div> {{ i.0 }}
                     </a>
                 </li>
@@ -453,68 +523,70 @@
       </div>
     {% endif %}
 
-    <h5>External Links</h5>
+    <h5>{% trans "External Links" %}</h5>
     <ul class="nav nav-list">
         {% if my_object.action_url %}
-            <li><a href="{{ my_object.action_url_expanded }}">Extra Actions</a></li>
+            <li><a target="_blank" href="{{ my_object.action_url_expanded }}">{% trans "Extra Actions" %}</a></li>
         {% endif %}
 
         {% if my_object.notes_url %}
-            <li><a href="{{ my_object.notes_url_expanded }}">Extra Notes</a></li>
+            <li><a target="_blank" href="{{ my_object.notes_url_expanded }}">{% trans "Extra Notes" %}</a></li>
         {% endif %}
 
         {% if my_object.host_action_url %}
-            <li><a href="{{ my_object.host_action_url_expanded }}">Host Actions</a></li>
+            <li><a target="_blank" href="{{ my_object.host_action_url_expanded }}">{% trans "Host Actions" %}</a></li>
         {% endif %}
 
         {% if my_object.host_notes_url %}
-            <li><a href="{{ my_object.host_notes_url_expanded }}">Host Notes</a></li>
+            <li><a target="_blank" href="{{ my_object.host_notes_url_expanded }}">{% trans "Host Notes" %}</a></li>
         {% endif %}
     </ul>
     {% if hostgroup_name %}
         {% if hostgroups %}
-            <h5>Is a member of hostgroup:</h5>
+            <h5>{% trans "Is a member of hostgroup:" %}</h5>
             <ul class="nav nav-list">
                 {% for group in hostgroups %}
-                    <li><a href="{% url status.views.status_hostgroup group.name %}">{{ group.name }}</a></li>
+                    <li><a target="_blank" href="{% url status.views.detail %}?hostgroup_name={{ group.name }}">{{ group.name }}</a></li>
                 {% endfor %}
             </ul>
         {% endif %}
     {% endif %}
     {% if host.parents %}
-        <h5>Network Parents</h5>
+        <h5>{% trans "Network Parents" %}</h5>
         <ul class="nav nav-list">
             {% for i in host.parents %}
-                <li><a href="{% url status.views.status_detail %}?host_name={{ i }}">
-                    {{ i }}
-                </a></li>
+                <li>
+                    <a href="{% url status.views.detail %}?host_name={{ i }}">
+                        {{ i }}
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if host.groups %}
-        <h5>Is a member of hostgroups</h5>
+        <h5>{% trans "Is a member of hostgroups" %}</h5>
         <ul class="nav nav-list">
             {% for group in host.groups %}
-                <li><a href="{% url status.views.status_hostgroup group %}">{{ group }}</a></li>
+                <li><a href="{% url status.views.detail %}?hostgroup_name={{ group  }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if my_object.contact_groups %}
-        <h5>Is a member of contactgroups</h5>
+        <h5>{% trans "Is a member of contactgroups" %}</h5>
         <ul class="nav nav-list">
             {% for group in my_object.contact_groups %}
-                <li><a href="">{{ group }}</a></li>
+                <li><a href="{% url adagios.status.views.detail %}?contactgroup_name={{ group }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
 
     {% if service.groups %}
-        <h5>Is a member of servicegroups</h5>
+        <h5>{% trans "Is a member of servicegroups" %}</h5>
         <ul class="nav nav-list">
             {% for group in service.groups %}
-                <li><a href="">{{ group }}</a></li>
+                <li><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ group }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -576,13 +648,15 @@
             {% endif %}
 
             // Fetch the effective check command for this object
-            var url = '{% url rest/status %}json/command_line?host_name={{ host_name }}&service_description={{ service_description }}';
-            $.getJSON(url)
+            var parameters = {};
+            parameters['host_name'] = "{{ host_name }}";
+            parameters['service_description'] = "{{ service_description }}";
+            adagios.rest.status.command_line(parameters)
                     .done( function(data) {
                         $('#effective_check_command').text(data);
                     })
                     .fail( function(data) {
-                        $('#effective_check_command').text("Failed to load check_command.");
+                        $('#effective_check_command').text("{% trans "Failed to load check_command." %}");
                         console.log(data);
                     });
 
@@ -612,16 +686,17 @@
         $('#graphs_ul').click(function(event){
                     var anchor = event.target.href.split('#')[1];
                     var title = event.target.text;
-                    my_element = document.getElementById(anchor);
+                    var my_element = document.getElementById(anchor);
 
 
                     if (my_element.childElementCount == 0) {
-                        spinner = document.createElement( 'img');
-                        spinner.setAttribute("src", "{% url media path="select2/spinner.gif" %}");
+                        var spinner = document.createElement( 'img');
+                        spinner.setAttribute("src", "{% url media path="external/select2/spinner.gif" %}");
                         my_element.appendChild( spinner );
                         var url = '{% url pnp.views.pnp 'json' %}?host={{ host_name }}&srv={{ service_description }}';
                         $.getJSON(url)
                                 .done( function(data) {
+                                    var new_img;
                                     $.each(data, function(i, item) {
                                         if (item['title'] == title) {
                                             new_img = document.createElement( 'img');
@@ -644,10 +719,10 @@
         // When enter is pressed in comment form. Post a new comment.
         $('#write_a_comment').keyup(function (e) {
             if (e.keyCode === 13) {
-                my_comment = this.value;
+                var my_comment = this.value;
                 if (my_comment == '')
                     return;
-                comment(my_comment,"{{ host_name }}", "{{ service_description }}")
+                adagios.status.comment(my_comment,"{{ host_name }}", "{{ service_description }}")
                         .done(function(data) {
                             location.reload();
                         })
@@ -657,21 +732,22 @@
         // When an editable field is change, lets update configuration
         $('.editable_field').focus(function(e) {
             $(e.target).data('orig-value', "" + $(e.target).val());
-        })
+        });
         $('.editable_field').blur(function(e) {
             var old_value = "" + $(e.target).data('orig-value');
             var new_value = "" + $(e.target).val();
             var attribute_name = "" + $(e.target).attr('name');
             var object_type = "{{ my_object.object_type }}";
             var short_name = "{{ my_object.short_name }}";
-            if (old_value == new_value)
+            if (old_value == new_value) {
                 return false;
+            }
 
             // Get the div right next to the input box for editing
             var message_div = $('#' + $(e.target).attr('name') + "_status");
             message_div.html('<div class="pull-right"><div class="circle state_3"></div> Saving ...</div>');
 
-            change_attribute(object_type, short_name, attribute_name, new_value)
+            adagios.status.change_attribute(object_type, short_name, attribute_name, new_value)
                     .done(function(e) {
                         message_div.html(
                         '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>undo </a>' +
@@ -682,7 +758,7 @@
 
                     });
 
-
+            return true;
         });
 
         // Perfomance Graph Preview on hover
@@ -691,7 +767,7 @@
             trigger: 'hover',
             template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
             content: function() {
-                return "<img src='"+ $(this)[0].href +"' alt='Image preview' />";
+                return "<img src='"+ $(this)[0].href +"' alt='{% trans "Image preview" %}' />";
             }
         });
     </script>

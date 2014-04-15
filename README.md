@@ -19,7 +19,7 @@ Features
   - Rest interface for viewing and modifying configuration
   - Full audit of any changes made
 
-Design principals
+Design principles
 ==================
   - Useful for both novices and nagios experts
   - No database backend
@@ -42,6 +42,16 @@ Adagios has packages for most recent versions of redhat/fedora and debian/ubuntu
 Install takes about 5 minutes following our [Install Guide](https://github.com/opinkerfi/adagios/wiki/Install-guide)
 
 
+Translations
+============
+
+  - handled by gettext, and stored in adagios/locale/
+  - .po files are editable with standart text editors or po-specific ones
+  - to add a language, run 'mkdir adagios/locale/<language-code>',
+    e.g. mkdir adagios/locale/de for German
+  - to create/update/compile .po files, run 'make trad'
+
+
 Support us
 ===================
 
@@ -58,4 +68,14 @@ If you need any help with getting adagios to work, feel free to open up an issue
 
   - Bug reports, feature requests: https://github.com/opinkerfi/adagios/issues
   - Mailing list: http://groups.google.com/group/adagios
-  - IRC: #adagios on irc.freenode.net
+  - IRC: #adagios on irc.freenode.net, https://webchat.freenode.net/?channels=#adagios
+
+
+License
+=======
+GNU AFFERO GENERAL PUBLIC LICENSE Version 3
+
+The GNU Affero General Public License is a free, copyleft license for
+software and other kinds of works, specifically designed to ensure
+cooperation with the community in the case of network server software.
+

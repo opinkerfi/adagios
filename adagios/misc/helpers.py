@@ -1,10 +1,27 @@
 #!/usr/bin/python
+#
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-'''
+"""
 
 Convenient stateless functions for pynag. This module is used by the /rest/ interface of adagios.
 
-'''
+"""
 
 
 import platform
@@ -16,6 +33,7 @@ from pynag import Utils
 from pynag import __version__
 from socket import gethostbyname_ex
 import adagios.settings
+from django.utils.translation import ugettext as _
 
 
 #_config = Parsers.config(adagios.settings.nagios_config)
@@ -29,7 +47,7 @@ def _get_dict(x):
 
 
 def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwargs):
-    ''' Get any type of object definition in a dict-compatible fashion
+    """ Get any type of object definition in a dict-compatible fashion
 
         Arguments:
             object_type (optional) -- Return objects of this type
@@ -42,7 +60,7 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
             get_objects(object_type="service", with_fields='*')
         Returns:
             List of ObjectDefinition
-    '''
+    """
 
     tmp = Model.ObjectDefinition.objects.filter(
         object_type=object_type, **kwargs)
@@ -81,7 +99,7 @@ def object_to_dict(object, attributes="id,shortname,object_type"):
 
 
 def get_object(id, with_fields="id,shortname,object_type"):
-    '''Returns one specific ObjectDefinition'''
+    """Returns one specific ObjectDefinition"""
     o = Model.ObjectDefinition.objects.get_by_id(id)
     return object_to_dict(o, attributes=with_fields)
 
@@ -116,13 +134,13 @@ def get_host_names(invalidate_cache=False):
 
 
 def change_attribute(id, attribute_name, new_value):
-    '''Changes object with the designated ID to file
+    """Changes object with the designated ID to file
 
     Arguments:
         id                -- object_id of the definition to be saved
         attribute_name    -- name of the attribute (i.e. "host_name")
         new_value         -- new value (i.e. "host.example.com")
-    '''
+    """
     o = Model.ObjectDefinition.objects.get_by_id(id)
     o[attribute_name] = new_value
     o.save()
@@ -144,13 +162,13 @@ def change_service_attribute(identifier, new_value):
     tmp = identifier.split('::')
     if len(tmp) != 3:
         raise ValueError(
-            "identifier must be in the form of host_name::service_description::attribute_name (got %s)" % identifier)
+            _("identifier must be in the form of host_name::service_description::attribute_name (got %s)") % identifier)
     host_name, service_description, attribute_name = tmp
     try:
         service = Model.Service.objects.get_by_shortname(
             "%s/%s" % (host_name, service_description))
     except KeyError, e:
-        raise KeyError("Could not find service %s" % e)
+        raise KeyError(_("Could not find service %s") % e)
     service[attribute_name] = new_value
     service.save()
     return True
@@ -172,19 +190,19 @@ def copy_object(object_id, recursive=False, **kwargs):
     """
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     new_object = o.copy(recursive=recursive, **kwargs)
-    return "Object successfully copied to %s" % new_object.get_filename()
+    return _("Object successfully copied to %s") % new_object.get_filename()
 
 
 def run_check_command(object_id):
-    ''' Runs the check_command for one specified object
+    """ Runs the check_command for one specified object
 
     Arguments:
         object_id         -- object_id of the definition (i.e. host or service)
     Returns:
         [return_code,stdout,stderr]
-    '''
+    """
     if platform.node() == 'adagios.opensource.is':
-        return (1, 'Running check commands is disabled in demo-environment')
+        return 1, _('Running check commands is disabled in demo-environment')
     o = Model.ObjectDefinition.objects.get_by_id(object_id)
     return o.run_check_command()
 
@@ -229,11 +247,11 @@ def reload_nagios():
     )
     result = {}
     if daemon.reload() == 0:
-        result['status'] = "success"
-        result['message'] = 'Nagios Successfully reloaded'
+        result['status'] = _("success")
+        result['message'] = _('Nagios Successfully reloaded')
     else:
-        result['status'] = "error"
-        result['message'] = "Failed to reload nagios (do you have enough permissions?)"
+        result['status'] = _("error")
+        result['message'] = _("Failed to reload nagios (do you have enough permissions?)")
     return result
 
 
@@ -320,28 +338,32 @@ def check_command(host_name, service_description, name=None, check_command=None,
 
     # Lets put all our results in a nice little dict
     macros = {}
-    macros['check_command'] = command.command_name
-    macros['original_command_line'] = command.command_line
-    macros['effective_command_line'] = my_object.get_effective_command_line()
+    cache = Model.ObjectFetcher._cache_only
+    try:
+        Model.ObjectFetcher._cache_only = True
+        macros['check_command'] = command.command_name
+        macros['original_command_line'] = command.command_line
+        macros['effective_command_line'] = my_object.get_effective_command_line()
 
-    # Lets get all macros that this check command defines:
-    regex = re.compile("(\$\w+\$)")
-    macronames = regex.findall(command.command_line)
-    for i in macronames:
-        macros[i] = my_object.get_macro(i) or ''
+        # Lets get all macros that this check command defines:
+        regex = re.compile("(\$\w+\$)")
+        macronames = regex.findall(command.command_line)
+        for i in macronames:
+            macros[i] = my_object.get_macro(i) or ''
 
-    if not check_command:
-        # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
-        ARGs = my_object.check_command.split('!')
-        for i, arg in enumerate(ARGs):
-            if i == 0:
-                continue
+        if not check_command:
+            # Argument macros are special (ARGX), lets display those as is, without resolving it to the fullest
+            ARGs = my_object.check_command.split('!')
+            for i, arg in enumerate(ARGs):
+                if i == 0:
+                    continue
 
-            macronames = regex.findall(arg)
-            for m in macronames:
-                macros[m] = my_object.get_macro(m) or ''
-            macros['$ARG{i}$'.format(i=i)] = arg
-
+                macronames = regex.findall(arg)
+                for m in macronames:
+                    macros[m] = my_object.get_macro(m) or ''
+                macros['$ARG{i}$'.format(i=i)] = arg
+    finally:
+        Model.ObjectFetcher._cache_only = cache
     return macros
 
 
@@ -360,24 +382,6 @@ def verify_configuration():
 
     return result
 
-    total_errors = 0
-    total_warnings = 0
-
-    for line in stdout.splitlines():
-        output = {}
-        output['tags'] = tags = []
-        output['content'] = line
-        if line.lower().startswith('warning'):
-            tags.append('warning')
-            total_warnings += 1
-        if line.lower().startswith('error'):
-            tags.append('error')
-            total_errors += 1
-        result['output'].append(output)
-        result['error_count'] = total_errors
-        result['warning_count'] = total_warnings
-    return result
-
 
 def get_object_statistics():
     """ Returns a list of all object_types with total number of configured objects
@@ -389,8 +393,26 @@ def get_object_statistics():
     ]
     """
     object_types = []
-    for object_type, Class in Model.string_to_class.items():
-        if object_type is not None:
-            total = len(Class.objects.all)
-            object_types.append({"object_type": object_type, "total": total})
+    Model.ObjectDefinition.objects.reload_cache()
+    for k, v in Model.ObjectFetcher._cached_object_type.items():
+        total = len(v)
+        object_types.append({"object_type": k, "total": total})
     return object_types
+
+
+def autocomplete(q):
+    """ Returns a list of {'hosts':[], 'hostgroups':[],'services':[]} matching search query q
+    """
+    if q is None:
+        q = ''
+    result = {}
+
+    hosts = Model.Host.objects.filter(host_name__contains=q)
+    services = Model.Service.objects.filter(service_description__contains=q)
+    hostgroups = Model.Hostgroup.objects.filter(hostgroup_name__contains=q)
+
+    result['hosts'] = sorted(set(map(lambda x: x.host_name, hosts)))
+    result['hostgroups'] = sorted(set(map(lambda x: x.hostgroup_name, hostgroups)))
+    result['services'] = sorted(set(map(lambda x: x.service_description, services)))
+
+    return result

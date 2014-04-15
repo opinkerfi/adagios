@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2010, Pall Sigurdsson <palli@opensource.is>
+# Adagios is a web based Nagios configuration interface
 #
-# This script is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Copyright (C) 2010, Pall Sigurdsson <palli@opensource.is>
 #
-# This script is distributed in the hope that it will be useful,
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.shortcuts import render_to_response, redirect
@@ -21,6 +23,8 @@ from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedir
 from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
+from django.utils.translation import ugettext as _
+from adagios.views import adagios_decorator
 
 from django.core.urlresolvers import reverse
 
@@ -31,12 +35,16 @@ import okconfig.network_scan
 from pynag import Model
 
 
-def addcomplete(request, c={}):
+@adagios_decorator
+def addcomplete(request, c=None):
     """ Landing page when a new okconfig group has been added
     """
+    if not c:
+        c = {}
     return render_to_response('addcomplete.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addgroup(request):
     """ Add a new okconfig group
 
@@ -55,7 +63,6 @@ def addgroup(request):
         if f.is_valid():
             group_name = f.cleaned_data['group_name']
             alias = f.cleaned_data['alias']
-            #description = f.cleaned_data['description']
             force = f.cleaned_data['force']
             try:
                 c['filelist'] = okconfig.addgroup(
@@ -63,13 +70,16 @@ def addgroup(request):
                 c['group_name'] = group_name
                 return addcomplete(request, c)
             except Exception, e:
-                c['errors'].append("error adding group: %s" % e)
+                c['errors'].append(_("error adding group: %s") % e)
         else:
-            c['errors'].append('Could not validate input')
+            c['errors'].append(_('Could not validate input'))
+    else:
+        raise Exception("Sorry i only support GET or POST")
     c['form'] = f
     return render_to_response('addgroup.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addhost(request):
     """ Add a new host from an okconfig template
     """
@@ -97,13 +107,16 @@ def addhost(request):
                 c['host_name'] = host_name
                 return addcomplete(request, c)
             except Exception, e:
-                c['errors'].append("error adding host: %s" % e)
+                c['errors'].append(_("error adding host: %s") % e)
         else:
-            c['errors'].append('Could not validate input')
+            c['errors'].append(_('Could not validate input'))
+    else:
+        raise Exception("Sorry i only support GET or POST")
     c['form'] = f
     return render_to_response('addhost.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addtemplate(request, host_name=None):
     """ Add a new okconfig template to a host
 
@@ -124,15 +137,16 @@ def addtemplate(request, host_name=None):
                 c['host_name'] = host_name = f.cleaned_data['host_name']
                 c['filelist'] = f.filelist
                 c['messages'].append(
-                    "Template was successfully added to host.")
+                    _("Template was successfully added to host."))
                 return HttpResponseRedirect(reverse('adagios.okconfig_.views.edit', args=[host_name]))
             except Exception, e:
                 c['errors'].append(e)
         else:
-            c['errors'].append("Could not validate form")
+            c['errors'].append(_("Could not validate form"))
     return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def addservice(request):
     """ Create a new service derived from an okconfig template
     """
@@ -165,10 +179,11 @@ def addservice(request):
             except IOError, e:
                 c['errors'].append(e)
         else:
-            c['errors'].append("Could not validate form")
+            c['errors'].append(_("Could not validate form"))
     return render_to_response('addservice.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def verify_okconfig(request):
     """ Checks if okconfig is properly set up. """
     c = {}
@@ -177,11 +192,12 @@ def verify_okconfig(request):
     for i in c['okconfig_checks'].values():
         if i == False:
             c['errors'].append(
-                'There seems to be a problem with your okconfig installation')
+                _('There seems to be a problem with your okconfig installation'))
             break
     return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def install_agent(request):
     """ Installs an okagent on a remote host """
     c = {}
@@ -207,29 +223,30 @@ def install_agent(request):
                 out = out.split('\n')
                 c['stdout'] = []
                 for i in out:
-                    if i.startswith('Unknown parameter encountered:'):
+                    if i.startswith(_('Unknown parameter encountered:')):
                         continue
-                    elif i.startswith('Ignoring unknown parameter'):
+                    elif i.startswith(_('Ignoring unknown parameter')):
                         continue
                     elif 'NT_STATUS_LOGON_FAILURE' in i:
-                        c['hint'] = "NT_STATUS_LOGON_FAILURE usually means there is a problem with username or password. Are you using correct domain ?"
+                        c['hint'] = _("NT_STATUS_LOGON_FAILURE usually means there is a problem with username or password. Are you using correct domain ?")
                     elif 'NT_STATUS_DUPLICATE_NAME' in i:
-                        c['hint'] = "The security settings on the remote windows host might forbid logins if the host name specified does not match the computername on the server. Try again with either correct hostname or the ip address of the server."
+                        c['hint'] = _("The security settings on the remote windows host might forbid logins if the host name specified does not match the computername on the server. Try again with either correct hostname or the ip address of the server.")
                     elif 'NT_STATUS_ACCESS_DENIED' in i:
-                        c['hint'] = "Please make sure that %s is a local administrator on host %s" % (
-                            user, host)
+                        c['hint'] = _("Please make sure that %(admin)s is a local administrator on host %(host)s") % {
+                            'admin': user, 'host': host}
                     elif i.startswith('Error: Directory') and i.endswith('not found'):
-                        c['hint'] = "No nsclient copy found "
+                        c['hint'] = _("No nsclient copy found ")
                     c['stdout'].append(i)
                 c['stdout'] = '\n'.join(c['stdout'])
             except Exception, e:
                 c['errors'].append(e)
         else:
-            c['errors'].append('invalid input')
+            c['errors'].append(_('invalid input'))
 
     return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit(request, host_name):
     """ Edit all the Service "__MACROS" for a given host """
 
@@ -244,7 +261,7 @@ def edit(request, host_name):
     try:
         c['myhost'] = Model.Host.objects.get_by_shortname(host_name)
     except KeyError, e:
-        c['errors'].append("Host %s not found" % e)
+        c['errors'].append(_("Host %s not found") % e)
         return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
     # Get all services of that host that contain a service_description
     services = Model.Service.objects.filter(
@@ -263,17 +280,18 @@ def edit(request, host_name):
                     if form.changed_data != []:
                         form.save()
                         c['messages'].append(
-                            "'%s' successfully saved." % service.get_description())
+                            _("'%s' successfully saved.") % service.get_description())
                 except Exception, e:
                     c['errors'].append(
-                        "Failed to save service %s: %s" % (service.get_description(), e))
+                        _("Failed to save service %(service)s: %(exc)s") % {'service': service.get_description(), 'exc': e})
             else:
                 c['errors'].append(
-                    'invalid data in %s' % service.get_description())
+                    _('invalid data in %s') % service.get_description())
         c['forms'] = myforms
     return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def choose_host(request):
     """Simple form that lets you choose one host to edit"""
     c = {}
@@ -288,6 +306,7 @@ def choose_host(request):
     return render_to_response('choosehost.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def scan_network(request):
     """ Scan a single network and show hosts that are alive
     """
@@ -306,7 +325,7 @@ def scan_network(request):
     elif request.method == 'POST':
         c['form'] = forms.ScanNetworkForm(request.POST)
         if not c['form'].is_valid():
-            c['errors'].append("could not validate form")
+            c['errors'].append(_("could not validate form"))
         else:
             network = c['form'].cleaned_data['network_address']
             try:
@@ -315,5 +334,5 @@ def scan_network(request):
                 for i in c['scan_results']:
                     i.check()
             except Exception, e:
-                c['errors'].append("Error running scan")
+                c['errors'].append(_("Error running scan"))
     return render_to_response('scan_network.html', c, context_instance=RequestContext(request))

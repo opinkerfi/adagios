@@ -1,22 +1,23 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
 {% block title %}{{ contact_name }}{% endblock %}
-{% block smallheader %}contact{% endblock %}
+{% block smallheader %}{% trans "contact" %}{% endblock %}
 {% block largeheader %}{{ contact_name }} ({{ contact.alias }}){% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.contact_list %}">Contacts</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}">{% trans "Contacts" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
 
     <ul class="nav nav-tabs" id="objecttab">
-        <li class="active"><a href="#feed" data-toggle="tab">Comment Feed</a></li>
-        <li><a href="#history" data-toggle="tab">History</a></li>
-        <li><a href="#contactgroups" data-toggle="tab">Groups</a></li>
-        <li><a href="#services" data-toggle="tab">Services</a></li>
-        <li><a href="#gitlog" data-toggle="tab">Audit Log</a></li>
-        <li><a href="#debug" data-toggle="tab">Debug</a></li>
+        <li class="active"><a href="#feed" data-toggle="tab">{% trans "Comment Feed" %}</a></li>
+        <li><a href="#history" data-toggle="tab">{% trans "History" %}</a></li>
+        <li><a href="#contactgroups" data-toggle="tab">{% trans "Groups" %}</a></li>
+        <li><a href="#services" data-toggle="tab">{% trans "Services" %}</a></li>
+        <li><a href="#gitlog" data-toggle="tab">{% trans "Audit Log" %}</a></li>
+        <li><a href="#debug" data-toggle="tab">{% trans "Debug" %}</a></li>
         <!-- <li><a href="#problems" data-toggle="tab">Comment Feed</a></li> -->
         <!-- <li><a href="#debug" data-toggle="tab">Debug</a></li> -->
     </ul>
@@ -24,10 +25,10 @@
 
         <div class="tab-pane active" id="feed">
             {% if comments %}
-                Comments that mention {{ contact_name }}
+                {% blocktrans %}Comments that mention {{ contact_name }}{% endblocktrans %}
                 {% include "snippets/status_commentlist_snippet.html" %}
             {% else %}
-                {{ contact_name }} is not tagged in any current problems.
+                {% blocktrans %}{{ contact_name }} is not tagged in any current problems.{% endblocktrans %}
             {% endif %}
 
         </div>
@@ -36,10 +37,10 @@
             {% if log %}
                <table style="font-size: 80%;" class="table well table-condensed">
                 <thead>
-                <th>Time</th>
-                <th>Type</th>
+                <th>{% trans "Time" %}</th>
+                <th>{% trans "Type" %}</th>
                 <th></th>
-                <th>Message</th>
+                <th>{% trans "Message" %}</th>
                 </thead>
                 {% for line in log  %}
                     {% ifchanged line.time|timestamp|date:"Y-m-d" %}
@@ -59,13 +60,13 @@
                 {% endfor %}
             </table>
             {% else %}
-                {{ contact_name }} is not mentioned in any recent log entries.
+                {% blocktrans %}{{ contact_name }} is not mentioned in any recent log entries.{% endblocktrans %}
             {% endif %}
         </div>
 
         <div class="tab-pane" id="contactgroups">
             {% if groups %}
-                {{ contact_name }} belongs to the following groups:
+                {% blocktrans %}{{ contact_name }} belongs to the following groups:{% endblocktrans %}
                 <table class="table well">
                     {% for i in groups %}
                         <tr>
@@ -75,29 +76,29 @@
                     {% endfor %}
                 </table>
             {% else %}
-                {{ contact_name }} does not belong to any groups.
+                {% blocktrans %}{{ contact_name }} does not belong to any groups.{% endblocktrans %}
             {% endif %}
         </div>
 
         <div class="tab-pane" id="services">
             {% if services %}
-                {{ contact_name }} is a contact for the following services:
+                {% blocktrans %}{{ contact_name }} is a contact for the following services:{% endblocktrans %}
                 {% include "snippets/status_servicelist_snippet.html" %}
             {% else %}
-                {{ contact_name }} is not a contact for any services.
+                {% blocktrans %}{{ contact_name }} is not a contact for any services.{% endblocktrans %}
             {% endif %}
             </div>
 
         <div class="tab-pane" id="gitlog">
             {% if gitlog %}
-                Git commits made by {{ contact_name }}
+                {% blocktrans %}Git commits made by {{ contact_name }}{% endblocktrans %}
                 <table class="table table-condensed well" >
                     <tr>
-                        <th>Date</th>
-                        <th>Summary</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Actions</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Summary" %}</th>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Email" %}</th>
+                        <th>{% trans "Actions" %}</th>
                     </tr>
                     {% for commit in gitlog %}
                         <tr id="{{ commit.hash }}">
@@ -109,7 +110,7 @@
                                 {% if commit_id != commit.hash %}
                                     <a href="{% url misc.views.gitlog %}?show={{ commit.hash }}#{{ commit.hash }}">diff</a>
                                 {% else %}
-                                    <a href="{% url misc.views.gitlog %}">hide</a>
+                                    <a href="{% url misc.views.gitlog %}">{% trans "hide" %}</a>
                                 {% endif %}
                             </td>
                         </tr>
@@ -127,13 +128,13 @@
                 </table>
 
             {% else %}
-                {{ contact_name }} has no commits in git log.
+                {% blocktrans %}{{ contact_name }} has no commits in git log.{% endblocktrans %}
             {% endif %}
 
         </div>
 
     <div class="tab-pane" id="debug">
-            <h4>Information available via livestatus:</h4>
+            <h4>{% trans "Information available via livestatus:" %}</h4>
             <table class="table-condensed table">
                 {% for k,v in contact.items %}
                     <tr>

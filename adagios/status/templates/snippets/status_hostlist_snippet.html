@@ -1,5 +1,6 @@
 <!-- snippet status_hostlist_snippet.html starts -->
 {% load adagiostags %}
+{% load i18n %}
 
 <table class="table table-condensed well searchtable" id="hoststable" style="font-size:12px;">
     <thead>
@@ -10,19 +11,20 @@
                     <input style="margin-left: -1px; padding: 0px;" type="checkbox" class="select_many">
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="select_all"> All</a></li>
-                    <li><a class="select_none"> None</a></li>
-                    <li><a class="select_unhandled_problems" > Unhandled Problems</a></li>
-                    <li><a class="select_problems"> All Problems</a></li>
+                    <li><a class="select_all">{% trans " All" %}</a></li>
+                    <li><a class="select_none">{% trans " None" %}</a></li>
+                    <li><a class="select_unhandled_problems" >{% trans " Unhandled Problems" %}</a></li>
+                    <li><a class="select_problems">{% trans " All Problems" %}</a></li>
                 </ul>
             </div>
         </th>
         <th></th>
-        <th>Host Name</th>
-        <th>Address</th>
-        <th>Last Check</th>
-        <th>Host Status</th>
-        <th>Service Status</th>
+        <th>{% trans "Host Name" %}</th>
+        <th>{% trans "Address" %}</th>
+        <th>{% trans "Duration" %}</th>
+        <th>{% trans "Last Check" %}</th>
+        <th>{% trans "Host Status" %}</th>
+        <th>{% trans "Service Status" %}</th>
     </tr>
     </thead>
     <tbody>
@@ -39,25 +41,34 @@
                 </a>
             </td>
             <td>
-                <a id="{{ row.name }}" href="{% url status.views.status_detail %}?host_name={{ row.name }}">
+                <a id="{{ row.name }}" href="{% url status.views.detail %}?host_name={{ row.name }}">
                     {{ row.name }}
                 </a>
             </td>
             <td>{{ row.address }}</td>
             <td>
+                {% if row.last_state_change != 0 %}
+                    <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
+                        {{ row.last_state_change|timestamp|timesince }}
+                    </span>
+                {% endif %}
+            </td>
+            <td>
             {% if row.last_check != 0 %}
+                <span title="{{ row.last_state_change|timestamp|date:'Y-m-d H:i' }}">
                 {{ row.last_check|timestamp|timesince }} ago
+                </span>
             {% else %}
                 never
             {% endif %}
             </td>
             {% if row.last_check == 0 %}
-                <td class="alert alert-info">Pending</td>
+            <td class="alert alert-info">{% trans "Pending" %}</td>
             {% else %}
                 {% if row.state  == 0 %}
-                    <td class="alert alert-success">Host UP</td>
+                <td class="alert alert-success">{% trans "Host UP" %}</td>
                 {% else %}
-                    <td class="alert alert-danger">{% if row.childs %}Network outage {% else %}Host Down {% endif %}</td>
+                <td class="alert alert-danger">{% if row.childs %}{% trans "Network outage" %} {% else %}{% trans "Host Down" %} {% endif %}</td>
                 {% endif %}
             {% endif %}
             <td>
@@ -75,7 +86,7 @@
                 <td colspan=5>
                     <div style="margin-left: 10px;" class="circle state_{{ i.1 }}"></div>
                     <span>
-                    <a href="{% url status.views.status_detail %}?host_name={{ row.name }}&service_description={{ i.0 }}">{{i.0 }}</a> - {{ i.3 }}
+                    <a href="{% url status.views.detail %}?host_name={{ row.name }}&service_description={{ i.0 }}">{{i.0 }}</a> - {{ i.3 }}
                     </span>
                 </td>
             </tr>
@@ -83,4 +94,9 @@
     {% endfor %}
     </tbody>
 </table>
+
+<script>
+    // Enable the multiselect checkbox in all status tables
+    adagios.status.initilize_multiselect_checkboxes();
+</script>
 <!-- snippet status_hostlist_snippet.html ends -->

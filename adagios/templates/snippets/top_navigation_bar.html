@@ -1,4 +1,6 @@
 <!-- snippets/header.html starts. This is the top navigation header on our page -->
+{% load i18n %}
+
 <div id="top_navigation_bar" class="navbar navbar-fixed-top" xmlns="http://www.w3.org/1999/html">
     <div class="navbar-inner">
         <div class="container-fluid" style="padding-right: 0px;">
@@ -11,13 +13,13 @@
             <!-- Logo in top nav -->
             <a class="brand" href="{% url home %}">Adagios</a>
             <div class="nav-collapse">
-                <ul class="nav">
+                <ul class="nav" id="top_navigation_menuitems">
 
 
 
                     <!-- Object Browser -->
                     <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
-                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-grey glyph-edit"></i> Configure</a>
+                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-grey glyph-edit"></i> {% trans "Configure" %}</a>
                     </li>
 
                     <!-- Nagios -->
@@ -41,36 +43,29 @@
                 <ul class="nav pull-right">
                     {% if not nagios_running %}
                         <li>
-		    <form action="{% url misc.views.nagios_service %}" method="POST">
-		    {% csrf_token %}
-                      <input type="hidden" name="start" value="1" />
-                      <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
-                    </form>
+                            <form action="{% url misc.views.nagios_service %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="start" value="1" />
+                                <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
+                            </form>
                         </li>
                     {% endif %}
+
                     <li class="nagios_needs_reload">
                         <a  title="Nagios Service needs a reload for configuration changes to take effect." href="#">
                             <span id="nagios_needs_reload_button" class="hide">
-                            <i  class="glyph-white glyph-refresh" onclick="adagios.misc.reload_nagios();"></i>
+                            <i  class="glyph-grey glyph-refresh" onclick="adagios.misc.reload_nagios();"></i>
                             </span>
                         </a>
                     </li>
                     {% if num_problems and plugins.status  %}
                         <li style="color: red;">
                         <a style="color: red;" href="{% url status.views.problems %}?unhandled">
-                            <i class="glyph-white  glyph-warning-sign" title="You have unhandled problems"></i>
+                            <i class="glyph-grey  glyph-warning-sign" title="You have unhandled problems"></i>
                             {{ num_problems }}
                         </a>
                         </li>
                     {% endif %}
-                    <!--
-                    <li>
-                        <a data-toggle="modal"
-                           href="#notifications">
-                            <div class="badge{% if notifications|length %} badge-warning{% endif %}"><span id="num_notifications">{{ notifications|length }}</span> Notification{% if notifications|length != 1 %}s{% endif %}</div>
-                        </a>
-                    </li>
-                    -->
 
                     <li class="dropdown"><a><i class="glyph-grey glyph-clock"></i> {{ current_time }}</a></li>
 
@@ -90,9 +85,9 @@
                                 </li>
                             {% endif %}
                             {% if plugins.status %}
-                                <li><a href="{% url status.views.contact_detail remote_user %}">My Profile</a></li>
+                                <li><a href="{% url status.views.contact_detail remote_user %}">{% trans "My Profile" %}</a></li>
                             {% endif %}
-                            <li><a href="{% url misc.views.sign_out %}">Sign Out</a></li>
+                            <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -101,18 +96,18 @@
                            href="#"><i class="glyph-cogwheel glyph-grey"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="https://github.com/opinkerfi/adagios/issues">Report Bug</a></li>
-                            <li><a href="https://github.com/opinkerfi/adagios/issues">Make Suggestion</a></li>
-                            <li><a href="http://adagios.org/">Project Webpage</a></li>
+                            <li><a href="https://github.com/opinkerfi/adagios/issues">{% trans "Report Bug" %}</a></li>
+                            <li><a href="https://github.com/opinkerfi/adagios/issues">{% trans "Make Suggestion" %}</a></li>
+                            <li><a href="http://adagios.org/">{% trans "Project Webpage" %}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{%  url objectbrowser.views.show_plugins %}">Missing Plugins</a></li>
-                            <li><a href="{%  url objectbrowser.views.edit_nagios_cfg %}">Edit nagios.cfg</a></li>
-                            <li><a href="{%  url misc.views.nagios_service %}">Nagios Service</a></li>
-                            <li><a href="{%  url misc.views.gitlog %}">Object History</a></li>
-                            <li><a href="{%  url objectbrowser.views.config_health %}">Config Health</a></li>
-                            <li><a href="{%  url misc.views.settings %}">Settings</a></li>
+                            <li><a href="{%  url objectbrowser.views.show_plugins %}">{% trans "Missing Plugins" %}</a></li>
+                            <li><a href="{%  url objectbrowser.views.edit_nagios_cfg %}">{% trans "Edit nagios.cfg" %}</a></li>
+                            <li><a href="{%  url misc.views.nagios_service %}">{% trans "Nagios Service" %}</a></li>
+                            <li><a href="{%  url misc.views.gitlog %}">{% trans "Object History" %}</a></li>
+                            <li><a href="{%  url objectbrowser.views.config_health %}">{% trans "Config Health" %}</a></li>
+                            <li><a href="{%  url misc.views.settings %}">{% trans "Settings" %}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{%  url misc.views.pnp4nagios %}">PNP Integration</a></li>
+                            <li><a href="{%  url misc.views.pnp4nagios %}">{% trans "PNP Integration" %}</a></li>
                             <!-- Any extra plugins can put an entry in the menubar -->
                             {% for i in misc_menubar_items %}
                                 <!-- Plugin menubar for {{ i }} -->
@@ -127,27 +122,5 @@
         </div>
     </div>
 </div>
-
-
-    <div class="modal hide fade" id="notifications">
-        <div class="modal-header"><h3>Notifications: <span id="num_notifications">{{ notifications|length }}</span></h3></div>
-        <div class="modal-body">
-            {%  for id,notification in notifications.items %}
-                <div class="alert alert-{{ notification.level }}" data-notification-dismiss="{{ id }}">
-
-                    <strong>{{ notification.level }}!</strong> {{  notification.message }}
-                    <div class="pull-right">
-                        <a href="#" data-dismiss="alert">
-                            Hide
-                        </a>
-                    </div>
-                </div>
-            {%  endfor %}
-        </div>
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal">Close</button>
-        </div>
-    </div>
-
 
 <!-- snippets/header.html ends -->

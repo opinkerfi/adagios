@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}{% endblock title %}
+
+{% block top_navigation %}{{ block.super }}{% endblock top_navigation %}
+{% block page_header %}{{ block.super }}{% endblock page_header %}
+
+
+
+{% block header %}{{ block.super }}{% endblock header %}
+
+{% block nav1 %}{{ block.super }}{% endblock nav1 %}
+{% block nav2 %}{{ block.super }}{% endblock nav2 %}
+
+{% block smallheader %}{{ block.super }}{% endblock smallheader %}
+{% block largeheader %}{{ block.super }}{% endblock largeheader %}
+
+
+<!-- Main contents go in here -->
+{% block content %}
+    <p>
+    Stuff the main content of your view in here. Your main content should go in here.
+    </p>
+    <ul id="hostlist"></ul>
+
+    <ul class="hide" id="prototype">
+        <li>
+            <div class="link-to-host" data-host_name=HOSTNAME data-state=STATE data-tag=UNHANDLED>HOSTNAME</div>
+        </li>
+    </ul>
+{% endblock content %}
+
+{% block footer %}
+    {{ block.super }}
+    <script>
+        var p = {};
+        function inject_hostlist(div, hosts) {
+            var html = '';
+            var prototype = $("#prototype").html();
+            var host, state, unhandled;
+            for (var i= 0; i<hosts.length; i+=1) {
+                host = hosts[i];
+                state = host.state;
+                html += prototype
+                        .replace(/STATE/, host.state)
+                        .replace(/UNHANDLED/, host.unhandled)
+                        .replace('HOSTNAME', host.name);
+            }
+            div.html(html);
+
+        }
+        adagios.rest.status.hosts(p)
+                .done(function(data) {
+                    var destination = $("#hostlist");
+                    inject_hostlist(destination, data);
+                });
+
+    </script>
+{% endblock footer %}
+
+{% block toolbar %}<div class="alert alert-info">{% trans "Toolbar goes here" %}</div>{% endblock toolbar %}2

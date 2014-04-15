@@ -1,3 +1,20 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Django settings for adagios project.
 
 DEBUG = True
@@ -73,15 +90,25 @@ MEDIA_URL = 'media/'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     #'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'adagios.auth.AuthorizationMiddleWare',
     #'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
+)
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('fr', 'French'),
+)
+
+LOCALE_PATHS = (
+    "%s/locale/" % (djangopath),
 )
 
 ROOT_URLCONF = 'adagios.urls'
@@ -119,7 +146,22 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages")
 
- 
+
+# Themes options #
+# To rapidly switch your theme, update THEME_DEFAULT and leave the rest.
+
+# folders in which themes files will be looked up
+THEMES_FOLDER = 'themes' # in 'media/'
+
+# default theme in use, it should be present in the THEMES_FOLDER
+# (or at least through a symbolic link)
+THEME_DEFAULT = 'default'
+
+# CSS entry-point, in the theme folder
+THEME_ENTRY_POINT = 'style.css'
+
+# generated location of
+THEME_CSS = os.path.join(THEMES_FOLDER, THEME_DEFAULT, THEME_ENTRY_POINT)
 
 
 # Adagios specific configuration options. These are just the defaults,
@@ -128,13 +170,14 @@ nagios_config=None # Sensible default is "/etc/nagios/nagios.cfg"
 nagios_url="/nagios"
 nagios_init_script = "/etc/init.d/nagios"
 nagios_binary = "/usr/bin/nagios"
+livestatus_path = None
 enable_githandler=False
 enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
-enable_pages_view = True
 enable_bi = True
 contrib_dir = "/var/lib/adagios/contrib/"
+serverside_includes = "/etc/adagios/ssi"
 escape_html_tags = True
 warn_if_selinux_is_active = True
 destination_directory="/etc/nagios/adagios/"
@@ -146,9 +189,7 @@ django_secret_key = ""
 map_center = "64.119595,-21.655426"
 map_zoom = "10"
 title_prefix = "Adagios - "
-
-# pages module, path to extra pages the user can upload
-extra_pages = "/etc/adagios/pages.d"
+auto_reload = False
 
 plugins = {}
 
@@ -193,21 +234,21 @@ if not django_secret_key:
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
     SECRET_KEY = get_random_string(50, chars)
     try:
-        fh = open(adagios_configfile, "a")
-        fh.write("\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n"
-            % SECRET_KEY)
-        fh.close()
+        data = "\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n" % SECRET_KEY
+        with open(adagios_configfile, "a") as config_fh:
+            config_fh.write(data)
     except Exception, e:
-                raise Exception("Unable to save generated django_secret_key: %s" % e)
+        print("ERROR: Got %s while trying to save django secret_key in %s" % (type(e), adagios_configfile))
+
 else:
     SECRET_KEY = django_secret_key
 
+ALLOWED_INCLUDE_ROOTS = (serverside_includes,)
+
 if enable_status_view:
-  plugins['status'] = 'adagios.status'
-if enable_pages_view:
-  plugins['pages'] = 'adagios.pages'
+    plugins['status'] = 'adagios.status'
 if enable_bi:
-  plugins['bi'] = 'adagios.bi'
+    plugins['bi'] = 'adagios.bi'
 
 for k,v in plugins.items():
     INSTALLED_APPS.append( v )

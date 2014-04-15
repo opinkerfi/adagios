@@ -1,3 +1,20 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import pynag.Model
 import os
 import getpass
@@ -13,6 +30,8 @@ from pynag import Model
 import time
 import datetime
 from adagios import __version__
+
+from django.utils.translation import ugettext as _
 
 def on_page_load(request):
     """ Collection of actions that take place every page load """
@@ -53,7 +72,8 @@ def on_page_load(request):
         results[k] = v
     for k, v in get_current_version(request).items():
         results[k] = v
-
+    for k, v in get_serverside_includes(request).items():
+        results[k] = v
     return results
 
 
@@ -67,6 +87,36 @@ def get_current_time(request):
         result['current_timestamp'] = int(time.time())
     except Exception:
         return result
+    return result
+
+
+def get_serverside_includes(request):
+    """ Returns a list of serverside includes to include on this page """
+    result = {}
+    try:
+        result['ssi_headers'] = []
+        result['ssi_footers'] = []
+        dirname = adagios.settings.serverside_includes
+        current_url = resolve_urlname(request)
+        if not dirname:
+            return {}
+        if not os.path.isdir(dirname):
+            return {}
+        files = os.listdir(dirname)
+        common_header_file = "common-header.ssi"
+        common_footer_file = "common-footer.ssi"
+        custom_header_file = "{urlname}-header.ssi".format(urlname=current_url)
+        custom_footer_file = "{urlname}-footer.ssi".format(urlname=current_url)
+        if common_header_file in files:
+            result['ssi_headers'].append(dirname + "/" + common_header_file)
+        if common_footer_file in files:
+            result['ssi_footers'].append(dirname + "/" + common_footer_file)
+        if custom_header_file in files:
+            result['ssi_headers'].append(dirname + "/" + custom_header_file)
+        if custom_footer_file in files:
+            result['ssi_footers'].append(dirname + "/" + custom_footer_file)
+    except Exception:
+        return {}
     return result
 
 
@@ -103,18 +153,16 @@ def resolve_urlname(request):
         if res:
             return {'urlname': res.url_name}
     except Exception:
-        return {}
+        return {'urlname': 'None'}
 
 
 def get_httpuser(request):
     """ Get the current user that is authenticating to us and update event handlers"""
     try:
-        remote_user = request.META.get('REMOTE_USER', 'anonymous')
-        for i in pynag.Model.eventhandlers:
-            i.modified_by = remote_user
+        remote_user = request.META.get('REMOTE_USER', None)
     except Exception:
-        remote_user = None
-    return {'remote_user': remote_user}
+        remote_user = "anonymous"
+    return {'remote_user': remote_user or "anonymous"}
 
 
 def get_nagios_url(request):
@@ -210,45 +258,12 @@ def check_destination_directory(request):
             dest_dir_was_found = True
     if not dest_dir_was_found:
         add_notification(level="warning", notification_id="dest_dir",
-                         message="Destination for new objects (%s) is not defined in nagios.cfg" % dest)
+                         message=_("Destination for new objects (%s) is not defined in nagios.cfg") % dest)
     elif not os.path.isdir(dest):
         add_notification(level="warning", notification_id="dest_dir",
-                         message="Destination directory for new objects (%s) is not found. Please create it." % dest)
+                         message=_("Destination directory for new objects (%s) is not found. Please create it.") % dest)
     else:
         clear_notification(notification_id="dest_dir")
-    return {}
-
-
-def check_git(request):
-    """ Notify user if there is uncommited data in git repository """
-    nagiosdir = os.path.dirname(pynag.Model.config.cfg_file)
-    if settings.enable_githandler == True:
-        try:
-            git = pynag.Model.EventHandlers.GitEventHandler(
-                nagiosdir, 'adagios', 'adagios')
-            uncommited_files = git.get_uncommited_files()
-            if len(uncommited_files) > 0:
-                add_notification(level="warning", notification_id="uncommited",
-                                 message="There are %s uncommited files in %s" % (len(uncommited_files), nagiosdir))
-            else:
-                clear_notification(notification_id="uncommited")
-            clear_notification(notification_id="git_missing")
-
-        except pynag.Model.EventHandlers.EventHandlerError, e:
-            if e.errorcode == 128:
-                add_notification(
-                    level="warning", notification_id="git_missing",
-                    message="Git Handler is enabled but there is no git repository in %s. Please init a new git repository." % nagiosdir)
-        # if okconfig is installed, make sure okconfig is notified of git
-        # settings
-        try:
-            author = request.META.get('REMOTE_USER', 'anonymous')
-            from pynag.Utils import GitRepo
-            import okconfig
-            okconfig.git = GitRepo(directory=os.path.dirname(
-                adagios.settings.nagios_config), auto_init=False, author_name=author)
-        except Exception:
-            pass
     return {}
 
 
@@ -266,14 +281,19 @@ def check_nagios_running(request):
 
 def check_selinux(request):
     """ Check if selinux is enabled and notify user """
-    if not settings.warn_if_selinux_is_active == True:
-        return {}
-    try:
-        if open('/sys/fs/selinux/enforce', 'r').readline().strip() == "1":
-            add_notification(
-                level="warning", message='SELinux is enabled, that is not supported, please disable it, see https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Disabling_SELinux')
-    except Exception:
-        pass
+    notification_id = "selinux_active"
+    if settings.warn_if_selinux_is_active:
+        try:
+            if open('/sys/fs/selinux/enforce', 'r').readline().strip() == "1":
+                add_notification(
+                    level="warning",
+                    message=_('SELinux is enabled, which is likely to give your monitoring engine problems., see <a href="https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html-single/Security-Enhanced_Linux/index.html#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Disabling_SELinux">here</a> for information on how to disable it.'),
+                    notification_id=notification_id,
+                )
+        except Exception:
+            pass
+    else:
+        clear_notification(notification_id)
     return {}
 
 

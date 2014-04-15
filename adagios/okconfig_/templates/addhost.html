@@ -1,15 +1,18 @@
-{% extends "base_okconfig.html" %}
-{% block title %}Add Host{% endblock %}
-{% block smallheader %}Add{% endblock %}
-{% block largeheader %}Host{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.addhost %}">Add Host</a>{% endblock %}
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Add Host" %}{% endblock %}
+{% block smallheader %}{% trans "Add" %}{% endblock %}
+{% block largeheader %}{% trans "Host" %}{% endblock %}
+{% block toolbar %}{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.addhost %}">{% trans "Add Host" %}</a>{% endblock %}
 
 {% block content %}
     <br/>
 	<form action="#" method="post" class="form-horizontal">{% csrf_token %}
         {% include "bootstrap_fields.html" with fields=form %}
         <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Submit</button>
+            <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
         </div>
 	</form>
 {% endblock %}
@@ -22,11 +25,10 @@
     <script>
         $('#id_host_name').focusout(function() {
             if ($('#id_address').val() == "") {
-                $.getJSON('{% url rest/pynag %}json/dnslookup',
-                        {
-                            host_name: $(this).val()
-                        },
-                        function(data) {
+                var parameters = {};
+                parameters['host_name'] = $(this).val();
+                adagios.rest.pynag.dnslookup(parameters)
+                        .done( function(data) {
                             $('#id_address').val(data['addresslist'][0]);
                         }
                 );

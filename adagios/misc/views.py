@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2010, Pall Sigurdsson <palli@opensource.is>
+# Adagios is a web based Nagios configuration interface
 #
-# This script is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Copyright (C) 2010, Pall Sigurdsson <palli@opensource.is>
 #
-# This script is distributed in the hope that it will be useful,
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Affero General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.core.context_processors import csrf
 from django.forms.formsets import BaseFormSet
 from django.shortcuts import render_to_response
 from django.shortcuts import render
+from django.utils.translation import ugettext as _
 
 from django.shortcuts import HttpResponse
 from django.template import RequestContext
@@ -43,21 +46,21 @@ from adagios import __version__
 import adagios.status.utils
 
 from collections import defaultdict
-from adagios.views import error_handler, error_page
+from adagios.views import adagios_decorator, error_page
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
-@error_handler
+@adagios_decorator
 def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file
     c['version'] = __version__
     return render_to_response('frontpage.html', c, context_instance=RequestContext(request))
 
-
+@adagios_decorator
 def settings(request):
     c = {}
     c.update(csrf(request))
@@ -71,49 +74,23 @@ def settings(request):
         if form.is_valid():
             try:
                 form.save()
-                m.append("%s successfully saved." % form.adagios_configfile)
+                m.append(_("%s successfully saved.") % form.adagios_configfile)
             except IOError, exc:
                 e.append(exc)
+    else:
+        raise Exception(_("We only support methods GET or POST"))
     c['form'] = form
     return render_to_response('settings.html', c, context_instance=RequestContext(request))
 
 
-def contact_us(request):
-    """ Bring a small form that has a "contact us" form on it """
-    c = {}
-    c.update(csrf(request))
-    if request.method == 'GET':
-        form = forms.ContactUsForm(initial=request.GET)
-    else:
-        form = forms.ContactUsForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            c['thank_you'] = True
-            c['sender'] = form.cleaned_data['sender']
-
-    c['form'] = form
-    return render_to_response('contact_us.html', c,  context_instance=RequestContext(request))
-
-
+@adagios_decorator
 def nagios(request):
     c = {}
     c['nagios_url'] = adagios.settings.nagios_url
     return render_to_response('nagios.html', c, context_instance=RequestContext(request))
 
 
-def map_view(request):
-    c = {}
-    try:
-        import pynag.Parsers
-        livestatus = pynag.Parsers.mk_livestatus()
-        c['hosts'] = livestatus.get_hosts()
-        c['map_center'] = adagios.settings.map_center
-        c['map_zoom'] = adagios.settings.map_zoom
-    except Exception:
-        pass
-    return render_to_response('map.html', c, context_instance=RequestContext(request))
-
-
+@adagios_decorator
 def gitlog(request):
     """ View that displays a nice log of previous git commits in dirname(config.cfg_file) """
     c = {}
@@ -142,16 +119,16 @@ def gitlog(request):
             elif 'git_commit' in request.POST:
                 filelist = []
                 commit_message = request.POST.get(
-                    'git_commit_message', "bulk commit by adagios")
+                    'git_commit_message', _("bulk commit by adagios"))
                 for i in request.POST:
                     if i.startswith('commit_'):
                         filename = i[len('commit_'):]
                         git.add(filename)
                         filelist.append(filename)
                 if len(filelist) == 0:
-                    raise Exception("No files selected.")
+                    raise Exception(_("No files selected."))
                 git.commit(message=commit_message, filelist=filelist)
-                m.append("%s files successfully commited." % len(filelist))
+                m.append(_("%s files successfully commited.") % len(filelist))
         except Exception, e:
             c['errors'].append(e)
     # Check if nagiosdir has a git repo or not
@@ -194,6 +171,7 @@ def gitlog(request):
     return render_to_response('gitlog.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def nagios_service(request):
     """ View to restart / reload nagios service """
     c = {}
@@ -224,12 +202,13 @@ def nagios_service(request):
     elif s == 1:
         c['friendly_status'] = "not running"
     else:
-        c['friendly_status'] = 'unknown (exit status %s)' % (s)
+        c['friendly_status'] = 'unknown (exit status %s)' % (s, )
     needs_reload = pynag.Model.config.needs_reload()
     c['needs_reload'] = needs_reload
     return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def pnp4nagios(request):
     """ View to handle integration with pnp4nagios """
     c = {}
@@ -251,26 +230,27 @@ def pnp4nagios(request):
             data=request.POST)
         if broker_form.is_valid():
             broker_form.save()
-            m.append("Broker Module updated in nagios.cfg")
+            m.append(_("Broker Module updated in nagios.cfg"))
     elif request.method == 'POST' and 'save_action_url' in request.POST:
         c['action_url'] = forms.PNPActionUrlForm(data=request.POST)
         if c['action_url'].is_valid():
             c['action_url'].save()
-            m.append('Action_url updated for %s services' %
+            m.append(_('Action_url updated for %s services') %
                      c['action_url'].total_services)
             if c['action_url'].error_services > 0:
                 e.append(
-                    "%s services could not be updated (check permissions?)" %
+                    _("%s services could not be updated (check permissions?)") %
                     c['action_url'].error_services)
     elif request.method == 'POST' and 'save_npcd_config' in request.POST:
         c['npcd_config'] = forms.PNPConfigForm(data=request.POST)
         if c['npcd_config'].is_valid():
             c['npcd_config'].save()
-            m.append("npcd.cfg updated")
+            m.append(_("npcd.cfg updated"))
 
     return render_to_response('pnp4nagios.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit_file(request, filename):
     """ This view gives raw read/write access to a given filename.
 
@@ -293,12 +273,14 @@ def edit_file(request, filename):
     return render_to_response('editfile.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def edit_nagios_cfg(request):
     """ Allows raw editing of nagios.cfg configfile
     """
     return edit_file(request, filename=adagios.settings.nagios_config)
 
 
+@adagios_decorator
 def pnp4nagios_edit_template(request, filename):
     """ Allows raw editing of a pnp4nagios template.
 
@@ -310,9 +292,10 @@ def pnp4nagios_edit_template(request, filename):
         return edit_file(request, filename=filename)
     else:
         raise Exception(
-            "Security violation. You are not allowed to edit %s" % filename)
+            _("Security violation. You are not allowed to edit %s") % filename)
 
 
+@adagios_decorator
 def icons(request, image_name=None):
     """ Use this view to see nagios icons/logos
     """
@@ -342,14 +325,10 @@ def icons(request, image_name=None):
             fsock = open("%s/%s" % (image_path, image_name,))
             return HttpResponse(fsock, mimetype=mime_type)
         else:
-            raise Exception("Not allowed to see this image")
+            raise Exception(_("Not allowed to see this image"))
 
 
-def sign_out(request):
-    """ Use this to force browser to update authentication """
-    return HttpResponse('You have been signed out', status=401)
-
-
+@adagios_decorator
 def mail(request):
     """ Send a notification email to one or more contacts regarding hosts or services """
     c = {}
@@ -373,17 +352,18 @@ def mail(request):
         c['form'] = forms.SendEmailForm(remote_user, data=request.POST)
         services = request.POST.getlist('service') or request.POST.getlist('service[]')
         hosts = request.POST.getlist('host') or request.POST.getlist('host[]')
+        c['acknowledged_or_not'] = request.POST.get('acknowledge_all_problems') == 'true'
 
     for host_name in hosts:
         host_object = adagios.status.utils.get_hosts(request, host_name=host_name)
         if not host_object:
             c['errors'].append(
-                "Host %s not found. Maybe a typo or you do not have access to it." % host_name
+                _("Host %s not found. Maybe a typo or you do not have access to it.") % host_name
             )
             continue
         for item in host_object:
             item['host_name'] = item['name']
-            item['description'] = "Host Status"
+            item['description'] = _("Host Status")
             c['form'].status_objects.append(item)
             c['form'].hosts.append(item)
 
@@ -396,14 +376,14 @@ def mail(request):
                                                         )
             if not service:
                 c['errors'].append(
-                    'Service "%s"" not found. Maybe a typo or you do not have access to it ?' % i)
+                    _('Service "%s"" not found. Maybe a typo or you do not have access to it ?') % i)
             for x in service:
                 c['form'].status_objects.append(x)
                 c['form'].services.append(x)
         except AttributeError, e:
-            c['errors'].append("AttributeError for '%s': %s" % (i, e))
+            c['errors'].append(_("AttributeError for '%(i)s': %(e)s") % {'i': i, 'e': e})
         except KeyError, e:
-            c['errors'].append("Error adding service '%s': %s" % (i, e))
+            c['errors'].append(_("Error adding service '%(i)s': %(e)s") % {'i': i, 'e': e})
 
     c['services'] = c['form'].services
     c['hosts'] = c['form'].hosts
@@ -415,6 +395,8 @@ def mail(request):
     return render_to_response('misc_mail.html', c, context_instance=RequestContext(request))
 
 
+
+@adagios_decorator
 def test(request):
     """ Generic test view, use this as a sandbox if you like
     """
@@ -422,6 +404,8 @@ def test(request):
     c['messages'] = []
     c.update(csrf(request))
     # Get some test data
+
+    print "you are: ", get_access_level(request)
 
     if request.method == 'POST':
         c['form'] = forms.PluginOutputForm(data=request.POST)
@@ -433,42 +417,7 @@ def test(request):
     return render_to_response('test.html', c, context_instance=RequestContext(request))
 
 
-def edit_check_command(request):
-    """ Generic view for editing check command of a service
-    """
-    c = {}
-    c['messages'] = []
-    c['errors'] = []
-    c.update(csrf(request))
-
-    for i in 'host_name', 'service_description', 'check_command':
-        if i in request.GET:
-            c[i] = request.GET.get(i).split('!')[0]
-        else:
-            c['errors'].append("%s is required" % i)
-            return render_to_response('edit_check_command.html', c, context_instance=RequestContext(request))
-
-    hosts = pynag.Model.Host.objects.filter(host_name=c['host_name'])
-    if len(hosts) == 0:
-        c['errors'].append("Host %s was not found " % (c['host_name']))
-    services = pynag.Model.Service.objects.filter(
-        host_name=c['host_name'], service_description=c['service_description'])
-    if len(services) == 0:
-        c['errors'].append("Service %s/%s was not found " %
-                           (c['host_name'], c['service_description']))
-    command_names = map(
-        lambda x: x.get("command_name", ''), pynag.Model.Command.objects.all)
-    if c['check_command'] in (None, '', 'None'):
-        c['check_command'] = ''
-    elif c['check_command'] not in command_names:
-        c['errors'].append(
-            "Check Command %s was not found " % (c['check_command']))
-    c['command_names'] = command_names
-
-    # Overwrites from the browser
-    return render_to_response('edit_check_command.html', c, context_instance=RequestContext(request))
-
-
+@adagios_decorator
 def paste(request):
     """ Generic test view, use this as a sandbox if you like
     """

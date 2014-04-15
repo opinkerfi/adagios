@@ -1,12 +1,18 @@
 {% extends "edit_object.html" %}
+{% load i18n %}
+
 {% block title %}{{ block.super }}{% endblock %}
 
 {% block header %}{{ block.super }}{% endblock %}
+{% block smallheader %}{{ my_object.object_type }}{% endblock %}
+{% block largeheader %}
+    {{ my_object.service_description }} <small>{% trans "on host" %}</small> {{ my_object.host_name }}
+{% endblock %}
 
 
 {% block sidebar %}{{ block.super }}{% endblock %}
 
-{% block adagios_hausinn %}
+{% block page_header %}
     {{ block.super }}
     {% if status.text and status.plugin_output %}
         <div class="row-fluid" id="top_status">
@@ -23,8 +29,8 @@
         <ul class="nav nav-tabs" id="objecttab">
             <li><a href="#general" data-toggle="tab">General</a></li>
             <li><a href="#monitoring" data-toggle="tab">Monitoring</a></li>
-            <li><a href="#notifications_tab" data-toggle="tab">Notifications</a></li>
-            <li id="macros_li"><a href="#macros_tab" data-toggle="tab">Macros</a></li>
+            <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+            <li id="macros_li"><a href="#macros" data-toggle="tab">Macros</a></li>
             <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
         </ul>
         <form class="form-horizontal" action="#" method="POST">{% csrf_token %}
@@ -38,14 +44,14 @@
                     </fieldset>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
 
                 <div class="tab-pane" id="monitoring">
                     <div class="control-group">
                         <label class="control-label" for="check_command">
-                            Check Command
+                            {% trans "Check Command" %}
                         </label>
                         <div class="controls" id="check_command">
                             <input id="check_command_actual_entry" type="hidden" name="check_command" value="{{ form.check_command.value }}"/>
@@ -61,7 +67,7 @@
                                 <tbody id="other_attributes_table"></tbody>
                             </table>
 
-                            <label class="help-block">Check command is a previously defined command, that runs the actual plugin. The input boxes below are automatically generated based on what check command you select. In the command_line previews below you can see the actual command that nagios will run.</label>
+                            <label class="help-block">{% trans "Check command is a previously defined command, that runs the actual plugin. The input boxes below are automatically generated based on what check command you select. In the command_line previews below you can see the actual command that nagios will run." %}</label>
                         </div>
 
                     </div>
@@ -71,7 +77,7 @@
                     <div id="check_command_editor_tables">
                         <div class="control-group">
                             <label class="control-label" for="original_command_line_div">
-                                Command Line
+                                {% trans "Command Line" %}
                             </label>
                             <div class="controls" id="original_command_line_div">
                                 <pre  id="original_command_line"></pre>
@@ -81,10 +87,10 @@
 
                         <div class="control-group">
                             <label class="control-label" for="effective_command_line">
-                                Expanded Command Line
+                                {% trans "Expanded Command Line" %}
                             </label>
                             <div class="controls" id="effective_command_line">
-                                <pre id="command_line_preview">Loading...</pre>
+                                <pre id="command_line_preview">{% trans "Loading..." %}</pre>
                             </div>
                         </div>
 
@@ -97,12 +103,11 @@
                     </fieldset>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
-                        <button class="btn">Cancel</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
                 </div>
 
-                <div class="tab-pane" id="notifications_tab">
+                <div class="tab-pane" id="notifications">
                     <fieldset>
                         {% include "bootstrap_field.html" with field=form.notification_interval %}
                         {% include "bootstrap_field.html" with field=form.first_notification_delay %}
@@ -112,14 +117,15 @@
                         {% include "bootstrap_field.html" with field=form.contacts %}
                     </fieldset>
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
-                        <button class="btn">Cancel</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
 
                 </div>
-                <div class="tab-pane" id="macros_tab">
+                <div class="tab-pane" id="macros">
                     <div class="well">
-                        This tab contains custom macros (also called "custom variables") for this {{ my_object.object_type }}.
+                        {% blocktrans with type=my_object.object_type %}
+			This tab contains custom macros (also called "custom variables") for this {{ type }}.
+			{% endblocktrans %}
                     </div>
                     <fieldset>
                         {% for field in form %}
@@ -129,7 +135,7 @@
                         {% endfor %}
                     </fieldset>
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Save changes</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Save changes" %}</button>
                     </div>
 
                 </div>
@@ -139,14 +145,14 @@
 
                     {% include "bootstrap_fields.html" with fields=advanced_form %}
                     <div class="form-actions">
-                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
                     </div>
                 </form>
             </div>
         </div>
 
     {% else %}
-        <p>Object not found </p>
+        <p>{% trans "Object not found" %} </p>
     {% endif %}
 {% endblock %}
 
@@ -157,14 +163,14 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-                    if ( $('div.tab-pane#macros_tab fieldset').children().length ) {
+                    if ( $('div.tab-pane#macros fieldset').children().length ) {
                         $('li#macros_li').show();
                     }
 
 
                     // Activate a clever check_command_editor
 
-                    editor = adagios.objectbrowser.CheckCommandEditor( {
+                    var editor = adagios.objectbrowser.CheckCommandEditor( {
                         host_name: "{{ my_object.host_name }}",
                         check_command: "{{ check_command }}",
                         name: "{{ my_object.name }}",

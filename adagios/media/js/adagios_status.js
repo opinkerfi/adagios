@@ -3,8 +3,54 @@ window.adagios = window.adagios || {};
 adagios.status = adagios.status || {};
 adagios.objectbrowser = adagios.objectbrowser || {};
 adagios.misc = adagios.misc || {};
+adagios.bi = adagios.bi || {};
 
 adagios.misc.__notification_id_counter = 0;
+
+
+$(document).ready(function() {
+
+    // Create good default behaviour for bootstrap tabs
+    adagios.misc.init_tab_selection();
+
+    // Disable all links that have the class 'disabled'
+    adagios.status.make_disabled_links_unclickable();
+
+    // Put keyboard focus on the search box
+    adagios.status.enable_search_box();
+
+    // Configure what happens when user clicks a selectable row or checkbox
+    adagios.status.enable_clickable_rows();
+
+    // Enable/disable toolbar and action buttons
+    adagios.status.count_selected_objects();
+
+    // Flash a warning if nagios needs a reload
+    adagios.objectbrowser.check_nagios_needs_reload();
+
+    // If there are any notifications from server, display them
+    adagios.misc.get_server_notifications();
+
+    // change all table with class datatable into datatables
+    adagios.misc.turn_tables_into_datatables();
+
+    // Multiselect checkboxes at the top-left of status-tables
+    adagios.status.initilize_multiselect_checkboxes();
+
+
+
+    // Fix console logging for internet explorer
+    adagios.misc.internet_explorer_console_fix();
+
+    // Handle user contributed ssi overwrites
+    adagios.misc.ssi_overwrites();
+
+    // Handle user contributed ssi overwrites
+    adagios.misc.modal_resize();
+
+});
+
+
 
 adagios.status.service_detail_update_servicestate_icon = function(host_name, params) {
     var results = {results: []};
@@ -27,7 +73,6 @@ adagios.status.service_detail_update_servicestate_icon = function(host_name, par
                 if (service['host_state'] === 0 && service['scheduled_downtime_depth'] === 0 && service['acknowledged'] === 0) {
                     circle_div.addClass("unhandled");
                 }
-                console.log(service)
             }
         }
     });
@@ -35,8 +80,8 @@ adagios.status.service_detail_update_servicestate_icon = function(host_name, par
 
 
 adagios.objectbrowser.CheckCommandEditor = function(parameters) {
-    p = parameters || {};
-    self = {};
+    var p = parameters || {};
+    var self = {};
     self.host_name = p.host_name || $('#check_command_editor_host_name').text();
     self.service_description = p.service_description || $('#check_command_editor_service_description').text();
     self.name = p.name || $('#check_command_editor_service_name').text();
@@ -56,7 +101,8 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             '<pre  id="original_command_line"></pre>' +
             '';
         $(destination_div).html(html);
-    }
+    };
+
     // Go through all the relevant input values, and return respective macros
     self.get_all_attributes = function() {
         var my_data = {};
@@ -70,13 +116,14 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         });
         return my_data;
     };
+
     // Find the selected attributes, and read through all arguments,
     // and concat it in one field that looks like this:
     // check_command!$ARG1$!$ARG2$
     self.update_check_command_entry = function() {
         var all_attributes =self.get_all_attributes();
-        check_command = all_attributes.check_command || '';
-        for (i in all_attributes) {
+        var check_command = all_attributes.check_command || '';
+        for (var i in all_attributes) {
             if (i.substring(0,4) == '$ARG') {
                check_command = check_command + '!' + all_attributes[i];
             }
@@ -85,30 +132,32 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             check_command = '';
         }
         $('#check_command_actual_entry').attr('value', check_command);
-    }
+    };
+
     // This function will look up what macros are related to our check_command
     // and then create correct input boxes for each one.
     self.generate_input_fields = function() {
-        my_data = {
+        var my_data = {
             'host_name': self.host_name,
             'service_description': self.service_description,
             'check_command': self.check_command,
             'name': self.name
         };
+        var check_command_editor_location = $('#check_command_editor_tables')
 
-        $('#check_command_editor_tables').hide();
+        check_command_editor_location.hide();
 
         if (my_data.check_command == null || my_data.check_command == '')
         {
             return;
         }
         if (my_data.host_name == null || my_data.host_name == '') {
-            console.log("No host_name specified. Not generating any input fields");
+            console.error("No host_name specified. Not generating any input fields");
             $('#check_command_editor_tables').hide();
             return;
         }
 
-        $('#check_command_editor_tables').show();
+        check_command_editor_location.show();
 
         adagios.rest.pynag.check_command(my_data)
             .done( function(data) {
@@ -118,6 +167,8 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
                 var check_command_arguments_input_fields = '';
                 var other_input_fields = '';
                 var input_field_value;
+                var friendly_name;
+                var edit_field;
                 for (var i in data) {
                     // Create a human friendly label for our attribute
                     friendly_name = i.replace('$_SERVICE','');
@@ -199,7 +250,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         var effective_command_line = self.original_command_line;
 
         effective_command_line = self.resolve_macros(effective_command_line, macros, true);
-        $('#command_line_preview').html( effective_command_line );
+        $('#command_line_preview').text( effective_command_line );
 
     };
 
@@ -228,7 +279,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
             input_string = input_string.replace(macroname, macrovalue);
         }
         return input_string;
-    }
+    };
 
     // We have a div that contains the original command-line with all its macros.
     // Lets modify it so all macros are highlighted.
@@ -241,7 +292,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         var macronames = self.original_command_line.match(/\$.*?\$/g);
         var decorated_command_line =  self.original_command_line;
 
-        console.log(decorated_command_line);
+        var new_str;
         for (var i in macronames) {
             macroname = macronames[i];
             macrovalue = data[macroname];
@@ -255,17 +306,15 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
                 + "'>"
                 + macroname
                 + "</a>";
-            console.log(i + " replace" + macroname + " with " + macrovalue);
             decorated_command_line = decorated_command_line.replace(macroname,new_str);
         }
-        console.log(decorated_command_line);
         $('#original_command_line').html( decorated_command_line );
-    }
+    };
 
     // Read through all inputs in #input_fields and then save the current service
     // This function reloads the current page on success
     self.save_check_command = function() {
-        my_data = self.get_all_attributes();
+        var my_data = self.get_all_attributes();
 
         adagios.rest.status.update_check_command(my_data)
             .done( function(data) {
@@ -289,7 +338,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
         if (self.debug) {
             console.log("debug: " + message);
         }
-    }
+    };
 
     return self;
 };
@@ -313,7 +362,7 @@ adagios.objectbrowser.CheckCommandEditor = function(parameters) {
 adagios.objectbrowser.select2_objects_query = function(object_type, query) {
     var results = {results: []};
 
-    params = {
+    var params = {
         object_type: object_type,
         name__contains:query.term
     };
@@ -340,14 +389,13 @@ adagios.objectbrowser.select2_objects_query = function(object_type, query) {
 adagios.objectbrowser.select2_business_process = function(query) {
     var results = {results: []};
 
-    params = {
-    };
+    var params = {};
 
     adagios.rest.status.get_business_process_names(params)
         .done( function(data) {
             var name, item, i;
             for (i in data) {
-                name = data[i]
+                name = data[i];
                 item  = {id: name, text: name};
                 results.results.push(item);
             }
@@ -366,7 +414,6 @@ adagios.objectbrowser.check_nagios_needs_reload = function() {
 
         });
 };
-
 
 // Reload nagios and display a nice status message on top of screen
 adagios.misc.reload_nagios = function() {
@@ -460,7 +507,6 @@ adagios.misc.error = function(message, notification_id, timeout) {
     return adagios.misc.add_notification(message, 'danger', notification_id, timeout);
 };
 
-
 // Initilize all bootstrap tabs, so that
 // By default it is possible to link to a specific tab
 // Also show first tab by default.
@@ -468,23 +514,442 @@ adagios.misc.init_tab_selection = function() {
 
     var tabs = $('ul.nav.nav-tabs');
     var anchor = document.location.href.split('#')[1] || '';
-    anchor = anchor.split('-tab')[0];
+    anchor = anchor.split('_tab')[0];
     var current_tab = tabs.find('a[href="#' + anchor + '"]');
     if (current_tab.length === 0) {
-        current_tab = tabs.find('a:first');
+        current_tab = tabs.find('a[data-toggle=tab]:first');
     }
     current_tab.tab('show');
 
     $('a[data-toggle="tab"]').on('shown', function (e) {
-        var currenttab = $(e.target).attr('href');
-        var id = $(e.target).attr('href').split("-")[0];
-        var currenttable = 'table' + id + "-table";
-        document.location.hash = id + "-tab";
+        var id = $(e.target).attr('href').split("_tab")[0];
+        document.location.hash = id + "_tab";
     });
 
 };
 
+// Puts keyboard focus on search box, and enables live filtering of
+// objects in the status table.
+adagios.status.enable_search_box = function() {
+    var searchbox = $('#search_field');
+    searchbox.focus();
 
-$(document).ready(function() {
-    adagios.misc.init_tab_selection();
-});
+    // When someone is typing in the searchbox, make sure searchtable is updated
+    var $rows;
+    searchbox.keyup(function() {
+        if ($rows === undefined) {
+            $rows = $('.searchtable tbody .mainrow');
+        }
+
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        $rows.show().filter(function() {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+
+            return !~text.indexOf(val);
+        }).hide();
+
+        // Some views like status view hide repeated occurances of host_names
+        // That does not work well if something is being filtered
+        if (val == '')
+            $('.repeated_content').hide();
+        else
+            $('.repeated_content').show();
+    });
+
+};
+
+// When row in datatable is clicked. Select it.
+adagios.status.enable_clickable_rows = function() {
+    var _last_selected = 0;
+    var rows = $( ".mainrow" );
+    var all_checkboxes = $(".chkbox", rows);
+    rows.click(function(e) {
+        var checkbox = $(':checkbox', this);
+        var index = rows.index(this);
+
+        // If we clicked something else than a link or the checkbox,
+        // Trigger an actual click on the checkbox
+        if (e.target.type !== 'checkbox' && e.target.tagName != 'A') {
+                checkbox.prop('checked', ! checkbox.prop('checked'));
+        }
+
+
+        // If shift is down while clicking a row, we select (or unselect)
+        // Everything from last row we clicked til here
+        if ( e.shiftKey && index != _last_selected ) {
+
+            all_checkboxes
+                    .slice(Math.min( _last_selected, index ), Math.max( _last_selected, index )+1 )
+                    .each(function(i, e) {
+                        this.checked = checkbox.prop('checked') || false;
+                        adagios.status.update_row_color($(this));
+                    });
+        }
+        else {
+
+        }
+        adagios.status.update_row_color(checkbox);
+        checkbox.focus();
+        _last_selected = index;
+        adagios.status.count_selected_objects();
+    });
+};
+
+// Given a checkbox, update the color of the selected row
+adagios.status.update_row_color = function(checkbox) {
+            if (checkbox.prop('checked') == true) {
+                checkbox.parent().parent().addClass('row_selected');
+            }
+            else {
+                checkbox.parent().parent().removeClass('row_selected');
+            }
+};
+
+// Return a list of all objects that have been checked and have the selectable class. This is used for
+// Acknowledge, downtime, etc.
+adagios.status.get_selected_objects = function() {
+    var result = [];
+    var primary = $( ".chkbox-primary:checked " );
+    var checked_boxes = $( ".selectable :checked:visible" );
+
+    if (checked_boxes.length == 0) {
+        checked_boxes = primary;
+    }
+    checked_boxes.each(function() {
+        result.push($(this).data());
+    });
+    return result;
+
+};
+
+// Links that have the class 'disabled' should not be clickable by default
+adagios.status.make_disabled_links_unclickable = function() {
+    // Disable a links as well as buttons using the disabled class since disabling links is not
+    // supported by default.
+    jQuery.fn.extend({
+            disable: function(state) {
+            return this.each(function() {
+                    var $this = $(this);
+                    $this.toggleClass('disabled', state);
+            });
+            }
+    });
+        // Disable clicking on disabled links
+        $('body').on('click', 'a.disabled', function(event) {
+            event.preventDefault();
+        });
+};
+
+
+
+// adagios.status.count_selected_objects()
+// Enables or disabled the action_buttons and toolbar buttons depending on if
+// Any objects are selected or not
+adagios.status.count_selected_objects = function() {
+
+    var selected_objects = adagios.status.get_selected_objects();
+
+    // Treat acknowledge button depending on if acknowledgements are needed
+    if (selected_objects.length > 0) {
+        $('#action_buttons button.adagios_service_multi').attr('disabled', null);
+        if (selected_objects.length > 1) {
+            $('#action_buttons button.adagios_service_single').attr('disabled', 'disabled');
+        } else {
+            $('#action_buttons button.adagios_service_single').attr('disabled', null);
+        }
+        $('.enable_on_select').attr('disabled', null);
+        $('#action_buttons').attr('title',null);
+        $('#action_buttons_more a').disable(false);
+    }
+    else {
+        $('#action_buttons button').attr('disabled', 'disabled');
+        $('.enable_on_select').attr('disabled', 'disabled');
+        $('#action_buttons_more a').disable(true);
+    }
+};
+
+
+// When a user clicks the remove acknowledgement button, this is called
+// to remove acknowledgements of all "selected" objects
+adagios.status.remove_acknowledgements = function() {
+    var selected_objects = adagios.status.get_selected_objects();
+    var args;
+    var objects_done = 0;
+    $.each(selected_objects, function(i, item) {
+        args = {};
+        args['host_name'] = item['host_name'];
+        args['service_description'] = item['service_description'];
+        adagios.rest.status.remove_acknowledgement(args)
+                .done(function() {
+                    objects_done += 1;
+                    if (objects_done == selected_objects.length) {
+                        location.reload();
+                    }
+            })
+    });
+};
+
+// When a user clicks the remove downtimes button, this is called
+// to remove downtimes of all "selected" objects
+adagios.status.remove_active_downtimes = function() {
+    var selected_objects = adagios.status.get_selected_objects();
+    var args;
+    var objects_done = 0;
+    $.each(selected_objects, function(i, item) {
+        args = {};
+        args['host_name'] = item['host_name'];
+        args['service_description'] = item['service_description'];
+        args['downtime_id'] = item['downtime_id'];
+        adagios.rest.status.remove_downtime(args)
+                .done(function() {
+                    objects_done += 1;
+                    if (objects_done == selected_objects.length) {
+                        location.reload();
+                    }
+                })
+    });
+};
+
+
+// Clear all checked checkboxes
+adagios.status.clear_all_selections = function() {
+       $('.chkbox').each( function(data) {
+           this.checked = false;
+           adagios.status.update_row_color($(this));
+           });
+        $('.select_many').each( function(data) {
+           this.checked = false;
+           });
+        $('.chkbox-primary').each( function(data) {
+            this.checked = true;
+        });
+        adagios.status.count_selected_objects();
+};
+
+// This event is fired when one or more objects have been rescheduled
+adagios.status.reschedule = function() {
+    var selected_objects = adagios.status.get_selected_objects();
+    var objects_done = 0;
+    var total = selected_objects.length;
+    var hostlist = '';
+    var servicelist = '';
+    var host_name, service_description, object_type;
+    $.each(selected_objects, function(i, item) {
+        host_name =  item['host_name'];
+        service_description = item['service_description'] || '';
+        object_type = item['object_type'];
+        if (object_type == 'host') {
+            hostlist = hostlist + ';' + host_name;
+        }
+        else if (object_type == 'service') {
+            servicelist = servicelist + ';' + host_name + ',' + service_description;
+        }
+    });
+
+    var parameters = {};
+    parameters['hostlist'] = hostlist;
+    parameters['servicelist'] = servicelist;
+
+    adagios.misc.info("Rescheduling " + selected_objects.length + " items", "reschedule_status");
+    adagios.rest.status.reschedule_many(parameters)
+        .done(function(data) {
+            adagios.misc.success("Reschedule request for " + selected_objects.length + " items has been sent. You should refresh your browser.", "reschedule_status", 5000);
+            adagios.status.clear_all_selections();
+        })
+        .fail(function(data) {
+           adagios.misc.error("Error while rescheduling checks. Error output printed in javascript console.", "reschedule_status");
+           console.error(data.responseText);
+        });
+
+};
+
+
+// Change all tables with the class "datatable" into a datatable
+adagios.misc.turn_tables_into_datatables = function() {
+    var oTable = $('.datatable').dataTable( {
+        "bPaginate": true,
+        "iDisplayLength": 100,
+        "sPaginationType": "bootstrap"
+    });
+    $('.dataTables_length').hide();
+
+};
+
+
+// All checkboxes with the "select_many" class have a multiselect
+// kind of feature.
+adagios.status.initilize_multiselect_checkboxes = function() {
+    var select_many_boxes = $('.select_many');
+    $('.select_all').click(function(e) {
+        $( ".chkbox").each( function() {
+            this.checked = true;
+            adagios.status.update_row_color($(this));
+        });
+        select_many_boxes.prop('checked',true);
+        select_many_boxes.prop('indeterminate',false);
+        adagios.status.count_selected_objects();
+    });
+    $('.select_none').click(function(e) {
+        $( ".chkbox").each( function() {
+            this.checked = false;
+            adagios.status.update_row_color($(this));
+        });
+        select_many_boxes.prop('checked',false);
+        select_many_boxes.prop('indeterminate',false);
+        adagios.status.count_selected_objects();
+    });
+    $('.select_problems').click(function(e) {
+        $( "input.problem ").each( function() {
+            this.checked = true;
+            adagios.status.update_row_color($(this));
+        });
+        select_many_boxes.prop('checked',false);
+        select_many_boxes.prop('indeterminate',true);
+        adagios.status.count_selected_objects();
+    });
+    $('.select_unhandled_problems').click(function(e) {
+        $( "input.unhandled ").each( function() {
+            this.checked = true;
+            adagios.status.update_row_color($(this));
+        });
+        select_many_boxes.prop('checked',false);
+        select_many_boxes.prop('indeterminate',true);
+        adagios.status.count_selected_objects();
+    });
+
+};
+
+// Handle SSI (serverside includes) overwrites.
+// We will look for objects with class ssi-append or ssi-overwrite and rewrite html accordingly.
+//
+// Example: this tag: <div class="ssi-overwrite" data-for="#top_navigation_bar" would overwrite
+// The markup inside #top_navigation_bar
+adagios.misc.ssi_overwrites = function() {
+    $(".ssi-overwrite").each(function(data) {
+        var dest_selector = $(this).data('for');
+        var destination = $(dest_selector);
+        destination.html($(this).html());
+    });
+
+    $(".ssi-append").each(function(data) {
+        var dest_selector = $(this).data('for');
+        var destination = $(dest_selector);
+        destination.html(destination.html() + $(this).html());
+    });
+
+
+};
+
+// Function to edit a single attribute of an object
+adagios.status.change_attribute = function(object_type,short_name,attribute_name,new_value, success, error) {
+    var my_data  = {
+        "object_type": object_type,
+        "short_name": short_name,
+        "attribute_name":attribute_name,
+        "new_value":new_value
+    };
+    return adagios.rest.status.edit(my_data)
+            .done(function(data) {
+                adagios.objectbrowser.check_nagios_needs_reload();
+            })
+            .fail(function(data) {
+                adagios.misc.error("Error saving data.")
+            });
+    };
+
+adagios.misc.internet_explorer_console_fix = function() {
+// Avoid `console` errors in browsers that lack a console.
+(function() {
+    var method;
+    var noop = function () {};
+    var methods = [
+        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
+        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
+        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
+        'timeStamp', 'trace', 'warn'
+    ];
+    var length = methods.length;
+    var console = (window.console = window.console || {});
+
+    while (length--) {
+        method = methods[length];
+
+        // Only stub undefined methods.
+        if (!console[method]) {
+            console[method] = noop;
+        }
+    }
+}());
+
+};
+
+// Given a specific background task id, monitor its status
+// And display output on regular intervals.
+adagios.misc.subscribe_to_task = function() {
+    adagios.rest.adagios.list_tasks()
+        .done(function(data) {
+           var first_task = data[0]['task_id'];
+            adagios.rest.adagios.get_task({'task_id': first_task})
+                .done(function(data) {
+                   adagios.misc.info(data['task_status'], "task_" + data['task_id']);
+
+                });
+        });
+
+};
+
+// Some javascript hacks to log the current user out of basic auth
+adagios.misc.logout = function() {
+    (function(safeLocation){
+        var outcome, u, m = "You should be logged out now.";
+        // IE has a simple solution for it - API:
+        try { outcome = document.execCommand("ClearAuthenticationCache") }catch(e){}
+        // Other browsers need a larger solution - AJAX call with special user name - 'logout'.
+        if (!outcome) {
+            // Let's create an xmlhttp object
+            outcome = (function(x){
+                if (x) {
+                    // the reason we use "random" value for password is
+                    // that browsers cache requests. changing
+                    // password effectively behaves like cache-busing.
+                    x.open("HEAD", safeLocation || location.href, true, "logout", (new Date()).getTime().toString())
+                    x.send("")
+                    // x.abort()
+                    return 1 // this is **speculative** "We are done."
+                } else {
+                    return
+                }
+            })(window.XMLHttpRequest ? new window.XMLHttpRequest() : ( window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : u ))
+        }
+        if (!outcome) {
+            m = "Your browser is too old or too weird to support log out functionality. Close all windows and restart the browser."
+        }
+        console.log(m);
+        // return !!outcome
+    })(/*if present URI does not return 200 OK for GET, set some other 200 OK location here*/)
+
+};
+
+// Resize modals to relative size to window
+adagios.misc.modal_resize = function() {
+    $('div.modal').on('show', function() {
+        $(this).find('div.modal-body').css({'max-height': ($( window ).height() * 0.7)+"px" });
+        $(this).find('div.modal-body').css({'max-width': ($( window ).width() * 0.9)+"px" });
+    });
+};
+
+// Delete a single host or service comment
+adagios.status.delete_comment = function(object_type, comment_id) {
+    var parameters = {};
+    parameters['comment_id'] = comment_id;
+    //parameters['is_service'] = (object_type == 'host');
+    return adagios.rest.status.delete_comment(parameters);
+};
+
+// Delete a single host or service downtime
+adagios.status.delete_downtime = function(object_type, downtime_id) {
+    var parameters = {};
+    parameters['downtime_id'] = downtime_id;
+    parameters['is_service'] = (object_type == 'host');
+    return adagios.rest.status.delete_downtime(parameters);
+};

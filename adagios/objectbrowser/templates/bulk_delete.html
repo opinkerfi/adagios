@@ -1,8 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Bulk edit{% endblock %}
-{% block smallheader %}bulk{% endblock %}
-{% block largeheader %}Delete objects{% endblock %}
-{% block nav1 %}Object Browser{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Bulk edit" %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% trans "Delete objects" %}{% endblock %}
+{% block nav1 %}{% trans "Object Browser" %}{% endblock %}
 {% block toolbar %}{% endblock %}
 {% block footer %}
     <script>
@@ -19,47 +21,52 @@
 {% endblock %}
 {% block content %}
     {% if success %}
-    <h3>Objects have been deleted.</h3>
+    <div class="alert alert-success">{% trans "Objects have been deleted." %}</div>
     {% else %}
-    You are about to delete multible objects. Are you sure you want to continue ?
-    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
-        <div>
-        <table id="many">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Object Type</th>
-                <th>Description</th>
-                <th>Filename</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for obj in objects %}
-                <tr>
-                    <td>
-                        <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
-                        <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
-                    </td>
-                    <td>{{ obj.object_type }}</td>
-                    <td>{{ obj.description }}</td>
-                    <td>{{ obj.filename }}</td>
-                </tr>
+        {% if objects %}
+            <div class="alert alert-danger">{% trans "You are about to delete multible objects. Are you sure you want to continue ?" %}</div>
 
-            {% endfor %}
-            </tbody>
-        </table>
-        <br/>
-        </div>
-        <div class="form-actions">
-            <label class="control-label" for="yes_i_am_sure" rel="tooltip" title="">
-                Yes, I am sure
-            </label>
-            <div class="controls" id="yes_i_am_sure_field">
-                <input type="checkbox" name="yes_i_am_sure" id="id_yes_i_am_sure" />
-                <button class="btn btn-danger" type="submit"><i class="icon-trash icon-white"></i> Delete them</button>
-            </div>
+            <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+                <div>
+                <table id="many">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>{% trans "Object Type" %}</th>
+                        <th>{% trans "Description" %}</th>
+                        <th>{% trans "Filename" %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for obj in objects %}
+                        <tr>
+                            <td>
+                                <input type="hidden" name="hidden_{{ obj.id }}" value="{{ obj.id }}" />
+                                <input type="checkbox" checked="checked" name="change_{{ obj.id }}" id="id_{{ obj.id }}" />
+                            </td>
+                            <td>{{ obj.object_type }}</td>
+                            <td>{{ obj.description }}</td>
+                            <td>{{ obj.filename }}</td>
+                        </tr>
 
-        </div>
-    </form>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <br/>
+                </div>
+                <div class="form-actions">
+                    <label class="control-label" for="yes_i_am_sure" rel="tooltip" title="">
+                        {% trans "Yes, I am sure" %}
+                    </label>
+                    <div class="controls" id="yes_i_am_sure_field">
+                        <input type="checkbox" name="yes_i_am_sure" id="id_yes_i_am_sure" />
+                        <button class="btn btn-danger" type="submit"><i class="icon-trash icon-white"></i> {% trans "Delete them" %}</button>
+                    </div>
+
+                </div>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">{% trans "Hey we didn't find any objects that match what you were looking for :(" %}</div>
+        {% endif %}
     {% endif %}
 {%  endblock %}

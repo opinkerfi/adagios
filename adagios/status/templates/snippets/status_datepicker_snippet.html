@@ -1,0 +1,33 @@
+<!-- snippet status_datepicker_snippet.html starts -->
+{% load i18n %}
+
+        <form method="GET" action="#tab_all" name="datetimepicker">
+            <div class="pull-left">
+                <div class="date pull-left">
+                    <input name="start_time_picker" style="width: 70px" type="text">
+                </div>
+                <div class="control-group pull-left">
+                    &nbsp;<input name="start_hours" style="width: 40px" type="text">
+                </div>
+                <div class="pull-left">
+                    &nbsp;To&nbsp;
+                </div>
+
+                <div class="date pull-left">
+                    <input style="width: 70px" name="end_time_picker" type="text">
+                </div>
+                <div class="control-group pull-left">
+                    &nbsp;<input name="end_hours" style="width: 40px" type="text">
+                </div>
+
+            </div>
+            <div class="pull-left" style="padding-left: 8px">
+                <input name="search" id="search_field" value="{{ request.GET.search }}" class="search-query" placeholder="search">
+                <button type="submit" name="submit" >Search</button>
+            </div>
+            <div class="clearfix">
+                <!-- <input type="text" class="slider" value=""> -->
+            </div>
+        </form>
+
+<!-- snippet status_datepicker_snippet.html ends -->

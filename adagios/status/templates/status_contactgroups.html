@@ -1,0 +1,19 @@
+{% extends "base_status.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Contactgroups" %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% trans "Contactgroups" %}{% endblock %}
+
+{% block nav1 %}{{ block.super }}{% endblock %}
+{% block nav2 %}<a href="{% url status.views.contact_list %}">{% trans "Contactgroups" %}</a>{% endblock %}
+{% load adagiostags %}
+
+{% block content %}
+    {% include "snippets/status_contactgrouplist_snippet.html" %}
+{% endblock %}
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+
+{% block footer %} {{ block.super }} {% endblock %}

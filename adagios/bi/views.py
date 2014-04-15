@@ -1,3 +1,19 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import simplejson
 from django.http import HttpResponse
@@ -5,14 +21,17 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 from adagios.pnp.functions import run_pnp
+from adagios.views import adagios_decorator
 
 import adagios.bi
 import adagios.bi.forms
 
-from adagios.views import error_handler, error_page
+from adagios.views import adagios_decorator, error_page
 
 
+@adagios_decorator
 def edit(request, process_name, process_type):
     """ Edit one specific business process
     """
@@ -53,11 +72,11 @@ def edit(request, process_name, process_type):
                 add_subprocess_form.save()
 
             else:
-                errors.append("failed to add subprocess")
+                errors.append(_("failed to add subprocess"))
                 add_subprocess_failed = True
         else:
             errors.append(
-                "I don't know what submit button was clicked. please file a bug.")
+                _("I don't know what submit button was clicked. please file a bug."))
 
         # Load the process again, since any of the above probably made changes
         # to it.
@@ -66,6 +85,7 @@ def edit(request, process_name, process_type):
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def add_graph(request):
     """ Add one or more graph to a single business process
     """
@@ -87,7 +107,7 @@ def add_graph(request):
     for graph in graphs:
         tmp = graph.split(',')
         if len(tmp) != 3:
-            c['errors'].append("Invalid graph string: %s" % (tmp))
+            c['errors'].append(_("Invalid graph string: %s") % (tmp))
         graph_dict = {}
         graph_dict['host_name'] = tmp[0]
         graph_dict['service_description'] = tmp[1]
@@ -101,7 +121,7 @@ def add_graph(request):
     if request.method == 'POST':
         if not name:
             raise Exception(
-                "Booh! you need to supply name= to the querystring")
+                _("Booh! you need to supply name= to the querystring"))
         for graph in c['graphs']:
             form = adagios.bi.forms.AddGraphForm(instance=bp, data=graph)
             if form.is_valid():
@@ -114,6 +134,7 @@ def add_graph(request):
     return render_to_response('business_process_add_graph.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def view(request, process_name, process_type=None):
     """ View one specific business process
     """
@@ -129,6 +150,7 @@ def view(request, process_name, process_type=None):
     return render_to_response('business_process_view.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def json(request, process_name=None, process_type=None):
     """ Returns a list of all processes in json format.
 
@@ -150,6 +172,7 @@ def json(request, process_name=None, process_type=None):
     json = simplejson.dumps(result)
     return HttpResponse(json, content_type="application/json")
 
+@adagios_decorator
 def graphs_json(request, process_name, process_type):
     """ Get graphs for one specific business process
     """
@@ -182,6 +205,7 @@ def graphs_json(request, process_name, process_type):
     return HttpResponse(graph_json)
 
 
+@adagios_decorator
 def add_subprocess(request):
     """ Add subitems to one specific businessprocess
     """
@@ -194,7 +218,7 @@ def add_subprocess(request):
     if request.method == 'POST':
         if 'name' not in request.POST:
             raise Exception(
-                "You must specify which subprocess to add all these objects to")
+                _("You must specify which subprocess to add all these objects to"))
         parameters.pop('name')
         bp = adagios.bi.get_business_process(request.POST.get('name'))
         # Find all subprocesses in the post, can for each one call add_process
@@ -212,6 +236,7 @@ def add_subprocess(request):
     return render_to_response('business_process_add_subprocess.html', c, context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def add(request):
     """ View one specific business process
     """
@@ -219,7 +244,7 @@ def add(request):
     c['messages'] = []
     c['errors'] = []
     import adagios.businessprocess
-    bp = adagios.bi.BusinessProcess("New Business Process")
+    bp = adagios.bi.BusinessProcess(_("New Business Process"))
     if request.method == 'GET':
         form = adagios.bi.forms.BusinessProcessForm(
             instance=bp, initial=bp.data)
@@ -232,6 +257,7 @@ def add(request):
     return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def index(request):
     """ List all configured business processes
     """
@@ -242,6 +268,7 @@ def index(request):
     return render_to_response('business_process_list.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def delete(request, process_name, process_type):
     """ Delete one specific business process """
     import adagios.businessprocess
@@ -255,6 +282,7 @@ def delete(request, process_name, process_type):
     return render_to_response('business_process_delete.html', locals(), context_instance=RequestContext(request))
 
 
+@adagios_decorator
 def change_status_calculation_method(request, process_name):
     import adagios.businessprocess
     bp = adagios.bi.get_business_process(process_name)
@@ -282,7 +310,7 @@ def _business_process_parse_querystring(request):
     elif request.method == 'POST':
         data = request.POST
     else:
-        raise Exception("Booh, use either get or POST")
+        raise Exception(_("Booh, use either get or POST"))
     parameters = {}
     process_list = []
     for key in data:

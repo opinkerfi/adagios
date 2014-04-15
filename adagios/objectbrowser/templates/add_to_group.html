@@ -1,15 +1,18 @@
-{% extends "adagios_standard.html" %}
-{% block title %}Bulk edit{% endblock %}
-{% block smallheader %}add{% endblock %}
-{% block largeheader %}to {{ group_type }}{% endblock %}
-{% block nav1 %}Object Browser{% endblock %}
-{%  block content %}
-    <p>
-    You are about to add {{ objects|length }} objects to a {{ group_type }} named:
-    </p>
+{% extends "base.html" %}
+{% load i18n %}
 
-    <input type="text" id="group_name" value="{{ group_name }}" placeholder="Please enter a group name"/>
-    <button class="pull-right btn btn-primary" onclick="add_to_group();" id="add_to_group_button" type="submit">OK, sounds good</button>
+{% block title %}{% trans "Bulk edit" %}{% endblock %}
+{% block smallheader %}{% trans "add" %}{% endblock %}
+{% block largeheader %}to {{ group_type }}{% endblock %}
+{% block toolbar %}{% endblock %}
+{% block nav1 %}{% trans "Object Browser" %}{% endblock %}
+{%  block content %}
+    <div class="alert alert-info">
+    {% blocktrans with length=objects|length %}You are about to add {{ length }} objects to a {{ group_type }} named:{% endblocktrans %}
+    </div>
+
+    <input class="pull-left" type="text" id="group_name" value="{{ group_name }}" placeholder="Please enter a group name"/>
+    <button class="pull-left btn btn-primary" onclick="add_to_group();" id="add_to_group_button" type="submit">{% trans "OK, sounds good" %}</button>
 
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
 
@@ -18,9 +21,9 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>Object Type</th>
-                    <th>Description</th>
-                    <th>Status</th>
+                    <th>{% trans "Object Type" %}</th>
+                    <th>{% trans "Description" %}</th>
+                    <th>{% trans "Status" %}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,7 +72,7 @@
                 url = "{% url objectbrowser.views.add_to_group %}/" + group_type + "/" + group_name;
                 url = url.split("?")[0];
                 url = url + "?" + object_type + '=' + description;
-                data = {}
+                data = {};
                 data["csrfmiddlewaretoken"] = window.csrftoken;
                 data['object_type'] = object_type;
                 data['description'] = description;

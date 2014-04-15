@@ -1,32 +1,34 @@
-{% extends "base_okconfig.html" %}
-{% block title %}Edit Host{% endblock %}
-{% block smallheader %}Edit{% endblock %}
-{% block largeheader %}Host{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.edit host_name %}">Edit Host</a>{% endblock %}
+{% extends "base.html" %}
+{% load i18n %}
 
+{% block title %}{% trans "Edit Host" %}{% endblock %}
+{% block smallheader %}{% trans "Edit" %}{% endblock %}
+{% block largeheader %}{% trans "Host" %}{% endblock %}
+{% block nav2 %}<a href="{% url adagios.okconfig_.views.edit host_name %}">{% trans "Edit Host" %}</a>{% endblock %}
+{% block toolbar %}{% endblock %}
 
 {% block content %}
 {% if myhost %}
     <div>
-    <h3>{{ host_name }} information:</h3>
+    <h3>{% blocktrans %}{{ host_name }} information:{% endblocktrans %}</h3>
         <dl class="dl-horizontal">
-            <dt>Host Name</dt>
+            <dt>{% trans "Host Name" %}</dt>
             <dd>{{ myhost.host_name }}</dd>
-            <dt>Address</dt>
+            <dt>{% trans "Address" %}</dt>
             <dd>{{ myhost.address }}</dd>
-            <dt>Status</dt>
-            <dd><span id="host_status" class="label">Pending</span> </dd>
+            <dt>{% trans "Status" %}</dt>
+            <dd><span id="host_status" class="label">{% trans "Pending" %}</span> </dd>
         </dl>
     </div>
 
 
     <!-- <button class="btn btn-success">Run all Service checks</button> -->
     <div style="margin: 16px">
-        <a href="{% url okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">Install Agent</a>
-        <a href="{% url okconfig_.views.addtemplate %}/?host_name={{ myhost.host_name }}" class="btn btn-success">Add templates</a>
+        <a href="{% url okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">{% trans "Install Agent" %}</a>
+        <a href="{% url okconfig_.views.addtemplate %}/?host_name={{ myhost.host_name }}" class="btn btn-success">{% trans "Add templates" %}</a>
     </div>
 
-    <h3>Services of this host:</h3>
+    <h3>{% trans "Services of this host:" %}</h3>
     <hr>
     <form action="#" method="post" class="form-horizontal">{% csrf_token %}
         <table class="table">
@@ -84,7 +86,7 @@
                 </tr>
                 <tr>
                     <td colspan=3>
-                        <button class="pull-right btn" type="submit">Save</button>
+                        <button class="pull-right btn" type="submit">{% trans "Save" %}</button>
                     </td>
                 </tr>
 
@@ -93,7 +95,7 @@
 
     </form>
 {% else %}
-    Host not found.
+    {% trans "Host not found." %}
 {% endif %}
 
 {% endblock %}
@@ -103,61 +105,59 @@
     <script>
     $(document).ready(function() {
         {% if myhost %}
-        $.getJSON('{% url rest/pynag %}json/run_check_command',
-                { object_id: '{{ myhost.id }}' },
-                function(data) {
-                    var host_status = $('span#host_status');
-                    var host_status_output = $('span#host_status_output');
-                    host_status_output.text(data[1]);
-                    host_status.addClass('label-success');
-                    if (parseInt(data[0]) < 1) {
-                        host_status.text('UP');
-                        host_status.addClass('label-success');
-                    } else {
-                        host_status.text('DOWN');
-                        host_status.addClass('label-danger');
-                    }
+            var parameters = { object_id: '{{ myhost.id }}' };
+            adagios.rest.pynag.run_check_command(parameters)
+                    .done( function(data) {
+                        var host_status = $('span#host_status');
+                        var host_status_output = $('span#host_status_output');
+                        host_status_output.text(data[1]);
+                        if (parseInt(data[0]) < 1) {
+                            host_status.text('UP');
+                            host_status.addClass('label-success');
+                        } else {
+                            host_status.text('DOWN');
+                            host_status.addClass('label-danger');
+                        }
                 }).error(function() {
                     host_status.text('Unknown');
                 });
         {% endif %}
         $('a.service_status.run_check_command').each(function() {
             var $this = $(this);
-            $.getJSON('{% url rest/pynag %}json/run_check_command',
-                    { object_id: $this.attr('data-object-id') },
-                    function(data) {
-                        var returncode = parseInt(data[0]);
-                        var output = "";
-                        if (data[1]) {
-                            output += data[1];
-                        } else {
-                            output += 'No data returned on stdout';
-                        }
-                        if (data[2]) {
-                            output += "<br/><br/><strong>Stderr Output:</strong><br/>" + data[2];
-                        }
-                        $this.attr('data-content', output);
+            var parameters = { object_id: $this.attr('data-object-id') };
+            adagios.rest.pynag.run_check_command(parameters)
+                    .done( function(data) {
+                                    var returncode = parseInt(data[0]);
+                                    var output = "";
+                                    if (data[1]) {
+                                        output += data[1];
+                                    } else {
+                                        output += '{% trans "No data returned on stdout" %}';
+                                    }
+                                    if (data[2]) {
+                                        output += "<br/><br/><strong>{% trans "Stderr Output:" %}</strong><br/>" + data[2];
+                                    }
+                                    $this.attr('data-content', output);
 
-                        if (returncode == 0) {
-                            $this.text('OK');
-                            $this.addClass('btn-success');
-                            return true;
-                        }
-                        if (returncode == 1) {
-                            $this.text('Warning');
-                            $this.addClass('btn-warning');
-                            return true;
-                        }
-                        if (returncode == 2) {
-                            $this.text('Critical');
-                            $this.addClass('btn-danger');
-                            return true;
-                        }
-                        $this.text('Unknown');
-                        $this.addClass('btn-inverse');
-                        return true;
-                    }
-            );
+                                    if (returncode == 0) {
+                                        $this.text('OK');
+                                        $this.addClass('btn-success');
+                                        return true;
+                                    }
+                                    if (returncode == 1) {
+                                        $this.text('Warning');
+                                        $this.addClass('btn-warning');
+                                        return true;
+                                    }
+                                    if (returncode == 2) {
+                                        $this.text('Critical');
+                                        $this.addClass('btn-danger');
+                                        return true;
+                                    }
+                                    $this.text('Unknown');
+                                    $this.addClass('btn-inverse');
+                                    return true;
+                    });
 
         });
         $('a[rel="popover"]').popover();

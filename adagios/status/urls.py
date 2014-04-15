@@ -1,47 +1,63 @@
+# Adagios is a web based Nagios configuration interface
+#
+# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from django.conf.urls.defaults import *
 from django.conf import settings
 
 urlpatterns = patterns('adagios',
-                      url(r'^/?$', 'status.views.status_index', name="status_index"),
-                      (r'^/test/?$', 'status.views.test_livestatus'),
-                      (r'^/boxview/?$', 'status.views.status_boxview'),
-                      (r'^/(?P<object_type>.+?)s.tiles/?$',
-                       'status.views.status_tiles'),
+                        url(r'^/?$', 'status.views.status_index', name="status_index"),
+                        url(r'^/acknowledgements/?$', 'status.views.acknowledgement_list'),
+                        url(r'^/error/?$', 'status.views.error_page'),
+                        url(r'^/comments/?$', 'status.views.comment_list'),
+                        url(r'^/contacts/?$', 'status.views.contact_list'),
+                        url(r'^/contactgroups/?$', 'status.views.contactgroups'),
+                        url(r'^/dashboard/?$', 'status.views.dashboard'),
+                        url(r'^/detail/?$', 'status.views.detail'),
+                        url(r'^/downtimes/?$', 'status.views.downtime_list'),
+                        url(r'^/hostgroups/?$', 'status.views.status_hostgroups'),
+                        url(r'^/hosts/?$', 'status.views.hosts'),
+                        url(r'^/log/?$', 'status.views.log'),
+                        url(r'^/map/?', 'status.views.map_view'),
+                        url(r'^/parents/?$', 'status.views.network_parents'),
+                        url(r'^/perfdata/?$', 'status.views.perfdata'),
+                        url(r'^/perfdata2/?$', 'status.views.perfdata2'),
+                        url(r'^/problems/?$', 'status.views.problems'),
+                        url(r'^/servicegroups/?$', 'status.views.status_servicegroups'),
+                        url(r'^/services/?$', 'status.views.services'),
+                        url(r'^/state_history/?$', 'status.views.state_history'),
 
-                      (r'^/paneview/?$', 'status.views.status_paneview'),
-                      (r'^/state_history/?$', 'status.views.state_history'),
 
-                      (r'^/dashboard/?$', 'status.views.dashboard'),
-                      (r'^/log/?$', 'status.views.status_log'),
-                      (r'^/parents/?$', 'status.views.network_parents'),
-                      (r'^/hostgroups/?$', 'status.views.status_hostgroups'),
-                      (r'^/hostgroups/(?P<hostgroup_name>.+)/?$',
-                       'status.views.status_hostgroup'),
-                      (r'^/servicegroups/?$',
-                       'status.views.status_servicegroups'),
-                      (r'^/hosts/?$', 'status.views.hosts'),
-                      (r'^/services/?$', 'status.views.services'),
-                      (r'^/test/services/?$', 'status.views.services_js'),
-                      (r'^/test/status_dt/?$', 'status.views.status_dt'),
-                      (r'^/problems/?$', 'status.views.problems'),
-                      (r'^/services_old/?$', 'status.views.status'),
-                      (r'^/contacts/(?P<contact_name>.+)/?$',
-                       'status.views.contact_detail'),
-                      (r'^/contacts/?$', 'status.views.contact_list'),
-                      (r'^/contactgroups/(?P<contactgroup_name>.+)/?$',
-                       'status.views.contactgroup_detail'),
-                      (r'^/comments/?$', 'status.views.comment_list'),
-                      (r'^/downtimes/?$', 'status.views.downtime_list'),
-                      (r'^/acknowledgements/?$', 'status.views.acknowledgement_list'),
-                      (r'^/perfdata/?$', 'status.views.perfdata'),
-                      (r'^/perfdata2/?$', 'status.views.perfdata2'),
-                      (r'^/acknowledge/?$', 'status.views.perfdata2'),
-                       #(r'^/hosts/(?P<host_name>.+?)/(?P<service_description>.+)/?$', 'status.views.status_detail'),
-                       #(r'^/hosts/(?P<host_name>.+)/$', 'status.views.status_detail'),
-                       #(r'^/hosts/(?P<host_name>.+)$', 'status.views.status_detail'),
-                      (r'^/error/?$', 'status.views.error_page'),
-                      (r'^/detail/?$', 'status.views.status_detail'),
 
-                      (r'^/snippets/log/?$', 'status.views.snippets_log'),
+                        # Misc snippets
+                        url(r'^/snippets/log/?$', 'status.views.snippets_log'),
+                        url(r'^/snippets/services/?$', 'status.views.snippets_services'),
+                        url(r'^/snippets/hosts/?$', 'status.views.snippets_hosts'),
 
-                       )
+                        # Misc tests
+                        url(r'^/test/services/?$', 'status.views.services_js'),
+                        url(r'^/test/status_dt/?$', 'status.views.status_dt'),
+                        url(r'^/test/livestatus/?$', 'status.views.test_livestatus'),
+
+                        # Deprecated as of 2013-03-23
+                        url(r'^/contacts/(?P<contact_name>.+)/?$', 'status.views.contact_detail'),
+                        url(r'^/hostgroups/(?P<hostgroup_name>.+)/?$', 'status.views.status_hostgroup'),
+                        url(r'^/contactgroups/(?P<contactgroup_name>.+)/?$', 'status.views.contactgroup_detail'),
+                        url(r'^/servicegroups/(?P<servicegroup_name>.+)/?$', 'status.views.servicegroup_detail'),
+                        url(r'^/services_old/?$', 'status.views.status'),
+
+
+                        )

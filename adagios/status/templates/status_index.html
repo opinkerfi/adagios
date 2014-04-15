@@ -1,7 +1,8 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
 {% block title %}Status Overview{% endblock %}
-{% block nav2 %}<a href="{% url status.views.status_index %}">Overview</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.status_index %}">{% trans "Overview" %}</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Status Overview{% endblock %}
 
@@ -15,14 +16,14 @@
             <table class="table  well table-condensed">
                 <thead>
                 <tr>
-                    <th>Status Overview</th>
-                    <th>#</th>
+                    <th>{% trans "Status Overview" %}</th>
+                    <th><span title="Unhandled Problems">#</span></th>
                     <th><i class="glyph-warning-sign" title="Unhandled Problems"></i></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Network Parents</td>
+                    <td>{% trans "Network Parents" %}</td>
                     <td><a href="{% url status.views.network_parents %}">{{ total_network_parents }}</a></td>
                     <td>
                         {% if  total_unhandled_network_problems == 0 %}
@@ -36,7 +37,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Hosts</td>
+                    <td>{% trans "Hosts" %}</td>
                     <td><a href="{% url status.views.hosts %}">{{ total_hosts }}</a></td>
                     <td>
                         {% if  unhandled_hosts == 0 %}
@@ -48,7 +49,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Services</td>
+                    <td>{% trans "Services" %}</td>
                     <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
                     <td>
                         {% if  unhandled_services == 0 %}
@@ -65,11 +66,11 @@
         <div class="span4" >
             <table class="table well table-condensed">
                 <thead>
-                <tr><th colspan="2">Current Health</th></tr>
+                <tr><th colspan="2">{% trans "Current Health" %}</th></tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td  style="white-space: nowrap" width=20px>All hosts</td>
+                    <td  style="white-space: nowrap" width=20px>{% trans "All hosts" %}</td>
                     <th>
                         <div class="progress">
                             <div class="bar bar-success" style=" width: {{ host_totals_percent.0 }}%;">{{ host_totals_percent.0|floatformat }}%</div>
@@ -81,7 +82,7 @@
                     </th>
                 </tr>
                 <tr>
-                    <td style="white-space: nowrap" width=20px>All services</td>
+                    <td style="white-space: nowrap" width=20px>{% trans "All services" %}</td>
                     <th>
                         <div class="progress">
                             <div class="bar bar-success" style=" width: {{ service_totals_percent.0 }}%;">{{ service_totals_percent.0|floatformat }}%</div>
@@ -100,19 +101,19 @@
             <table class="table-condensed well table" id="top_alert_producers">
                 <thead>
                     <tr>
-                        <th>Top Alert Producers</th>
-                        <th>Recent Alerts</th>
+                        <th>{% trans "Top Alert Producers" %}</th>
+                        <th>{% trans "Recent Alerts" %}</th>
                     </tr>
                 </thead>
                 <tr id="top_alert_producers_loading">
-                    <td id="top_alert_loading_message" colspan=2><img src="{% url media path="select2/spinner.gif" %}"> Loading...</td>
+                    <td id="top_alert_loading_message" colspan=2><img src="{% url media path="external/select2/spinner.gif" %}"> {% trans "Loading..." %}</td>
                 </tr>
             </table>
         </div>
     </div>
     <hr>
     <div id="servicelist_in_overview">
-        <h4>Unhandled service problems</h4>
+        <h4>{% trans "Unhandled service problems" %}</h4>
         {% include "snippets/status_servicelist_snippet.html" %}
     </div>
     <!--
@@ -229,12 +230,12 @@
     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
     <ul class="dropdown-menu">
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&unhandled"> Open Problems</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state__isnot=0"> All Problems</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state=0"> All OK</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&acknowledged=1"> All Acknowledged</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> All in Downtime</a></li>
-        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}"> Everything</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&unhandled"> {% trans "Open Problems" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state__isnot=0"> {% trans "All Problems" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&state=0"> {% trans "All OK" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&acknowledged=1"> {% trans "All Acknowledged" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> {% trans "All in Downtime" %}</a></li>
+        <li><a href="{% url adagios.status.views.problems %}?q={{ request.GET.q }}"> {% trans "Everything" %}</a></li>
     </ul>
 </div>
 {% endblock %}
@@ -242,7 +243,7 @@
 
 {% block bottom_left %}
     <div id="updates_avail">
-        Adagios version: {{ adagios_version }}. Latest: <span id="latest_version">...</span>
+        {% blocktrans %}Adagios version: {{ adagios_version }}. Latest: <span id="latest_version">...</span>{% endblocktrans %}
     </div>
 {% endblock bottom_left %}
 
@@ -251,61 +252,67 @@
     {{ block.super }}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
-    $(document).ready(function() {
-        // Hide the action buttons
-        //$('#action_buttons').hide();
+        $(document).ready(function() {
+            // Update top_alert_producers
+            update_top_alert_producers(3);
 
-        // Update top_alert_producers
-        update_top_alert_producers(3);
+            // Get latest adagios version:
+            $('#latest_version').adagios_version();
 
-    });
-    // Fetch information about top_alert_producers ajax style and update table
-    // with id "top_alert_producers"
-    function update_top_alert_producers(limit) {
-        var url = '{% url rest/status %}json/top_alert_producers?limit=' + limit;
-        var table=document.getElementById("top_alert_producers");
-        var top_alert_producers = $.getJSON(url)
-        .done( function(data) {
-            // Hide the loading message
-            $('#top_alert_producers_loading').hide();
-            for (i=0;i<data.length;i++){
-                row = data[i];
-                host_name = row[0];
-                number_of_alerts = row[1];
+            // Set a reload in 30 seconds
+            timedRefresh(30000);
+        });
 
-                // Add a new row to our table
-                var row=table.insertRow(i+1);
-                var cell1=row.insertCell(0);
-                var cell2=row.insertCell(1);
-                cell1_html = '<a href="{% url status.views.status_detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
-                cell2_html = '<a href="{% url status.views.status_detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
-                cell1.innerHTML=cell1_html;
-                cell2.innerHTML=cell2_html;
-            }
-        })
-        .fail( function(data) {
+        // Fetch information about top_alert_producers ajax style and update table
+        // with id "top_alert_producers"
+        function update_top_alert_producers(limit) {
+            var table=document.getElementById("top_alert_producers");
+
+            adagios.rest.status.top_alert_producers({'limit': limit})
+                    .done( function(data) {
+                        // Hide the loading message
+                        $('#top_alert_producers_loading').hide();
+                        var host_name;
+                        var number_of_alerts;
+                        var cell1_html;
+                        var cell2_html;
+
+                        for (var i=0;i<data.length;i++){
+                            row = data[i];
+                            host_name = row[0];
+                            number_of_alerts = row[1];
+
+                            // Add a new row to our table
+                            var row=table.insertRow(i+1);
+                            var cell1=row.insertCell(0);
+                            var cell2=row.insertCell(1);
+                            cell1_html = '<a href="{% url status.views.detail  %}?host_name=' + host_name + '">' + host_name + '</a>';
+                            cell2_html = '<a href="{% url status.views.detail %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
+                            cell1.innerHTML=cell1_html;
+                            cell2.innerHTML=cell2_html;
+                        }
+                    })
+                    .fail( function(data) {
                         // Fail scenario
                         var td = document.getElementById("top_alert_loading_message");
                         td.innerHTML = "update_top_alert_producers() failed";
                         return data;
-        });
-
-
-    }
-    </script>
-
-    <script>
-
-        function timedRefresh(timeoutPeriod) {
-            var interval = setInterval(refreshPage, timeoutPeriod);
+                    });
         }
 
+        // Configure a timed refresh of our page.
+        function timedRefresh(timeoutPeriod) {
+            setInterval(refreshPage, timeoutPeriod);
+        }
+
+        // conditional reload of page. Reload only if user is not interacting with it currently.
         function refreshPage() {
-            checked_boxes = $( ".selectable :checked" );
-            shown_modals = $("div .modal.in");
-            if (checked_boxes.length + shown_modals.length == 0) {
+            var checked_boxes = $( ".selectable :checked" );
+            var shown_modals = $("div .modal.in");
+            var searchbox_contents = $("#search_field").val();
+            if (checked_boxes.length + shown_modals.length + searchbox_contents.length == 0) {
                 console.log("Refreshing page...");
-                location.reload(true);
+                location.reload();
             }
             else {
                 console.log("Canceled auto-refresh of page because input boxes or modals have been edited");
@@ -313,10 +320,6 @@
             }
         }
 
-        $(document).ready(function() {
-               $('#latest_version').adagios_version();
-            timedRefresh(30000);
-        });
     </script>
 {% endblock %}
 

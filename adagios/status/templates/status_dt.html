@@ -1,36 +1,44 @@
 {% extends "base_status.html" %}
+{% load i18n %}
 
-{% block title %}Datatable status{% endblock %}
+{% block title %}{% trans "Datatable status" %}{% endblock %}
 {% block nav2 %}
 {% endblock %}
 {% block smallheader %}
 {% endblock %}
 {% block largeheader %}
-    Datatable status
+    {% trans "Datatable status" %}
 {% endblock %}
 
 {% block content %}
 
 <table id="status_dt">
   <thead>
+    <tr>
+      <th>{% trans "Host name" %}</th>
+      <th>{% trans "Service" %}</th>
+    </tr>
   </thead>
   <tbody>
-  <tbody>
-</table>
+  </tbody>
 </table>
 {% endblock %}
 
 {% block header %} {{ block.super }}
 {% endblock %}
 
+{% block footer %}
+{{ block.super }}
+
+<script>
 $(document).ready(function() {
     $('#status_dt').dataTable( {
         "bProcessing": true,
         "bServerSide": true,
-        "sAjaxSource": "/status/rest/json/dt"
+
+        "sAjaxSource": "/rest/status/json/services_dt"
     } );
 } );
+</script>
 
-
-{% block header %}
 {% endblock %}

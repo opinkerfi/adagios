@@ -1,8 +1,10 @@
 {% extends "base_status.html" %}
+{% load i18n %}
+
 {% block title %}Add new Object{% endblock %}
 {% block smallheader %}Add{% endblock %}
 {% block largeheader %}{{ object_type }}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">Object Browser</a>{% endblock %}
+{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser"%}</a>{% endblock %}
 
 {% block toolbar %}
 {% endblock %}
@@ -11,7 +13,7 @@
     <table class="table table-condensed well datatable">
     <thead>
     <tr>
-    <th>Short name</th>
+    <th>{% trans "Short name" %}</th>
     <th>{{ attribute_name }}</th>
     </tr>
     </thead>
@@ -38,43 +40,44 @@
             // When an editable field is change, lets update configuration
         $('.editable_field').focus(function(e) {
             $(e.target).data('orig-value', "" + $(e.target).val());
-        })
+        });
+
         $('.editable_field').blur(function(e) {
             var old_value = "" + $(e.target).data('orig-value');
             var new_value = "" + $(e.target).val();
             var attribute_name = "" + $(e.target).data('attribute_name');
             var object_type = $(e.target).data('object_type');
             var short_name = $(e.target).data('short_name');
-            if (old_value == new_value)
+            if (old_value == new_value) {
                 return false;
+            }
 
             // Get the div right next to the input box for editing
             var message_div = $('#' + $(e.target).attr('name') + "_status");
-            message_div.html('<div class="pull-right"><div class="circle state_3"></div> Saving ...</div>');
+            message_div.html('<div class="pull-right"><div class="circle state_3"></div>' + gettext("Saving ...") + '</div>');
 
-            tmp = change_attribute(
+            var tmp = adagios.status.change_attribute(
                     object_type,
                     short_name,
                     attribute_name,
                     new_value,
                     function(e) {
                         message_div.html(
-                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>undo </a>' +
+                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>' + gettext('undo') + '</a>' +
                         '<div class="pull-right">' +
-                        '<div class="circle state_0"></div>  Saved. ' +
-                        '</div> '
+                        '<div class="circle state_0"></div>  ' + gettext('Saved.') + ' + '</div> '
                         );
                     },
                     function(e) {
                         message_div.html(
-                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>undo </a>' +
+                        '<a class="pull-left" href="" onclick=undo_attribute(\''+attribute_name+'\')>' + gettext('undo') +'</a>' +
                         '<div class="pull-right">' +
-                        '<div class="circle state_2"></div>  Failed. ' +
-                        '</div> '
+                        '<div class="circle state_2"></div>  ' + gettext('Failed.') + ' + '</div> '
                         );
                     }
 
             );
+            return true;
 
         });
 
