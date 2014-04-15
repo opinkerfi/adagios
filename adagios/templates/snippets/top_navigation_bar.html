@@ -68,11 +68,11 @@
                     {% endif %}
 
                     <li class="dropdown"><a><i class="glyph-grey glyph-clock"></i> {{ current_time }}</a></li>
-
+		    {% get_current_language as curr_language %}
                     <li class="dropdown" id="user-drop-down">
                         <a class="dropdown-toggle"
                            data-toggle="dropdown"
-                           href="#"><i class="glyph-user glyph-grey"></i> {{ remote_user }}
+                           href="#"><i class="glyph-user glyph-grey"></i> {{ remote_user }} ({{ curr_language }})
                             {% if tagged_comments %}({{ tagged_comments }}){% endif %}
                         </a>
                         <ul class="dropdown-menu">
@@ -87,6 +87,7 @@
                             {% if plugins.status %}
                                 <li><a href="{% url status.views.contact_detail remote_user %}">{% trans "My Profile" %}</a></li>
                             {% endif %}
+                            <li><a href="{% url misc.views.preferences %}">{% trans "Preferences" %}</a></li>
                             <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
                         </ul>
                     </li>

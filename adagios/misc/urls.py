@@ -24,6 +24,7 @@ urlpatterns = patterns('',
                       (r'^/?$', 'adagios.misc.views.index'),
 
                       (r'^/settings/?', 'adagios.misc.views.settings'),
+		      (r'^/preferences/?', 'adagios.misc.views.preferences'),
                       (r'^/nagios/?', 'adagios.misc.views.nagios'),
                       (r'^/gitlog/?', 'adagios.misc.views.gitlog'),
                       (r'^/service/?', 'adagios.misc.views.nagios_service'),
