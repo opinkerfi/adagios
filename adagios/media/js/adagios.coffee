@@ -230,9 +230,17 @@ $.extend $.fn.dataTableExt.oStdClasses,
             """<input id="ob_mass_select" name="#{ item["id"] }" type="checkbox">"""
           ]
           $.each v["rows"], (k, field) ->
-            cell = """<a href="edit/#{ item["id"] }">"""
+            cell = """<a href="edit/#{ item["id"] }" """
+            cell += 'class="'
+            if item["register"] is "0"
+              cell += "dis-object"
+            cell += '">'
             field_value = ""
-            cell += """<i class="#{ field.icon }"></i>"""  if "icon" of field
+            if "icon" of field
+              cell += """<i class="#{ field.icon }"""
+              if item["register"] is "0"
+                cell += """ glyph-grey"""
+              cell += """ "></i>"""
             if item[field["cName"]]
               field_value = item[field["cName"]]
             else
