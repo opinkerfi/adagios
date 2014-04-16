@@ -108,16 +108,15 @@ class User(object):
             raise Exception("Couldn't write settings into file %s. Be sure to"
                             "have write permissions on the parent folder."
                             % self._conffile)
-        self.trigger_hooks(self._request)
+        self.trigger_hooks()
 
-    def trigger_hooks(self, request):
+    def trigger_hooks(self):
         """ Triggers the hooks when preferences are changed. """
-        if self._request is not None:
-            # language preference
-            from django.utils import translation
-            try:
-                request.session['django_language'] = self.language
-                # newer versions of Django: s/django_language/_language
-                translation.activate(self.language)
-            except Exception as e:
-                pass
+        # language preference
+        from django.utils import translation
+        try:
+            self._request.session['django_language'] = self.language
+            # newer versions of Django: s/django_language/_language
+            translation.activate(self.language)
+        except Exception as e:
+            pass
