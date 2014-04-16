@@ -1,5 +1,6 @@
 <!-- snippets/header.html starts. This is the top navigation header on our page -->
 {% load i18n %}
+{% load url from future %}
 
 <div id="top_navigation_bar" class="navbar navbar-fixed-top" xmlns="http://www.w3.org/1999/html">
     <div class="navbar-inner">
@@ -11,21 +12,18 @@
             </a>
 
             <!-- Logo in top nav -->
-            <a class="brand" href="{% url home %}">Adagios</a>
+            <a class="brand" href="{% url 'home' %}">{{ settings.TOPMENU_HOME }}</a>
             <div class="nav-collapse">
                 <ul class="nav" id="top_navigation_menuitems">
 
-
-
-                    <!-- Object Browser -->
-                    <li class="{% if urlname == "objectbrowser"%}active{% endif %}">
-                        <a href="{% url objectbrowser.views.list_object_types %}" ><i class="glyph-grey glyph-edit"></i> {% trans "Configure" %}</a>
+                  {% for item in settings.TOPMENU_ITEMS %}
+                    <li class="{% if item.1|lower in urlname %}active{% endif %}">
+                      <a href="{% url item.2 %}" >
+                        <i class="glyph-grey {{ item.3 }}"></i> {% trans item.0 %}
+                      </a>
                     </li>
+                  {% endfor %}
 
-                    <!-- Nagios -->
-                    <li>
-                        <a href="{% url misc.views.nagios %}"><i class="glyph-list glyph-grey"></i> Nagios</a>
-                    </li>
 
                     <!-- Any extra plugins can put an entry in the menubar -->
                     {% for i in menubar_items %}
@@ -43,10 +41,10 @@
                 <ul class="nav pull-right">
                     {% if not nagios_running %}
                         <li>
-                            <form action="{% url misc.views.nagios_service %}" method="POST">
+                            <form action="{% url 'misc.views.nagios_service' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="start" value="1" />
-                                <input type="image" src="{% url media path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
+                                <input type="image" src="{% url 'media' path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
                             </form>
                         </li>
                     {% endif %}
@@ -60,7 +58,7 @@
                     </li>
                     {% if num_problems and plugins.status  %}
                         <li style="color: red;">
-                        <a style="color: red;" href="{% url status.views.problems %}?unhandled">
+                        <a style="color: red;" href="{% url 'status.views.problems' %}?unhandled">
                             <i class="glyph-grey  glyph-warning-sign" title="You have unhandled problems"></i>
                             {{ num_problems }}
                         </a>
@@ -79,13 +77,13 @@
                             {% if tagged_comments and plugins.status %}
                                 <li>
 
-                                <a href="{% url status.views.contact_detail remote_user %}">
+                                <a href="{% url 'status.views.contact_detail' remote_user %}">
                                     User {{ remote_user }} is mentioned in {{ tagged_comments }} comments.
                                 </a>
                                 </li>
                             {% endif %}
                             {% if plugins.status %}
-                                <li><a href="{% url status.views.contact_detail remote_user %}">{% trans "My Profile" %}</a></li>
+                                <li><a href="{% url 'status.views.contact_detail' remote_user %}">{% trans "My Profile" %}</a></li>
                             {% endif %}
                             <li><a href="{% url misc.views.preferences %}">{% trans "Preferences" %}</a></li>
                             <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
@@ -101,14 +99,14 @@
                             <li><a href="https://github.com/opinkerfi/adagios/issues">{% trans "Make Suggestion" %}</a></li>
                             <li><a href="http://adagios.org/">{% trans "Project Webpage" %}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{%  url objectbrowser.views.show_plugins %}">{% trans "Missing Plugins" %}</a></li>
-                            <li><a href="{%  url objectbrowser.views.edit_nagios_cfg %}">{% trans "Edit nagios.cfg" %}</a></li>
-                            <li><a href="{%  url misc.views.nagios_service %}">{% trans "Nagios Service" %}</a></li>
-                            <li><a href="{%  url misc.views.gitlog %}">{% trans "Object History" %}</a></li>
-                            <li><a href="{%  url objectbrowser.views.config_health %}">{% trans "Config Health" %}</a></li>
-                            <li><a href="{%  url misc.views.settings %}">{% trans "Settings" %}</a></li>
+                            <li><a href="{%  url 'objectbrowser.views.show_plugins' %}">{% trans "Missing Plugins" %}</a></li>
+                            <li><a href="{%  url 'objectbrowser.views.edit_nagios_cfg' %}">{% trans "Edit nagios.cfg" %}</a></li>
+                            <li><a href="{%  url 'misc.views.nagios_service' %}">{% trans "Nagios Service" %}</a></li>
+                            <li><a href="{%  url 'misc.views.gitlog' %}">{% trans "Object History" %}</a></li>
+                            <li><a href="{%  url 'objectbrowser.views.config_health' %}">{% trans "Config Health" %}</a></li>
+                            <li><a href="{%  url 'misc.views.settings' %}">{% trans "Settings" %}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{%  url misc.views.pnp4nagios %}">{% trans "PNP Integration" %}</a></li>
+                            <li><a href="{%  url 'misc.views.pnp4nagios' %}">{% trans "PNP Integration" %}</a></li>
                             <!-- Any extra plugins can put an entry in the menubar -->
                             {% for i in misc_menubar_items %}
                                 <!-- Plugin menubar for {{ i }} -->
