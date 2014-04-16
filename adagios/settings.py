@@ -172,10 +172,10 @@ USER_PREFS_PATH = "/etc/adagios/userdata/"
 TOPMENU_HOME = 'Adagios'
 
 # items in the top menubar (excluding those coming from %s_menubar.html)
-# Name, identifier, view_url, icon
 # The identfier is used to recognize active links (which are displayed
 # differently).
 TOPMENU_ITEMS = [
+    # Name,        identifier,      view_url,                                icon
     ('Configure', 'objectbrowser', 'objectbrowser.views.list_object_types', 'glyph-edit'),
     ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
     ]
