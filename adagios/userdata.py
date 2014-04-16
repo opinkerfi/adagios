@@ -104,9 +104,7 @@ class User(object):
         try:
             with open(self._conffile, 'w') as f:
                 f.write(json.dumps(d))
-        except IOError as e:
-            print('yo')
-            print(e)
+        except IOError:
             raise Exception("Couldn't write settings into file %s. Be sure to"
                             "have write permissions on the parent folder."
                             % self._conffile)
