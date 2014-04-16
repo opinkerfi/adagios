@@ -71,7 +71,7 @@
       <ul class="nav nav-list">
         <li class="nav-header" style="color: black;">{% trans "Shortcuts" %}</li>
 	
-        <li{% if urlname == 'status_index' %} class="active"{% endif %}><a href="{% url status.views.status_index %}">{% trans "Status Overview" %} </a></li>
+        <li{% if urlname == 'adagios.status.views.status_index' %} class="active"{% endif %}><a href="{% url status.views.status_index %}">{% trans "Status Overview" %} </a></li>
         <li{% if urlname == 'adagios.status.views.problems' and 'unhandled' in request.GET %} class="active"{% endif %}>
           <a {% if num_problems_unhandled %}{% endif %} href="{% url status.views.problems %}?unhandled">{% trans "Open Problems" %} {% if num_problems_unhandled %}<span class="pull-right">({{ num_problems_unhandled }})</span>{% endif %}</a>
         </li>
