@@ -11,7 +11,7 @@
 
 {% block content %}
     <div class="alert alert-danger">
-        {% blocktrans with type=i.object_type desc=u.description file=i.filename %}
+        {% blocktrans with type=object.object_type desc=object.description file=object.filename %}
 	Are you sure you want to delete {{ type }} {{ desc }} from file {{ file }} ?
 	{% endblocktrans %}
     </div>
