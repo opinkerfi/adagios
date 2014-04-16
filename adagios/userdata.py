@@ -93,9 +93,9 @@ class User(object):
         self.__dict__[name] = value
 
     def to_dict(self):
-        d = {k: self.__dict__[k]
-             for k in filter(lambda x: not(x.startswith('_')),
-                             self.__dict__.keys())}
+        d = {}
+        for k in filter(lambda x: not(x.startswith('_')), self.__dict__.keys()):
+            d[k] = self.__dict__[k]
         return d
     
     def save(self):
