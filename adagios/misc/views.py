@@ -44,7 +44,7 @@ import adagios.settings
 import adagios.objectbrowser
 from adagios import __version__
 import adagios.status.utils
-from adagios import userprefs
+from adagios import userdata
 
 from collections import defaultdict
 from adagios.views import adagios_decorator, error_page
@@ -440,17 +440,16 @@ def preferences(request):
     c['messages'] = []
     c.update(csrf(request))
     
-    user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'),
-                          request=request)
+    user = userdata.User(request)
     
     if request.method == 'POST':
-        c['form'] = forms.UserprefsForm(data=request.POST)
+        c['form'] = forms.UserdataForm(data=request.POST)
         if c['form'].is_valid():
             for k, v in c['form'].cleaned_data.iteritems():
                 user.set_pref(k, v)
             user.save() # will save in json and trigger the hooks
             c['messages'].append(_('Preferences have been saved.'))
     else:
-        c['form'] = forms.UserprefsForm(initial=user.to_dict())
+        c['form'] = forms.UserdataForm(initial=user.to_dict())
 
-    return render_to_response('userprefs.html', c, context_instance=RequestContext(request))
+    return render_to_response('userdata.html', c, context_instance=RequestContext(request))

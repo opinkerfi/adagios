@@ -25,25 +25,35 @@ import settings
 
 class User(object):
     """ Handles authentified users, provides preferences management. """
-    def __init__(self, username, autosave=False, request=None):
+    def __init__(self, request, autosave=False):
         """ Instantiates one user's preferences.
 
         Args:
-          username (str): The username of the user.
+          request (Request): The incoming Django request.
 
         Kwargs:
           autosave (bool): if True, preferences are automatically saved.
-          request (Request): if provided, hooks will be triggered
-            (e.g. changing the language preference must be told to
-            Django).
         """
-        self._username = username
-        self._autosave = autosave
         self._request = request
+        self._autosave = autosave
+        self._username = request.META.get('REMOTE_USER', 'anonymous')
         self._conffile = self._get_prefs_location()
+        self._check_path(self._conffile)
         # sets the preferences as attributes:
         for k, v in self._get_conf().iteritems():
             self.__dict__[k] = v
+
+    def _check_path(self, path):
+        """ Checks the userdata folder, try to create it if it doesn't
+        exist."""
+        folder = os.path.dirname(path)
+        # does the folder exist?
+        if not os.path.isdir(folder):
+            try:
+                os.makedirs(folder)
+            except:
+                raise Exception("Folder %s can't be created. Be sure Adagios"
+                                "has write access on its parent." % folder)
     
     def _get_prefs_location(self):
         """ Returns the location of the preferences file of the
@@ -94,8 +104,12 @@ class User(object):
         try:
             with open(self._conffile, 'w') as f:
                 f.write(json.dumps(d))
-        except IOError, Exception:
-            raise Exception("Couldn't write settings into file %s" % conffile)
+        except IOError as e:
+            print('yo')
+            print(e)
+            raise Exception("Couldn't write settings into file %s. Be sure to"
+                            "have write permissions on the parent folder."
+                            % self._conffile)
         self.trigger_hooks(self._request)
 
     def trigger_hooks(self, request):

@@ -25,7 +25,7 @@ This is a rest interface used by the "/rest/" module that affects adagios direct
 
 from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
-from adagios import userprefs
+from adagios import userdata
 from django.utils.translation import ugettext as _
 
 version = __version__
@@ -112,15 +112,14 @@ def get_task(task_id="someid"):
 
 def get_user_preferences(request):
     try:
-        user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'))
+        user = userdata.User(request)
     except Exception as e:
         raise e
     return user.to_dict()
 
 def set_user_preference(request, **kwargs):
     try:
-        user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'),
-                              request=request)
+        user = userdata.User(request)
     except Exception as e:
         raise e
     

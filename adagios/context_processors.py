@@ -30,7 +30,7 @@ from pynag import Model
 import time
 import datetime
 from adagios import __version__
-from adagios import userprefs
+from adagios import userdata
 
 from django.utils.translation import ugettext as _
 
@@ -343,7 +343,7 @@ def get_user_preferences(request):
                             settings.THEME_ENTRY_POINT)
     
     try:
-        user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'))
+        user = userdata.User(request)
         results = user.to_dict()
         # adds the theme path, as it's easier to compute here than in template
         if 'theme' in results.keys():
