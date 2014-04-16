@@ -16,7 +16,8 @@ Summary of features:
     Adagios now supports using multiple themes, which at the
     moment can be changed only by editing settings.py
     
-    Also a proof of concept spacelab theme from Savoir-faire Linux 
+    Also a proof of concept spacelab theme from
+    http://bootswatch.com/spacelab/
     
     
 * Authorization support
