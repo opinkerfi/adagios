@@ -338,21 +338,21 @@ def reload_configfile(request):
 def get_user_preferences(request):
     """ Loads the preferences for the logged-in user. """
     def theme_to_themepath(theme):
-	return os.path.join(settings.THEMES_FOLDER,
-			    theme,
-			    settings.THEME_ENTRY_POINT)
+        return os.path.join(settings.THEMES_FOLDER,
+                            theme,
+                            settings.THEME_ENTRY_POINT)
     
     try:
-	user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'))
-	results = user.to_dict()
-	# adds the theme path, as it's easier to compute here than in template
-	if 'theme' in results.keys():
-	    results['theme_path'] = theme_to_themepath(results['theme'])
-	else: # default theme
-	    results['theme_path'] = theme_to_themepath(settings.THEME_DEFAULT)
+        user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'))
+        results = user.to_dict()
+        # adds the theme path, as it's easier to compute here than in template
+        if 'theme' in results.keys():
+            results['theme_path'] = theme_to_themepath(results['theme'])
+        else: # default theme
+            results['theme_path'] = theme_to_themepath(settings.THEME_DEFAULT)
     except Exception:
-	return {}
-    return results
+        results = {}
+    return {'user_data': results}
 
 if __name__ == '__main__':
     on_page_load(request=None)

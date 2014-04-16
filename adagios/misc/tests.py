@@ -36,7 +36,7 @@ class MiscTestCase(unittest.TestCase):
         """ Smoke test views in /misc/
         """
         self.loadPage("/misc/settings")
-	self.loadPage("/misc/preferences")
+        self.loadPage("/misc/preferences")
         self.loadPage("/misc/nagios")
         self.loadPage("/misc/settings")
         self.loadPage("/misc/service")
@@ -55,10 +55,10 @@ class MiscTestCase(unittest.TestCase):
 
 
     def test_user_preferences(self):
-	c = Client()
-	response = c.post('/misc/preferences/',
-			  {'theme': 'spacelab', 'language': 'fr'})
+        c = Client()
+        response = c.post('/misc/preferences/',
+                          {'theme': 'spacelab', 'language': 'fr'})
 
-	assert(response.status_code == 200)
-	assert('spacelab/style.css' in response.content)
-	assert('(fr)' in response.content)
+        assert(response.status_code == 200)
+        assert('spacelab/style.css' in response.content)
+        assert('(fr)' in response.content)

@@ -441,15 +441,15 @@ def preferences(request):
     c.update(csrf(request))
     
     user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'),
-			  request=request)
+                          request=request)
     
     if request.method == 'POST':
         c['form'] = forms.UserprefsForm(data=request.POST)
         if c['form'].is_valid():
-	    for k, v in c['form'].cleaned_data.iteritems():
-		user.set_pref(k, v)
-	    user.save() # will save in json and trigger the hooks
-	    c['messages'].append(_('Preferences have been saved.'))
+            for k, v in c['form'].cleaned_data.iteritems():
+                user.set_pref(k, v)
+            user.save() # will save in json and trigger the hooks
+            c['messages'].append(_('Preferences have been saved.'))
     else:
         c['form'] = forms.UserprefsForm(initial=user.to_dict())
 

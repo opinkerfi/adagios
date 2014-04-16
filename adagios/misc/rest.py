@@ -112,19 +112,19 @@ def get_task(task_id="someid"):
 
 def get_user_preferences(request):
     try:
-	user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'))
+        user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'))
     except Exception as e:
-	raise e
+        raise e
     return user.to_dict()
 
 def set_user_preference(request, **kwargs):
     try:
-	user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'),
-			      request=request)
+        user = userprefs.User(request.META.get('REMOTE_USER', 'anonymous'),
+                              request=request)
     except Exception as e:
-	raise e
+        raise e
     
     for (k, v) in kwargs.iteritems():
-	if not k.startswith('_'):
-	    user.set_pref(k, v)
+        if not k.startswith('_'):
+            user.set_pref(k, v)
     user.save()
