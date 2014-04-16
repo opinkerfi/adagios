@@ -166,7 +166,7 @@ THEMES_AVAILABLE = ('default', 'spacelab',)
 THEME_ENTRY_POINT = 'style.css'
 
 # folder where users preferences are stored
-USER_PREFS_PATH = "%s/userdata" % (djangopath)
+USER_PREFS_PATH = "/etc/adagios/userdata/"
 
 
 # Adagios specific configuration options. These are just the defaults,
