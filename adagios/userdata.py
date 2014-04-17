@@ -64,6 +64,13 @@ class User(object):
             raise Exception('You must define USER_PREFS_PATH in settings.py')
 
         return os.path.join(user_prefs_path, self._username + '.json')
+
+    def _get_default_conf(self):
+        try:
+            d = settings.PREFS_DEFAULT
+        except:
+            d = dict()
+        return d
     
     def _get_conf(self):
         """ Returns the json preferences for the specified user. """
@@ -71,9 +78,9 @@ class User(object):
             with open(self._conffile) as f:
                 conf = json.loads(f.read())
         except IOError:
-            conf = dict()
+            conf = self._get_default_conf()
         except ValueError:
-            conf = dict()
+            conf = self._get_default_conf()
         return conf
     
     def __getattr__(self, name):

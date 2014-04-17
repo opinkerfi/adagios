@@ -168,6 +168,12 @@ THEME_ENTRY_POINT = 'style.css'
 # folder where users preferences are stored
 USER_PREFS_PATH = "/etc/adagios/userdata/"
 
+# default preferences, for new users or when they are not available
+PREFS_DEFAULT = {
+    'language': 'en',
+    'theme': 'default',
+    }
+
 # name displayed in the top left corner
 TOPMENU_HOME = 'Adagios'
 
