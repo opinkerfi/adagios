@@ -27,9 +27,9 @@
 
         <form action="" method="get" class="form-horizontal">
             {% trans "Limit results to: " %}<input name="limit" id="id_limit" value=10>{% trans " rows." %}
-            <button name="submit" type="submit">{% trans "Get {{ table }}" %}</button>
+            <button name="submit" type="submit">{% blocktrans %}Get {{ table }}{% endblocktrans %}</button>
             <br>
-            {% trans "Show only the following columns {{ table }}:" %}
+            {% blocktrans %}Show only the following columns {{ table }}:{% endblocktrans %}
             <input type="hidden" value="{{ table }}" name=table>
             <table class="well table" border=1>
                 <tr>
