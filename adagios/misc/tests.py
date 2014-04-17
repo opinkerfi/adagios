@@ -62,3 +62,23 @@ class MiscTestCase(unittest.TestCase):
         assert(response.status_code == 200)
         assert('spacelab/style.css' in response.content)
         assert('(fr)' in response.content)
+    
+    def load_get(self, url):
+        c = Client()
+        response = c.get(url)
+        return response
+    
+    def test_topmenu_highlight(self):
+        r = self.load_get('/status/')
+        assert '<li class="active">\n  <a href="/status">' in r.content
+    
+    def test_leftmenu_highlight(self):
+        r = self.load_get('/status/problems')
+        assert '<li class="active">\n          <a href="/status/problems">' in r.content
+    
+    def test_app_name(self):
+        from adagios import settings
+        settings.TOPMENU_HOME = 'Free beer'
+        r = self.load_get('/status')
+        assert 'Free beer' in r.content
+
