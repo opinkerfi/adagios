@@ -85,7 +85,7 @@
                             {% if plugins.status %}
                                 <li><a href="{% url 'status.views.contact_detail' remote_user %}">{% trans "My Profile" %}</a></li>
                             {% endif %}
-                            <li><a href="{% url misc.views.preferences %}">{% trans "Preferences" %}</a></li>
+                            <li><a href="{% url 'misc.views.preferences' %}">{% trans "Preferences" %}</a></li>
                             <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
                         </ul>
                     </li>
