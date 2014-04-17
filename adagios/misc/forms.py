@@ -93,6 +93,10 @@ class ContactUsForm(forms.Form):
         """) % {'topic': topic, 'sender': sender, 'message': message}
         send_mail(subject, msg, from_address, to_address, fail_silently=False)
 
+class UserdataForm(forms.Form):
+    language = forms.ChoiceField(choices=settings.LANGUAGES)
+    theme = forms.ChoiceField(choices=[(x,x) for x in settings.THEMES_AVAILABLE])
+
 
 class AdagiosSettingsForm(forms.Form):
     nagios_config = forms.CharField(

@@ -93,7 +93,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    #'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -101,6 +101,8 @@ MIDDLEWARE_CLASSES = (
     #'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
 )
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
 LANGUAGES = (
     ('en', 'English'),
@@ -123,7 +125,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = [
     #'django.contrib.auth',
     #'django.contrib.contenttypes',
-    #'django.contrib.sessions',
+    'django.contrib.sessions',
     'django.contrib.sites',
     #'django.contrib.messages',
     # Uncomment the next line to enable the admin:
@@ -157,11 +159,14 @@ THEMES_FOLDER = 'themes' # in 'media/'
 # (or at least through a symbolic link)
 THEME_DEFAULT = 'default'
 
+# Themes the user can choose in its preferences
+THEMES_AVAILABLE = ('default', 'spacelab',)
+
 # CSS entry-point, in the theme folder
 THEME_ENTRY_POINT = 'style.css'
 
-# generated location of
-THEME_CSS = os.path.join(THEMES_FOLDER, THEME_DEFAULT, THEME_ENTRY_POINT)
+# folder where users preferences are stored
+USER_PREFS_PATH = "/etc/adagios/userdata/"
 
 
 # Adagios specific configuration options. These are just the defaults,
