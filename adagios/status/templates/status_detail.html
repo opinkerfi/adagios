@@ -323,7 +323,7 @@
                             <div id="comments">
                                 {% for i in my_object.downtimes_with_info %}
                                     <div class="alert alert-info">
-                                        <button class="close delete_downtime" data-dismiss="alert" title="{% trans "Delete Downtime {{ i.0 }}" %}"
+                                        <button class="close delete_downtime" data-dismiss="alert" title="{% trans "Delete Downtime" %} {{ i.0 }}"
                                                 onclick="$.getJSON('{% url rest/status %}json/delete_downtime?downtime_id={{ i.0 }}{% if object_type == 'host' %}&is_service=False{% endif %}');">
                                             <i class="glyph-bin"></i></button>
                                         <i class="glyph-user"></i> <a href="{% url status.views.detail %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
@@ -351,7 +351,7 @@
                                     </div>
                                 {% endfor %}
                             {% else %}
-                                <p>{% trans "This {{ my_object.object_type }} has no comments." %}</p>
+                                <p>{% blocktrans with ot=my_object.object_type %}This {{ ot }} has no comments.{% endblocktrans %}</p>
                             {% endif %}
                             <div id="div_add_comment" class="alert alert-info">
                                         <input type="hidden" name="author" id="id_author" value="{{ remote_user }}"/>
@@ -386,7 +386,7 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            {% trans "This {{ my_object.object_type }} has no configured network parents." %}
+                            {% blocktrans with ot=my_object.object_type %}This {{ ot }} has no configured network parents.{% endblocktrans %}
                         {% endif %}
                 </tr>
             </table>
@@ -490,7 +490,7 @@
                 {% else %}
                     {% if pnp4nagios_error %}
                         <div class="alert alert-warning">
-                            {% trans "We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}" %}
+                            {% blocktrans %}We got an error while trying to talk with PNP4nagios: {{ pnp4nagios_error }}{% endblocktrans %}
                         </div>
                         {% trans "Please check that:" %}
                         <ul>
@@ -500,7 +500,7 @@
                         <li>{% url pnp.views.pnp "json" as the_url %} {% blocktrans %}Click <a href="{{ the_url }}">here</a> to see pnp4nagios output{% endblocktrans %}</li>
                         </ul>
                     {% endif %}
-                    {% trans "No Performance data is available for this {{ my_object.object_type }}." %}
+                    {% blocktrans with ot=my_object.object_type %}No Performance data is available for this {{ ot }}.{% endblocktrans %}
                 {% endif %}
         </div>
         </div>
@@ -656,7 +656,7 @@
                         $('#effective_check_command').text(data);
                     })
                     .fail( function(data) {
-                        $('#effective_check_command').text("{% trans "Failed to load check_command." %}");
+                        $('#effective_check_command').text(gettext("Failed to load check_command."));
                         console.log(data);
                     });
 
