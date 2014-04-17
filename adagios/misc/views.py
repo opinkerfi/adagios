@@ -86,9 +86,13 @@ def settings(request):
 
 @adagios_decorator
 def nagios(request):
-    c = {}
-    c['nagios_url'] = adagios.settings.nagios_url
-    return render_to_response('nagios.html', c, context_instance=RequestContext(request))
+    return iframe(request, adagios.settings.nagios_url)
+
+@adagios_decorator
+def iframe(request, url=None):
+    if not url:
+        url = request.GET.get('url', None)
+    return render_to_response('iframe.html', locals(), context_instance=RequestContext(request))
 
 
 @adagios_decorator

@@ -75,7 +75,7 @@ def index(request):
     """ This view is our frontpage """
     # If status view is enabled, redirect to frontpage of the status page:
     if adagios.settings.enable_status_view:
-        return redirect('status_index', permanent=True)
+        return redirect('adagios.status.views.status_index', permanent=True)
     else:
         return redirect('objectbrowser', permanent=True)
 

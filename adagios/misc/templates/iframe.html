@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ url }}{% endblock %}
+{% block page_content %}
+
+    {% if url %}
+        <iframe style="position: absolute;top: 40px; left: 0px" src="{{ url }}" width="100%" height="100%" >
+        {% blocktrans %}This iframe is supposed to display the page available at <a href="{{ url }}">{{ url }}</a>.{% endblocktrans %}
+        </iframe>
+    {% else %}
+        You need to load this page with ?url=foo query string <a href="?url=http://adagios.org">like this</a>.
+    {% endif %}
+
+{% endblock %}
+
+{% block page_footer %}{% endblock %}
