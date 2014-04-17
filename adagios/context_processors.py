@@ -30,6 +30,7 @@ from pynag import Model
 import time
 import datetime
 from adagios import __version__
+from adagios import userdata
 
 from django.utils.translation import ugettext as _
 
@@ -73,6 +74,8 @@ def on_page_load(request):
     for k, v in get_current_version(request).items():
         results[k] = v
     for k, v in get_serverside_includes(request).items():
+        results[k] = v
+    for k, v in get_user_preferences(request).items():
         results[k] = v
     return results
 
@@ -332,6 +335,25 @@ def reload_configfile(request):
             level="warning", message=str(e), notification_id="configfile")
     return {}
 
+def get_user_preferences(request):
+    """ Loads the preferences for the logged-in user. """
+    def theme_to_themepath(theme):
+        return os.path.join(settings.THEMES_FOLDER,
+                            theme,
+                            settings.THEME_ENTRY_POINT)
+    
+    try:
+        user = userdata.User(request)
+        user.trigger_hooks()
+        results = user.to_dict()
+        # adds the theme path, as it's easier to compute here than in template
+        if 'theme' in results.keys():
+            results['theme_path'] = theme_to_themepath(results['theme'])
+        else: # default theme
+            results['theme_path'] = theme_to_themepath(settings.THEME_DEFAULT)
+    except Exception:
+        results = {}
+    return {'user_data': results}
 
 if __name__ == '__main__':
     on_page_load(request=None)

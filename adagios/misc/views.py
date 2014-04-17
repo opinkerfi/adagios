@@ -44,6 +44,7 @@ import adagios.settings
 import adagios.objectbrowser
 from adagios import __version__
 import adagios.status.utils
+from adagios import userdata
 
 from collections import defaultdict
 from adagios.views import adagios_decorator, error_page
@@ -433,4 +434,22 @@ def paste(request):
 
     return render_to_response('test2.html', c, context_instance=RequestContext(request))
 
+@adagios_decorator
+def preferences(request):
+    c = {}
+    c['messages'] = []
+    c.update(csrf(request))
+    
+    user = userdata.User(request)
+    
+    if request.method == 'POST':
+        c['form'] = forms.UserdataForm(data=request.POST)
+        if c['form'].is_valid():
+            for k, v in c['form'].cleaned_data.iteritems():
+                user.set_pref(k, v)
+            user.save() # will save in json and trigger the hooks
+            c['messages'].append(_('Preferences have been saved.'))
+    else:
+        c['form'] = forms.UserdataForm(initial=user.to_dict())
 
+    return render_to_response('userdata.html', c, context_instance=RequestContext(request))
