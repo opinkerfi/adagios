@@ -344,6 +344,7 @@ def get_user_preferences(request):
     
     try:
         user = userdata.User(request)
+        user.trigger_hooks()
         results = user.to_dict()
         # adds the theme path, as it's easier to compute here than in template
         if 'theme' in results.keys():
