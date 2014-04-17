@@ -13,7 +13,7 @@ Summary: Web Based Nagios Configuration
 Group: Applications/Internet
 License: AGPLv3
 URL: https://adagios.opensource.is/
-Source0: https://adagios.opensource.is/releases/%{name}-%{version}.tar.gz
+Source0: https://pypi.python.org/packages/source/a/adagios/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildArch: noarch
 Prefix: %{_prefix}
@@ -21,7 +21,7 @@ Prefix: %{_prefix}
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: pynag >= 0.8.4
+Requires: pynag >= 0.8.8
 Requires: httpd
 Requires: mod_wsgi
 Requires: Django
@@ -53,6 +53,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d/
 install %{buildroot}%{python_sitelib}/adagios/etc/sudoers.d/adagios %{buildroot}%{_sysconfdir}/sudoers.d/
 
 mkdir -p "%{buildroot}%{_localstatedir}/lib/adagios/"
+mkdir -p "%{buildroot}%{_localstatedir}/lib/adagios/userdata"
 cp -r "%{buildroot}%{python_sitelib}/adagios/contrib/lib"  "%{buildroot}%{_localstatedir}/lib/adagios/contrib"
 
 %clean
@@ -66,6 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
 %attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios
 %attr(0775, nagios, nagios) %dir %{_sysconfdir}/adagios/conf.d
+%attr(0775, nagios, nagios) %dir %{_localstatedir}/lib/adagios
 %attr(0664, nagios, nagios) %config(noreplace) %{_sysconfdir}/adagios/adagios.conf
 %attr(0664, nagios, nagios) %config(noreplace) %{_sysconfdir}/adagios/conf.d/*
 %attr(0440, root, root) %config(noreplace) %{_sysconfdir}/sudoers.d/adagios
