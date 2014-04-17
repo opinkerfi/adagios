@@ -19,7 +19,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 urlpatterns = patterns('adagios',
-                        url(r'^/?$', 'status.views.status_index', name="status_index"),
+                        url(r'^/?$', 'status.views.status_index'),
                         url(r'^/acknowledgements/?$', 'status.views.acknowledgement_list'),
                         url(r'^/error/?$', 'status.views.error_page'),
                         url(r'^/comments/?$', 'status.views.comment_list'),

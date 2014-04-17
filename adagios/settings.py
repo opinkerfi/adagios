@@ -168,6 +168,30 @@ THEME_ENTRY_POINT = 'style.css'
 # folder where users preferences are stored
 USER_PREFS_PATH = "/etc/adagios/userdata/"
 
+# name displayed in the top left corner
+TOPMENU_HOME = 'Adagios'
+
+# items in the top menubar (excluding those coming from %s_menubar.html)
+# The identfier is used to recognize active links (which are displayed
+# differently).
+TOPMENU_ITEMS = [
+    # Name,        identifier,      view_url,                                icon
+    ('Configure', 'objectbrowser', 'objectbrowser.views.list_object_types', 'glyph-edit'),
+    ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
+    ]
+
+# name displayed in the top left corner
+TOPMENU_HOME = 'Adagios'
+
+# items in the top menubar (excluding those coming from %s_menubar.html)
+# The identfier is used to recognize active links (which are displayed
+# differently).
+TOPMENU_ITEMS = [
+    # Name,        identifier,      view_url,                                icon
+    ('Configure', 'objectbrowser', 'objectbrowser.views.list_object_types', 'glyph-edit'),
+    ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
+    ]
+
 
 # Adagios specific configuration options. These are just the defaults,
 # Anything put in /etc/adagios.d/adagios.conf will overwrite this.
