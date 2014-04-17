@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "User preferences" %}{% endblock %}
+{% block smallheader %}{% trans "Edit" %}{% endblock %}
+{% block largeheader %}{% trans "Preferences" %}{% endblock %}
+{% block toolbar %}{% endblock %}
+
+{% block content %}
+
+
+{% if form %}
+    <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+        {% include "bootstrap_fields.html" with fields=form %}
+        <div class="form-actions">
+            <button class="btn btn-success" type="submit">Save</button>
+        </div>
+    </form>
+<script>
+$('#zesubmit').button();
+</script>
+
+{% endif %}
+
+{% endblock %}

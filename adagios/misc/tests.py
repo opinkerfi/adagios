@@ -36,6 +36,7 @@ class MiscTestCase(unittest.TestCase):
         """ Smoke test views in /misc/
         """
         self.loadPage("/misc/settings")
+        self.loadPage("/misc/preferences")
         self.loadPage("/misc/nagios")
         self.loadPage("/misc/settings")
         self.loadPage("/misc/service")
@@ -51,3 +52,33 @@ class MiscTestCase(unittest.TestCase):
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
         except Exception, e:
             self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(e)s") % {'url': url, 'e': e})
+
+
+    def test_user_preferences(self):
+        c = Client()
+        response = c.post('/misc/preferences/',
+                          {'theme': 'spacelab', 'language': 'fr'})
+
+        assert(response.status_code == 200)
+        assert('spacelab/style.css' in response.content)
+        assert('(fr)' in response.content)
+    
+    def load_get(self, url):
+        c = Client()
+        response = c.get(url)
+        return response
+    
+    def test_topmenu_highlight(self):
+        r = self.load_get('/status/')
+        assert '<li class="active">\n  <a href="/status">' in r.content
+    
+    def test_leftmenu_highlight(self):
+        r = self.load_get('/status/problems')
+        assert '<li class="active">\n          <a href="/status/problems">' in r.content
+    
+    def test_app_name(self):
+        from adagios import settings
+        settings.TOPMENU_HOME = 'Free beer'
+        r = self.load_get('/status')
+        assert 'Free beer' in r.content
+

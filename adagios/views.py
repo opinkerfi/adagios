@@ -75,7 +75,7 @@ def index(request):
     """ This view is our frontpage """
     # If status view is enabled, redirect to frontpage of the status page:
     if adagios.settings.enable_status_view:
-        return redirect('status_index', permanent=True)
+        return redirect('adagios.status.views.status_index', permanent=True)
     else:
         return redirect('objectbrowser', permanent=True)
 
@@ -83,7 +83,13 @@ def index(request):
 def http_403(request, exception=None):
     context = {}
     context['exception'] = exception
-
-    response = render_to_response('403.html', context, context_instance=RequestContext(request))
+    if request.META.get('CONTENT_TYPE') == 'application/json':
+        c = {}
+        c['exception_type'] = exception.__class__
+        c['message'] = str(exception.message)
+        c['access_required'] = exception.access_required
+        response = HttpResponse(content=str(c), content_type='application/json')
+    else:
+        response = render_to_response('403.html', context, context_instance=RequestContext(request))
     response.status_code = 403
     return response

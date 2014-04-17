@@ -782,14 +782,15 @@ def state_history(request):
     end_time = request.GET.get('end_time', None)
     if end_time is None:
         end_time = time.time()
-    end_time = int(end_time)
+    end_time = int(float(end_time))
     if start_time is None:
         seconds_in_a_day = 60 * 60 * 24
         seconds_today = end_time % seconds_in_a_day  # midnight of today
         start_time = end_time - seconds_today
     start_time = int(start_time)
+
     l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    c['log'] = log = l.get_state_history()
+    c['log'] = log = l.get_state_history(start_time=start_time, end_time=end_time,strict=False)
     total_duration = end_time - start_time
     c['total_duration'] = total_duration
     css_hint = {}
@@ -800,24 +801,30 @@ def state_history(request):
     last_item = None
 
     services = {}
+    search_filter = request.GET.copy()
+    search_filter.pop('start_time', None)
+    search_filter.pop('end_time', None)
+    search_filter.pop('start_time_picker', None)
+    search_filter.pop('start_hours', None)
+    search_filter.pop('end_time_picker', None)
+    search_filter.pop('end_hours', None)
+    search_filter.pop('submit', None)
+
+    log = pynag.Utils.grep(log, **search_filter)
     for i in log:
         short_name = "%s/%s" % (i['host_name'], i['service_description'])
-        for k, v in request.GET.items():
-            if k in i.keys() and i[k] != v:
-                break
-        else:
-            if short_name not in services:
-                s = {}
-                s['host_name'] = i['host_name']
-                s['service_description'] = i['service_description']
-                s['log'] = []
-                s['worst_logfile_state'] = 0
-                #s['log'] = [{'time':start_time,'state':3, 'plugin_output':'Unknown value here'}]
-                services[short_name] = s
+        if short_name not in services:
+            s = {}
+            s['host_name'] = i['host_name']
+            s['service_description'] = i['service_description']
+            s['log'] = []
+            s['worst_logfile_state'] = 0
+            #s['log'] = [{'time':start_time,'state':3, 'plugin_output':'Unknown value here'}]
+            services[short_name] = s
 
-            services[short_name]['log'].append(i)
-            services[short_name]['worst_logfile_state'] = max(
-                services[short_name]['worst_logfile_state'], i['state'])
+        services[short_name]['log'].append(i)
+        services[short_name]['worst_logfile_state'] = max(
+            services[short_name]['worst_logfile_state'], i['state'])
     for service in services.values():
         last_item = None
         service['sla'] = float(0)
@@ -850,7 +857,6 @@ def state_history(request):
                 service['sla'] += last_item['duration_percent']
             else:
                 service['num_problems'] += 1
-
     c['services'] = services
     c['start_time'] = start_time
     c['end_time'] = end_time

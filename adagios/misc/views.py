@@ -44,6 +44,7 @@ import adagios.settings
 import adagios.objectbrowser
 from adagios import __version__
 import adagios.status.utils
+from adagios import userdata
 
 from collections import defaultdict
 from adagios.views import adagios_decorator, error_page
@@ -85,9 +86,13 @@ def settings(request):
 
 @adagios_decorator
 def nagios(request):
-    c = {}
-    c['nagios_url'] = adagios.settings.nagios_url
-    return render_to_response('nagios.html', c, context_instance=RequestContext(request))
+    return iframe(request, adagios.settings.nagios_url)
+
+@adagios_decorator
+def iframe(request, url=None):
+    if not url:
+        url = request.GET.get('url', None)
+    return render_to_response('iframe.html', locals(), context_instance=RequestContext(request))
 
 
 @adagios_decorator
@@ -405,8 +410,6 @@ def test(request):
     c.update(csrf(request))
     # Get some test data
 
-    print "you are: ", get_access_level(request)
-
     if request.method == 'POST':
         c['form'] = forms.PluginOutputForm(data=request.POST)
         if c['form'].is_valid():
@@ -435,4 +438,22 @@ def paste(request):
 
     return render_to_response('test2.html', c, context_instance=RequestContext(request))
 
+@adagios_decorator
+def preferences(request):
+    c = {}
+    c['messages'] = []
+    c.update(csrf(request))
+    
+    user = userdata.User(request)
+    
+    if request.method == 'POST':
+        c['form'] = forms.UserdataForm(data=request.POST)
+        if c['form'].is_valid():
+            for k, v in c['form'].cleaned_data.iteritems():
+                user.set_pref(k, v)
+            user.save() # will save in json and trigger the hooks
+            c['messages'].append(_('Preferences have been saved.'))
+    else:
+        c['form'] = forms.UserdataForm(initial=user.to_dict())
 
+    return render_to_response('userdata.html', c, context_instance=RequestContext(request))

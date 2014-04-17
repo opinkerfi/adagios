@@ -260,7 +260,7 @@
             $('#latest_version').adagios_version();
 
             // Set a reload in 30 seconds
-            timedRefresh(30000);
+            adagios.misc.timed_reload(30);
         });
 
         // Fetch information about top_alert_producers ajax style and update table
@@ -298,26 +298,6 @@
                         td.innerHTML = "update_top_alert_producers() failed";
                         return data;
                     });
-        }
-
-        // Configure a timed refresh of our page.
-        function timedRefresh(timeoutPeriod) {
-            setInterval(refreshPage, timeoutPeriod);
-        }
-
-        // conditional reload of page. Reload only if user is not interacting with it currently.
-        function refreshPage() {
-            var checked_boxes = $( ".selectable :checked" );
-            var shown_modals = $("div .modal.in");
-            var searchbox_contents = $("#search_field").val();
-            if (checked_boxes.length + shown_modals.length + searchbox_contents.length == 0) {
-                console.log("Refreshing page...");
-                location.reload();
-            }
-            else {
-                console.log("Canceled auto-refresh of page because input boxes or modals have been edited");
-                clearInterval(1);
-            }
         }
 
     </script>
