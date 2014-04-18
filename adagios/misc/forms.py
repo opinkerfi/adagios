@@ -97,7 +97,8 @@ class UserdataForm(forms.Form):
     language = forms.ChoiceField(choices=settings.LANGUAGES)
     theme = forms.ChoiceField(choices=[(x,x) for x in settings.THEMES_AVAILABLE])
     refresh_rate = forms.IntegerField(
-        help_text="For pages that auto-reload. Set the number of seconds to wait between page refreshes."
+        help_text="For pages that auto-reload. Set the number of seconds to wait between page refreshes. "
+                  "Set refresh rate to 0 to disable automatic refreshing."
     )
 
 
