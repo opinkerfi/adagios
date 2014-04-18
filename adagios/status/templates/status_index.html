@@ -260,7 +260,7 @@
             $('#latest_version').adagios_version();
 
             // Set a reload in 30 seconds
-            adagios.misc.timed_reload(30);
+            adagios.misc.timed_reload({{ user_data.refresh_rate }});
         });
 
         // Fetch information about top_alert_producers ajax style and update table

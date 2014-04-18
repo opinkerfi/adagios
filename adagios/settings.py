@@ -172,6 +172,7 @@ USER_PREFS_PATH = "/etc/adagios/userdata/"
 PREFS_DEFAULT = {
     'language': 'en',
     'theme': 'default',
+    'refresh_rate': '30'
     }
 
 # name displayed in the top left corner
@@ -225,6 +226,7 @@ map_center = "64.119595,-21.655426"
 map_zoom = "10"
 title_prefix = "Adagios - "
 auto_reload = False
+refresh_rate = "30"
 
 plugins = {}
 
