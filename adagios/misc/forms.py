@@ -95,11 +95,18 @@ class ContactUsForm(forms.Form):
         send_mail(subject, msg, from_address, to_address, fail_silently=False)
 
 class UserdataForm(forms.Form):
-    language = forms.ChoiceField(choices=settings.LANGUAGES)
-    theme = forms.ChoiceField(choices=[(x,x) for x in adagios.utils.get_available_themes()])
+    language = forms.ChoiceField(
+        choices=settings.LANGUAGES,
+        required=False
+    )
+    theme = forms.ChoiceField(
+        choices=[(x, x) for x in adagios.utils.get_available_themes()],
+        required=False
+    )
     refresh_rate = forms.IntegerField(
         help_text="For pages that auto-reload. Set the number of seconds to wait between page refreshes. "
-                  "Set refresh rate to 0 to disable automatic refreshing."
+                  "Set refresh rate to 0 to disable automatic refreshing.",
+        required=False,
     )
 
 
