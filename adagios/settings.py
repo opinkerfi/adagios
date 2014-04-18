@@ -6,12 +6,12 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -37,12 +37,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/tmp/test',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/tmp/test',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -153,7 +153,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
 # To rapidly switch your theme, update THEME_DEFAULT and leave the rest.
 
 # folders in which themes files will be looked up
-THEMES_FOLDER = 'themes' # in 'media/'
+THEMES_FOLDER = 'themes'  # in 'media/'
 
 # default theme in use, it should be present in the THEMES_FOLDER
 # (or at least through a symbolic link)
@@ -179,17 +179,17 @@ TOPMENU_ITEMS = [
     # Name,        identifier,      view_url,                                icon
     ('Configure', 'objectbrowser', 'objectbrowser.views.list_object_types', 'glyph-edit'),
     ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
-    ]
+]
 
 
 # Adagios specific configuration options. These are just the defaults,
 # Anything put in /etc/adagios.d/adagios.conf will overwrite this.
-nagios_config=None # Sensible default is "/etc/nagios/nagios.cfg"
-nagios_url="/nagios"
+nagios_config = None  # Sensible default is "/etc/nagios/nagios.cfg"
+nagios_url = "/nagios"
 nagios_init_script = "/etc/init.d/nagios"
 nagios_binary = "/usr/bin/nagios"
 livestatus_path = None
-enable_githandler=False
+enable_githandler = False
 enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
@@ -198,11 +198,11 @@ contrib_dir = "/var/lib/adagios/contrib/"
 serverside_includes = "/etc/adagios/ssi"
 escape_html_tags = True
 warn_if_selinux_is_active = True
-destination_directory="/etc/nagios/adagios/"
-administrators="nagiosadmin,@users"
+destination_directory = "/etc/nagios/adagios/"
+administrators = "nagiosadmin,@users"
 pnp_url = "/pnp4nagios"
 pnp_filepath = "/usr/share/nagios/html/pnp4nagios/index.php"
-include=""
+include = ""
 django_secret_key = ""
 map_center = "64.119595,-21.655426"
 map_zoom = "10"
@@ -241,13 +241,12 @@ except IOError, e:
 try:
     from django.utils.crypto import get_random_string
 except ImportError:
-    def get_random_string(length, stringset=string.ascii_letters+string.digits+string.punctuation):
+    def get_random_string(length, stringset=string.ascii_letters + string.digits + string.punctuation):
         '''
         Returns a string with `length` characters chosen from `stringset`
         >>> len(get_random_string(20)) == 20
         '''
-        return ''.join([stringset[i%len(stringset)] \
-            for i in [ord(x) for x in os.urandom(length)]])
+        return ''.join([stringset[i % len(stringset)] for i in [ord(x) for x in os.urandom(length)]])
 
 if not django_secret_key:
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
@@ -269,8 +268,8 @@ if enable_status_view:
 if enable_bi:
     plugins['bi'] = 'adagios.bi'
 
-for k,v in plugins.items():
-    INSTALLED_APPS.append( v )
+for k, v in plugins.items():
+    INSTALLED_APPS.append(v)
 
 
 # default preferences, for new users or when they are not available
@@ -278,4 +277,4 @@ PREFS_DEFAULT = {
     'language': 'en',
     'theme': THEME_DEFAULT,
     'refresh_rate': refresh_rate
-    }
+}
