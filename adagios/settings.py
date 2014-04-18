@@ -168,12 +168,6 @@ THEME_ENTRY_POINT = 'style.css'
 # folder where users preferences are stored
 USER_PREFS_PATH = "/etc/adagios/userdata/"
 
-# default preferences, for new users or when they are not available
-PREFS_DEFAULT = {
-    'language': 'en',
-    'theme': 'default',
-    'refresh_rate': '30'
-    }
 
 # name displayed in the top left corner
 TOPMENU_HOME = 'Adagios'
@@ -290,3 +284,10 @@ if enable_bi:
 for k,v in plugins.items():
     INSTALLED_APPS.append( v )
 
+
+# default preferences, for new users or when they are not available
+PREFS_DEFAULT = {
+    'language': 'en',
+    'theme': THEME_DEFAULT,
+    'refresh_rate': refresh_rate
+    }
