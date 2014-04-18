@@ -956,28 +956,31 @@ adagios.status.delete_downtime = function(object_type, downtime_id) {
 
 
 // Reload current page in X seconds. (1000 = 1 second). Will not reload if user is
-// Interacting with the page.
+// Interacting with the page. Any value < 0.01 will be ignored.
 adagios.misc.timed_reload = function(seconds) {
-                var milliseconds = seconds * 1000;
-                var reload = setInterval(location.reload, milliseconds);
-                var reload_has_been_canceled;
-                $( ".selectable").change(function(data) {
-                    if (!reload_has_been_canceled) {
-                        console.log("checkbox was changed. Canceling reload");
-                        clearInterval(reload);
-                    }
+    if (seconds < 0.01) {
+        return;
+    }
+    var milliseconds = seconds * 1000;
+    var reload = setInterval(window.location.reload(), milliseconds);
+    var reload_has_been_canceled;
+    $( ".selectable").change(function(data) {
+        if (!reload_has_been_canceled) {
+            console.log("checkbox was changed. Canceling reload");
+            clearInterval(reload);
+        }
 
-                });
-                $("div .modal").on('shown', function(data) {
-                    if (!reload_has_been_canceled) {
-                        console.log("Canceling reload because of modal shown");
-                        clearInterval(reload);
-                    }
-               });
-                $("#search_field").keyup( function(data) {
-                   if (!reload_has_been_canceled) {
-                        console.log("Canceling reload because search_field was modified");
-                        clearInterval(reload);
-                    }
-                });
+    });
+    $("div .modal").on('shown', function(data) {
+        if (!reload_has_been_canceled) {
+            console.log("Canceling reload because of modal shown");
+            clearInterval(reload);
+        }
+    });
+    $("#search_field").keyup( function(data) {
+       if (!reload_has_been_canceled) {
+            console.log("Canceling reload because search_field was modified");
+            clearInterval(reload);
+        }
+    });
 };

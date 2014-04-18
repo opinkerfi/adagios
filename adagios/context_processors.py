@@ -254,6 +254,13 @@ def check_destination_directory(request):
     """ Check that adagios has a place to store new objects """
     dest = settings.destination_directory
     dest_dir_was_found = False
+
+    # If there are problems with finding nagios.cfg, we don't
+    # need to display any errors here regarding destination_directories
+    try:
+        Model.config.parse_maincfg()
+    except Exception:
+        return {}
     for k, v in Model.config.maincfg_values:
         if k != 'cfg_dir':
             continue

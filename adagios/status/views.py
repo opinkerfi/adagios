@@ -249,6 +249,7 @@ def service_detail(request, host_name, service_description):
     c['errors'] = []
 
     livestatus = utils.livestatus(request)
+    backend = request.GET.get('backend')
     c['pnp_url'] = adagios.settings.pnp_url
     c['nagios_url'] = adagios.settings.nagios_url
     c['request'] = request
@@ -258,7 +259,7 @@ def service_detail(request, host_name, service_description):
     today = now - seconds_passed_today  # midnight of today
 
     try:
-        c['host'] = my_host = livestatus.get_host(host_name)
+        c['host'] = my_host = livestatus.get_host(host_name, backend)
         my_host['object_type'] = 'host'
         my_host['short_name'] = my_host['name']
     except IndexError:
@@ -276,7 +277,7 @@ def service_detail(request, host_name, service_description):
     else:
         try:
             c['service'] = my_service = livestatus.get_service(
-                host_name, service_description)
+                host_name, service_description, backend=backend)
             my_service['object_type'] = 'service'
             c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (
@@ -349,12 +350,13 @@ def _get_network_parents(request, host_name):
         ]
     """
     result = []
+    backend = request.GET.get('backend', None)
     livestatus = adagios.status.utils.livestatus(request)
     if isinstance(host_name, unicode):
         host_name = smart_str(host_name)
 
     if isinstance(host_name, str):
-        host = livestatus.get_host(host_name)
+        host = livestatus.get_host(host_name, backend)
     elif isinstance(host_name, dict):
         host = host_name
     else:
@@ -362,7 +364,7 @@ def _get_network_parents(request, host_name):
             'host_name must be str or dict (got %s)' % type(host_name))
     parent_names = host['parents']
     while len(parent_names) > 0:
-        parents = map(lambda x: livestatus.get_host(x), parent_names)
+        parents = map(lambda x: livestatus.get_host(x, backend), parent_names)
 
         # generate a list of grandparent names:
         grand_parents = set()
@@ -1001,16 +1003,17 @@ def contact_detail(request, contact_name):
     c['errors'] = []
     c['contact_name'] = contact_name
     l = adagios.status.utils.livestatus(request)
+    backend = request.GET.get('backend', None)
 
     # Fetch contact and basic information
-    result = l.query("GET contacts", "Filter: name = %s" % contact_name)
-    if result == []:
+    try:
+        result = l.get_contact(contact_name, backend)
+        contact = result[0]
+        c['contact'] = contact
+    except IndexError:
         c['errors'].append("Contact named '%s' was not found." % contact_name)
         if contact_name != 'anonymous':
             return render_to_response('status_error.html', c, context_instance=RequestContext(request))
-    else:
-        contact = result[0]
-        c['contact'] = contact
 
     # Active comments
     c['comments'] = l.query(
