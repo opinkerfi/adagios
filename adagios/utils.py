@@ -23,6 +23,8 @@ import time
 import adagios
 import pynag.Model
 import adagios.exceptions
+import adagios.settings
+import os
 
 from django.utils.translation import ugettext as _
 
@@ -95,3 +97,15 @@ def update_eventhandlers(request):
             adagios.settings.nagios_config), auto_init=False, author_name=remote_user)
     except Exception:
         pass
+
+
+def get_available_themes():
+    """ Returns a tuple with the name of themes that are available in media/theme directory """
+    theme_dir = os.path.join(adagios.settings.MEDIA_ROOT, adagios.settings.THEMES_FOLDER)
+
+    result = []
+    for root, dirs, files in os.walk(theme_dir):
+        if adagios.settings.THEME_ENTRY_POINT in files:
+            result.append(os.path.basename(root))
+
+    return result

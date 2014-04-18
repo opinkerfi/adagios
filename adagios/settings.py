@@ -159,9 +159,6 @@ THEMES_FOLDER = 'themes'  # in 'media/'
 # (or at least through a symbolic link)
 THEME_DEFAULT = 'default'
 
-# Themes the user can choose in its preferences
-THEMES_AVAILABLE = ('default', 'spacelab',)
-
 # CSS entry-point, in the theme folder
 THEME_ENTRY_POINT = 'style.css'
 

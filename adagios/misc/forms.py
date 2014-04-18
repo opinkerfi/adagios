@@ -26,6 +26,7 @@ from django.utils.translation import ugettext as _
 
 import os.path
 from adagios import settings
+import adagios.utils
 from pynag import Model, Control
 from django.core.mail import EmailMultiAlternatives
 import pynag.Parsers
@@ -95,7 +96,7 @@ class ContactUsForm(forms.Form):
 
 class UserdataForm(forms.Form):
     language = forms.ChoiceField(choices=settings.LANGUAGES)
-    theme = forms.ChoiceField(choices=[(x,x) for x in settings.THEMES_AVAILABLE])
+    theme = forms.ChoiceField(choices=[(x,x) for x in adagios.utils.get_available_themes()])
     refresh_rate = forms.IntegerField(
         help_text="For pages that auto-reload. Set the number of seconds to wait between page refreshes. "
                   "Set refresh rate to 0 to disable automatic refreshing."
@@ -141,6 +142,13 @@ class AdagiosSettingsForm(forms.Form):
         help_text=_("Default coordinates when opening up the world map. This should be in the form of longitude,latitude"))
     map_zoom = forms.CharField(
         help_text=_("Default Zoom level when opening up the world map. 10 is a good default value"))
+    language = forms.ChoiceField(choices=settings.LANGUAGES, required=False)
+    theme = forms.ChoiceField(required=False, choices=[(x,x) for x in adagios.utils.get_available_themes()])
+    refresh_rate = forms.IntegerField(
+        help_text="For pages that auto-reload. Set the number of seconds to wait between page refreshes. "
+                  "Set refresh rate to 0 to disable automatic refreshing."
+    )
+
     include = forms.CharField(
         required=False, help_text=_("Include configuration options from files matching this pattern"))
 
