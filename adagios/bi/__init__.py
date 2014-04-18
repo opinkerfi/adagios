@@ -673,7 +673,7 @@ class Host(BusinessProcess):
 
     def load(self):
             self._livestatus = adagios.status.utils.livestatus(request=None)
-            self._host = self._livestatus.get_host(self.name)
+            self._host = self._livestatus.get_host(self.name, backend=None)
             self.display_name = self._host.get('display_name') or self.name
             self.notes = self._host.get(
                 'notes') or 'You are looking at the host %s' % self.name
@@ -718,11 +718,11 @@ class Domain(Host):
     def load(self):
         self._livestatus = adagios.status.utils.livestatus(request=None)
         try:
-            self._host = self._livestatus.get_host(self.name)
+            self._host = self._livestatus.get_host(self.name, backend=None)
         except IndexError:
             self.create_host()
             try:
-                self._host = self._livestatus.get_host(self.name)
+                self._host = self._livestatus.get_host(self.name, backend=None)
             except IndexError:
                 raise Exception(_("Failed to create host %s") % self.name)
 
