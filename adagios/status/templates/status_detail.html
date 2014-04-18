@@ -27,12 +27,15 @@
 
 {% block content %}
     <div class="row-fluid">
-    <div class="span9" id="maincontent_left_side">
+      <div class="span9" id="maincontent_left_side">
         <ul class="nav nav-tabs" id="objecttab">
             <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
             <li><a href="#information" data-toggle="tab">{% trans "Information" %}</a></li>
             <li><a href="#events" data-toggle="tab" id="history_link">{% trans "History" %}</a></li>
             <li><a href="#graphs" data-toggle="tab" id="graphs_link">{% trans "Graphs" %}</a></li>
+            {% if settings.GRAPHITE_ON %}
+              <li><a href="#graphite" data-toggle="tab" id="graphite_link">{% trans "Graphite" %}</a></li>
+            {% endif %}
             <li><a href="#custom_variables" data-toggle="tab">{% trans "Custom Variables" %}</a></li>
             <li><a href="#other" data-toggle="tab">{% trans "Debug" %}</a></li>
         </ul>
@@ -113,6 +116,9 @@
                                     <th>{% trans "min" %}</th>
                                     <th>{% trans "max" %}</th>
                                     <th>{% trans "pnp" %}</th>
+                                    {% if settings.GRAPHITE_ON %}
+                                      <th>{% trans "graphite" %}</th>
+                                    {% endif %}
                                 </tr>
                                 {% for i in perfdata %}
                                     <tr>
@@ -127,6 +133,9 @@
                                         <td>
                                             <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                                         </td>
+                                        {% if settings.GRAPHITE_ON %}
+                                          <td><a href="{{ graphite_default|hash:i.label }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a></td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </table>
@@ -503,8 +512,31 @@
                     {% blocktrans with ot=my_object.object_type %}No Performance data is available for this {{ ot }}.{% endblocktrans %}
                 {% endif %}
         </div>
+        {% if settings.GRAPHITE_ON %}
+        <div class="tab-pane" id="graphite">
+          <div id="graphite" class="tabbable"> <!-- Only required for left/right tabs -->
+            <ul class="nav nav-pills" id="graphite_ul">
+              {% for graph in graphite %}
+                <li{% if graph.css_id == settings.GRAPHITE_DEFAULT_TAB %} class="active"{% endif %}><a href="#graphite_{{ graph.css_id }}" id="graphite_{{ graph.css_id }}_link" data-toggle="tab">{% trans graph.name %}</a></li>
+              {% endfor %}
+            </ul>
+
+            <div class="tab-content" id="graphs_content">
+              {% for graph in graphite %}
+                <div class="tab-pane{% if graph.css_id == settings.GRAPHITE_DEFAULT_TAB %} active{% endif %}" id="graphite_{{ graph.css_id }}">
+                  {% for k,v in graph.metrics.items %}
+                    <img src="{{ v }}" />
+                    <br /><br />
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
-    </div>
+        {% endif %}
+        
+        </div>
+      </div>
 
     <div class="span3 visible-desktop" id="maincontent_right_side">
     {% if host.services_with_info %}

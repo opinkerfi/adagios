@@ -178,6 +178,27 @@ TOPMENU_ITEMS = [
     ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
 ]
 
+# Graphite #
+
+# to activate/deactivate Graphite
+GRAPHITE_ON = True
+
+# the url where to fetch data and images
+GRAPHITE_URL = "http://localhost:9091"
+
+# time ranges for generated graphs
+# the CSS identifier only needs to be unique here (it will be prefixed)
+GRAPHITE_PERIODS = [
+    # Displayed name, CSS identifier, Graphite period
+    ('4 hours',       'hours',        '-4h'),
+    ('One day',       'day',          '-1d'),
+    ('One week',      'week',         '-1w'),
+    ('One month',     'month',        '-1mon'),
+    ('One year',      'year',         '-1y'),
+    ]
+
+# default selected (active) tab, and the one rendered in General-preview
+GRAPHITE_DEFAULT_TAB = 'day'
 
 # Adagios specific configuration options. These are just the defaults,
 # Anything put in /etc/adagios.d/adagios.conf will overwrite this.

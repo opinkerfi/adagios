@@ -37,3 +37,9 @@ def duration(value):
     """
     zero = datetime.min
     return timesince(zero, zero + timedelta(0, value))
+
+@register.filter("hash")
+def hash(h, key):
+    return h[key]
+
+
