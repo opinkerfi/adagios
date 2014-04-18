@@ -45,6 +45,7 @@ import adagios.status.rest
 import adagios.status.forms
 import adagios.businessprocess
 from django.core.urlresolvers import reverse
+from adagios.status import graphite
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -315,7 +316,7 @@ def service_detail(request, host_name, service_description):
         except pynag.Utils.PynagError:
             datum.status = state[3]
     c['perfdata'] = perfdata.metrics
-
+    
     # Get a complete list of network parents
     try:
         c['network_parents'] = reversed(_get_network_parents(request, host_name))
@@ -330,7 +331,24 @@ def service_detail(request, host_name, service_description):
         tmp = []
         c['pnp4nagios_error'] = e
     c['graph_urls'] = tmp
-
+    
+    if adagios.settings.GRAPHITE_ON:
+        metrics = [x.label for x in perfdata.metrics]
+        service = c['service_description'].replace(' ', '_')
+        c['graphite'] = graphite.get(adagios.settings.GRAPHITE_URL,
+                                     c['host_name'],
+                                     service,
+                                     metrics,
+                                     adagios.settings.GRAPHITE_PERIODS,
+                                     600, 250)
+        # used in the General tab - preview
+        for graph in c['graphite']:
+            if graph['css_id'] == adagios.settings.GRAPHITE_DEFAULT_TAB:
+                default = {}
+                for k,v in graph['metrics'].items():
+                    default[k] = v
+                c['graphite_default'] = default
+    
     return render_to_response('status_detail.html', c, context_instance=RequestContext(request))
 
 
