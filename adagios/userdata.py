@@ -52,7 +52,7 @@ class User(object):
             try:
                 os.makedirs(folder)
             except:
-                raise Exception("Folder %s can't be created. Be sure Adagios"
+                raise Exception("Folder %s can't be created. Be sure Adagios "
                                 "has write access on its parent." % folder)
     
     def _get_prefs_location(self):
@@ -112,7 +112,7 @@ class User(object):
             with open(self._conffile, 'w') as f:
                 f.write(json.dumps(d))
         except IOError:
-            raise Exception("Couldn't write settings into file %s. Be sure to"
+            raise Exception("Couldn't write settings into file %s. Be sure to "
                             "have write permissions on the parent folder."
                             % self._conffile)
         self.trigger_hooks()
