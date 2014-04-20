@@ -25,6 +25,7 @@ import pynag.Model
 import adagios.exceptions
 import adagios.settings
 import os
+import pynag.Utils.misc
 
 from django.utils.translation import ugettext as _
 
@@ -109,3 +110,63 @@ def get_available_themes():
             result.append(os.path.basename(root))
 
     return result
+
+
+def reload_config_file(adagios_configfile=None):
+    """ Reloads adagios.conf and populates updates adagios.settings accordingly.
+
+    Args:
+        adagios_configfile: Full path to adagios.conf. If None then use settings.adagios_configfile
+    """
+    if not adagios_configfile:
+        adagios_configfile = adagios.settings.adagios_configfile
+
+    # Using execfile might not be optimal outside strict settings.py usage, but
+    # lets do things exactly like settings.py does it.
+    execfile(adagios_configfile)
+    config_values = locals()
+    adagios.settings.__dict__.update(config_values)
+
+
+class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
+    _adagios_settings_copy = None
+
+    def __init__(self, *args, **kwargs):
+        super(FakeAdagiosEnvironment, self).__init__(*args, **kwargs)
+
+    def update_adagios_global_variables(self):
+        """ Updates common adagios.settings to point to a temp directory.
+
+         If you are are doing unit tests which require specific changes, feel free to update
+         adagios.settings manually after calling this method.
+        """
+        self._adagios_settings_copy = adagios.settings.__dict__.copy()
+        adagios.settings.adagios_configfile = self.adagios_config_file
+        adagios.settings.USER_PREFS_PATH = self.adagios_config_dir + "/userdata"
+        adagios.settings.nagios_config = self.cfg_file
+        adagios.settings.livestatus_path = self.livestatus_path
+        reload_config_file(self.adagios_config_file)
+
+    def restore_adagios_global_variables(self):
+        """ Restores adagios.settings so it looks like before update_adagios_global_variables() was called
+        """
+        adagios.settings.__dict__.clear()
+        adagios.settings.__dict__.update(self._adagios_settings_copy)
+
+    def create_minimal_environment(self):
+        """ Behaves like FakeNagiosEnvironment except also creates adagios config directory """
+
+        super(FakeAdagiosEnvironment, self).create_minimal_environment()
+        self.adagios_config_dir = os.path.join(self.tempdir, 'adagios')
+        self.adagios_config_file = os.path.join(self.adagios_config_dir, 'adagios.conf')
+
+        os.makedirs(self.adagios_config_dir)
+        with open(self.adagios_config_file, 'w') as f:
+            f.write('')
+
+    def terminate(self):
+        """ Behaves like FakeNagiosEnvironment except also restores adagios.settings module """
+        if self._adagios_settings_copy:
+            self.restore_adagios_global_variables()
+        super(FakeAdagiosEnvironment, self).terminate()
+

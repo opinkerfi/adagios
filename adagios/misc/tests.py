@@ -19,13 +19,50 @@
 
 from django.utils import unittest
 from django.test.client import Client
+import adagios.utils
+import os
+
+
+class FakeAdagiosEnvironment(unittest.TestCase):
+    """ Test the features of adagios.utils.FakeAdagiosEnvironment
+    """
+    def setUp(self):
+        self.fake_adagios = adagios.utils.FakeAdagiosEnvironment()
+
+    def tearDown(self):
+        self.fake_adagios.terminate()
+
+    def testFakeAdagiosEnvironment(self):
+        fake_adagios = self.fake_adagios
+
+        # Make sure temporary environment gets created
+        fake_adagios.create_minimal_environment()
+        self.assertTrue(os.path.exists(fake_adagios.adagios_config_file))
+
+        # Make sure adagios.settings is updated
+        global_config_file = adagios.settings.adagios_configfile
+        fake_adagios.update_adagios_global_variables()
+
+        # Make sure adagios_config_file changed
+        self.assertTrue(adagios.settings.adagios_configfile != global_config_file)
+
+        # Make sure the new test is in the tempdir
+        self.assertTrue(adagios.settings.adagios_configfile.startswith(fake_adagios.tempdir))
+
+        # Make sure global variables are proparly restored
+        fake_adagios.restore_adagios_global_variables()
+        self.assertTrue(adagios.settings.adagios_configfile == global_config_file)
 
 
 class MiscTestCase(unittest.TestCase):
 
     def setUp(self):
-        from adagios.settings import nagios_config
-        self.nagios_config = nagios_config
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_adagios_global_variables()
+
+    def tearDown(self):
+        self.environment.terminate()
 
     def _testPageLoad(self, url):
         c = Client()
@@ -53,7 +90,6 @@ class MiscTestCase(unittest.TestCase):
         except Exception, e:
             self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(e)s") % {'url': url, 'e': e})
 
-
     def test_user_preferences(self):
         c = Client()
         response = c.post('/misc/preferences/',
@@ -62,7 +98,7 @@ class MiscTestCase(unittest.TestCase):
         assert(response.status_code == 200)
         assert('spacelab/style.css' in response.content)
         assert('(fr)' in response.content)
-    
+
     def load_get(self, url):
         c = Client()
         response = c.get(url)
