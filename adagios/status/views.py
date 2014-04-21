@@ -1184,7 +1184,17 @@ def status_hostgroup(request, hostgroup_name):
     """ Here for backwards compatibility """
     return hostgroup_detail(request, hostgroup_name=hostgroup_name)
 
+
 @adagios_decorator
 def status_detail(request):
     """ Here for backwards compatibility """
     return detail(request)
+
+@adagios_decorator
+def backends(request):
+    """ Display a list of available backends and their connection status """
+    livestatus = adagios.status.utils.livestatus(request)
+    backends = livestatus.get_backends()
+    for i, v in backends.items():
+        v.test(raise_error=False)
+    return render_to_response('status_backends.html', locals(), context_instance=RequestContext(request))
