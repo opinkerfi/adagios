@@ -74,8 +74,13 @@ $.extend $.fn.dataTableExt.oStdClasses,
     return true if cache_type is undefined
 
     # We are showing templates and this is register=0
-    if aData[0] is "0" and cache_type is "2"
-      return true
+    # if aData[0] is "0" and cache_type is "2"
+    #   return true
+
+    # We are showing templates and this is everything with a name
+    if cache_type is "2"
+      if aData[1] isnt null and aData[1] isnt undefined
+        return true
 
     if cache_type is "1" and aData[2] is "#{object_type}group" and aData[0] != "0"
       return true
