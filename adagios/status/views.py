@@ -340,7 +340,9 @@ def service_detail(request, host_name, service_description):
                                      service,
                                      metrics,
                                      adagios.settings.GRAPHITE_PERIODS,
-                                     600, 250)
+                                     600, 250,
+                                     prefix=adagios.settings.GRAPHITE_PREFIX,
+                                     )
         # used in the General tab - preview
         for graph in c['graphite']:
             if graph['css_id'] == adagios.settings.GRAPHITE_DEFAULT_TAB:

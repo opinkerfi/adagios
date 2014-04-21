@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-def _get_graphite_url(base, host, service, metric, from_, title, width, height):
+def _get_graphite_url(base, host, service, metric, from_, title, width, height, prefix=''):
     """ Constructs an URL for Graphite.
     
     Args:
@@ -28,6 +28,7 @@ def _get_graphite_url(base, host, service, metric, from_, title, width, height):
       - title (str): title of the graphic
       - width (int): width in pixels
       - height (int): height in pixels
+      - prefix (str): Prefix to put in front of your graphite datapoint
 
     Returns: str
     """
@@ -41,13 +42,13 @@ def _get_graphite_url(base, host, service, metric, from_, title, width, height):
            '?width=%(width)s'
            '&height=%(height)s'
            '&from=%(from_)s'
-           '&target=%(host)s.%(service)s.%(metric)s'
-           '&target=%(host)s.%(service)s.%(metric)s_warn'
-           '&target=%(host)s.%(service)s.%(metric)s_crit'
+           '&target=%(prefix)s%(host)s.%(service)s.%(metric)s'
+           '&target=%(prefix)s%(host)s.%(service)s.%(metric)s_warn'
+           '&target=%(prefix)s%(host)s.%(service)s.%(metric)s_crit'
            '&title=%(title)s')
     
     url %= dict(base=base, host=host, service=service, metric=metric,
-                from_=from_, width=width, height=height, title=title)
+                from_=from_, width=width, height=height, title=title, prefix=prefix)
     return url
 
 def _compliant_name(name):
@@ -59,7 +60,7 @@ def _compliant_name(name):
         print(t)
     return name
 
-def get(base, host, service, metrics, units, width, height):
+def get(base, host, service, metrics, units, width, height, prefix=''):
     """ Returns a data structure containg URLs for Graphite.
 
     The structure looks like:
@@ -90,7 +91,7 @@ def get(base, host, service, metrics, units, width, height):
         for metric in metrics:
             titl = title % dict(host=host, service=service, metric=metric)
             m[metric] = _get_graphite_url(base, host, service, metric,
-                                          unit, titl, width, height)
+                                          unit, titl, width, height, prefix)
         graph = dict(name=name, css_id=css_id, metrics=m)
         graphs.append(graph)
     

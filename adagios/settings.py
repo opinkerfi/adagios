@@ -197,6 +197,11 @@ GRAPHITE_PERIODS = [
     ('One year',      'year',         '-1y'),
     ]
 
+# If your graphite install is not dedicated for Nagios, chances are that all
+# graphs have a specific prefix (i.e. nagios.HOSTNAME.SERVICENAME)
+# Leave empty if you are unsure.
+GRAPHITE_PREFIX = ""
+
 # default selected (active) tab, and the one rendered in General-preview
 GRAPHITE_DEFAULT_TAB = 'day'
 
