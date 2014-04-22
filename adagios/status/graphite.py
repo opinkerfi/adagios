@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import adagios.settings
 
+
 def _get_graphite_url(base, host, service, metric, from_):
     """ Constructs an URL for Graphite.
     
@@ -37,6 +38,7 @@ def _get_graphite_url(base, host, service, metric, from_):
     url = "{base}/render?" + adagios.settings.graphite_querystring
     url = url.format(**locals())
     return url
+
 
 def _compliant_name(name):
     """ Makes the necessary replacements for Graphite. """
@@ -65,8 +67,6 @@ def get(base, host, service, metrics, units):
       - metrics (list): list of metrics, e.g. ["size", "time"]
       - units (list): a list of <name,css_id,unit>,
         see adagios.settings.GRAPHITE_PERIODS
-      - width (int): width in pixels
-      - height (int): height in pixels
 
     Returns: list
     """
