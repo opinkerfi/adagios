@@ -180,9 +180,6 @@ TOPMENU_ITEMS = [
 
 # Graphite #
 
-# to activate/deactivate Graphite
-GRAPHITE_ON = True
-
 # the url where to fetch data and images
 GRAPHITE_URL = "http://localhost:9091"
 
@@ -217,6 +214,7 @@ enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
 enable_bi = True
+enable_graphite = False
 contrib_dir = "/var/lib/adagios/contrib/"
 serverside_includes = "/etc/adagios/ssi"
 escape_html_tags = True
