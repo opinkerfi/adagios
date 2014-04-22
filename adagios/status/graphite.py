@@ -57,7 +57,6 @@ def _compliant_name(name):
         return '__HOST__'
     for t in (' ', '/', '.'):
         name = name.replace(t, '_')
-        print(t)
     return name
 
 def get(base, host, service, metrics, units, width, height, prefix=''):
