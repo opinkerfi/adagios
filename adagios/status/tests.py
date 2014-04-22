@@ -112,12 +112,8 @@ class Graphite(unittest.TestCase):
         metric = "packetloss"
         from_ = "-1d"
         title = "example_title"
-        width = "20"
-        height = "20"
-        prefix = ""
         parameters = locals()
         parameters.pop('self', None)
-        expected_result = "http://localhost/graphite/render/?width=20&height=20&from=-1d&target=localhost.Ping.packetloss&target=localhost.Ping.packetloss_warn&target=localhost.Ping.packetloss_crit&title=example_title"
         result = adagios.status.graphite._get_graphite_url(**parameters)
         self.assertTrue(result.startswith(base))
         self.assertTrue(host in result)
@@ -131,9 +127,6 @@ class Graphite(unittest.TestCase):
         service = "Ping"
         metrics = ["packetloss", "rta"]
         units = [("test", "test", "-1d")]
-        width = "20"
-        height = "20"
-        prefix = ""
         parameters = locals()
         parameters.pop('self', None)
         result = adagios.status.graphite.get(**parameters)
