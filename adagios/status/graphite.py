@@ -6,24 +6,25 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import adagios.settings
+
 
 import re
+import adagios.settings
 
 ILLEGAL_CHAR = re.compile(r'[^\w-]')
 
 
 def _get_graphite_url(base, host, service, metric, from_):
     """ Constructs an URL for Graphite.
-    
+
     Args:
       - base (str): base URL for Graphite access
       - host (str): hostname
@@ -62,7 +63,7 @@ def get(base, host, service, metrics, units):
                   'time': 'http://url-of-time-metric'}
      },
      {...}]
-    
+
     Args:
       - base (str): base URL for Graphite access
       - host (str): hostname
@@ -74,12 +75,12 @@ def get(base, host, service, metrics, units):
     Returns: list
     """
     graphs = []
-    
+
     for name, css_id, unit in units:
         m = {}
         for metric in metrics:
             m[metric] = _get_graphite_url(base, host, service, metric, unit)
         graph = dict(name=name, css_id=css_id, metrics=m)
         graphs.append(graph)
-    
+
     return graphs
