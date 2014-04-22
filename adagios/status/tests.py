@@ -119,7 +119,10 @@ class Graphite(unittest.TestCase):
         parameters.pop('self', None)
         expected_result = "http://localhost/graphite/render/?width=20&height=20&from=-1d&target=localhost.Ping.packetloss&target=localhost.Ping.packetloss_warn&target=localhost.Ping.packetloss_crit&title=example_title"
         result = adagios.status.graphite._get_graphite_url(**parameters)
-        self.assertEqual(expected_result, result)
+        self.assertTrue(result.startswith(base))
+        self.assertTrue(host in result)
+        self.assertTrue(service in result)
+        self.assertTrue(title in result)
 
     def test_get(self):
         """ Smoketest for adagios.status.graphite.get() """
