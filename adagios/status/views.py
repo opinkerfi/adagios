@@ -341,7 +341,7 @@ def service_detail(request, host_name, service_description):
                                      metrics,
                                      adagios.settings.GRAPHITE_PERIODS,
                                      600, 250,
-                                     prefix=adagios.settings.GRAPHITE_PREFIX,
+                                     prefix=adagios.settings.graphite_prefix,
                                      )
         # used in the General tab - preview
         for graph in c['graphite']:
