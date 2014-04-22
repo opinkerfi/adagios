@@ -119,7 +119,7 @@ class Graphite(unittest.TestCase):
         self.assertTrue(service in result)
         self.assertTrue(metric in result)
 
-    def test_get(self):
+    def test_get(self):1
         """ Smoketest for adagios.status.graphite.get() """
         base = "http://localhost/graphite"
         host = "localhost"
