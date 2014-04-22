@@ -14,7 +14,7 @@
 # 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+import adagios.settings
 
 def _get_graphite_url(base, host, service, metric, from_, title, width, height, prefix=''):
     """ Constructs an URL for Graphite.
@@ -32,23 +32,13 @@ def _get_graphite_url(base, host, service, metric, from_, title, width, height, 
 
     Returns: str
     """
-    host = _compliant_name(host)
-    service = _compliant_name(service)
-    metric = _compliant_name(metric)
-
+    host_ = _compliant_name(host)
+    service_ = _compliant_name(service)
+    metric_ = _compliant_name(metric)
     base = base.rstrip('/')
 
-    url = ('%(base)s/render/'
-           '?width=%(width)s'
-           '&height=%(height)s'
-           '&from=%(from_)s'
-           '&target=%(prefix)s%(host)s.%(service)s.%(metric)s'
-           '&target=%(prefix)s%(host)s.%(service)s.%(metric)s_warn'
-           '&target=%(prefix)s%(host)s.%(service)s.%(metric)s_crit'
-           '&title=%(title)s')
-    
-    url %= dict(base=base, host=host, service=service, metric=metric,
-                from_=from_, width=width, height=height, title=title, prefix=prefix)
+    url = "{base}/render?" + adagios.settings.graphite_querystring
+    url = url.format(**locals())
     return url
 
 def _compliant_name(name):

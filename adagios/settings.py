@@ -194,10 +194,8 @@ GRAPHITE_PERIODS = [
     ('One year',      'year',         '-1y'),
     ]
 
-# If your graphite install is not dedicated for Nagios, chances are that all
-# graphs have a specific prefix (i.e. nagios.HOSTNAME.SERVICENAME)
-# Leave empty if you are unsure.
-graphite_prefix = ""
+# querystring that will be passed on to graphite's render method.
+graphite_querystring = "target=nagios.{host_}.{service_}.{metric_}&width=500&height=2500&from=-1d&lineMode=connected&title={title}"
 
 # default selected (active) tab, and the one rendered in General-preview
 GRAPHITE_DEFAULT_TAB = 'day'
