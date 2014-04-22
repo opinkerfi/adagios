@@ -78,11 +78,13 @@ $.extend $.fn.dataTableExt.oStdClasses,
       if aData[1] isnt undefined and aData[1] isnt null
         return true
 
-    if cache_type is "1" and aData[2] is "#{object_type}group" and aData[0] != "0"
-      return true
+    if cache_type is "1" and aData[2] is "#{object_type}group"
+      if aData[1] is undefined or aData[1] is null
+        return true
 
-    if cache_type is "0" and aData[2] is object_type and aData[0] != "0"
-      return true
+    if cache_type is "0" and aData[2] is "#{object_type}"
+      if aData[1] is undefined or aData[1] is null
+        return true
 
     # default no
     false
