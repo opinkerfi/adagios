@@ -78,10 +78,12 @@ $.extend $.fn.dataTableExt.oStdClasses,
       if aData[1] isnt undefined and aData[1] isnt null
         return true
 
+    # Showing all objectgroups without a name
     if cache_type is "1" and aData[2] is "#{object_type}group"
       if aData[1] is undefined or aData[1] is null
         return true
 
+    # Showing all objects without a name
     if cache_type is "0" and aData[2] is "#{object_type}"
       if aData[1] is undefined or aData[1] is null
         return true
