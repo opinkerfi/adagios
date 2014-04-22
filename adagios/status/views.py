@@ -335,7 +335,7 @@ def service_detail(request, host_name, service_description):
     if adagios.settings.enable_graphite:
         metrics = [x.label for x in perfdata.metrics]
         service = c['service_description'].replace(' ', '_')
-        c['graphite'] = graphite.get(adagios.settings.GRAPHITE_URL,
+        c['graphite'] = graphite.get(adagios.settings.graphite_url,
                                      c['host_name'],
                                      service,
                                      metrics,

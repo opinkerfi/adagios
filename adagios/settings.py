@@ -181,7 +181,7 @@ TOPMENU_ITEMS = [
 # Graphite #
 
 # the url where to fetch data and images
-GRAPHITE_URL = "http://localhost:9091"
+graphite_url = "http://localhost:9091"
 
 # time ranges for generated graphs
 # the CSS identifier only needs to be unique here (it will be prefixed)
