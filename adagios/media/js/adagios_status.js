@@ -962,7 +962,8 @@ adagios.misc.timed_reload = function(seconds) {
         return;
     }
     var milliseconds = seconds * 1000;
-    var reload = setInterval(window.location.reload(), milliseconds);
+    var reload_function = function() { console.log("reloading..."); window.location.reload(); };
+    var reload = setInterval(reload_function, milliseconds);
     var reload_has_been_canceled;
     $( ".selectable").change(function(data) {
         if (!reload_has_been_canceled) {

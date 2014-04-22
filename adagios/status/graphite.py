@@ -16,6 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import adagios.settings
 
+import re
+
+ILLEGAL_CHAR = re.compile(r'[^\w-]')
+
 
 def _get_graphite_url(base, host, service, metric, from_):
     """ Constructs an URL for Graphite.
@@ -44,8 +48,7 @@ def _compliant_name(name):
     """ Makes the necessary replacements for Graphite. """
     if name == '_HOST_':
         return '__HOST__'
-    for t in (' ', '/', '.'):
-        name = name.replace(t, '_')
+    name = ILLEGAL_CHAR.sub('_', name)
     return name
 
 

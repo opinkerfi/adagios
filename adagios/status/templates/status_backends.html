@@ -1,0 +1,46 @@
+{% extends "base_status.html" %}
+{% load i18n %}
+{% load adagiostags %}
+
+{% block title %}{% trans "Status Backends" %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% trans "Status Backends" %}{% endblock %}
+
+
+{% block content %}
+    {% blocktrans %}
+        This page shows currently configured status backends.
+        If you have just changed the configuration and are not seeing updated values
+        try restarting your web server.
+    {% endblocktrans %}
+
+    <table class="table">
+        <thead>
+            <th>{% trans "Backend name" %}</th>
+            <th>{% trans "Socket path" %}</th>
+            <th>{% trans "Status" %}</th>
+        </thead>
+
+        <tbody>
+        {% for backend_name, backend in backends.items %}
+            <tr>
+                <td>{{ backend_name }}</td>
+                <td>{{ backend.livestatus_socket_path }}</td>
+                <td>
+                    {% if backend.error %}
+                        <div class="alert alert-danger">{{ backend.error }}</div>
+                    {% else %}
+                        <div class="alert alert-success">Seems to work</div>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block view_buttons %}{% endblock %}
+{% block action_buttons %}{% endblock %}
+
+{% block footer %} {{ block.super }} {% endblock %}
