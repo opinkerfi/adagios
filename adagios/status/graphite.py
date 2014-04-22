@@ -32,7 +32,7 @@ def _get_graphite_url(base, host, service, metric, from_):
     service_ = _compliant_name(service)
     metric_ = _compliant_name(metric)
     base = base.rstrip('/')
-    title = adagios.settings.graphite_title
+    title = adagios.settings.graphite_title.format(**locals())
 
     url = "{base}/render?" + adagios.settings.graphite_querystring
     url = url.format(**locals())
