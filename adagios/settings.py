@@ -195,7 +195,7 @@ GRAPHITE_PERIODS = [
     ]
 
 # querystring that will be passed on to graphite's render method.
-graphite_querystring = "target={host_}.{service_}.{metric_}&width=500&height=200&from={from_}d&lineMode=connected&title={title}"
+graphite_querystring = "target={host_}.{service_}.{metric_}&width=500&height=200&from={from_}d&lineMode=connected&title={title}&target={host_}.{service_}.{metric_}_warn&target={host_}.{service_}.{metric_}_crit"
 
 # Title format to use on all graphite graphs
 graphite_title = "{host} - {service} - {metric}"
