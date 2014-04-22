@@ -1,3 +1,22 @@
+Changes in NEXT
+========================
+
+Summary of features:
+
+* Experimental Multi Site support
+    You can now specify multiple status backends in adagios.conf by
+    using a comma seperated list of paths to livestatus sockets.
+
+* Native integration with graphite.
+    You can now configure a url to graphite and it will will automatically
+    grab all graphs for a specific host or service in the status_detail page
+
+* Support for preferences on a per-user basis.
+    User preferences like themes and languages can now be configured under
+    /misc/preferences or by clicking "Preferences" in the top navigation bar.
+
+
+
 Changes in version 1.5.0
 ========================
 There has been a lot of refactoring in the code with tons
