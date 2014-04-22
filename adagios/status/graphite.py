@@ -59,6 +59,7 @@ def _compliant_name(name):
         name = name.replace(t, '_')
     return name
 
+
 def get(base, host, service, metrics, units, width, height, prefix=''):
     """ Returns a data structure containg URLs for Graphite.
 
@@ -74,7 +75,7 @@ def get(base, host, service, metrics, units, width, height, prefix=''):
       - base (str): base URL for Graphite access
       - host (str): hostname
       - service (str): service, e.g. HTTP
-      - metric (str): metric, e.g. size, time
+      - metrics (list): list of metrics, e.g. ["size", "time"]
       - units (list): a list of <name,css_id,unit>,
         see adagios.settings.GRAPHITE_PERIODS
       - width (int): width in pixels
