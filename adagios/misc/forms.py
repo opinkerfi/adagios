@@ -155,6 +155,9 @@ class AdagiosSettingsForm(forms.Form):
         help_text="For pages that auto-reload. Set the number of seconds to wait between page refreshes. "
                   "Set refresh rate to 0 to disable automatic refreshing."
     )
+    enable_graphite = forms.BooleanField(required=False, help_text="If set. Include graphite graphs in status views")
+    graphite_url = forms.CharField(help_text="Path to your graphite install.", required=False)
+    graphite_prefix = forms.CharField(help_text="Prefix all graphite metric names with this (f.e. 'nagios.')", required=False)
 
     include = forms.CharField(
         required=False, help_text=_("Include configuration options from files matching this pattern"))

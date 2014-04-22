@@ -33,7 +33,7 @@
             <li><a href="#information" data-toggle="tab">{% trans "Information" %}</a></li>
             <li><a href="#events" data-toggle="tab" id="history_link">{% trans "History" %}</a></li>
             <li><a href="#graphs" data-toggle="tab" id="graphs_link">{% trans "Graphs" %}</a></li>
-            {% if settings.GRAPHITE_ON %}
+            {% if settings.enable_graphite %}
               <li><a href="#graphite" data-toggle="tab" id="graphite_link">{% trans "Graphite" %}</a></li>
             {% endif %}
             <li><a href="#custom_variables" data-toggle="tab">{% trans "Custom Variables" %}</a></li>
@@ -116,7 +116,7 @@
                                     <th>{% trans "min" %}</th>
                                     <th>{% trans "max" %}</th>
                                     <th>{% trans "pnp" %}</th>
-                                    {% if settings.GRAPHITE_ON %}
+                                    {% if settings.enable_graphite %}
                                       <th>{% trans "graphite" %}</th>
                                     {% endif %}
                                 </tr>
@@ -133,7 +133,7 @@
                                         <td>
                                             <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                                         </td>
-                                        {% if settings.GRAPHITE_ON %}
+                                        {% if settings.enable_graphite %}
                                           <td><a href="{{ graphite_default|hash:i.label }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a></td>
                                         {% endif %}
                                     </tr>
@@ -512,7 +512,7 @@
                     {% blocktrans with ot=my_object.object_type %}No Performance data is available for this {{ ot }}.{% endblocktrans %}
                 {% endif %}
         </div>
-        {% if settings.GRAPHITE_ON %}
+        {% if settings.enable_graphite %}
         <div class="tab-pane" id="graphite">
           <div id="graphite" class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-pills" id="graphite_ul">

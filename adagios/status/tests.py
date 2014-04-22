@@ -8,12 +8,12 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,6 +26,8 @@ import os
 from django.test.client import RequestFactory
 import adagios.status
 import adagios.status.utils
+import adagios.status.graphite
+
 
 class LiveStatusTestCase(unittest.TestCase):
 
@@ -99,3 +101,40 @@ class LiveStatusTestCase(unittest.TestCase):
         data['performance_data'] = ''
         response = c.post('/rest/status/json/submit_check_result', data=data)
         self.assertEqual(200, response.status_code)
+
+
+class Graphite(unittest.TestCase):
+    def test__get_graphite_url(self):
+        """ Smoketest for  adagios.status.graphite._get_graphite_url() """
+        base = "http://localhost/graphite"
+        host = "localhost"
+        service = "Ping"
+        metric = "packetloss"
+        from_ = "-1d"
+        title = "example_title"
+        width = "20"
+        height = "20"
+        prefix = ""
+        parameters = locals()
+        parameters.pop('self', None)
+        expected_result = "http://localhost/graphite/render/?width=20&height=20&from=-1d&target=localhost.Ping.packetloss&target=localhost.Ping.packetloss_warn&target=localhost.Ping.packetloss_crit&title=example_title"
+        result = adagios.status.graphite._get_graphite_url(**parameters)
+        self.assertEqual(expected_result, result)
+
+    def test_get(self):
+        """ Smoketest for adagios.status.graphite.get() """
+        base = "http://localhost/graphite"
+        host = "localhost"
+        service = "Ping"
+        metrics = ["packetloss", "rta"]
+        units = [("test", "test", "-1d")]
+        width = "20"
+        height = "20"
+        prefix = ""
+        parameters = locals()
+        parameters.pop('self', None)
+        result = adagios.status.graphite.get(**parameters)
+        self.assertTrue(result)
+        self.assertTrue(len(result) == 1)
+        self.assertTrue('rta' in result[0]['metrics'])
+        self.assertTrue('packetloss' in result[0]['metrics'])

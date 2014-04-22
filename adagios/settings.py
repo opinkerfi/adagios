@@ -180,11 +180,8 @@ TOPMENU_ITEMS = [
 
 # Graphite #
 
-# to activate/deactivate Graphite
-GRAPHITE_ON = True
-
 # the url where to fetch data and images
-GRAPHITE_URL = "http://localhost:9091"
+graphite_url = "http://localhost:9091"
 
 # time ranges for generated graphs
 # the CSS identifier only needs to be unique here (it will be prefixed)
@@ -196,6 +193,11 @@ GRAPHITE_PERIODS = [
     ('One month',     'month',        '-1mon'),
     ('One year',      'year',         '-1y'),
     ]
+
+# If your graphite install is not dedicated for Nagios, chances are that all
+# graphs have a specific prefix (i.e. nagios.HOSTNAME.SERVICENAME)
+# Leave empty if you are unsure.
+graphite_prefix = ""
 
 # default selected (active) tab, and the one rendered in General-preview
 GRAPHITE_DEFAULT_TAB = 'day'
@@ -212,6 +214,7 @@ enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
 enable_bi = True
+enable_graphite = False
 contrib_dir = "/var/lib/adagios/contrib/"
 serverside_includes = "/etc/adagios/ssi"
 escape_html_tags = True

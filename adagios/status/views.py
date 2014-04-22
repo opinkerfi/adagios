@@ -332,15 +332,17 @@ def service_detail(request, host_name, service_description):
         c['pnp4nagios_error'] = e
     c['graph_urls'] = tmp
     
-    if adagios.settings.GRAPHITE_ON:
+    if adagios.settings.enable_graphite:
         metrics = [x.label for x in perfdata.metrics]
         service = c['service_description'].replace(' ', '_')
-        c['graphite'] = graphite.get(adagios.settings.GRAPHITE_URL,
+        c['graphite'] = graphite.get(adagios.settings.graphite_url,
                                      c['host_name'],
                                      service,
                                      metrics,
                                      adagios.settings.GRAPHITE_PERIODS,
-                                     600, 250)
+                                     600, 250,
+                                     prefix=adagios.settings.graphite_prefix,
+                                     )
         # used in the General tab - preview
         for graph in c['graphite']:
             if graph['css_id'] == adagios.settings.GRAPHITE_DEFAULT_TAB:
