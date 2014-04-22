@@ -157,8 +157,8 @@ class AdagiosSettingsForm(forms.Form):
     )
     enable_graphite = forms.BooleanField(required=False, help_text="If set. Include graphite graphs in status views")
     graphite_url = forms.CharField(help_text="Path to your graphite install.", required=False)
-    graphite_prefix = forms.CharField(help_text="Prefix all graphite metric names with this (f.e. 'nagios.')", required=False)
-
+    graphite_querystring = forms.CharField(help_text="Querystring that is passed into graphite's /render method. {host} is replaced with respective hostname while {host_} will apply common graphite escaping. i.e. example.com -> example_com", required=False)
+    graphite_title = forms.CharField(help_text="Use this title on all graphs coming from graphite", required=False)
     include = forms.CharField(
         required=False, help_text=_("Include configuration options from files matching this pattern"))
 
