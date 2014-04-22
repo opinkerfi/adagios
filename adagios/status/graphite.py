@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import adagios.settings
 
-def _get_graphite_url(base, host, service, metric, from_, title):
+def _get_graphite_url(base, host, service, metric, from_):
     """ Constructs an URL for Graphite.
     
     Args:
@@ -25,7 +25,6 @@ def _get_graphite_url(base, host, service, metric, from_, title):
       - service (str): service, e.g. HTTP
       - metric (str): metric, e.g. size, time
       - from_ (str): Graphite time period
-      - title (str): title of the graphic
 
     Returns: str
     """
@@ -33,6 +32,7 @@ def _get_graphite_url(base, host, service, metric, from_, title):
     service_ = _compliant_name(service)
     metric_ = _compliant_name(metric)
     base = base.rstrip('/')
+    title = adagios.settings.graphite_title
 
     url = "{base}/render?" + adagios.settings.graphite_querystring
     url = url.format(**locals())
@@ -71,14 +71,11 @@ def get(base, host, service, metrics, units):
     Returns: list
     """
     graphs = []
-    title = '%(host)s - %(service)s - %(metric)s'
     
     for name, css_id, unit in units:
         m = {}
         for metric in metrics:
-            titl = title % dict(host=host, service=service, metric=metric)
-            m[metric] = _get_graphite_url(base, host, service, metric,
-                                          unit, titl)
+            m[metric] = _get_graphite_url(base, host, service, metric, unit)
         graph = dict(name=name, css_id=css_id, metrics=m)
         graphs.append(graph)
     

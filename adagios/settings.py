@@ -197,6 +197,9 @@ GRAPHITE_PERIODS = [
 # querystring that will be passed on to graphite's render method.
 graphite_querystring = "target=nagios.{host_}.{service_}.{metric_}&width=500&height=2500&from=-1d&lineMode=connected&title={title}"
 
+# Title format to use on all graphite graphs
+graphite_title = "{host} - {service} - {metric}"
+
 # default selected (active) tab, and the one rendered in General-preview
 GRAPHITE_DEFAULT_TAB = 'day'
 
