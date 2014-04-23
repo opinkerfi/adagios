@@ -240,25 +240,22 @@ plugins = {}
 # created in the django project root which should be avoided.
 adagios_configfile = "/etc/adagios/adagios.conf"
 
-# Try to save a configuration file into the project djangopath
-if not os.path.exists(adagios_configfile):
-    adagios_configfile = "%s/adagios.conf" % djangopath
-    open(adagios_configfile, "a").close()
 
 try:
+    if not os.path.exists(adagios_configfile):
+        alternative_adagios_configfile = "%s/adagios.conf" % djangopath
+        message = "Config file '{adagios_configfile}' not found. Using {alternative_adagios_configfile} instead."
+        warn(message.format(**locals()))
+        adagios_configfile = alternative_adagios_configfile
+        open(adagios_configfile, "a").close()
+
     execfile(adagios_configfile)
     # if config has any default include, lets include that as well
     configfiles = glob(include)
     for configfile in configfiles:
         execfile(configfile)
 except IOError, e:
-    # Only raise on errors other than file not found (missing config is OK)
-    if e.errno != 2:
-        raise Exception('Unable to open %s: %s' % (adagios_configfile, e.strerror))
-    # Warn on missing configs
-    else:
-        # TODO: Should this go someplace?
-        warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
+    warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
 try:
     from django.utils.crypto import get_random_string
@@ -278,7 +275,7 @@ if not django_secret_key:
         with open(adagios_configfile, "a") as config_fh:
             config_fh.write(data)
     except Exception, e:
-        print("ERROR: Got %s while trying to save django secret_key in %s" % (type(e), adagios_configfile))
+        warn("ERROR: Got %s while trying to save django secret_key in %s" % (type(e), adagios_configfile))
 
 else:
     SECRET_KEY = django_secret_key
