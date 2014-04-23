@@ -958,10 +958,10 @@ adagios.status.delete_downtime = function(object_type, downtime_id) {
 // Reload current page in X seconds. (1000 = 1 second). Will not reload if user is
 // Interacting with the page. Any value < 0.01 will be ignored.
 adagios.misc.timed_reload = function(seconds) {
-    if (seconds < 0.01) {
+    var milliseconds = seconds * 1000;
+    if (!seconds || milliseconds < 100) {
         return;
     }
-    var milliseconds = seconds * 1000;
     var reload_function = function() { console.log("reloading..."); window.location.reload(); };
     var reload = setInterval(reload_function, milliseconds);
     var reload_has_been_canceled;
