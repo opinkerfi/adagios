@@ -38,7 +38,7 @@ class User(object):
         self._autosave = autosave
         try:
             self._username = request.META.get('REMOTE_USER', 'anonymous')
-        except:
+        except Exception:
             self._username = 'anonymous'
         self._conffile = self._get_prefs_location()
         self._check_path(self._conffile)

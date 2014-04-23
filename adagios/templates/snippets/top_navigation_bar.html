@@ -96,7 +96,7 @@
                       <ul class="dropdown-menu">
                         {% for backend in backends %}
                           <li{% if backend in user_data.disabled_backends %} style="text-decoration: line-through;"{% else %}{% endif %}>
-                            <a href="#" onclick="adagios.rest.status.toggle_backend_visibility({'backend_name':'{{ backend }}'}); location.reload();">{{ backend }}</a>
+                            <a href="#" onclick="adagios.rest.status.toggle_backend_visibility({'backend_name':'{{ backend }}'}).done(function() {location.reload();});">{{ backend }}</a>
                           </li>
                         {% endfor %}
                       </ul>
