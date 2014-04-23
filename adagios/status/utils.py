@@ -53,8 +53,10 @@ def livestatus(request):
     
     backends = get_all_backends()
     # we remove the disabled backends
-    user = userdata.User(request)
-    backends = filter(lambda x: x not in user.disabled_backends, backends)
+    if backends is not None:
+        user = userdata.User(request)
+        if user.disabled_backends is not None:
+            backends = filter(lambda x: x not in user.disabled_backends, backends)
     
     livestatus = pynag.Parsers.MultiSite(
         nagios_cfg_file=adagios.settings.nagios_config,
