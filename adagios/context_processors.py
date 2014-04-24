@@ -375,7 +375,6 @@ def get_all_nonworking_backends(request):
     """ Returns the backends which don't answer at the time. """
     b = [x for x in get_all_backends(request)['backends']
          if not Livestatus(x).test(raise_error=False)]
-    print get_all_backends(request)#.values()
     return {'nonworking_backends': b}
 
 if __name__ == '__main__':
