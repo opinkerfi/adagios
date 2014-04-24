@@ -27,18 +27,30 @@ from django.test.client import RequestFactory
 import adagios.status
 import adagios.status.utils
 import adagios.status.graphite
+import adagios.settings
+import adagios.utils
 
 
 class LiveStatusTestCase(unittest.TestCase):
 
-    def setUp(self):
-        from adagios.settings import nagios_config
-        self.nagios_config = nagios_config
-        self.factory = RequestFactory()
+    @classmethod
+    def setUpClass(cls):
+        cls.nagios_config = adagios.settings.nagios_config
+        cls.environment = adagios.utils.FakeAdagiosEnvironment()
+        cls.environment.create_minimal_environment()
+        cls.environment.configure_livestatus()
+        cls.environment.update_adagios_global_variables()
+        cls.environment.start()
+        cls.livestatus = cls.environment.get_livestatus()
+
+        cls.factory = RequestFactory()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.environment.terminate()
 
     def testLivestatusConnectivity(self):
-        livestatus = adagios.status.utils.livestatus(request=None)
-        requests = livestatus.query('GET status', 'Columns: requests')
+        requests = self.livestatus.query('GET status', 'Columns: requests')
         self.assertEqual(
             1, len(requests), _("Could not get status.requests from livestatus"))
 
