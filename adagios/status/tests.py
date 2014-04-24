@@ -39,7 +39,7 @@ class LiveStatusTestCase(unittest.TestCase):
         cls.environment = adagios.utils.FakeAdagiosEnvironment()
         cls.environment.create_minimal_environment()
         cls.environment.configure_livestatus()
-        cls.environment.update_adagios_global_variables()
+        #cls.environment.update_adagios_global_variables()
         cls.environment.start()
         cls.livestatus = cls.environment.get_livestatus()
 
