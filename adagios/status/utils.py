@@ -295,76 +295,76 @@ def get_statistics(request, *args, **kwargs):
     c = {}
     l = livestatus(request)
     arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
-    # Get host/service totals as an array of [ok,warn,crit,unknown]
-    c['service_totals'] = (l.query('GET services', 'Stats: state = 0',
-                                  'Stats: state = 1', 'Stats: state = 2', 'Stats: state = 3', *arguments)
-                           or [1, 0, 0, 0])
-    c['host_totals'] = (l.query(
-        'GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2', *arguments)
-                        or [1, 0, 0])
 
-    # Get total number of host/services
+    # Get service totals as an array of [ok,warn,crit,unknown]
+    c['service_totals'] = l.get_services(
+        'Stats: state = 0',
+        'Stats: state = 1',
+        'Stats: state = 2',
+        'Stats: state = 3',
+        *arguments
+    ) or [0, 0, 0, 0]
+
+    # Get host totals as an array of [up,down,unreachable]
+    c['host_totals'] = l.get_hosts(
+        'Stats: state = 0',
+        'Stats: state = 1',
+        'Stats: state = 2',
+        *arguments
+    ) or [0, 0, 0]
+
+    # Get total number of host/ host_problems
     c['total_hosts'] = sum(c['host_totals'])
-    
     c['total_host_problems'] = c['total_hosts'] - c['host_totals'][0]
 
+    # Get total number of services/ service_problems
     c['total_services'] = sum(c['service_totals'])
     c['total_service_problems'] = c['total_services'] - c['service_totals'][0]
+
     # Calculate percentage of hosts/services that are "ok"
     try:
-        c['service_totals_percent'] = map(
-            lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
+        c['service_totals_percent'] = map(lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
     except ZeroDivisionError:
         c['service_totals_percent'] = [0, 0, 0, 0]
     try:
-        c['host_totals_percent'] = map(
-            lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
+        c['host_totals_percent'] = map(lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
     except ZeroDivisionError:
         c['host_totals_percent'] = [0, 0, 0, 0]
     
-    unhandled_services = l.query('GET services',
-                                 'Filter: acknowledged = 0',
-                                 'Filter: scheduled_downtime_depth = 0',
-                                 'Filter: host_state = 0',
-                                 'Stats: state > 0',
-                                 *arguments
-                                 )
-    if unhandled_services:
-        c['unhandled_services'] = unhandled_services[0]
-    else:
-        c['unhandled_services'] = 0
-    
-    unhandled_hosts = l.query('GET hosts',
-                              'Filter: acknowledged = 0',
-                              'Filter: scheduled_downtime_depth = 0',
-                              'Stats: state = 1',
-                              *arguments
-                              )
-    if unhandled_hosts:
-        c['unhandled_hosts'] = unhandled_hosts[0]
-    else:
-        c['unhandled_hosts'] = 0
+    unhandled_services = l.get_services(
+        'Stats: state > 0',
+        acknowledged=0,
+        scheduled_downtime_depth=0,
+        host_state=0,
+        *arguments
+    ) or [0]
 
-    total_unhandled_network_problems = l.query('GET hosts',
-                                               'Filter: acknowledged = 0',
-                                               'Filter: scheduled_downtime_depth = 0',
-                                               'Filter: childs != ',
-                                               'Stats: state = 1',
-                                               *arguments
-                                               )
-    if total_unhandled_network_problems:
-        c['total_unhandled_network_problems'] = total_unhandled_network_problems[0]
-    else:
-        c['total_unhandled_network_problems'] = 0
-    
-    tmp = l.query('GET hosts',
-                  'Filter: childs != ',
-                  'Stats: state >= 0',
-                  'Stats: state > 0',
-                  *arguments
-                  )
-    if not tmp:
-        tmp = [0, 0]
+    unhandled_hosts = l.get_hosts(
+        'Stats: state = 1',
+        acknowledged=0,
+        scheduled_downtime_depth=0,
+        *arguments
+    ) or [0]
+
+    c['unhandled_services'] = unhandled_services[0]
+    c['unhandled_hosts'] = unhandled_hosts[0]
+
+    total_unhandled_network_problems = l.get_hosts(
+        'Filter: childs != ',
+        'Stats: state = 1',
+        acknowledged=0,
+        scheduled_downtime_depth=0,
+        *arguments
+    ) or [0]
+    c['total_unhandled_network_problems'] = total_unhandled_network_problems[0]
+
+    tmp = l.get_hosts(
+        'Filter: childs != ',
+        'Stats: state >= 0',
+        'Stats: state > 0',
+        *arguments
+    ) or [0, 0]
+
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
 
