@@ -24,6 +24,7 @@ from adagios.misc.rest import add_notification, clear_notification
 
 import pynag.Model.EventHandlers
 import pynag.Parsers
+from pynag.Parsers import Livestatus
 import adagios
 import adagios.status.utils
 from pynag import Model
@@ -78,6 +79,8 @@ def on_page_load(request):
     for k, v in get_user_preferences(request).items():
         results[k] = v
     for k, v in get_all_backends(request).items():
+        results[k] = v
+    for k, v in get_all_nonworking_backends(request).items():
         results[k] = v
     return results
 
@@ -367,6 +370,13 @@ def get_user_preferences(request):
 def get_all_backends(request):
     backends = adagios.status.utils.get_all_backends()
     return {'backends': backends}
+
+def get_all_nonworking_backends(request):
+    """ Returns the backends which don't answer at the time. """
+    b = [x for x in get_all_backends(request)['backends']
+         if not Livestatus(x).test(raise_error=False)]
+    print get_all_backends(request)#.values()
+    return {'nonworking_backends': b}
 
 if __name__ == '__main__':
     on_page_load(request=None)
