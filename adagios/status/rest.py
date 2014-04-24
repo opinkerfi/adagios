@@ -31,6 +31,7 @@ import pynag.Parsers
 import collections
 
 from django.utils.translation import ugettext as _
+from adagios import userdata
 
 def hosts(request, fields=None, **kwargs):
     """ Get List of hosts. Any parameters will be passed straight throught to pynag.Utils.grep()
@@ -807,3 +808,20 @@ def wait_many(hostlist, servicelist, WaitCondition=None, WaitTrigger='check', **
         livestatus.get('services', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
         print WaitObject
 
+
+def toggle_backend_visibility(request, backend_name):
+    """ Toggles a backend in user preferences.
+
+    Args:
+      request: a Django request
+      backend_name (str): The name of the backend.
+    """
+    user = userdata.User(request)
+    if not user.disabled_backends:
+        user.disabled_backends = []
+    if backend_name in user.disabled_backends:
+        user.disabled_backends.remove(backend_name)
+    else:
+        user.disabled_backends.append(backend_name)
+    
+    user.save()

@@ -26,12 +26,19 @@ import adagios.settings
 import simplejson as json
 
 from collections import defaultdict
+from adagios import userdata
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
+def get_all_backends():
+    # TODO: Properly support multiple instances, using split here is not a good idea
+    backends = adagios.settings.livestatus_path or ''
+    backends = backends.split(',')
+    backends = map(lambda x: x.strip(), backends)
+    return backends
 
 def livestatus(request):
     """ Returns a new pynag.Parsers.mk_livestatus() object with authauser automatically set from request.META['remoteuser']
@@ -43,21 +50,22 @@ def livestatus(request):
         authuser = request.META.get('REMOTE_USER', None)
     else:
         authuser = None
-
-    # TODO: Properly support multiple instances, using split here is not a good idea
-    backends = adagios.settings.livestatus_path or ''
-    backends = backends.split(',')
-    backends = map(lambda x: x.strip(), backends)
-    backends = filter(lambda x: x, backends)
+    
+    backends = get_all_backends()
+    # we remove the disabled backends
+    if backends is not None:
+        user = userdata.User(request)
+        if user.disabled_backends is not None:
+            backends = filter(lambda x: x not in user.disabled_backends, backends)
+    
     livestatus = pynag.Parsers.MultiSite(
         nagios_cfg_file=adagios.settings.nagios_config,
         livestatus_socket_path=adagios.settings.livestatus_path,
         authuser=authuser)
-    if not backends:
-        livestatus.add_backend(path=adagios.settings.livestatus_path, name="local")
-    else:
-        for i in backends:
-            livestatus.add_backend(path=i, name=i)
+    
+    for i in backends:
+        livestatus.add_backend(path=i, name=i)
+    
     return livestatus
 
 
@@ -288,13 +296,16 @@ def get_statistics(request, *args, **kwargs):
     l = livestatus(request)
     arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
     # Get host/service totals as an array of [ok,warn,crit,unknown]
-    c['service_totals'] = l.query('GET services', 'Stats: state = 0',
+    c['service_totals'] = (l.query('GET services', 'Stats: state = 0',
                                   'Stats: state = 1', 'Stats: state = 2', 'Stats: state = 3', *arguments)
-    c['host_totals'] = l.query(
+                           or [1, 0, 0, 0])
+    c['host_totals'] = (l.query(
         'GET hosts', 'Stats: state = 0', 'Stats: state = 1', 'Stats: state = 2', *arguments)
+                        or [1, 0, 0])
 
     # Get total number of host/services
     c['total_hosts'] = sum(c['host_totals'])
+    
     c['total_host_problems'] = c['total_hosts'] - c['host_totals'][0]
 
     c['total_services'] = sum(c['service_totals'])
@@ -310,34 +321,50 @@ def get_statistics(request, *args, **kwargs):
             lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
     except ZeroDivisionError:
         c['host_totals_percent'] = [0, 0, 0, 0]
+    
+    unhandled_services = l.query('GET services',
+                                 'Filter: acknowledged = 0',
+                                 'Filter: scheduled_downtime_depth = 0',
+                                 'Filter: host_state = 0',
+                                 'Stats: state > 0',
+                                 *arguments
+                                 )
+    if unhandled_services:
+        c['unhandled_services'] = unhandled_services[0]
+    else:
+        c['unhandled_services'] = 0
+    
+    unhandled_hosts = l.query('GET hosts',
+                              'Filter: acknowledged = 0',
+                              'Filter: scheduled_downtime_depth = 0',
+                              'Stats: state = 1',
+                              *arguments
+                              )
+    if unhandled_hosts:
+        c['unhandled_hosts'] = unhandled_hosts[0]
+    else:
+        c['unhandled_hosts'] = 0
 
-    c['unhandled_services'] = l.query('GET services',
-                                      'Filter: acknowledged = 0',
-                                      'Filter: scheduled_downtime_depth = 0',
-                                      'Filter: host_state = 0',
-                                      'Stats: state > 0',
-                                      *arguments
-                                      )[0]
-    c['unhandled_hosts'] = l.query('GET hosts',
-                                   'Filter: acknowledged = 0',
-                                   'Filter: scheduled_downtime_depth = 0',
-                                   'Stats: state = 1',
-                                   *arguments
-                                   )[0]
-
-    c['total_unhandled_network_problems'] = l.query('GET hosts',
-                                                    'Filter: acknowledged = 0',
-                                                    'Filter: scheduled_downtime_depth = 0',
-                                                    'Filter: childs != ',
-                                                    'Stats: state = 1',
-                                                    *arguments
-                                                    )[0]
+    total_unhandled_network_problems = l.query('GET hosts',
+                                               'Filter: acknowledged = 0',
+                                               'Filter: scheduled_downtime_depth = 0',
+                                               'Filter: childs != ',
+                                               'Stats: state = 1',
+                                               *arguments
+                                               )
+    if total_unhandled_network_problems:
+        c['total_unhandled_network_problems'] = total_unhandled_network_problems[0]
+    else:
+        c['total_unhandled_network_problems'] = 0
+    
     tmp = l.query('GET hosts',
                   'Filter: childs != ',
                   'Stats: state >= 0',
                   'Stats: state > 0',
                   *arguments
                   )
+    if not tmp:
+        tmp = [0, 0]
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
 

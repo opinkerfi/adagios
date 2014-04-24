@@ -77,6 +77,8 @@ def on_page_load(request):
         results[k] = v
     for k, v in get_user_preferences(request).items():
         results[k] = v
+    for k, v in get_all_backends(request).items():
+        results[k] = v
     return results
 
 
@@ -361,6 +363,10 @@ def get_user_preferences(request):
     except Exception:
         results = {}
     return {'user_data': results}
+
+def get_all_backends(request):
+    backends = adagios.status.utils.get_all_backends()
+    return {'backends': backends}
 
 if __name__ == '__main__':
     on_page_load(request=None)

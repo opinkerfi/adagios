@@ -90,6 +90,18 @@
                         </ul>
                     </li>
                     <li class="dropdown">
+                      <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="glyph-tags glyph-grey"></i>
+                      </a>
+                      <ul class="dropdown-menu">
+                        {% for backend in backends %}
+                          <li{% if backend in user_data.disabled_backends %} style="text-decoration: line-through;"{% else %}{% endif %}>
+                            <a href="#" onclick="adagios.rest.status.toggle_backend_visibility({'backend_name':'{{ backend }}'}).done(function() {location.reload();});">{{ backend }}</a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                    <li class="dropdown">
                         <a class="dropdown-toggle"
                            data-toggle="dropdown"
                            href="#"><i class="glyph-cogwheel glyph-grey"></i>
