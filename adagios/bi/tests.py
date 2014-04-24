@@ -35,6 +35,7 @@ from django.utils.translation import ugettext as _
 from adagios.bi import *
 import adagios.utils
 
+
 class TestBusinessProcess(TestCase):
     def setUp(self):
         fd, filename = tempfile.mkstemp()

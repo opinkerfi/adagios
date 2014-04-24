@@ -26,11 +26,13 @@ import os
 class FakeAdagiosEnvironment(unittest.TestCase):
     """ Test the features of adagios.utils.FakeAdagiosEnvironment
     """
-    def setUp(self):
-        self.fake_adagios = adagios.utils.FakeAdagiosEnvironment()
+    @classmethod
+    def setUpClass(cls):
+        cls.fake_adagios = adagios.utils.FakeAdagiosEnvironment()
 
-    def tearDown(self):
-        self.fake_adagios.terminate()
+    @classmethod
+    def tearDownClass(cls):
+        cls.fake_adagios.terminate()
 
     def testFakeAdagiosEnvironment(self):
         fake_adagios = self.fake_adagios
