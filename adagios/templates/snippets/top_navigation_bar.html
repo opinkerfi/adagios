@@ -95,8 +95,11 @@
                       </a>
                       <ul class="dropdown-menu">
                         {% for backend in backends %}
-                          <li{% if backend in user_data.disabled_backends %} style="text-decoration: line-through;"{% else %}{% endif %}>
-                            <a href="#" onclick="adagios.rest.status.toggle_backend_visibility({'backend_name':'{{ backend }}'}).done(function() {location.reload();});">{{ backend }}</a>
+                          <li>
+                            <a href="#"
+                               onclick="adagios.rest.status.toggle_backend_visibility({'backend_name':'{{ backend }}'}).done(function() {location.reload();});">
+                              <i class="circle {% if backend in nonworking_backends %}state_2unhandled{% else %}state_0{% endif %}"></i>
+                              <span{% if backend in user_data.disabled_backends %} style="text-decoration: line-through;"{% else %}{% endif %}>{{ backend }}</span></a>
                           </li>
                         {% endfor %}
                       </ul>
