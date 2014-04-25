@@ -545,19 +545,3 @@ div#glyphicons-attribution,
 div#glyphicons-attribution a {
     color: #666;
 }
-
-/* Red/Green circle */
-.circle {
-    border-radius: 50%;
-    width: 8px;
-    height: 8px;
-    Qdisplay: inline;
-}
-.green {
-    color: green;
-    background-color: green;
-}
-.red {
-    color: red;
-    background-color: red;
-}
