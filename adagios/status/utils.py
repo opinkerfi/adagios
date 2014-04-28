@@ -23,6 +23,7 @@
 import pynag.Utils
 import pynag.Parsers
 import adagios.settings
+from adagios.misc.rest import add_notification, clear_notification
 import simplejson as json
 
 from collections import defaultdict
@@ -40,6 +41,7 @@ def get_all_backends():
     backends = map(lambda x: x.strip(), backends)
     return backends
 
+
 def livestatus(request):
     """ Returns a new pynag.Parsers.mk_livestatus() object with authauser automatically set from request.META['remoteuser']
     """
@@ -54,10 +56,15 @@ def livestatus(request):
     backends = get_all_backends()
     # we remove the disabled backends
     if backends is not None:
-        user = userdata.User(request)
-        if user.disabled_backends is not None:
-            backends = filter(lambda x: x not in user.disabled_backends, backends)
-    
+        try:
+            user = userdata.User(request)
+            if user.disabled_backends is not None:
+                backends = filter(lambda x: x not in user.disabled_backends, backends)
+            clear_notification("userdata problem")
+        except Exception as e:
+            message = "%s: %s" % (type(e), str(e))
+            add_notification(level="warning", notification_id="userdata problem", message=message)
+
     livestatus = pynag.Parsers.MultiSite(
         nagios_cfg_file=adagios.settings.nagios_config,
         livestatus_socket_path=adagios.settings.livestatus_path,

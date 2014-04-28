@@ -347,24 +347,22 @@ def reload_configfile(request):
             level="warning", message=str(e), notification_id="configfile")
     return {}
 
+
 def get_user_preferences(request):
     """ Loads the preferences for the logged-in user. """
     def theme_to_themepath(theme):
         return os.path.join(settings.THEMES_FOLDER,
                             theme,
                             settings.THEME_ENTRY_POINT)
-    
     try:
         user = userdata.User(request)
         user.trigger_hooks()
         results = user.to_dict()
-        # adds the theme path, as it's easier to compute here than in template
-        if 'theme' in results.keys():
-            results['theme_path'] = theme_to_themepath(results['theme'])
-        else: # default theme
-            results['theme_path'] = theme_to_themepath(settings.THEME_DEFAULT)
     except Exception:
-        results = {}
+        results = adagios.settings.PREFS_DEFAULT
+
+    theme = results.get('theme', 'default')
+    results['theme_path'] = theme_to_themepath(theme)
     return {'user_data': results}
 
 def get_all_backends(request):
