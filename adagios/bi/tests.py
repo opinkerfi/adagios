@@ -166,8 +166,8 @@ class TestBusinessProcessLogic(TestCase):
     def setUp(self):
         self.environment = adagios.utils.FakeAdagiosEnvironment()
         self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
         self.environment.configure_livestatus()
+        self.environment.update_adagios_global_variables()
         self.environment.start()
 
         self.livestatus = self.environment.get_livestatus()
@@ -220,8 +220,8 @@ class TestDomainProcess(TestCase):
     def setUp(self):
         self.environment = adagios.utils.FakeAdagiosEnvironment()
         self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
         self.environment.configure_livestatus()
+        self.environment.update_adagios_global_variables()
         self.environment.start()
 
         self.livestatus = self.environment.get_livestatus()
@@ -239,14 +239,35 @@ class TestDomainProcess(TestCase):
         domain.get_status()
 
 
+class TestServiceProcess(TestCase):
+    """ Test Service Business process type """
+    def setUp(self):
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.configure_livestatus()
+        self.environment.update_adagios_global_variables()
+        self.environment.start()
+
+        self.livestatus = self.environment.get_livestatus()
+        self.livestatus.test()
+    def tearDown(self):
+        self.environment.terminate()
+
+    def testService(self):
+        service = get_business_process('ok_host/ok service 1', process_type='service')
+        status = service.get_status()
+        self.assertFalse(service.errors)
+        self.assertEqual(0, status, "The service should always have status OK")
+
+
 class TestHostProcess(TestCase):
     """ Test the Host business process type
     """
     def setUp(self):
         self.environment = adagios.utils.FakeAdagiosEnvironment()
         self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
         self.environment.configure_livestatus()
+        self.environment.update_adagios_global_variables()
         self.environment.start()
 
         self.livestatus = self.environment.get_livestatus()

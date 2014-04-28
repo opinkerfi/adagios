@@ -658,8 +658,6 @@ class Service(BusinessProcess):
     def get_status(self):
         try:
             self.load()
-            if self._service.get('last_check') == 0:
-                self._service['state'] = 3
             return self._service.get('state', 3)
         except Exception, e:
             self.errors.append(e)
