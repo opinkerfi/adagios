@@ -39,7 +39,7 @@ class LiveStatusTestCase(unittest.TestCase):
         cls.environment = adagios.utils.FakeAdagiosEnvironment()
         cls.environment.create_minimal_environment()
         cls.environment.configure_livestatus()
-        #cls.environment.update_adagios_global_variables()
+        cls.environment.update_adagios_global_variables()
         cls.environment.start()
         cls.livestatus = cls.environment.get_livestatus()
 
@@ -88,18 +88,31 @@ class LiveStatusTestCase(unittest.TestCase):
         self.loadPage('/status/map')
         self.loadPage('/status/dashboard')
 
+    def test_status_detail(self):
+        """ Tests for /status/detail """
+        tmp = self.loadPage('/status/detail?contact_name=nagiosadmin')
+        self.assertTrue('nagiosadmin belongs to the following' in tmp.content)
+
+        tmp = self.loadPage('/status/detail?host_name=ok_host')
+        self.assertTrue('ok_host' in tmp.content)
+
+        tmp = self.loadPage('/status/detail?host_name=ok_host&service_description=ok%20service%201')
+        self.assertTrue('ok_host' in tmp.content)
+
+        tmp = self.loadPage('/status/detail?contactgroup_name=admins')
+        self.assertTrue('nagiosadmin' in tmp.content)
+
+        
     def testStateHistory(self):
         request = self.factory.get('/status/state_history')
         adagios.status.views.state_history(request)
 
-    def loadPage(self, url):
+    def loadPage(self, url, expected_status_code=200):
         """ Load one specific page, and assert if return code is not 200 """
-        try:
-            c = Client()
-            response = c.get(url)
-            self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
-        except Exception, e:
-            self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(e)s") % {'url': url, 'e': e})
+        c = Client()
+        response = c.get(url)
+        self.assertEqual(response.status_code, expected_status_code, _("Expected status code %s for page %s") % (expected_status_code, url))
+        return response
 
     def testSubmitCommand(self):
         """ Test adagios.rest.status.submit_check_results
