@@ -77,13 +77,13 @@
                             {% if tagged_comments and plugins.status %}
                                 <li>
 
-                                <a href="{% url 'status.views.contact_detail' remote_user %}">
+                                <a href="{% url 'status.views.detail' %}?contact_name={{ remote_user }}">
                                     User {{ remote_user }} is mentioned in {{ tagged_comments }} comments.
                                 </a>
                                 </li>
                             {% endif %}
                             {% if plugins.status %}
-                                <li><a href="{% url 'status.views.contact_detail' remote_user %}">{% trans "My Profile" %}</a></li>
+                                <li><a href="{% url 'status.views.detail' %}?contact_name={{ remote_user }}">{% trans "My Profile" %}</a></li>
                             {% endif %}
                             <li><a href="{% url 'misc.views.preferences' %}">{% trans "Preferences" %}</a></li>
                             <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
