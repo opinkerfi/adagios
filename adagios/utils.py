@@ -144,7 +144,7 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
         adagios.settings.adagios_configfile = self.adagios_config_file
         adagios.settings.USER_PREFS_PATH = self.adagios_config_dir + "/userdata"
         adagios.settings.nagios_config = self.cfg_file
-        adagios.settings.livestatus_path = self.livestatus_path
+        adagios.settings.livestatus_path = self.livestatus_socket_path
         reload_config_file(self.adagios_config_file)
 
     def restore_adagios_global_variables(self):
