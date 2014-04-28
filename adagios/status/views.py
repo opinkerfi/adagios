@@ -1025,13 +1025,10 @@ def contact_detail(request, contact_name):
 
     # Fetch contact and basic information
     try:
-        result = l.get_contact(contact_name, backend)
-        contact = result[0]
+        contact = l.get_contact(contact_name, backend)
         c['contact'] = contact
     except IndexError:
-        c['errors'].append("Contact named '%s' was not found." % contact_name)
-        if contact_name != 'anonymous':
-            return render_to_response('status_error.html', c, context_instance=RequestContext(request))
+        raise Exception("Contact named '%s' was not found." % contact_name)
 
     # Active comments
     c['comments'] = l.query(
