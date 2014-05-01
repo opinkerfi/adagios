@@ -1,12 +1,12 @@
 {% extends "base_status.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Contacts" %}{% endblock %}
+{% block title %}{% trans "Downtimes" %}{% endblock %}
 {% block smallheader %}{% endblock %}
-{% block largeheader %}{% trans "Contacts" %}{% endblock %}
+{% block largeheader %}{% trans "Downtimes" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.comment_list %}">{% trans "Comments" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url status.views.comment_list %}">{% trans "Downtimes" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
