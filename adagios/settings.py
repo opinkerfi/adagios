@@ -172,6 +172,8 @@ TOPMENU_HOME = 'Adagios'
 # items in the top menubar (excluding those coming from %s_menubar.html)
 # The identfier is used to recognize active links (which are displayed
 # differently).
+# The view can begin with '/' (and will go to http://server/...)
+# or can be a view name.
 TOPMENU_ITEMS = [
     # Name,        identifier,      view_url,                                icon
     ('Configure', 'objectbrowser', 'objectbrowser.views.list_object_types', 'glyph-edit'),
