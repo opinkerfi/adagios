@@ -174,10 +174,13 @@ TOPMENU_HOME = 'Adagios'
 # differently).
 # The view can begin with '/' (and will go to http://server/...)
 # or can be a view name.
+# See Nagvis example for direct link, though the template contrib/nagvis.html must be created.
 TOPMENU_ITEMS = [
     # Name,        identifier,      view_url,                                icon
+    # ('Nagvis',  'nagvis',        '/contrib/nagvis.html',                  'glyph-display'),
     ('Configure', 'objectbrowser', 'objectbrowser.views.list_object_types', 'glyph-edit'),
     ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
+
 ]
 
 # Graphite #
