@@ -15,9 +15,8 @@
             <a class="brand" href="{% url 'home' %}">{{ settings.TOPMENU_HOME }}</a>
             <div class="nav-collapse">
                 <ul class="nav" id="top_navigation_menuitems">
-
                   {% for item in settings.TOPMENU_ITEMS %}
-                    <li class="{% if item.1|lower in urlname %}active{% endif %}">
+                    <li class="{% if item.1|lower in urlname or item.1|lower in request.path %}active{% endif %}">
                       {% with item.2|slice:":1" as start %}
                         {% if start = "/" %}
                           <a href="{{ item.2 }}">
