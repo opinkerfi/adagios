@@ -15,12 +15,17 @@
             <a class="brand" href="{% url 'home' %}">{{ settings.TOPMENU_HOME }}</a>
             <div class="nav-collapse">
                 <ul class="nav" id="top_navigation_menuitems">
-
                   {% for item in settings.TOPMENU_ITEMS %}
-                    <li class="{% if item.1|lower in urlname %}active{% endif %}">
-                      <a href="{% url item.2 %}" >
+                    <li class="{% if item.1|lower in urlname or item.1|lower in request.path %}active{% endif %}">
+                      {% with item.2|slice:":1" as start %}
+                        {% if start = "/" %}
+                          <a href="{{ item.2 }}">
+                        {% else %}
+                          <a href="{% url item.2 %}" >
+                        {% endif %}
                         <i class="glyph-grey {{ item.3 }}"></i> {% trans item.0 %}
-                      </a>
+                        </a>
+                      {% endwith %}
                     </li>
                   {% endfor %}
 
