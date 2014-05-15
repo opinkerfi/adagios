@@ -295,6 +295,12 @@ if enable_bi:
 for k, v in plugins.items():
     INSTALLED_APPS.append(v)
 
+# Profiling settings
+#
+# You can use the @profile("filename") to profile single functions within
+# adagios. Not enabled by default on any function.
+PROFILE_LOG_BASE = "/var/lib/adagios"
+import adagios.profiling
 
 # default preferences, for new users or when they are not available
 PREFS_DEFAULT = {
