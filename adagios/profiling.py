@@ -20,6 +20,9 @@
 
 # Code from https://code.djangoproject.com/wiki/ProfilingDjango
 
+# Documentation at 
+# https://github.com/opinkerfi/adagios/wiki/Profiling-Decorators-within-Adagios
+
 
 import hotshot
 import os
