@@ -2,7 +2,7 @@
 #
 # Adagios is a web based Nagios configuration interface
 #
-# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
+# Copyright (C) 2014, Tomas Edwardsson <tommi@tommi.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -16,6 +16,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Code from https://code.djangoproject.com/wiki/ProfilingDjango
+
 
 import hotshot
 import os
