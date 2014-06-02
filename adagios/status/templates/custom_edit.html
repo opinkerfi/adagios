@@ -106,8 +106,9 @@ tbody:nth-child(odd){
      //$("#table_{{ cat.id }}").disableSelection();
    {% endfor %}
  });
- 
- $(function() {
+
+
+ function bind_filters_submit() {
    /*
      Reloads the form when a filter is selected (because filter forms
      are generated server side).
@@ -115,7 +116,7 @@ tbody:nth-child(odd){
    $('select[id*="id_filters-"]').bind('click change', function() {
      $('#custom_view_form').submit();
    });
-});
+ }
  
  function rename_nums(val, elem_id) {
    /*
@@ -174,6 +175,7 @@ tbody:nth-child(odd){
    //new_child.find("select, input, textarea").each(function() {this.value = ""});
    // and re-activate select2
    field.find("select").select2();
+   bind_filters_submit();
  }
  
  function del_field(elem, elem_id) {
@@ -192,5 +194,7 @@ tbody:nth-child(odd){
      sel.value = parseInt(sel.value) - 1;
    }
  }
+
+bind_filters_submit();
 </script>
 {% endblock %}
