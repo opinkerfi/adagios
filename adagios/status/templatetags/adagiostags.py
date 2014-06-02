@@ -16,10 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import math
+import socket
+from geoip import geolite2
 from datetime import datetime, timedelta
 from django import template
 from django.utils.timesince import timesince
 from django.utils.translation import ugettext as _
+from django.template.defaultfilters import stringfilter
 
 register = template.Library()
 
@@ -27,7 +30,7 @@ register = template.Library()
 def timestamp(value):
     try:
         return datetime.fromtimestamp(value)
-    except AttributeError:
+    except (AttributeError, TypeError):
         return ''
 
 @register.filter("duration")
@@ -36,10 +39,50 @@ def duration(value):
     'value' must be in seconds.
     """
     zero = datetime.min
-    return timesince(zero, zero + timedelta(0, value))
+    try:
+        return timesince(zero, zero + timedelta(0, value))
+    except Exception:
+        return value
 
 @register.filter("hash")
 def hash(h, key):
-    return h[key]
+    try:
+        return h[key]
+    except KeyError as e:
+        return ''
 
+@register.filter("replace")
+@stringfilter
+def replace(value, args):
+    """ args must be a comma-separated string: "pattern, replacement" """
+    try:
+        pattern, replacement = args.split(',')
+    except Exception as e:
+        return value
+    return value.replace(pattern, replacement)
 
+@register.filter("locateip")
+def locateip(value):
+    def is_legal_ip(ip):
+        try:
+            socket.inet_pton(socket.AF_INET, address)
+        except Exception:
+            try:
+                socket.inet_pton(socket.AF_INET6, address)
+            except Exception:
+                return False
+        return True
+    
+    if not is_legal_ip(value):
+        try:
+            value = socket.gethostbyname(value)
+        except Exception:
+            return None
+    try:
+        match = geolite2.lookup(value)
+        lat, lon = match.location
+    except Exception as e:
+        print value, e
+        return None
+    #return (lon, lat)
+    return '%s,%s' % (lon, lat)
