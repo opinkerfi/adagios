@@ -1,0 +1,62 @@
+{% extends 'custom_views/base_view.html' %}
+{% load adagiostags %}
+{% load i18n %}
+
+{% block data %}
+<style type="text/css">
+table {
+  background-color: #f1f1ff;
+}
+
+th {
+  padding-right: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: LOLblue;
+}
+
+tr {
+  border: 1px solid #dddddd;
+}
+
+td {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+</style>
+<br />
+<div class="table-responsive">
+  <table class="table-striped table-hover" id="data-results">
+    <thead>
+      <tr>
+        {% for col in view.columns %}
+          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with title=col.name|title|replace:"_, " %}
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for line in data %}
+      <tr>
+        {% for col in view.columns %}
+          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with col_name=col.name line=line %}
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+{{ block.super }}
+<script type="text/javascript" src="{% url media path="external/datatable/js/datatable.js" %}"></script>
+<script type="text/javascript">
+ $('#data-results').datatable({
+   tableClass: "JustARandomNameDifferentThanDatatable",
+   sort: '*',
+ });
+</script>
+
+{% endblock %}
