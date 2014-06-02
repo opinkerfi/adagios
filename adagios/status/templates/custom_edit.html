@@ -24,7 +24,7 @@ tbody:nth-child(odd){
 </style>
 <br />
 
-<form action="#" method="post" class="form-horizontal">{% csrf_token %}
+<form id="custom_view_form" action="#" method="post" class="form-horizontal">{% csrf_token %}
   <div class="tabbable"> <!-- Only required for left/right tabs -->
     <ul class="nav nav-tabs">
       {% for cat in categories %}
@@ -106,6 +106,16 @@ tbody:nth-child(odd){
      //$("#table_{{ cat.id }}").disableSelection();
    {% endfor %}
  });
+ 
+ $(function() {
+   /*
+     Reloads the form when a filter is selected (because filter forms
+     are generated server side).
+   */
+   $('select[id*="id_filters-"]').bind('click change', function() {
+     $('#custom_view_form').submit();
+   });
+});
  
  function rename_nums(val, elem_id) {
    /*
