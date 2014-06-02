@@ -36,11 +36,16 @@ class Default(object):
         self.values = values
 
     def __repr__(self):
-        return 'Filter: %(column)s = %(value)s\n' % self.values
+        d = self.values.copy()
+        d['op'] = '~' if self.values['regex'] else '='
+        d['negate'] = '\nNegate:\n' if self.values['negate'] else ''
+        return 'Filter: %(column)s %(op)s %(value)s%(negate)s\n' % d
 
     def get_fields(self):
         fields = SortedDict([
             ('value', forms.CharField(required=False)),
+            ('regex', forms.BooleanField(required=False)),
+            ('negate', forms.BooleanField(required=False)),
             ])
         return fields
 
