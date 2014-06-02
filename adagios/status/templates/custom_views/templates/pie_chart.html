@@ -1,0 +1,42 @@
+{% extends 'custom_views/base_view.html' %}
+{% load adagiostags %}
+
+{% block data %}
+
+<div id="chart1" style="width: 300px;">
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+{{ block.super }}
+<script type="text/javascript" src="{% url media path="external/jqplot/jquery.jqplot.min.js" %}"></script>
+<script type="text/javascript" src="{% url media path="external/jqplot/plugins/jqplot.pieRenderer.min.js" %}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  var labels = [{% for s in view.stats %}'{{ s.column }}={{ s.value }}', {% endfor %}];
+  var values = [{% for s in data %}{{ s}}, {% endfor %}];
+  var data = [];
+  for(i=0; i<labels.length; i++) {
+     data.push([labels[i], values[i]]);
+  }
+   
+  var plot1 = jQuery.jqplot ('chart1', [data], 
+    { 
+      seriesDefaults: {
+        // Make this a pie chart.
+        renderer: jQuery.jqplot.PieRenderer, 
+        rendererOptions: {
+          // Put data labels on the pie slices.
+          // By default, labels show the percentage of the slice.
+          showDataLabels: true
+        }
+      }, 
+      legend: { show:true, location: 'e' }
+    }
+  );
+});
+</script>
+
+{% endblock %}
