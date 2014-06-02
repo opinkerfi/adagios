@@ -1,0 +1,33 @@
+{% for field in form %}
+    <tr class="control-group{% if field.errors %} error{% endif %}{% if field.required %} required{% endif %}">
+      {% if forloop.first %}
+        <td rowspan="{{ form.fields|length }}">
+          {% if cat.delete_button %}
+            <i class="glyph-black glyph-bin"
+               onclick="del_field('{{ cat.id }}_{{ counter0 }}', '{{ cat.id }}')"></i>
+          {% endif %}
+          {% if cat.move_button %}
+            <i class="glyph-black glyph-move move-button"></i>
+          {% endif %}
+        </td>
+      {% endif %}
+      <td>
+        <label class="control-label" style="padding-right: 10px;" for="{{ field.name }}">
+          {{ field.label }}
+        </label>
+      </td>
+      <td style="min-width: 200px;">
+        <div class="controls" style="padding: 0; margin: 0;">
+          {{ field }}
+        </div>
+      </td>
+      <td>
+        {% for err in field.errors %}
+          <p class="help-inline error">{{ err }}</p>
+        {% endfor %}
+        {% if field.help_text %}
+          <label class="help-inline">{{ field.help_text }}</label>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}

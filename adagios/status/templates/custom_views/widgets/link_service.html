@@ -1,0 +1,12 @@
+{% load adagiostags %}
+{% if title %}
+  <th>{{ title }}</th>
+{% else %}
+  <td>
+  {% if line.name or line.host_name %}
+    <a href="{% url status.views.detail %}?service_description={{ line|hash:col_name }}&host_name={{ line.name|default:line.host_name }}&backend={{ line.backend }}">{{ line|hash:col_name }}</a>
+  {% else %}
+    {{ line|hash:col_name }}
+  {% endif %}
+  </td>
+{% endif %}

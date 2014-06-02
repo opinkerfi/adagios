@@ -24,12 +24,15 @@ from os.path import dirname
 from collections import defaultdict
 import json
 import traceback
+import locale
+locale.setlocale(locale.LC_ALL, "")
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, Http404
 from django.template import RequestContext
 from django.utils.encoding import smart_str
 from django.core.context_processors import csrf
 from django.utils.translation import ugettext as _
+from django.forms.formsets import formset_factory
 
 import pynag.Model
 import pynag.Utils
@@ -43,7 +46,10 @@ from adagios.pnp.functions import run_pnp
 from adagios.status import utils
 import adagios.status.rest
 import adagios.status.forms
+from adagios.status import custom_forms
+from adagios.status import custom_filters
 import adagios.businessprocess
+from adagios import userdata
 from django.core.urlresolvers import reverse
 from adagios.status import graphite
 
@@ -1215,3 +1221,233 @@ def backends(request):
     for i, v in backends.items():
         v.test(raise_error=False)
     return render_to_response('status_backends.html', locals(), context_instance=RequestContext(request))
+
+
+@adagios_decorator
+def custom_view(request, viewname):
+    def data_to_query(data):
+        """
+        Transforms a view dict into a Livestatus query.
+        """
+        d = {}
+        d['datasource'] = data['metadata'][0]['data_source']
+        d['columns'] = [x['name'] for x in data['columns'] if x['name']]
+        # we have to add columns which are in d['sorts'], otherwise the data
+        # postprocessor can't do its job
+        #sorts = [x['column'] for x in data['sorts']]
+        add_sorts = [x['column'] for x in data['sorts'] if x not in d['columns']]
+        d['columns'] = ' '.join(d['columns'] + add_sorts)
+        if d['columns']:
+            d['columns'] = 'Columns: ' + d['columns'] + '\n'
+        d['stats'] = ''.join(['Stats: %(column)s = %(value)s\n' % x for x in data['stats']])
+        d['filters'] = ''.join([str(custom_filters.get_filter(d['datasource'], x['column'])(x))
+                                for x in data['filters'] if x['column']])
+        query = ('GET %(datasource)s\n'
+                 '%(columns)s'
+                 '%(filters)s'
+                 '%(stats)s') % d
+        return query
+
+    c = {}
+    # View management
+    user = userdata.User(request)
+    c['viewname'] = viewname
+    if not user.views:
+        user.views = {}
+        user.save()
+        raise Http404(_("You don't have any view defined."))
+    if viewname not in user.views.keys():
+        raise Http404(_("This view doesn't exist."))
+    view = user.views[viewname]
+
+    # Data pre-processing
+    livestatus = utils.livestatus(request)
+    livestatus_query = data_to_query(view)
+
+    # Query execution
+    try:
+        # the split is a workaround for pynag and the 'Stats:' clause
+        c['data'] = livestatus.query(*livestatus_query.split('\n'))
+    except Exception as e:
+        c['data'] = []
+        c['errors'] = [_('Error in LiveStatus query'), e.message]
+
+    # Data post-processing
+    # sorting
+
+    class OppositeStr(str):
+        """ Simple hack to not implement the sorting by ourselves.
+        By allowing the construction of opposite strings (as in the
+        mathematical opposite), we can have the DESC functionality
+        while only using the key parameter of sorted.
+        It's the opposite day! http://youtu.be/G1p6VrAmq9g
+        """
+        def __cmp__(self, o):
+            return -1 * cmp(str(self), str(o))
+        def __lt__(self, o):
+            return self.__cmp__(o) < 0
+
+    def format_sort(string):
+        """ Let's not pay attention to capitals and esoteric chars. """
+        return locale.strxfrm(str(string).lower())
+
+    c['data'] = sorted(c['data'],
+                       key=lambda x: [OppositeStr(format_sort(x[el['column']])) if el['reverse']
+                                      else format_sort(x[el['column']])
+                                      for el in view['sorts']])
+
+    # Moaaaar data for our templates
+    c['view'] = view
+
+    template = view['metadata'][0].get('template', 'table.html')
+
+    return render_to_response(adagios.settings.CUSTOM_TEMPLATES_DIR + template, c,
+                              context_instance=RequestContext(request))
+
+@adagios_decorator
+def custom_edit(request, viewname=None):
+    user = userdata.User(request)
+    if not user.views:
+        user.views = {}
+
+    c = {}
+    c['viewname'] = viewname
+
+    # first, we need to figure out the datasource, because the forms depend on it
+    try:
+        datasource = (request.GET.get('datasource', False)
+                      or request.POST.get('metadata-0-data_source', False)
+                      or user.views[viewname]['metadata'][0]['data_source'])
+    except Exception as e:
+        raise Exception(_('No datasource found.'))
+
+    # class attributes which will get passed to our forms classes
+    form_attrs = {'datasource': datasource}
+
+    c['categories'] = [
+        {'name': _('Meta'),
+         'id': 'metadata',
+         'move_button': False,
+         'delete_button': False,
+         'add_button': False,
+         # we keep a formset here, even if there's only one form,
+         # in order to keep the same structure for all tabs
+         'form_class': formset_factory(custom_forms.MetadataForm, max_num=1,),
+         },
+        {'name': _('Columns'),
+         'id': 'columns',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         # From Django 1.7, we can use min_num=1, extra=0.
+         # The dynamic class used as a parameter in formset_factory
+         # is a proper (== not-too-dirty) way to give our forms the
+         # datasource parameter.
+         'form_class': formset_factory(
+             type('ColumnsForm', (custom_forms.ColumnsForm,), form_attrs),
+             extra=0,),
+         },
+        {'name': _('Filters'),
+         'id': 'filters',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         'form_class': formset_factory(
+             type('FiltersForm', (custom_forms.FiltersForm,), form_attrs),
+             extra=0,),
+         },
+        {'name': _('Sorting'),
+         'id': 'sorts',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         'form_class': formset_factory(
+             type('SortsForm', (custom_forms.SortsForm,), form_attrs),
+             extra=0,),
+         },
+        {'name': _('Statistics'),
+         'id': 'stats',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         'form_class': formset_factory(
+             type('StatsForm', (custom_forms.StatsForm,), form_attrs),
+             extra=0,),
+         },
+        ]
+
+    if request.method == 'POST':
+        for el in c['categories']:
+            # we add the form(s) to our category
+            el['forms'] = el['form_class'](
+                request.POST,
+                prefix=el['id'])
+
+            # if there is an error somewhere, we mark the form as errored
+            el['errors'] = any([x.errors for x in el['forms']])
+
+        if all([x['forms'].is_valid() for x in c['categories']]):
+            # all forms are valid
+            new_viewname = c['categories'][0]['forms'].cleaned_data[0]['view_name']
+
+            if viewname != new_viewname:
+                if viewname is not None:
+                    # the user has renamed the view
+                    del user.views[viewname]
+                # let's make sure the new name doesn't exist, and add underscores if yes
+                while new_viewname in user.views:
+                    new_viewname += '_'
+
+            viewname = new_viewname
+
+            user.views[viewname] = {}
+            for el in c['categories']:
+                user.views[viewname][el['id']] = el['forms'].cleaned_data
+            # and let's update the view name, in the case it has changed
+            # done here because request.POST is immutable
+            user.views[viewname]['metadata'][0]['view_name'] = viewname
+
+            user.save()
+            return redirect(custom_edit, viewname=viewname)
+
+    elif request.method == 'GET':
+        if viewname:
+            try:
+                initial = user.views[viewname]
+            except KeyError:
+                raise Http404(_("This view doesn't exist."))
+        else:
+            initial = {'metadata': [],
+                       'columns': [],
+                       'filters': [],
+                       'sorts': [],
+                       'stats': [],
+                       }
+            # If you want an empty field at form creation, just replace
+            # [] by [None].
+            # The [None] hack is a workaround to make Django create
+            # formsets with one form, thus permitting to keep extra=0
+            # in formset_factory. As of Django 1.7, it will be better
+            # to use min_num=1.
+
+        for el in c['categories']:
+            el['forms'] = el['form_class'](
+                initial=initial[el['id']],
+                prefix=el['id'])
+
+        c['categories'][0]['forms'][0].fields['data_source'].initial = datasource
+
+    c['datasource'] = datasource
+    return render_to_response('custom_edit.html', c,
+                              context_instance=RequestContext(request))
+
+@adagios_decorator
+def custom_delete(request, viewname):
+    user = userdata.User(request)
+    c = {}
+    if viewname not in user.views.keys():
+        raise Http404(_("This view doesn't exist."))
+
+    del user.views[viewname]
+    user.save()
+    return redirect(status_index)

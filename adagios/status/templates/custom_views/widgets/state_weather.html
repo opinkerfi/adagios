@@ -1,0 +1,18 @@
+{% load adagiostags %}
+{% if title %}
+  <th>{{ title }}</th>
+{% else %}
+  <td>
+  <span style="font-size: x-large;">
+    {% if line|hash:col_name == 0 %}
+      <span style="color: green;">&#9728;</span>
+    {% elif line|hash:col_name == 1 %}
+      <span style="color: orange;">&#9730;</span>
+    {% elif line|hash:col_name == 2 %}
+      <span style="color: red;">&#9760;</span>
+    {% elif line|hash:col_name == 3 %}
+      <span style="color: black;">&#9748;</span>
+    {% endif %}
+  </span>
+  </td>
+{% endif %}

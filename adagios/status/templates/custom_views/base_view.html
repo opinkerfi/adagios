@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Custom view" %}: {{ viewname }}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% trans "Custom view" %}: {{ viewname }}{% endblock %}
+{% block toolbar %}{% endblock %}
+
+
+
+{% block action_buttons %}
+{% endblock %}
+
+{% block content %}
+
+<div>
+  <a href="{% url status.views.custom_edit viewname %}" class="btn">{% trans "Edit view" %}</a>
+  <a href="javascript:$('#areyousure').toggle('400');" class="btn">{% trans "Delete view" %}</a>
+</div>
+<br />
+<div id="areyousure" class="alert alert-error hide">
+  {% blocktrans %}
+    Are you sure you want to delete the view {{ viewname }}?
+  {% endblocktrans %}
+  <a href="{% url status.views.custom_delete viewname %}" class="btn btn-danger">{% trans "Yes" %}</a>
+  <a href="javascript:$('#areyousure').toggle('400');" class="btn btn-success">{% trans "No" %}</a>
+</div>
+
+{% block data %}
+{% endblock %}
+
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+
+{% if view.metadata.0.reload_interval %}
+  <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+   $(document).ready(function() {
+     // Set a reload
+     adagios.misc.timed_reload({{ view.metadata.0.reload_interval }});
+   });
+  </script>
+{% endif %}
+{% endblock %}
