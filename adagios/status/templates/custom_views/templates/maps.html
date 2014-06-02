@@ -2,6 +2,10 @@
 {% load adagiostags %}
 
 {% block data %}
+<style type="text/css">
+/* this is done to prevent a conflict from bootstrap */
+#mapOpenLayers img { max-width: none; }
+</style>
 <div id="mapOpenLayers" style="height: 600px;"></div>
 
 {% endblock %}
