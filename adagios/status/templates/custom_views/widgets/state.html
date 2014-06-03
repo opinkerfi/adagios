@@ -2,5 +2,5 @@
 {% if title %}
   <th>{{ title }}</th>
 {% else %}
-  <td><div class="circle state_{{ line|hash:col_name }}{% if view.metadata.0.datasource == "services" and col_name == "state" and line.acknowledged == 0 %}unhandled{% endif %}{% if col_name == "host_state" or col_name == "state" and view.metadata.0.datasource == "hosts" %} host{% endif %}"></div></td>
+  <td><div class="circle state_{{ line|hash:col_name }}{% if view.metadata.0.data_source == "services" and col_name == "state" and line.acknowledged == 0 %}unhandled{% endif %}{% if col_name == "host_state" or col_name == "state" and view.metadata.0.datasource == "hosts" %} host{% endif %}"></div></td>
 {% endif %}
