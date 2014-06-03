@@ -21,6 +21,8 @@ install:
   - sudo pip install okconfig
   - pip install 'Django<1.5'
   - pip install simplejson
+  - pip install python-geoip
+  - pip install python-geoip-geolite2
   - pip install https://github.com/pynag/pynag/zipball/master
   - python setup.py build
   - python setup.py install
