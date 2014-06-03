@@ -304,8 +304,6 @@ if enable_bi:
 for k, v in plugins.items():
     INSTALLED_APPS.append(v)
 
-import adagios.profiling
-
 # default preferences, for new users or when they are not available
 PREFS_DEFAULT = {
     'language': 'en',
