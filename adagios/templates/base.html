@@ -94,7 +94,9 @@
         </li>
         <hr />
         {% for view in user_data.views %}
-          <li{% if '/status/custom/edit/'|add:view == request.path_info or '/status/custom/view/'|add:view == request.path_info %} class="active"{% endif %}><a href="{% url status.views.custom_view view %}">{{ view }}</a></li>
+          <li{% if '/status/custom/edit/'|add:view == request.path_info or '/status/custom/view/'|add:view == request.path_info %} class="active"{% endif %}>
+            <a style="display: inline-block; width: 70%;" href="{% url status.views.custom_view view %}">{{ view }}</a><a href="{% url status.views.custom_edit view %}" class="pull-right" style="display: inline; width: 10%;"><i class="glyph-grey glyph-edit"></i></a>
+          </li>
         {% endfor %}
 
         <li class="nav-header">{% trans "Reports" %}</li>

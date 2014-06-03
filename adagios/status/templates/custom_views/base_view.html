@@ -13,28 +13,15 @@
 
 {% block content %}
 
-<div>
-  <a href="{% url status.views.custom_edit viewname %}" class="btn">{% trans "Edit view" %}</a>
-  <a href="javascript:$('#areyousure').toggle('400');" class="btn">{% trans "Delete view" %}</a>
-</div>
-<br />
-<div id="areyousure" class="alert alert-error hide">
-  {% blocktrans %}
-    Are you sure you want to delete the view {{ viewname }}?
-  {% endblocktrans %}
-  <a href="{% url status.views.custom_delete viewname %}" class="btn btn-danger">{% trans "Yes" %}</a>
-  <a href="javascript:$('#areyousure').toggle('400');" class="btn btn-success">{% trans "No" %}</a>
-</div>
-
 <style type="text/css">
  #template_content { height: 600px; }
 </style>
 
 {% block data %}
 
-{% endblock %}
+{% endblock data %}
 
-{% endblock %}
+{% endblock content %}
 
 {% block footer %}
 {{ block.super }}

@@ -1453,9 +1453,11 @@ def custom_edit(request, viewname=None):
 def custom_delete(request, viewname):
     user = userdata.User(request)
     c = {}
-    if viewname not in user.views.keys():
-        raise Http404(_("This view doesn't exist."))
-
-    del user.views[viewname]
+    try:
+        del user.views[viewname]
+    except Exception:
+        # the user tried to delete a view which he created but didn't save
+        pass
+    
     user.save()
     return redirect(status_index)
