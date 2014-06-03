@@ -52,6 +52,14 @@ tbody:nth-child(odd){
   </div>
   <div class="form-actions">
     <button class="btn btn-success" type="submit">{% trans "Save" %}</button>
+    <a href="javascript:$('#areyousure').toggle('400');" class="btn">{% trans "Delete view" %}</a>
+    <div id="areyousure" class="alert alert-error hide">
+      {% blocktrans %}
+        Are you sure you want to delete the view {{ viewname }}?
+      {% endblocktrans %}
+      <a href="{% url status.views.custom_delete viewname %}" class="btn btn-danger">{% trans "Yes" %}</a>
+      <a href="javascript:$('#areyousure').toggle('400');" class="btn btn-success">{% trans "No" %}</a>
+    </div>
   </div>
 </form>
 <!-- forms store, it's like AppStore but free -->
