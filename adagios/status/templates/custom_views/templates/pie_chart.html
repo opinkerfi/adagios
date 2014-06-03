@@ -1,9 +1,11 @@
-{% extends 'custom_views/base_view.html' %}
+{% extends view.metadata.0.fullscreen|yesno:'custom_views/base_view_fullscreen.html,custom_views/base_view.html' %}
 {% load adagiostags %}
 
 {% block data %}
 
-<div id="chart1" style="width: 300px;">
+<div id="template_content">
+  <div id="chart1" style="width: 300px;">
+  </div>
 </div>
 
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'custom_views/base_view.html' %}
+{% extends view.metadata.0.fullscreen|yesno:'custom_views/base_view_fullscreen.html,custom_views/base_view.html' %}
 {% load adagiostags %}
 {% load i18n %}
 
@@ -24,28 +24,29 @@ td {
   padding-bottom: 2px;
 }
 </style>
-<br />
-<div class="table-responsive">
-  <table class="table-striped table-hover" id="data-results">
-    <thead>
-      <tr>
-        {% for col in view.columns %}
-          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with title=col.name|title|replace:"_, " %}
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for line in data %}
-      <tr>
-        {% for col in view.columns %}
-          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with col_name=col.name line=line %}
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
 
+<div id="template_content">
+  <div class="table-responsive">
+    <table class="table-striped table-hover" id="data-results">
+      <thead>
+        <tr>
+          {% for col in view.columns %}
+          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with title=col.name|title|replace:"_, " %}
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for line in data %}
+        <tr>
+          {% for col in view.columns %}
+          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with col_name=col.name line=line %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}
 
 
