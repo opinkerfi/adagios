@@ -26,7 +26,11 @@ td {
 </style>
 
 <div id="template_content">
-  <div class="table-responsive">
+  <div class=" pull-right" id="search_box">
+    <input name="filter_results"  type="text" id="filter_field" class="input-large search-query" placeholder="filter results" />
+  </div>
+
+  <div class="table-responsive" id="table_data">
     <table class="table-striped table-hover" id="data-results">
       <thead>
         <tr>
@@ -52,6 +56,19 @@ td {
 
 {% block footer %}
 {{ block.super }}
+<script type="text/javascript">
+ /*
+   Updates the table whenever the filter input field is changed.
+ */
+ $("#filter_field").bind('input', function() {
+   var to_filter = $("#table_data tbody tr");
+   to_filter.show();
+   to_filter.filter(function (index) {
+     return $(this)[0].innerHTML.indexOf($("#filter_field")[0].value) < 0;
+   }).hide();
+ });
+</script>
+
 <script type="text/javascript" src="{% url media path="external/datatable/js/datatable.js" %}"></script>
 <script type="text/javascript">
  $('#data-results').datatable({
