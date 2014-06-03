@@ -93,6 +93,9 @@ class MetadataForm(forms.Form):
         help_text=_('Number of seconds between two reloads of the view, 0 to disable auto-reload.'),
         initial=0,
         widget=NumberInput(attrs={'min': 0, 'max': 600, 'step': 10}),)
+    fullscreen = forms.BooleanField(
+        required=False,
+        help_text=_("Option to have the view rendered full screen (without the surrounding menus)."),)
 
 class ColumnsForm(forms.Form):
     def __init__(self, *args, **kwargs):
