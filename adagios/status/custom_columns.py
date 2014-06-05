@@ -46,12 +46,15 @@ def get_data():
     # we try every backend until one works properly
     # otherwise columns appear multiple times, coming from multiple backends
     # this is faster than using set() afterwards
+    res = None
     for backend in backends:
         try:
             res = livestatus.query(query, backend=backend)
             break
         except:
             continue
+    if not res:
+        raise Exception('No working backend found.')
     return res
 
 def process_data(data):
