@@ -58,24 +58,26 @@ from adagios.views import adagios_decorator, error_page
 @adagios_decorator
 def detail(request):
     """ Return status detail view for a single given host, hostgroup,service, contact, etc """
-    host_name = request.GET.get('host_name')
-    service_description = request.GET.get('service_description')
-    contact_name = request.GET.get('contact_name')
-    hostgroup_name = request.GET.get('hostgroup_name')
-    contactgroup_name = request.GET.get('contactgroup_name')
-    servicegroup_name = request.GET.get('servicegroup_name')
-    if service_description:
-        return service_detail(request, host_name=host_name, service_description=service_description)
-    elif host_name:
-        return host_detail(request, host_name=host_name)
-    elif contact_name:
-        return contact_detail(request, contact_name=contact_name)
-    elif contactgroup_name:
-        return contactgroup_detail(request, contactgroup_name=contactgroup_name)
-    elif hostgroup_name:
-        return hostgroup_detail(request, hostgroup_name=hostgroup_name)
-    elif servicegroup_name:
-        return servicegroup_detail(request, servicegroup_name=servicegroup_name)
+    args = {}
+    for query_parm in ['host_name', 'service_description', 'contact_name',
+              'hostgroup_name', 'contactgroup_name', 'servicegroup_name']:
+        value = request.GET.get(query_parm)
+        if value:
+            args[query_parm] = value.encode('utf-8')
+
+    if 'service_description' in args:
+        return service_detail(request, host_name=args['host_name'],
+                                       service_description=args['service_description'])
+    elif 'host_name' in args:
+        return host_detail(request, host_name=args['host_name'])
+    elif 'contact_name' in args:
+        return contact_detail(request, contact_name=args['contact_name'])
+    elif 'contactgroup_name' in args:
+        return contactgroup_detail(request, contactgroup_name=args['contactgroup_name'])
+    elif 'hostgroup_name' in args:
+        return hostgroup_detail(request, hostgroup_name=args['hostgroup_name'])
+    elif 'servicegroup_name' in args:
+        return servicegroup_detail(request, servicegroup_name=args['servicegroup_name'])
 
     raise Exception(_("You have to provide an item via querystring so we know what to give you details for"))
 
