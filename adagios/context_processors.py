@@ -157,7 +157,7 @@ def resolve_urlname(request):
     request is within the template"""
     from django.core.urlresolvers import resolve
     try:
-        res = resolve(request.path)
+        res = resolve(request.path_info)
         if res:
             return {'urlname': res.url_name}
     except Exception:
