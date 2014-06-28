@@ -1225,6 +1225,10 @@ def backends(request):
 
 @adagios_decorator
 def custom_view(request, viewname):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+
     def data_to_query(data):
         """
         Transforms a view dict into a Livestatus query.
@@ -1250,7 +1254,6 @@ def custom_view(request, viewname):
         query = query.strip()
         return query
 
-    c = {}
     # View management
     user = userdata.User(request)
     c['viewname'] = viewname
@@ -1271,8 +1274,11 @@ def custom_view(request, viewname):
         # the split is a workaround for pynag and the 'Stats:' clause
         c['data'] = livestatus.query(*livestatus_query.split('\n'))
     except Exception as e:
-        c['data'] = []
-        c['errors'] = [_('Error in LiveStatus query'), e.message]
+        # Any exception in livestatus query here is a critical error
+        error = _('Error in LiveStatus query')
+        c['errors'].append(error)
+        c['errors'].append(e.message)
+        return error_page(request, c)
 
     # Data post-processing
     # sorting
