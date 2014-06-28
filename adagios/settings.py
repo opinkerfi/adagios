@@ -172,10 +172,15 @@ TOPMENU_HOME = 'Adagios'
 # items in the top menubar (excluding those coming from %s_menubar.html)
 # The identfier is used to recognize active links (which are displayed
 # differently).
+# The view can begin with '/' (and will go to http://server/...)
+# or can be a view name.
+# See Nagvis example for direct link, though the template contrib/nagvis.html must be created.
 TOPMENU_ITEMS = [
     # Name,        identifier,      view_url,                                icon
+    # ('Nagvis',  'nagvis',        '/contrib/nagvis.html',                  'glyph-display'),
     ('Configure', 'objectbrowser', 'objectbrowser.views.list_object_types', 'glyph-edit'),
     ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
+
 ]
 
 # Graphite #
@@ -234,6 +239,15 @@ refresh_rate = "30"
 
 plugins = {}
 
+# Profiling settings
+#
+# You can use the @profile("filename") to profile single functions within
+# adagios. Not enabled by default on any function.
+#
+# Documenations at
+# https://github.com/opinkerfi/adagios/wiki/Profiling-Decorators-within-Adagios
+PROFILE_LOG_BASE = "/var/lib/adagios"
+
 # Load config files from /etc/adagios
 # Adagios uses the configuration file in /etc/adagios/adagios.conf by default.
 # If it doesn't exist you should create it. Otherwise a adagios.conf will be
@@ -289,7 +303,6 @@ if enable_bi:
 
 for k, v in plugins.items():
     INSTALLED_APPS.append(v)
-
 
 # default preferences, for new users or when they are not available
 PREFS_DEFAULT = {

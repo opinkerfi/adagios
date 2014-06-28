@@ -232,10 +232,10 @@ def get_services(request=None, tags=None, fields=None, *args, **kwargs):
 
     # If q was added, it is a fuzzy filter on services
     for i in q:
-        arguments.append('Filter: host_name ~~ %s' % i)
-        arguments.append('Filter: description ~~ %s' % i)
-        arguments.append('Filter: plugin_output ~~ %s' % i)
-        arguments.append('Filter: host_address ~~ %s' % i)
+        arguments.append('Filter: host_name ~~ %s' % i.encode('utf-8'))
+        arguments.append('Filter: description ~~ %s' % i.encode('utf-8'))
+        arguments.append('Filter: plugin_output ~~ %s' % i.encode('utf-8'))
+        arguments.append('Filter: host_address ~~ %s' % i.encode('utf-8'))
         arguments.append('Or: 4')
 
     if fields is None:

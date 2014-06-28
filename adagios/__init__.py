@@ -71,3 +71,5 @@ try:
 except Exception:
     pass
 
+import adagios.profiling
+

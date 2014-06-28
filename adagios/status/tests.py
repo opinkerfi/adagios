@@ -111,7 +111,7 @@ class LiveStatusTestCase(unittest.TestCase):
         """ Load one specific page, and assert if return code is not 200 """
         c = Client()
         response = c.get(url)
-        self.assertEqual(response.status_code, expected_status_code, _("Expected status code %s for page %s") % (expected_status_code, url))
+        self.assertEqual(response.status_code, expected_status_code, _("Expected status code %(code)s for page %(url)s") % {'code': expected_status_code, 'url': url})
         return response
 
     def testSubmitCommand(self):

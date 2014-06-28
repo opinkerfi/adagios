@@ -66,6 +66,6 @@ def contrib(request, arg1, arg2=None, arg3=None, arg4=None):
     statistics = lambda: locals().get('statistics', adagios.status.utils.get_statistics(request))
 
     t = template.Template(content)
-    c = template.Context(locals())
+    c = RequestContext(request, locals())
     html = t.render(c)
     return HttpResponse(html)
