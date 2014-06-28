@@ -1246,6 +1246,8 @@ def custom_view(request, viewname):
                  '%(columns)s'
                  '%(filters)s'
                  '%(stats)s') % d
+        # Remove uneeded linebreaks at the end:
+        query = query.strip()
         return query
 
     c = {}
