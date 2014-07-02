@@ -323,6 +323,16 @@ button.close.notification {
     margin: 2px;
 }
 
+#left_sidebar .custom-view-link {
+    display: inline-block;
+    width: 70%;
+}
+
+#left_sidebar .custom-view-edit {
+    display: inline;
+    width: 10%;
+}
+
 .well {
         background: url('../img/bak.jpg')
 }
