@@ -80,25 +80,6 @@
         <li{% if urlname == 'adagios.status.views.network_parents' %} class="active"{% endif %}><a href="{% url status.views.network_parents %}">{% trans "Network Parents" %} </a></li>
         <li{% if urlname == 'objectbrowser' %} class="active"{% endif %}><a href="{% url objectbrowser.views.list_object_types %}">{% trans "Configuration" %}</a></li>
         
-        <li class="nav-header">{% trans "Custom views" %}</li>
-        <li{% if request.path_info == '/status/custom/edit' %} class="active"{% endif %}>
-          <a href="#" id="toggle_select_new_view">{% trans "+New view" %}</a>
-          <div id="div_new_view" style="display: none;">
-          <select id="select_new_view">
-            <option value="None" selected="selected">{% trans "Datasource" %}</option>
-            {% for datasource in livestatus_datasources %}
-              <option value="{{ datasource }}">{{ datasource }}</option>
-            {% endfor %}
-          </select>
-          </div>
-        </li>
-        <hr />
-        {% for view in user_data.views %}
-          <li{% if '/status/custom/edit/'|add:view == request.path_info or '/status/custom/view/'|add:view == request.path_info %} class="active"{% endif %}>
-            <a href="{% url status.views.custom_view view %}" class="custom-view-link">{{ view }}</a><a href="{% url status.views.custom_edit view %}" class="pull-right custom-view-edit"><i class="glyph-grey glyph-edit"></i></a>
-          </li>
-        {% endfor %}
-
         <li class="nav-header">{% trans "Reports" %}</li>
         
         <li{% if urlname == 'adagios.status.views.state_history' %} class="active"{% endif %}><a href="{% url status.views.state_history %}">{% trans "State History" %} </a></li>
@@ -119,6 +100,25 @@
         <li{% if urlname == 'adagios.status.views.perfdata2' %} class="active"{% endif %}><a href="{% url status.views.perfdata2 %}">{% trans "Performance Data 2" %}</a></li>
         <li{% if urlname == 'adagios.bi.views.index' %} class="active"{% endif %}><a href="{% url bi.views.index %}">{% trans "Business Intelligence" %}</a></li>
         <li{% if urlname == 'adagios.status.views.dashboard' %} class="active"{% endif %}><a href="{% url status.views.dashboard %}">{% trans "Dashboard" %}</a></li>
+
+        <li class="nav-header">{% trans "Experimental views" %}</li>
+        <li{% if request.path_info == '/status/custom/edit' %} class="active"{% endif %}>
+          <a href="#" id="toggle_select_new_view">{% trans "+New view" %}</a>
+          <div id="div_new_view" style="display: none;">
+          <select id="select_new_view">
+            <option value="None" selected="selected">{% trans "Datasource" %}</option>
+            {% for datasource in livestatus_datasources %}
+              <option value="{{ datasource }}">{{ datasource }}</option>
+            {% endfor %}
+          </select>
+          </div>
+        </li>
+        <hr />
+        {% for view in user_data.views %}
+          <li{% if '/status/custom/edit/'|add:view == request.path_info or '/status/custom/view/'|add:view == request.path_info %} class="active"{% endif %}>
+            <a href="{% url status.views.custom_view view %}" class="custom-view-link">{{ view }}</a><a href="{% url status.views.custom_edit view %}" class="pull-right custom-view-edit"><i class="glyph-grey glyph-edit"></i></a>
+          </li>
+        {% endfor %}
       </ul>
     </div>
     {% endblock left_sidebar %}
