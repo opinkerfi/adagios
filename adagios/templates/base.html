@@ -80,6 +80,23 @@
         <li{% if urlname == 'adagios.status.views.network_parents' %} class="active"{% endif %}><a href="{% url status.views.network_parents %}">{% trans "Network Parents" %} </a></li>
         <li{% if urlname == 'objectbrowser' %} class="active"{% endif %}><a href="{% url objectbrowser.views.list_object_types %}">{% trans "Configuration" %}</a></li>
         
+        <li class="nav-header" style="color: black;">{% trans "Custom views" %}</li>
+        <li{% if request.path_info == '/status/custom/edit' %} class="active"{% endif %}>
+          <a href="#" id="toggle_select_new_view">{% trans "+New view" %}</a>
+          <div id="div_new_view" style="display: none;">
+          <select id="select_new_view">
+            <option value="None" selected="selected">{% trans "Datasource" %}</option>
+            {% for datasource in livestatus_datasources %}
+              <option value="{{ datasource }}">{{ datasource }}</option>
+            {% endfor %}
+          </select>
+          </div>
+        </li>
+        <hr style="margin: 2px;" />
+        {% for view in user_data.views %}
+          <li{% if '/status/custom/edit/'|add:view == request.path_info or '/status/custom/view/'|add:view == request.path_info %} class="active"{% endif %}><a href="{% url status.views.custom_view view %}">{{ view }}</a></li>
+        {% endfor %}
+
         <li class="nav-header" style="color: black;">{% trans "Reports" %}</li>
         
         <li{% if urlname == 'adagios.status.views.state_history' %} class="active"{% endif %}><a href="{% url status.views.state_history %}">{% trans "State History" %} </a></li>
@@ -214,6 +231,18 @@
 
 <script src="{% url media path="external/datepicker/js/bootstrap-datepicker.js" %}"></script>
 
+<script type="text/javascript">
+/* Toggles the select field when the user clicks on 'Add view' */
+$("#toggle_select_new_view").click(function() {
+  $("#div_new_view").toggle(400);
+  });
+/* Loads the 'new view' page when the user selects a datasource in the select menu. */
+$("#select_new_view").bind('click change', function() {
+   if($(this).val() != 'None') {
+     document.location.href = "{% url status.views.custom_edit %}?datasource=" + $(this).val();
+   }
+ });
+</script>
 
 
 

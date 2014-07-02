@@ -183,6 +183,12 @@ TOPMENU_ITEMS = [
 
 ]
 
+# Custom views
+CUSTOM_TEMPLATES_DIR = 'custom_views/templates/'
+# this will be avoided one day with Django 1.7 (render_to_response(..., dirs=[...]))
+CUSTOM_TEMPLATES_PATH = '%s/status/templates/%s/' % (djangopath, CUSTOM_TEMPLATES_DIR)
+CUSTOM_WIDGETS_PATH = '%s/status/templates/custom_views/widgets/' % djangopath
+
 # Graphite #
 
 # the url where to fetch data and images

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load adagiostags %}
+
+{% block title %}{% if viewname %}{% trans "Edit view" %}: {{ viewname }}{% else %}New view{% endif %}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% if viewname %}{% trans "Edit view" %}: {{ viewname }}{% else %}New view{% endif %}{% endblock %}
+{% block toolbar %}{% endblock %}
+
+{% block content %}
+<style>
+tbody::before{
+   content: '';
+   display: block;
+   height: 15px;
+}
+
+tbody:nth-child(even){
+   background-color: #efefef;
+}
+tbody:nth-child(odd){
+   background-color: #FFF;
+}
+</style>
+<br />
+
+<form id="custom_view_form" action="#" method="post" class="form-horizontal">{% csrf_token %}
+  <div class="tabbable"> <!-- Only required for left/right tabs -->
+    <ul class="nav nav-tabs">
+      {% for cat in categories %}
+        <li><a{% if cat.errors %} style="color:#b94a48;"{% endif %} href="#tab_{{ cat.id }}" data-toggle="tab">{{ cat.name }}</a></li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content">
+      {% for cat in categories %}
+      {{ cat.forms.management_form }}
+      <div class="tab-pane {% if forloop.first %} active{% endif %}" id="tab_{{ cat.id }}">
+        <table id="table_{{ cat.id }}">
+        {% for form in cat.forms %}
+          <tbody id="{{ cat.id }}_{{ forloop.counter0 }}" style="border-bottom: 1px solid d0d0d0;">
+            {% include "snippets/status_customview_formset_snippet.html" with cat=cat form=form counter0=forloop.counter0 %}
+          </tbody>
+        {% endfor %}
+        </table>
+        <br />
+        {% if cat.add_button %}
+          <button type="button" class="btn" onclick="add_field('{{ cat.id }}')">{% trans "Add field" %}</button>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-success" type="submit">{% trans "Save" %}</button>
+  </div>
+</form>
+<!-- forms store, it's like AppStore but free -->
+<div id="form_store" style="display: none;">
+  <table>
+    {% for cat in categories %}
+      <tbody id="form_store_{{ cat.id }}">
+        {% include "snippets/status_customview_formset_snippet.html" with cat=cat form=cat.forms.empty_form counter0=forloop.counter0 %}
+      </tbody>
+    {% endfor %}
+  </table>
+</div>
+
+
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+
+<style type="text/css">
+/* work-around for a bug when cloning select2 components */
+.sortable-placeholder {
+     border: 1px dashed grey;
+     z-index: 10000;
+     height: 100px; /* XXX */
+     display: block;
+}
+.select2-container {
+    display: block;
+    max-width: 30em;
+}
+
+</style>
+
+<script src="{% url media path="external/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js" %}"></script>
+
+<script type="text/javascript">
+
+ $(function() {
+   /*
+     activates the drag-and-drop sort for each element
+   */
+   {% for cat in categories %}
+     $("#table_{{ cat.id }}").sortable({axis: "y",
+                                     //containment: "parent",
+                                     cursor: "move",
+                                     handle: ".move-button",
+                                     opacity: 0.5,
+                                     placeholder: "sortable-placeholder",
+                                     scroll: true,
+                                     update: function(event, ui) {rename_nums("#table_{{ cat.id }}", "{{ cat.id }}")}});
+     //$("#table_{{ cat.id }}").disableSelection();
+   {% endfor %}
+ });
+
+
+ function bind_filters_submit() {
+   /*
+     Reloads the form when a filter is selected (because filter forms
+     are generated server side).
+   */
+   $('select[id*="id_filters-"]').bind('click change', function() {
+     $('#custom_view_form').submit();
+   });
+ }
+ 
+ function rename_nums(val, elem_id) {
+   /*
+     Renames the attributes of elements of a list (val), changing the 
+     numbers following an iteration.
+     elem_id being e.g. 'column', all the numbers in *column-NUMBER* and
+     *column_NUMBER* will be updated.
+   */
+   var field = $(val);
+   $.each(field.children(), function(index, value) {
+     patt = new RegExp(elem_id + "([-_])\\d+");
+     repl = elem_id + "$1" + index;
+     // replaces 'column-0-foo' by 'column-1-foo', same with '_'
+     this.id = elem_id + '_' + index;
+     $(this).find("*").each(function() {
+       $.each(this.attributes, function() {
+         if(this.specified) {
+           if(this.name == "id" || this.name == "name" || this.name == "onclick") {
+             this.value = this.value.replace(patt, repl);
+           }
+         }
+       });
+     });
+   });
+ }
+
+ function add_field(elem_id) {
+   /*
+     Clones the last field and adds it to the list.
+     It first disables select2 and re-enables it afterwards,
+     otherwise select2 not happy.
+     Also increments django's form counter.
+   */
+   // the container
+   var field = $("#table_" + elem_id);
+   // element which is going to be cloned
+   var clone_me = $("#form_store #form_store_" + elem_id);
+   // first, we deactivate select2
+   clone_me.find("select").select2("destroy");
+   // we clone and add the new element to the container
+   var new_child = clone_me.clone();
+   new_child.appendTo(field);
+   // we remove the djangenerated __prefix__
+   new_child.find("*").each(function() {
+       $.each(this.attributes, function() {
+           console.log(this.value);
+           this.value = this.value.replace('__prefix__', '0');
+       });
+     });
+   // we update the attributes to have correct numbers
+   rename_nums(new_child.parent(), elem_id);
+   var sel = $("#id_" + elem_id + "-TOTAL_FORMS")[0];
+   sel.value = parseInt(sel.value) + 1;
+   
+   // we delete values of input fields
+   //new_child.find("select, input, textarea").each(function() {this.value = ""});
+   // and re-activate select2
+   field.find("select").select2();
+   bind_filters_submit();
+ }
+ 
+ function del_field(elem, elem_id) {
+   /*
+     Deletes a field with id_elem, if it's not the only one in the list.
+     Also renames the numbers in the attributes, hence the need for
+     elem_id (e.g. 'columns').
+   */
+   var elem = $("#" + elem);
+   console.log(elem);
+   if(elem.parent().children().length > 0) { // replace by 1 if you wanna save the last field
+     parent = elem.parent();
+     elem.remove();
+     rename_nums(parent, elem_id);
+     var sel = $("#id_" + elem_id + "-TOTAL_FORMS")[0];
+     sel.value = parseInt(sel.value) - 1;
+   }
+ }
+
+bind_filters_submit();
+</script>
+{% endblock %}
