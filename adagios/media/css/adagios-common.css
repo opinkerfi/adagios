@@ -319,6 +319,10 @@ button.close.notification {
     color: black;
 }
 
+#left_sidebar hr {
+    margin: 2px;
+}
+
 .well {
         background: url('../img/bak.jpg')
 }

@@ -92,7 +92,7 @@
           </select>
           </div>
         </li>
-        <hr style="margin: 2px;" />
+        <hr />
         {% for view in user_data.views %}
           <li{% if '/status/custom/edit/'|add:view == request.path_info or '/status/custom/view/'|add:view == request.path_info %} class="active"{% endif %}><a href="{% url status.views.custom_view view %}">{{ view }}</a></li>
         {% endfor %}
