@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import math
-import socket
-from geoip import geolite2
 from datetime import datetime, timedelta
 from django import template
 from django.utils.timesince import timesince
@@ -60,29 +57,3 @@ def replace(value, args):
     except Exception as e:
         return value
     return value.replace(pattern, replacement)
-
-@register.filter("locateip")
-def locateip(value):
-    def is_legal_ip(ip):
-        try:
-            socket.inet_pton(socket.AF_INET, address)
-        except Exception:
-            try:
-                socket.inet_pton(socket.AF_INET6, address)
-            except Exception:
-                return False
-        return True
-    
-    if not is_legal_ip(value):
-        try:
-            value = socket.gethostbyname(value)
-        except Exception:
-            return None
-    try:
-        match = geolite2.lookup(value)
-        lat, lon = match.location
-    except Exception as e:
-        print value, e
-        return None
-    #return (lon, lat)
-    return '%s,%s' % (lon, lat)
