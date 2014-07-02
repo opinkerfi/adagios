@@ -311,6 +311,14 @@ button.close.notification {
     margin-top: 20px;
 }
 
+#left_sidebar a {
+    font-weight: normal;
+}
+
+#left_sidebar .nav_header {
+    color: black;
+}
+
 .well {
         background: url('../img/bak.jpg')
 }
@@ -475,10 +483,6 @@ button.close.notification {
     background-color: lightblue;
 }
 
-
-#left_sidebar a {
-    font-weight: normal;
-}
 .small{
     width: 1px;
 }
@@ -545,3 +549,4 @@ div#glyphicons-attribution,
 div#glyphicons-attribution a {
     color: #666;
 }
+
