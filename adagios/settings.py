@@ -163,7 +163,7 @@ THEME_DEFAULT = 'default'
 THEME_ENTRY_POINT = 'style.css'
 
 # folder where users preferences are stored
-USER_PREFS_PATH = "/etc/adagios/userdata/"
+USER_PREFS_PATH = "/var/lib/adagios/userdata/"
 
 
 # name displayed in the top left corner
