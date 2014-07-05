@@ -83,12 +83,20 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         Takes a comma separated string, removes + if it is prefixed so. Returns a list
         """
+        if value is None:
+            return []
         if isinstance(value, str):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields
-        return value
+        else:
+            raise ValueError("Expected string. Got %s" % type(value))
 
+    def set_prefix(self, value):
+        self.__prefix = value
+
+    def get_prefix(self):
+        return self.__prefix
 
 class PynagRadioWidget(forms.widgets.HiddenInput):
 
@@ -160,7 +168,6 @@ class PynagForm(AdagiosForm):
 
             # Here we actually make a change to our pynag object
             self.pynag_object[k] = value
-
             # Additionally, update the field for the return form
             self.fields[k] = self.get_pynagField(k, css_tag="defined")
             self.fields[k].value = value
