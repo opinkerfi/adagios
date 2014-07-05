@@ -175,14 +175,12 @@ class PynagForm(AdagiosForm):
         adagios.misc.rest.add_notification(message=_("Object successfully saved"), level="success", notification_type="show_once")
 
     def __init__(self, pynag_object, *args, **kwargs):
-        self.pynag_object = pynag_object
+        self.pynag_object = p = pynag_object
         super(PynagForm, self).__init__(*args, **kwargs)
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
-        defined_attributes = sorted(
-            self.pynag_object._defined_attributes.keys())
-        inherited_attributes = sorted(
-            self.pynag_object._inherited_attributes.keys())
+        defined_attributes = sorted(p._defined_attributes.keys())
+        inherited_attributes = sorted(p._inherited_attributes.keys())
         all_attributes = sorted(object_definitions.get(object_type).keys())
         all_attributes += ['name', 'use', 'register']
 
@@ -194,11 +192,9 @@ class PynagForm(AdagiosForm):
             # if field_name.startswith('$ARG'):
             #    self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
             if object_type == 'service' and field_name.startswith('$_SERVICE'):
-                self.fields[field_name] = self.get_pynagField(
-                    field_name, css_tag='defined')
+                self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
             elif object_type == 'host' and field_name.startswith('$_HOST'):
-                self.fields[field_name] = self.get_pynagField(
-                    field_name, css_tag='defined')
+                self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
 
         # Calculate what attributes are "undefined"
         self.undefined_attributes = []
@@ -210,14 +206,11 @@ class PynagForm(AdagiosForm):
             self.undefined_attributes.append(i)
         # Find out which attributes to show
         for field_name in defined_attributes:
-            self.fields[field_name] = self.get_pynagField(
-                field_name, css_tag='defined')
+            self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
         for field_name in inherited_attributes:
-            self.fields[field_name] = self.get_pynagField(
-                field_name, css_tag="inherited")
+            self.fields[field_name] = self.get_pynagField(field_name, css_tag="inherited")
         for field_name in self.undefined_attributes:
-            self.fields[field_name] = self.get_pynagField(
-                field_name, css_tag='undefined')
+            self.fields[field_name] = self.get_pynagField(field_name, css_tag='undefined')
         return
 
     def get_pynagField(self, field_name, css_tag="", required=None):
