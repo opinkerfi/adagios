@@ -55,6 +55,47 @@ HOST_NOTIFICATION_OPTIONS = (
 
 BOOLEAN_CHOICES = (('', 'not set'), ('1', '1'), ('0', '0'))
 
+class PynagAutoCompleteField(forms.CharField):
+    """ Behaves like Charfield, but includes data-choices for select2 autocomplete. """
+    def __init__(self, object_type, inline_help_text=None, complete="shortname", *args, **kwargs):
+        super(PynagAutoCompleteField, self).__init__(*args, **kwargs)
+
+        if not inline_help_text:
+            inline_help_text = "Selection some {object_type}s"
+            inline_help_text = inline_help_text.format(object_type=object_type)
+
+
+        self.widget.attrs['data-placeholder'] = inline_help_text
+        #choices = choices or []
+        #if not isinstance(choices, list) and not isinstance(choices, tuple):
+        #    raise ValueError("Expected a list or tuple for choices, but got %s" % type(choices))
+        #
+        #self.widget.attrs['data-choices'] = ','.join(choices)
+
+    def get_all_shortnames(self, object_type):
+        """ Returns a list of all shortnames, given a specific object type."""
+        objects = self.get_all_objects(object_type)
+        shortnames = map(lambda x: x.get_shortname(), objects)
+
+        # Remove objects with no shortname
+        shortnames = filter(lambda x: x, shortnames)
+
+        return shortnames
+    def get_all_object_names(self, object_type):
+        """ Returns a list of all object names (name attribute) for a given object type. """
+        objects = self.get_all_objects(object_type)
+        names = map(lambda x: x.name, objects)
+
+        # Remove objects with no name
+        names = filter(lambda x: x, names)
+        return names
+
+    def get_all_objects(self, object_type):
+        """ Returns all object of a given object type """
+        Class = Model.string_to_class[object_type]
+        objects = Class.objects.get_all()
+        return objects
+
 
 class PynagChoiceField(forms.MultipleChoiceField):
 
