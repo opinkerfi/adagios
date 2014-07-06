@@ -37,7 +37,8 @@ $(document).ready(function() {
     // Multiselect checkboxes at the top-left of status-tables
     adagios.status.initilize_multiselect_checkboxes();
 
-
+    // Input boxes with the class pynag-autocomplete get select2 autocomplete magic.
+    adagios.objectbrowser.autocomplete_for_multichoicefields();
 
     // Fix console logging for internet explorer
     adagios.misc.internet_explorer_console_fix();
@@ -983,5 +984,14 @@ adagios.misc.timed_reload = function(seconds) {
             console.log("Canceling reload because search_field was modified");
             clearInterval(reload);
         }
+    });
+};
+
+// Find all fields with the class pynag-autocomplete and turn them into proper select2 fields
+adagios.objectbrowser.autocomplete_for_multichoicefields = function() {
+    $("input.pynag-autocomplete").each(function() {
+        var choices = $(this).data()["choices"] || '';
+	    choices = choices.split(',');
+	    $(this).select2({tags:choices});
     });
 };
