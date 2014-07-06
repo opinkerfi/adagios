@@ -265,7 +265,17 @@ class PynagForm(AdagiosForm):
             self.fields[field_name] = self.get_pynagField(field_name, css_tag="inherited")
         for field_name in self.undefined_attributes:
             self.fields[field_name] = self.get_pynagField(field_name, css_tag='undefined')
-        return
+
+        # If no initial values were provided, use the one in our pynag object.
+        if not self.initial:
+            self.initial = pynag_object._defined_attributes
+            self.initial.update(pynag_object._changes)
+
+        for name, field in self.fields.items():
+            if name in self.initial:
+                field.initial = self.initial[name]
+            elif name in self.pynag_object:
+                field.initial = self.pynag_object[name]
 
     def get_pynagField(self, field_name, css_tag="", required=None):
         """ Takes a given field_name and returns a forms.Field that is appropriate for this field
