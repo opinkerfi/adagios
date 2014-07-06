@@ -62,7 +62,7 @@ class PynagAutoCompleteField(forms.CharField):
 
         # Add help text into data-placeholder
         if not inline_help_text:
-            inline_help_text = "Selection some {object_type}s"
+            inline_help_text = "Select some {object_type}s"
             inline_help_text = inline_help_text.format(object_type=object_type)
         self.widget.attrs['data-placeholder'] = inline_help_text
 
@@ -109,6 +109,19 @@ class PynagAutoCompleteField(forms.CharField):
         objects = Class.objects.get_all()
         return objects
 
+    def prepare_value(self, value):
+        """
+        Takes a comma separated string, removes + if it is prefixed so. Returns a comma seperated string
+        """
+        if value == 'null':
+            return value
+        elif isinstance(value, basestring):
+            a = AttributeList(value)
+            self.__prefix = a.operator
+            a.operator = ''
+            a = str(a)
+            value = a
+        return value
 
 class PynagChoiceField(forms.MultipleChoiceField):
 
@@ -193,6 +206,15 @@ class PynagForm(AdagiosForm):
                 operator = AttributeList(self.pynag_object.get(k, '')).operator or ''
                 cleaned_data[k] = "%s%s" % (operator, v)
         return cleaned_data
+
+    def _get_changed_data(self):
+        # Fields that do not appear in our POST are not marked as changed data
+        # This can happen for example because some views decide not to print all
+        # Fields to the browser
+        changed_data = super(PynagForm, self)._get_changed_data()
+        changed_data = filter(lambda x: x in self.data, changed_data)
+        return changed_data
+    changed_data = property(_get_changed_data)
 
     def save(self):
         changed_keys = map(lambda x: smart_str(x), self.changed_data)
