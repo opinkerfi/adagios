@@ -60,17 +60,30 @@ class PynagAutoCompleteField(forms.CharField):
     def __init__(self, object_type, inline_help_text=None, complete="shortname", *args, **kwargs):
         super(PynagAutoCompleteField, self).__init__(*args, **kwargs)
 
+        # Add help text into data-placeholder
         if not inline_help_text:
             inline_help_text = "Selection some {object_type}s"
             inline_help_text = inline_help_text.format(object_type=object_type)
-
-
         self.widget.attrs['data-placeholder'] = inline_help_text
-        #choices = choices or []
-        #if not isinstance(choices, list) and not isinstance(choices, tuple):
-        #    raise ValueError("Expected a list or tuple for choices, but got %s" % type(choices))
-        #
-        #self.widget.attrs['data-choices'] = ','.join(choices)
+
+        # Add autcomplete choices in data-choices
+        if complete == 'shortname':
+            choices = self.get_all_shortnames(object_type=object_type)
+        elif complete == 'name':
+            choices = self.get_all_object_names(object_type=object_type)
+        else:
+            raise ValueError("complete must be either shortname or name")
+        choices_string = ','.join(choices)
+        self.widget.attrs['data-choices'] = choices_string
+
+        # Give our widget a unique css class
+        self.widget.attrs['class'] = self.widget.attrs.get('class', '')
+        self.widget.attrs['class'] += ' pynag-autocomplete ';
+
+        # Hardcode widget length to 500px, because select2 plays badly
+        # with css
+        self.widget.attrs['style'] = self.widget.attrs.get('style', '')
+        self.widget.attrs['style'] += ' width: 500px; '
 
     def get_all_shortnames(self, object_type):
         """ Returns a list of all shortnames, given a specific object type."""
@@ -274,48 +287,19 @@ class PynagForm(AdagiosForm):
         if False is True:
             pass
         elif field_name in ('contact_groups', 'contactgroups', 'contactgroup_members'):
-                all_groups = Model.Contactgroup.objects.filter(
-                    contactgroup_name__contains="")
-                choices = sorted(
-                    map(lambda x: (x.contactgroup_name, x.contactgroup_name), all_groups))
-                field = PynagChoiceField(
-                    choices=choices, inline_help_text=_("No %(field_name)s selected") % {'field_name': field_name})
+            field = PynagAutoCompleteField(object_type='contactgroup', complete='shortname')
         elif field_name == 'use':
-            all_objects = self.pynag_object.objects.filter(name__contains='')
-            choices = map(lambda x: (x.name, x.name), all_objects)
-            field = PynagChoiceField(
-                choices=sorted(choices), inline_help_text=_("No %s selected") % {'field_name': field_name})
+            field = PynagAutoCompleteField(object_type=object_type, complete="name")
         elif field_name in ('servicegroups', 'servicegroup_members'):
-            all_groups = Model.Servicegroup.objects.filter(
-                servicegroup_name__contains='')
-            choices = map(
-                lambda x: (x.servicegroup_name, x.servicegroup_name), all_groups)
-            field = PynagChoiceField(
-                choices=sorted(choices), inline_help_text=_("No %(field_name)s selected") % {'field_name': field_name})
+            field = PynagAutoCompleteField(object_type='servicegroup')
         elif field_name in ('hostgroups', 'hostgroup_members', 'hostgroup_name') and object_type != 'hostgroup':
-            all_groups = Model.Hostgroup.objects.filter(
-                hostgroup_name__contains='')
-            choices = map(
-                lambda x: (x.hostgroup_name, x.hostgroup_name), all_groups)
-            field = PynagChoiceField(
-                choices=sorted(choices), inline_help_text=_("No %(field_name)s selected") % {'field_name': field_name})
+            field = PynagAutoCompleteField(object_type='hostgroup')
         elif field_name == 'members' and object_type == 'hostgroup':
-            all_groups = Model.Host.objects.filter(host_name__contains='')
-            choices = map(lambda x: (x.host_name, x.host_name), all_groups)
-            field = PynagChoiceField(
-                choices=sorted(choices), inline_help_text=_("No %(field_name)s selected") % {'field_name': field_name})
+            field = PynagAutoCompleteField(object_type='host')
         elif field_name == 'host_name' and object_type == 'service':
-            all_groups = Model.Host.objects.filter(host_name__contains='')
-            choices = map(lambda x: (x.host_name, x.host_name), all_groups)
-            field = PynagChoiceField(
-                choices=sorted(choices), inline_help_text=_("No %(field_name)s selected") % {'field_name': field_name})
+            field = PynagAutoCompleteField(object_type='host')
         elif field_name in ('contacts', 'members'):
-            all_objects = Model.Contact.objects.filter(
-                contact_name__contains='')
-            choices = map(
-                lambda x: (x.contact_name, x.contact_name), all_objects)
-            field = PynagChoiceField(
-                choices=sorted(choices), inline_help_text=_("No %s selected") % {'field_name': field_name})
+            field = PynagAutoCompleteField(object_type='contact')
         elif field_name.endswith('_period'):
             all_objects = Model.Timeperiod.objects.filter(
                 timeperiod_name__contains='')
@@ -386,6 +370,8 @@ class PynagForm(AdagiosForm):
             field.widget.attrs['class'] = ''
             field.css_tag = ''
         field.widget.attrs['class'] += " " + css_tag
+        if not hasattr(field, 'css_tag'):
+            field.css_tag = ''
         field.css_tag += " " + css_tag
 
     def add_placeholder(self, field, placeholder=_("Insert some value here")):
