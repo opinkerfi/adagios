@@ -8,12 +8,12 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -181,7 +181,6 @@ class TestPynagForm(unittest.TestCase):
         attrs = sorted(host._defined_attributes.keys())
         self.assertEqual(['alias', 'host_name'], attrs)
 
-
     def testMultiChoiceFieldEmptyValue(self):
         host = self._create_new_host()
         hostgroups = ''
@@ -253,6 +252,7 @@ class TestPynagForm(unittest.TestCase):
         form = adagios.objectbrowser.forms.PynagForm(my_object, data=data)
         self.assertTrue(form.is_valid())
         self.assertListEqual(sorted(data.keys()), sorted(form.changed_data))
+
     def test_change_hostgroup(self):
         host = self._create_new_host()
         host_name = host.host_name
@@ -277,7 +277,6 @@ class TestPynagForm(unittest.TestCase):
         host = pynag.Model.Host.objects.get_by_shortname(host_name)
         self.assertEqual('+h2', host.hostgroups)
 
-
     def test_issue_389_via_form(self):
         my_object = pynag.Model.Service()
         my_object.rewrite(_TEST_SERVICE)
@@ -294,6 +293,7 @@ class TestPynagForm(unittest.TestCase):
 
         self.assertEqual('0', form.pynag_object.active_checks_enabled)
         self.assertEqual('HVAC', form.pynag_object.hostgroup_name)
+
     def test_issue_389_via_view(self):
         # In this test we have a problematic service that produces several bugs when user opens it in
         # objectbrowser and just presses save.
@@ -407,7 +407,18 @@ class TestPynagForm(unittest.TestCase):
         self.assertEqual(dataset, form.initial)
         self.assertEqual({}, form.data)
 
+
 class TestPynagAutoCompleteField(unittest.TestCase):
+    def setUp(self):
+        self.nagios_config = adagios.settings.nagios_config
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_adagios_global_variables()
+        self.environment.update_model()
+
+    def tearDown(self):
+        self.environment.terminate()
+
     def test_init(self):
         field = PynagAutoCompleteField('host')
         self.assertIsInstance(field, adagios.objectbrowser.forms.PynagAutoCompleteField)
@@ -421,8 +432,7 @@ class TestPynagAutoCompleteField(unittest.TestCase):
         field = PynagAutoCompleteField('host', complete="shortname")
         choices_string = field.widget.attrs['data-choices']
         choices_list = choices_string.split(',')
-        self.assertIn('apc02.disney.com', choices_list)
-        self.assertIn('switch01.wolf.com', choices_list)
+        self.assertIn('ok_host', choices_list)
         self.assertNotIn(None, choices_list)
 
         field = PynagAutoCompleteField('host', complete="name")
@@ -434,20 +444,20 @@ class TestPynagAutoCompleteField(unittest.TestCase):
         self.assertNotIn('apc02.disney.com', choices_list)
 
     def test_get_all_shortnames(self):
-        object_type='host'
+        object_type = 'host'
         field = adagios.objectbrowser.forms.PynagAutoCompleteField(object_type=object_type)
         shortnames = field.get_all_shortnames(object_type=object_type)
-        self.assertIn('apc02.disney.com', shortnames)
-        self.assertIn('switch01.wolf.com', shortnames)
+        self.assertIn('ok_host', shortnames)
         self.assertNotIn(None, shortnames)
 
     def test_get_all_object_names(self):
-        object_type='host'
+        object_type = 'host'
         field = adagios.objectbrowser.forms.PynagAutoCompleteField(object_type=object_type)
         names = field.get_all_object_names(object_type=object_type)
         self.assertNotIn(None, names)
         self.assertIn('generic-host', names)
         self.assertIn('linux-server', names)
+
     def test_prepare_value(self):
         field = PynagAutoCompleteField(object_type='host')
 
@@ -455,7 +465,19 @@ class TestPynagAutoCompleteField(unittest.TestCase):
         self.assertEqual('a,b', field.prepare_value('+a,b'))
         self.assertEqual('a', field.prepare_value('a'))
         self.assertEqual('null', field.prepare_value('null'))
+
+
 class TestPynagChoiceField(unittest.TestCase):
+    def setUp(self):
+        self.nagios_config = adagios.settings.nagios_config
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_adagios_global_variables()
+        self.environment.update_model()
+
+    def tearDown(self):
+        self.environment.terminate()
+
     def test_prepare_value(self):
         field = adagios.objectbrowser.forms.PynagChoiceField(initial=None)
         prepare_value = field.prepare_value
@@ -503,7 +525,6 @@ class TestPynagChoiceField(unittest.TestCase):
 
         field.set_prefix('')
         self.assertEqual('', field.get_prefix())
-
 
 
 _TEST_SERVICE = """
