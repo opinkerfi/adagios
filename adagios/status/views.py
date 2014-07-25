@@ -24,8 +24,7 @@ from os.path import dirname
 from collections import defaultdict
 import json
 import traceback
-import locale
-locale.setlocale(locale.LC_ALL, "")
+import functools
 
 from django.shortcuts import render_to_response, redirect, Http404
 from django.template import RequestContext
@@ -48,6 +47,7 @@ import adagios.status.rest
 import adagios.status.forms
 from adagios.status import custom_forms
 from adagios.status import custom_filters
+from adagios.status import custom_utils
 import adagios.businessprocess
 from adagios import userdata
 from django.core.urlresolvers import reverse
@@ -1229,30 +1229,6 @@ def custom_view(request, viewname):
     c['messages'] = []
     c['errors'] = []
 
-    def data_to_query(data):
-        """
-        Transforms a view dict into a Livestatus query.
-        """
-        d = {}
-        d['datasource'] = data['metadata'][0]['data_source']
-        d['columns'] = [x['name'] for x in data['columns'] if x['name']]
-        # we have to add columns which are in d['sorts'], otherwise the data
-        # postprocessor can't do its job
-        #sorts = [x['column'] for x in data['sorts']]
-        add_sorts = [x['column'] for x in data['sorts'] if x not in d['columns']]
-        d['columns'] = ' '.join(d['columns'] + add_sorts)
-        if d['columns']:
-            d['columns'] = 'Columns: ' + d['columns'] + '\n'
-        d['stats'] = ''.join(['Stats: %(column)s = %(value)s\n' % x for x in data['stats']])
-        d['filters'] = ''.join([str(custom_filters.get_filter(d['datasource'], x['column'])(x))
-                                for x in data['filters'] if x['column']])
-        query = ('GET %(datasource)s\n'
-                 '%(columns)s'
-                 '%(filters)s'
-                 '%(stats)s') % d
-        # Remove uneeded linebreaks at the end:
-        query = query.strip()
-        return query
 
     # View management
     user = userdata.User(request)
@@ -1267,7 +1243,7 @@ def custom_view(request, viewname):
 
     # Data pre-processing
     livestatus = utils.livestatus(request)
-    livestatus_query = data_to_query(view)
+    livestatus_query = custom_utils.data_to_query(view)
 
     # Query execution
     try:
@@ -1282,28 +1258,10 @@ def custom_view(request, viewname):
 
     # Data post-processing
     # sorting
-
-    class OppositeStr(str):
-        """ Simple hack to not implement the sorting by ourselves.
-        By allowing the construction of opposite strings (as in the
-        mathematical opposite), we can have the DESC functionality
-        while only using the key parameter of sorted.
-        It's the opposite day! http://youtu.be/G1p6VrAmq9g
-        """
-        def __cmp__(self, o):
-            return -1 * cmp(str(self), str(o))
-        def __lt__(self, o):
-            return self.__cmp__(o) < 0
-
-    def format_sort(string):
-        """ Let's not pay attention to capitals and esoteric chars. """
-        return locale.strxfrm(str(string).lower())
-
     c['data'] = sorted(c['data'],
-                       key=lambda x: [OppositeStr(format_sort(x[el['column']])) if el['reverse']
-                                      else format_sort(x[el['column']])
-                                      for el in view['sorts']])
-
+                       key=functools.partial(custom_utils.sort_data,
+                                             sorts=view['sorts']))
+    
     # Moaaaar data for our templates
     c['view'] = view
 
