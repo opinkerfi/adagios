@@ -38,6 +38,7 @@ from adagios.status import custom_columns
 from adagios.status import custom_filters
 
 from django import forms
+from django.forms.formsets import formset_factory
 from adagios import settings
 from django.utils.translation import ugettext as _
 
@@ -152,3 +153,57 @@ class StatsForm(forms.Form):
             help_text=_('Stats by...'),)
 
         self.fields['value'] = forms.CharField(required=False)
+
+def get_categories(form_attrs):
+    categories = [
+        {'name': _('Meta'),
+         'id': 'metadata',
+         'move_button': False,
+         'delete_button': False,
+         'add_button': False,
+         # we keep a formset here, even if there's only one form,
+         # in order to keep the same structure for all tabs
+         'form_class': formset_factory(MetadataForm, max_num=1,),
+         },
+        {'name': _('Columns'),
+         'id': 'columns',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         # From Django 1.7, we can use min_num=1, extra=0.
+         # The dynamic class used as a parameter in formset_factory
+         # is a proper (== not-too-dirty) way to give our forms the
+         # datasource parameter.
+         'form_class': formset_factory(
+             type('ColumnsForm', (ColumnsForm,), form_attrs),
+             extra=0,),
+         },
+        {'name': _('Filters'),
+         'id': 'filters',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         'form_class': formset_factory(
+             type('FiltersForm', (FiltersForm,), form_attrs),
+             extra=0,),
+         },
+        {'name': _('Sorting'),
+         'id': 'sorts',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         'form_class': formset_factory(
+             type('SortsForm', (SortsForm,), form_attrs),
+             extra=0,),
+         },
+        {'name': _('Statistics'),
+         'id': 'stats',
+         'move_button': True,
+         'delete_button': True,
+         'add_button': True,
+         'form_class': formset_factory(
+             type('StatsForm', (StatsForm,), form_attrs),
+             extra=0,),
+         },
+        ]
+    return categories

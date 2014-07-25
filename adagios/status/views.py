@@ -31,7 +31,6 @@ from django.template import RequestContext
 from django.utils.encoding import smart_str
 from django.core.context_processors import csrf
 from django.utils.translation import ugettext as _
-from django.forms.formsets import formset_factory
 
 import pynag.Model
 import pynag.Utils
@@ -1290,58 +1289,8 @@ def custom_edit(request, viewname=None):
     # class attributes which will get passed to our forms classes
     form_attrs = {'datasource': datasource}
 
-    c['categories'] = [
-        {'name': _('Meta'),
-         'id': 'metadata',
-         'move_button': False,
-         'delete_button': False,
-         'add_button': False,
-         # we keep a formset here, even if there's only one form,
-         # in order to keep the same structure for all tabs
-         'form_class': formset_factory(custom_forms.MetadataForm, max_num=1,),
-         },
-        {'name': _('Columns'),
-         'id': 'columns',
-         'move_button': True,
-         'delete_button': True,
-         'add_button': True,
-         # From Django 1.7, we can use min_num=1, extra=0.
-         # The dynamic class used as a parameter in formset_factory
-         # is a proper (== not-too-dirty) way to give our forms the
-         # datasource parameter.
-         'form_class': formset_factory(
-             type('ColumnsForm', (custom_forms.ColumnsForm,), form_attrs),
-             extra=0,),
-         },
-        {'name': _('Filters'),
-         'id': 'filters',
-         'move_button': True,
-         'delete_button': True,
-         'add_button': True,
-         'form_class': formset_factory(
-             type('FiltersForm', (custom_forms.FiltersForm,), form_attrs),
-             extra=0,),
-         },
-        {'name': _('Sorting'),
-         'id': 'sorts',
-         'move_button': True,
-         'delete_button': True,
-         'add_button': True,
-         'form_class': formset_factory(
-             type('SortsForm', (custom_forms.SortsForm,), form_attrs),
-             extra=0,),
-         },
-        {'name': _('Statistics'),
-         'id': 'stats',
-         'move_button': True,
-         'delete_button': True,
-         'add_button': True,
-         'form_class': formset_factory(
-             type('StatsForm', (custom_forms.StatsForm,), form_attrs),
-             extra=0,),
-         },
-        ]
-
+    c['categories'] = custom_forms.get_categories(form_attrs)
+    
     if request.method == 'POST':
         for el in c['categories']:
             # we add the form(s) to our category
