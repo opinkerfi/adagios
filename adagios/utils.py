@@ -144,7 +144,9 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
         adagios.settings.adagios_configfile = self.adagios_config_file
         adagios.settings.USER_PREFS_PATH = self.adagios_config_dir + "/userdata"
         adagios.settings.nagios_config = self.cfg_file
-        adagios.settings.livestatus_path = self.livestatus_socket_path
+        # we update livestatus_path only if the socket mode is used
+        if ':' not in adagios.settings.livestatus_path and '/' in adagios.settings.livestatus_path:
+            adagios.settings.livestatus_path = self.livestatus_socket_path
         reload_config_file(self.adagios_config_file)
 
     def restore_adagios_global_variables(self):
@@ -153,10 +155,10 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
         adagios.settings.__dict__.clear()
         adagios.settings.__dict__.update(self._adagios_settings_copy)
 
-    def create_minimal_environment(self):
+    def create_minimal_environment(self, backend='nagios'):
         """ Behaves like FakeNagiosEnvironment except also creates adagios config directory """
 
-        super(FakeAdagiosEnvironment, self).create_minimal_environment()
+        super(FakeAdagiosEnvironment, self).create_minimal_environment(backend=backend)
         self.adagios_config_dir = os.path.join(self.tempdir, 'adagios')
         self.adagios_config_file = os.path.join(self.adagios_config_dir, 'adagios.conf')
 
@@ -164,9 +166,9 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
         with open(self.adagios_config_file, 'w') as f:
             f.write('')
 
-    def terminate(self):
+    def terminate(self, stop_command=None):
         """ Behaves like FakeNagiosEnvironment except also restores adagios.settings module """
         if self._adagios_settings_copy:
             self.restore_adagios_global_variables()
-        super(FakeAdagiosEnvironment, self).terminate()
+        super(FakeAdagiosEnvironment, self).terminate(stop_command=stop_command)
 

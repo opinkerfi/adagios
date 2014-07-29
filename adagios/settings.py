@@ -183,6 +183,23 @@ TOPMENU_ITEMS = [
 
 ]
 
+# Backend
+# Used notably for tests, to create adapted fake environments
+BACKEND = 'nagios'
+# BACKEND = 'shinken'
+
+# Engine start command
+# None works fine for Nagios, because Pynag will guess it
+ENGINE_START_COMMAND = None
+# Shinken hack, as it's not trivial to specify another configuration than
+# /etc/shinken/shinken.cfg
+# ENGINE_START_COMMAND = 'ln -s /var/run/shinken/arbiterd.pid {tmp_dir}/nagios.pid && service shinken-broker start && service shinken-poller start && service shinken-reactionner start && service shinken-receiver start && service shinken-scheduler start && /usr/bin/shinken-arbiter -c {tmp_conf} -d && sleep 10'
+
+# Engine stop command
+# None works fine for Nagios, because Pynag will guess it
+ENGINE_STOP_COMMAND = None
+# ENGINE_STOP_COMMAND = 'service shinken stop'
+
 # Graphite #
 
 # the url where to fetch data and images
