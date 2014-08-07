@@ -22,7 +22,7 @@
                         {% if start = "/" %}
                           <a href="{{ item.2 }}">
                         {% else %}
-                          <a href="{% url item.2 %}" >
+                          <a href="{% url "item.2" %}" >
                         {% endif %}
                         <i class="glyph-grey {{ item.3 }}"></i> {% trans item.0 %}
                         </a>

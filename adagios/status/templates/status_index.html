@@ -1,5 +1,6 @@
 {% extends "base_status.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block title %}Status Overview{% endblock %}
 {% block nav2 %}<a href="{% url "status.views.status_index" %}">{% trans "Overview" %}</a>{% endblock %}
@@ -29,7 +30,7 @@
                         {% if  total_unhandled_network_problems == 0 %}
                         {% else %}
 
-                                <a href="{%  url status.views.network_parents %}?unhandled">
+                                <a href="{%  url "status.views.network_parents" %}?unhandled">
                                     {{ total_unhandled_network_problems }}
                                 </a>
 
@@ -42,7 +43,7 @@
                     <td>
                         {% if  unhandled_hosts == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.hosts %}?unhandled">
+                            <a href="{%  url "status.views.hosts" %}?unhandled">
                                 {{ unhandled_hosts }}
                             </a>
                         {% endif %}
@@ -54,7 +55,7 @@
                     <td>
                         {% if  unhandled_services == 0 %}
                         {% else %}
-                            <a href="{%  url status.views.services %}?unhandled">
+                            <a href="{%  url "status.views.services" %}?unhandled">
                                 {{ unhandled_services }}
                             </a>
                         {% endif %}
