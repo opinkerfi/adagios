@@ -20,6 +20,7 @@ from django.conf.urls import patterns, url, include
 from django.conf import settings
 
 from django.views.static import serve
+from django.conf.urls.static import static
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -45,4 +46,4 @@ urlpatterns = patterns('',
     
     # Internationalization
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog'),
-)
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
