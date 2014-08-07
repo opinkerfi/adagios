@@ -109,7 +109,7 @@ def handle_request(request, module_name, module_path, attribute, format):
         raise BaseException(
             _("Unsupported format: '%s'. Valid formats: json xml txt") %
             format)
-    return HttpResponse(result, mimetype=mimetype)
+    return HttpResponse(result, content_type=mimetype)
 
 
 @adagios_decorator
@@ -200,7 +200,7 @@ def javascript(request, module_name, module_path):
         args, varargs, varkw, defaults = argspec
     c['functions'] = members
 
-    return render_to_response('javascript.html', c, mimetype="text/javascript", context_instance=RequestContext(request))
+    return render_to_response('javascript.html', c, content_type="text/javascript", context_instance=RequestContext(request))
 
 
 class CallFunctionForm(forms.Form):
