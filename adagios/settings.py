@@ -80,6 +80,7 @@ MEDIA_ROOT = "%s/media/" % (djangopath)
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'media/'
+STATIC_URL = 'media//'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -132,6 +133,7 @@ INSTALLED_APPS = [
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'django.contrib.staticfiles',
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
