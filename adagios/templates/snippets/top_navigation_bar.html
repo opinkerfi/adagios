@@ -83,7 +83,7 @@
                             {% if tagged_comments and plugins.status %}
                                 <li>
 
-                                <a href="{% url "'status.views.detail'" %}?contact_name={{ remote_user }}">
+                                <a href="{% url "status.views.detail" %}?contact_name={{ remote_user }}">
                                     User {{ remote_user }} is mentioned in {{ tagged_comments }} comments.
                                 </a>
                                 </li>
