@@ -204,7 +204,9 @@
             $('#servicelist').html(gettext("Loading ..."));
             var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
             var snippet_url = '{% url adagios.status.views.snippets_services %}?host_groups__has_field=' + hostgroup_name;
-            $('#servicelist').load(snippet_url);
+            $('#servicelist').load(snippet_url, function() {
+                adagios.status.initilize_multiselect_checkboxes();
+            });
         });
 
         $('#hosts_link').click(function(event) {
@@ -212,7 +214,9 @@
             $('#hostlist').html(gettext("Loading ..."));
             var hostgroup_name = encodeURIComponent("{{ hostgroup_name }}");
             var snippet_url = '{% url adagios.status.views.snippets_hosts %}?host_groups__has_field=' + hostgroup_name;
-            $('#hostlist').load(snippet_url);
+            $('#hostlist').load(snippet_url, function() {
+                adagios.status.initilize_multiselect_checkboxes();
+            });
         });
 
     </script>
