@@ -37,12 +37,12 @@
                 <td class="host hidden-phone">
                     {% ifchanged service.host_name %}
                         <div title="{{ service.host_plugin_output }}" class="circle  host state_{{ service.host_state }}"></div>
-                        <a href="{% url "status.views.detail%}?host_name={{" service.host_name }}&backend={{ service.backend }}" title='{% blocktrans with host=service.host_name %}Details for host {{ host }}{% endblocktrans %}'>{{ service.host_name }}</a>
+                        <a href="{% url "status.views.detail" %}?host_name={{" service.host_name }}&backend={{ service.backend }}" title='{% blocktrans with host=service.host_name %}Details for host {{ host }}{% endblocktrans %}'>{{ service.host_name }}</a>
                         <span class="pull-right right-of-host"></span>
                     {% else %}
                         <div class="repeated_content hide">
                             <div title="{{ service.host_plugin_output }}" class="circle host state_{{ service.host_state }}"></div>
-                            <a href="{% url "status.views.detail%}?host_name={{" service.host_name }}&backend={{ service.backend }}" title='{% blocktrans with host=service.host_name %}Details for host {{ host }}{% endblocktrans %}'>{{ service.host_name }}</a>
+                            <a href="{% url "status.views.detail" %}?host_name={{" service.host_name }}&backend={{ service.backend }}" title='{% blocktrans with host=service.host_name %}Details for host {{ host }}{% endblocktrans %}'>{{ service.host_name }}</a>
                         </div>
                     {% endifchanged %}
                 </td>
