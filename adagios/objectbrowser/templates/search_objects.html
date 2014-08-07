@@ -4,7 +4,7 @@
 {% block title %}List Objects{% endblock %}
 {% block smallheader %}ObjectBrowser{% endblock %}
 {% block largeheader %}Search results{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "objectbrowser" %}</a>{% endblock %}
+{% block nav1 %}<a href="{% url "objectbrowser" %}">{% trans "objectbrowser" %}</a>{% endblock %}
 
 
 
@@ -35,10 +35,10 @@ $(document).ready(function() {
             <tbody>
             {% for o in objects %}
                 <tr class="{% cycle 'even' 'odd' %}">
-                    <td><a href="{% url adagios.objectbrowser.views.edit_object o.id %}">{{ o.description }}</a></td>
-                    <td><a href="{% url search %}?object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
-                    <td><a href="{% url adagios.objectbrowser.views.edit_object o.id %}">{{ o.name }} </a></td>
-                    <td><a href="{% url search %}?filename={{ o.filename }}">{{ o.filename }}</a></td>
+                    <td><a href="{% url "adagios.objectbrowser.views.edit_object" o.id %}">{{ o.description }}</a></td>
+                    <td><a href="{% url "search" %}?object_type={{ o.object_type }}">{{ o.object_type }}</a></td>
+                    <td><a href="{% url "adagios.objectbrowser.views.edit_object" o.id %}">{{ o.name }} </a></td>
+                    <td><a href="{% url "search" %}?filename={{ o.filename }}">{{ o.filename }}</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -52,12 +52,12 @@ $(document).ready(function() {
             <ul>
                 {% for i in services %}
                     <li>
-                        <a href="{% url adagios.objectbrowser.views.edit_object object_id=i.id %}">
+                        <a href="{% url "adagios.objectbrowser.views.edit_object" object_id=i.id %}">
                             {% blocktrans with name=i.hostgroup_name %}Edit service for all hosts in hostgroup {{ name }}{% endblocktrans %}
                         </a>
                     </li>
                     <li>
-                        <a href="{% url adagios.objectbrowser.views.copy_and_edit_object object_id=i.id %}?host_name={{ host_name }}&hostgroup_name=None&service_description={{ service_description }}">
+                        <a href="{% url "adagios.objectbrowser.views.copy_and_edit_object" object_id=i.id %}?host_name={{ host_name }}&hostgroup_name=None&service_description={{ service_description }}">
                             {% blocktrans %}Create '{{ host_name }}/{{ service_description }}' and edit that one.{% endblocktrans %}
                         </a>
                     </li>
@@ -65,7 +65,7 @@ $(document).ready(function() {
             </ul>
         {% else %}
             <h2>{% trans "Oh no! We couldn't find the objects you are looking for :/" %}</h2>
-	    {% url adagios.objectbrowser.views.list_object_types as the_url %}
+	    {% url "adagios.objectbrowser.views.list_object_types" as the_url %}
 	    {% blocktrans %}
             Perhaps you try browsing for what you were looking for <a href="{{ the_url }}">here</a>
 	    {% endblocktrans %}

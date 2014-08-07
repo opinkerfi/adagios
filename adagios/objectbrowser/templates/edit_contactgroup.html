@@ -47,7 +47,7 @@
                                 {% if effective_memberof %}
                                     <p>
                                         {% for group in effective_memberof %}
-                                            <label><a href="{% url adagios.objectbrowser.views.edit_object group.id %}">{{group.contactgroup_name}}</a></label>
+                                            <label><a href="{% url "adagios.objectbrowser.views.edit_object" group.id %}">{{group.contactgroup_name}}</a></label>
                                         {% endfor %}
                                     </p>
                                 {% endif %}
@@ -76,7 +76,7 @@
                             {% if effective_contacts %}
                                 <p>
                                     {% for i in effective_contacts %}
-                                        <label><a href="{% url adagios.objectbrowser.views.edit_object i.id %}">{{i.contact_name}}</a></label>
+                                        <label><a href="{% url "adagios.objectbrowser.views.edit_object" i.id %}">{{i.contact_name}}</a></label>
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -91,7 +91,7 @@
         <div class="tab-pane" id="advanced">
             <!-- All Attributes -->
             <h2>All Attributes</h2>
-            <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
+            <form action="{% url "objectbrowser.views.advanced_edit" my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                 {% include "bootstrap_fields.html" with fields=advanced_form %}
                 <div class="form-actions">
                     <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>

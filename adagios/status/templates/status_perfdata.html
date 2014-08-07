@@ -6,7 +6,7 @@
 {% block largeheader %}Performance Data Metrics{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.perfdata %}">{% trans "Performance Data" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "status.views.perfdata" %}">{% trans "Performance Data" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
@@ -47,7 +47,7 @@
                 <td>{{ i.max }}   </td>
                 <td class="nowrap"><div class="circle state_{{ i.get_status }}"> </div></td>
                 <td>
-                    <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
+                    <a href="{% url "pnp.views.pnp" %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                 </td>
             </tr>
         {% endfor %}
