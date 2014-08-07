@@ -1,4 +1,5 @@
 <!-- snippets/header.html starts. This is the top navigation header on our page -->
+{% load staticfiles %}
 {% load i18n %}
 {% load url from future %}
 
@@ -46,10 +47,10 @@
                 <ul class="nav pull-right">
                     {% if not nagios_running %}
                         <li>
-                            <form action="{% url "'misc.views.nagios_service'" %}" method="POST">
+                            <form action="{% url "misc.views.nagios_service" %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="start" value="1" />
-                                <input type="image" src="{% url "'media'" path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
+                                <input type="image" src="{% static "img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
                             </form>
                         </li>
                     {% endif %}
