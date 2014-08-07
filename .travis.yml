@@ -5,7 +5,7 @@ python:
 script:
   - cd -
   - cd adagios
-  - python /home/travis/virtualenv/python2.7.8/lib/python2.7/site-packages/adagios/manage.py test
+  - python manage.py test
 install:
   - whoami
   - sudo apt-get update
