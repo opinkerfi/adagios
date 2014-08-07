@@ -19,9 +19,8 @@ install:
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - sudo pip install okconfig
-  - pip install 'Django<1.5'
-  - pip install simplejson
   - pip install https://github.com/pynag/pynag/zipball/master
+  - pip install -r requirements.txt
   - python setup.py build
   - python setup.py install
   - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
