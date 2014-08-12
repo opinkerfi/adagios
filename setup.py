@@ -19,7 +19,7 @@
 
 import os
 
-from distutils.core import setup
+from setuptools import setup
 from distutils.command.build import build
 from distutils.sysconfig import get_python_lib
 from adagios import __version__
