@@ -18,7 +18,7 @@ install:
   - sudo chown -R travis /etc/adagios/
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
-  - pip install okconfig
+  - sudo pip install okconfig
   - pip install https://github.com/pynag/pynag/zipball/master
   - pip install -r requirements.txt
   - python setup.py build
