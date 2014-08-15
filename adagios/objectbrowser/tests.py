@@ -54,7 +54,6 @@ class TestObjectBrowser(unittest.TestCase):
         self.loadPage('/objectbrowser/edit_all', 404)
         self.loadPage('/objectbrowser/copy_and_edit', 301)
 
-        self.loadPage('/objectbrowser/confighealth')
         self.loadPage('/objectbrowser/plugins')
         self.loadPage('/objectbrowser/nagios.cfg')
         self.loadPage('/objectbrowser/geek_edit', 404)
