@@ -21,7 +21,7 @@ install:
   - deactivate
   - sudo rm -r ~/virtualenv/python*
   - sudo pip install okconfig
-  - python -c "import okconfig"
+  - /usr/bin/python -c "import okconfig"
   - virtualenv ~/virtualenv/python2.6
   - source ~/virtualenv/python2.6/bin/activate
   - python -c "import okconfig"
