@@ -7,14 +7,6 @@
 override_dh_auto_install:
 	python setup.py install --root=debian/adagios --install-layout=deb
 	
-	# Copy adagios main config file, and adapt paths to debian specific places
-	
-	sed -i 's|/etc/nagios/|/etc/nagios3/|g' debian/adagios/etc/adagios/adagios.conf
-	sed -i 's|/etc/init.d/nagios|/etc/init.d/nagios3|g' debian/adagios/etc/adagios/adagios.conf
-	sed -i 's|nagios"|nagios3"|g' debian/adagios/etc/adagios/adagios.conf
-	sed -i 's|destination_directory.*|destination_directory="/etc/nagios3/adagios/"|g' debian/adagios/etc/adagios/adagios.conf
-	sed -i 's|pnp_filepath.*|pnp_filepath="/usr/share/pnp4nagios/html/index.php"|g' debian/adagios/etc/adagios/adagios.conf
-	
 	# copy sudoers.d file and modify paths
 	sed -i 's|/etc/init.d/nagios|/etc/init.d/nagios3|' debian/adagios/usr/lib/python2.7/dist-packages/adagios/etc/sudoers.d/adagios 
 	
