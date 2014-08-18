@@ -7,12 +7,6 @@
 override_dh_auto_install:
 	python setup.py install --root=debian/adagios --install-layout=deb
 	
-	# Copy apache config to conf.d and modify some paths
-	cat debian/adagios/usr/lib/python*/dist-packages/adagios/apache/adagios.conf | \
-	sed 's|nagios/passwd|nagios3/htpasswd.users|' | \
-	sed 's|WSGISocketPrefix|#WSGISocketPrefix|' > \
-	debian/adagios/etc/apache2/conf.d/adagios.conf
-	
 	# Copy adagios main config file, and adapt paths to debian specific places
 	
 	sed -i 's|/etc/nagios/|/etc/nagios3/|g' debian/adagios/etc/adagios/adagios.conf
