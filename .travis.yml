@@ -21,7 +21,7 @@ install:
   - deactivate
   - sudo rm -r ~/virtualenv/python*
   - sudo pip install okconfig
-  - virtualenv ~/virtualenv/python2.6
+  - virtualenv ~/virtualenv/python2.6 --system-site-packages
   - source ~/virtualenv/python2.6/bin/activate
   - pip install https://github.com/pynag/pynag/zipball/master
   - pip install -r requirements.txt
