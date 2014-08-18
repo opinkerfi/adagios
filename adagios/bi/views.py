@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import simplejson
+import json
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -169,8 +169,8 @@ def json(request, process_name=None, process_type=None):
         json['name'] = i.name
         json['display_name'] = i.display_name
         result.append(json)
-    json = simplejson.dumps(result)
-    return HttpResponse(json, content_type="application/json")
+    json_dump = json.dumps(result)
+    return HttpResponse(json_dump, content_type="application/json")
 
 @adagios_decorator
 def graphs_json(request, process_name, process_type):
@@ -192,7 +192,7 @@ def graphs_json(request, process_name, process_type):
             metric_name = graph.get('metric_name')
             pnp_result = run_pnp('json', host=graph.get(
                 'host_name'), srv=graph.get('service_description'))
-            json_data = simplejson.loads(pnp_result)
+            json_data = json.loads(pnp_result)
             for i in json_data:
                 if i.get('ds_name') == graph.get('metric_name'):
                     notes = graph.get('notes')
@@ -201,7 +201,7 @@ def graphs_json(request, process_name, process_type):
                     i['last_value'] = last_value
                     i['notes'] = notes
                     graphs.append(i)
-    graph_json = simplejson.dumps(graphs)
+    graph_json = json.dumps(graphs)
     return HttpResponse(graph_json)
 
 

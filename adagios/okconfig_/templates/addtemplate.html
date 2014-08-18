@@ -5,7 +5,7 @@
 {% block smallheader %}{% trans "Add" %}{% endblock %}
 {% block largeheader %}{% trans "Template" %}{% endblock %}
 {% block toolbar %}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.addtemplate %}">{% trans "Add Template" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.okconfig_.views.addtemplate" %}">{% trans "Add Template" %}</a>{% endblock %}
 {% block footer %}
     {{ block.super }}
 {% endblock %}

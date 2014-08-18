@@ -6,7 +6,7 @@
 {% block largeheader %}{% trans "State History" %}
 {% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.state_history %}">{% trans "State History" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "status.views.state_history" %}">{% trans "State History" %}</a>{% endblock %}
 {% load adagiostags %}
 {% block toolbar %}{% endblock %}
 {% block content %}
@@ -34,17 +34,17 @@
     {% for service in services.values %}{% if service.num_problems > 1 %}
         <tr>
         <td>
-            <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
+            <a href="{% url "adagios.status.views.detail" %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
         </td>
         <td class="nowrap">
             {% if service.service_description %}
-                <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.service_description }}</a>
+                <a href="{% url "adagios.status.views.detail" %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.service_description }}</a>
             {% else %}
-                <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{% trans "Host Status" %}</a>
+                <a href="{% url "adagios.status.views.detail" %}?host_name={{ service.host_name }}">{% trans "Host Status" %}</a>
             {% endif %}
         </td>
         <td>{{ service.sla|floatformat }}%</td>
-            <td><a href="{% url status.views.log %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.num_problems }}</a></td>
+            <td><a href="{% url "status.views.log" %}?host_name={{ service.host_name }}&service_description={{ service.service_description }}">{{ service.num_problems }}</a></td>
             <td width=500px>
 
             <div width="500px" class="progress">

@@ -41,14 +41,14 @@
                     <tbody>
                     <tr>
                         <td>{% trans "Network Parents" %}</td>
-                        <td><a href="{% url status.views.network_parents %}">{{ total_network_parents }}</a></td>
+                        <td><a href="{% url "status.views.network_parents" %}">{{ total_network_parents }}</a></td>
                         <td>
-                            <a href="{% url status.views.network_parents %}?state__isnot=0">
+                            <a href="{% url "status.views.network_parents" %}?state__isnot=0">
                             <div class="alert alert-warning">{{ total_network_problems }}</div>
                             </a>
                         </td>
                         <td>
-                            <a href="{% url status.views.network_parents %}?unhandled">
+                            <a href="{% url "status.views.network_parents" %}?unhandled">
                             {% if total_unhandled_network_problems == 0 %}
                                 <div class="alert alert-success">{{ total_unhandled_network_problems }}</div>
                             {% else %}
@@ -59,14 +59,14 @@
                     </tr>
                     <tr>
                         <td>{% trans "Hosts" %}</td>
-                        <td><a href="{% url status.views.hosts %}">{{ total_hosts }}</a></td>
+                        <td><a href="{% url "status.views.hosts" %}">{{ total_hosts }}</a></td>
                         <td>
-                            <a href="{% url status.views.hosts %}?state__isnot=0">
+                            <a href="{% url "status.views.hosts" %}?state__isnot=0">
                             <div class="alert alert-warning">{{  total_host_problems }}</div>
                             </a>
                         </td>
                         <td>
-                            <a href="{% url status.views.hosts %}?unhandled">
+                            <a href="{% url "status.views.hosts" %}?unhandled">
                             {% if host_problems|length == 0 %}
                                 <div class="alert alert-success">{{ host_problems|length }}</div>
                             {% else %}
@@ -78,14 +78,14 @@
                     </tr>
                     <tr>
                         <td>{% trans "Services" %}</td>
-                        <td><a href="{% url status.views.services %}"> {{ total_services }}</a></td>
+                        <td><a href="{% url "status.views.services" %}"> {{ total_services }}</a></td>
                         <td>
-                            <a href="{% url status.views.services %}?state__isnot=0">
+                            <a href="{% url "status.views.services" %}?state__isnot=0">
                             <div class="alert alert-warning">{{ total_service_problems }}</div>
                             </a>
                         </td>
                         <td>
-                            <a href="{% url status.views.services %}?unhandled">
+                            <a href="{% url "status.views.services" %}?unhandled">
                             {% if service_problems|length == 0 %}
                                 <div class="alert alert-success">{{ service_problems|length }}</div>
                             {% else %}
@@ -168,12 +168,12 @@
                             {% if i.state == 2 %}<tr class="dashboard alert alert-danger">{% endif %}
                             {% if i.state == 3 %}<tr class="dashboard alert alert-danger">{% endif %}
                                 <td>
-                                    <a href="{% url adagios.status.views.detail %}/?host_name={{ i.host_name }}">
+                                    <a href="{% url "adagios.status.views.detail" %}/?host_name={{ i.host_name }}">
                                         {{ i.host_name }}
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="{% url adagios.status.views.detail %}/?host_name={{ i.host_name }}&service_description={{ i.description }}">
+                                    <a href="{% url "adagios.status.views.detail" %}/?host_name={{ i.host_name }}&service_description={{ i.description }}">
                                     {{ i.description }}
                                     </a>
                                 </td>

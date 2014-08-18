@@ -328,7 +328,7 @@ def icons(request, image_name=None):
             file_extension = image_name.split('.').pop()
             mime_type = mimetypes.types_map.get(file_extension)
             fsock = open("%s/%s" % (image_path, image_name,))
-            return HttpResponse(fsock, mimetype=mime_type)
+            return HttpResponse(fsock, content_type=mime_type)
         else:
             raise Exception(_("Not allowed to see this image"))
 

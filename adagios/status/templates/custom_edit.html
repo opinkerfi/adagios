@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load adagiostags %}
+{% load staticfiles %}
 
 {% block title %}{% if viewname %}{% trans "Edit view" %}: {{ viewname }}{% else %}New view{% endif %}{% endblock %}
 {% block smallheader %}{% endblock %}
@@ -57,7 +58,7 @@ tbody:nth-child(odd){
       {% blocktrans %}
         Are you sure you want to delete the view {{ viewname }}?
       {% endblocktrans %}
-      <a href="{% url status.views.custom_delete viewname %}" class="btn btn-danger">{% trans "Yes" %}</a>
+      <a href="{% url "status.views.custom_delete" viewname %}" class="btn btn-danger">{% trans "Yes" %}</a>
       <a href="javascript:$('#areyousure').toggle('400');" class="btn btn-success">{% trans "No" %}</a>
     </div>
   </div>
@@ -94,7 +95,7 @@ tbody:nth-child(odd){
 
 </style>
 
-<script src="{% url media path="external/jquery-ui-1.10.4.custom/jquery-ui-1.10.4.custom.min.js" %}"></script>
+<script src="{% static "external/jquery-ui-1.10.4.custom/jquery-ui-1.10.4.custom.min.js" %}"></script>
 
 <script type="text/javascript">
 
