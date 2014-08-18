@@ -18,7 +18,11 @@ install:
   - sudo chown -R travis /etc/adagios/
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
+  - deactivate
+  - sudo rm -rf /home/travis/virtualenv/python*
   - sudo pip install okconfig
+  - virtualenv /home/travis/virtualenv/python2.6
+  - . /home/travis/virtualenv/python2.6/bin/activate
   - pip install https://github.com/pynag/pynag/zipball/master
   - pip install -r requirements.txt
   - python setup.py build
