@@ -9,7 +9,7 @@ script:
 install:
   - whoami
   - sudo apt-get update
-  - sudo apt-get install -y nagios3 check-mk-livestatus pnp4nagios
+  - sudo apt-get install -y nagios3 check-mk-livestatus pnp4nagios python-paramiko
   - sudo usermod travis -G nagios -a
   - sudo chown -R nagios:nagios /etc/nagios3
   - sudo chmod -R 777 /etc/nagios3
