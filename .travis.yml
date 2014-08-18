@@ -19,10 +19,10 @@ install:
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - deactivate
-  - sudo rm -rf /home/travis/virtualenv/python*
+  - sudo rm -r ~/virtualenv/python*
   - sudo pip install okconfig
-  - virtualenv /home/travis/virtualenv/python2.6
-  - . /home/travis/virtualenv/python2.6/bin/activate
+  - virtualenv ~/virtualenv/python2.6
+  - source ~/virtualenv/python2.6/bin/activate
   - pip install https://github.com/pynag/pynag/zipball/master
   - pip install -r requirements.txt
   - python setup.py build
@@ -46,6 +46,7 @@ install:
   - sudo service nagios3 reload
   - sudo service npcd start
   - sudo chmod -R 777 /var/lib/nagios3
+  - python -c "import okconfig"
 notifications:
   email: false
 
