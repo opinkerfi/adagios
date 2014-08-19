@@ -9,4 +9,4 @@ MANIFEST
 dist
 adagios.conf
 *.mo
-
+adagios/media/external

@@ -1,0 +1,3 @@
+Not bower dependencies:
+* html5shim (is used by bootstrap and dynamically downloaded from a CDN)
+* jqplot (not properly bowerized yet)
