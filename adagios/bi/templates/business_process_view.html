@@ -55,7 +55,7 @@
 
             if (my_element.childElementCount == 0) {
                 var spinner = document.createElement( 'img');
-                spinner.setAttribute("src", "{% static "external/select2/spinner.gif" %}");
+                spinner.setAttribute("src", "{% static "external/select2/select2-spinner.gif" %}");
                 my_element.appendChild( spinner );
                 var url = '{{ graphs_url }}';
                 $.getJSON(url)
