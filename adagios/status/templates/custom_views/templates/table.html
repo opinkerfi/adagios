@@ -1,6 +1,7 @@
 {% extends view.metadata.0.fullscreen|yesno:'custom_views/base_view_fullscreen.html,custom_views/base_view.html' %}
 {% load adagiostags %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block data %}
 <style type="text/css">
@@ -69,7 +70,7 @@ td {
  });
 </script>
 
-<script type="text/javascript" src="{% url media path="external/datatable/js/datatable.js" %}"></script>
+<script type="text/javascript" src="{% static "external/datatable/js/datatable.js" %}"></script>
 <script type="text/javascript">
  $('#data-results').datatable({
    tableClass: "JustARandomNameDifferentThanDatatable",

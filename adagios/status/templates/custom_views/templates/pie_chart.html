@@ -1,5 +1,6 @@
 {% extends view.metadata.0.fullscreen|yesno:'custom_views/base_view_fullscreen.html,custom_views/base_view.html' %}
 {% load adagiostags %}
+{% load staticfiles %}
 
 {% block data %}
 
@@ -13,8 +14,8 @@
 
 {% block footer %}
 {{ block.super }}
-<script type="text/javascript" src="{% url media path="external/jqplot/jquery.jqplot.min.js" %}"></script>
-<script type="text/javascript" src="{% url media path="external/jqplot/plugins/jqplot.pieRenderer.min.js" %}"></script>
+<script type="text/javascript" src="{% static "external/jqplot/jquery.jqplot.min.js" %}"></script>
+<script type="text/javascript" src="{% static "external/jqplot/plugins/jqplot.pieRenderer.min.js" %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
   var labels = [{% for s in view.stats %}'{{ s.column }}={{ s.value }}', {% endfor %}];

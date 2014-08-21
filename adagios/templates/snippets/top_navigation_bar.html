@@ -1,4 +1,5 @@
 <!-- snippets/header.html starts. This is the top navigation header on our page -->
+{% load staticfiles %}
 {% load i18n %}
 {% load url from future %}
 
@@ -12,7 +13,7 @@
             </a>
 
             <!-- Logo in top nav -->
-            <a class="brand" href="{% url 'home' %}">{{ settings.TOPMENU_HOME }}</a>
+            <a class="brand" href="{% url "home" %}">{{ settings.TOPMENU_HOME }}</a>
             <div class="nav-collapse">
                 <ul class="nav" id="top_navigation_menuitems">
                   {% for item in settings.TOPMENU_ITEMS %}
@@ -21,7 +22,7 @@
                         {% if start = "/" %}
                           <a href="{{ item.2 }}">
                         {% else %}
-                          <a href="{% url item.2 %}" >
+                          <a href="{% url item.2%}" >
                         {% endif %}
                         <i class="glyph-grey {{ item.3 }}"></i> {% trans item.0 %}
                         </a>
@@ -46,10 +47,10 @@
                 <ul class="nav pull-right">
                     {% if not nagios_running %}
                         <li>
-                            <form action="{% url 'misc.views.nagios_service' %}" method="POST">
+                            <form action="{% url "misc.views.nagios_service" %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="start" value="1" />
-                                <input type="image" src="{% url 'media' path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
+                                <input type="image" src="{% static "img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
                             </form>
                         </li>
                     {% endif %}
@@ -63,7 +64,7 @@
                     </li>
                     {% if num_problems and plugins.status  %}
                         <li style="color: red;">
-                        <a style="color: red;" href="{% url 'status.views.problems' %}?unhandled">
+                        <a style="color: red;" href="{% url "status.views.problems" %}?unhandled">
                             <i class="glyph-grey  glyph-warning-sign" title="You have unhandled problems"></i>
                             {{ num_problems }}
                         </a>
@@ -82,15 +83,15 @@
                             {% if tagged_comments and plugins.status %}
                                 <li>
 
-                                <a href="{% url 'status.views.detail' %}?contact_name={{ remote_user }}">
+                                <a href="{% url "status.views.detail" %}?contact_name={{ remote_user }}">
                                     User {{ remote_user }} is mentioned in {{ tagged_comments }} comments.
                                 </a>
                                 </li>
                             {% endif %}
                             {% if plugins.status %}
-                                <li><a href="{% url 'status.views.detail' %}?contact_name={{ remote_user }}">{% trans "My Profile" %}</a></li>
+                                <li><a href="{% url "status.views.detail" %}?contact_name={{ remote_user }}">{% trans "My Profile" %}</a></li>
                             {% endif %}
-                            <li><a href="{% url 'misc.views.preferences' %}">{% trans "Preferences" %}</a></li>
+                            <li><a href="{% url "misc.views.preferences" %}">{% trans "Preferences" %}</a></li>
                             <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
                         </ul>
                     </li>

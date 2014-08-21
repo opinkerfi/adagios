@@ -4,7 +4,7 @@
 {% block title %}{% trans "Scan Network" %}{% endblock %}
 {% block smallheader %}{% trans "Scan" %}{% endblock %}
 {% block largeheader %}{% trans "Network" %}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.scan_network %}">{% trans "Scan Network" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.okconfig_.views.scan_network" %}">{% trans "Scan Network" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 {% block header %}
@@ -42,7 +42,7 @@
   {% for host in scan_results %}
 	<tr>
 	 {% if not host.ismonitored %}
-	 <td><a href="{% url okconfig_.views.addhost %}?host_name={{ host.hostname }}&address={{ host.ipaddress }}">{% trans "Add" %}</a></td>
+	 <td><a href="{% url "okconfig_.views.addhost" %}?host_name={{ host.hostname }}&address={{ host.ipaddress }}">{% trans "Add" %}</a></td>
 	 {% else %}
 	 <td></td>
 	 {% endif %}

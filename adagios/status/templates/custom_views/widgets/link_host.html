@@ -3,6 +3,6 @@
   <th>{{ title }}</th>
 {% else %}
   <td>
-    <a href="{% url status.views.detail %}?host_name={{ value }}&backend={{ line.backend }}">{{ line|hash:col_name }}</a>
+    <a href="{% url "status.views.detail" %}?host_name={{ value }}&backend={{ line.backend }}">{{ line|hash:col_name }}</a>
   </td>
 {% endif %}

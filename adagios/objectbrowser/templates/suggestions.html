@@ -59,13 +59,13 @@
         <td>{{ i.message }}</td>
         <td>
             {% if i.model %}
-                <a title="{{ i.model }}" href="{% url adagios.objectbrowser.views.edit_object i.model.id %}">{{ i.item.meta.object_type }} {{ i.model.description }}</a>
+                <a title="{{ i.model }}" href="{% url "adagios.objectbrowser.views.edit_object" i.model.id %}">{{ i.item.meta.object_type }} {{ i.model.description }}</a>
             {% else %}
                 n/a
             {% endif %}
         </td>
-		<td><a href="{% url adagios.objectbrowser.views.search_objects %}?filename={{ i.filename }}">{{ i.filename }}</a></td>
-		<td><a href="{% url adagios.objectbrowser.views.delete_object i.item %}">{% trans "Delete Object" %}</a> </td>
+		<td><a href="{% url "adagios.objectbrowser.views.search_objects" %}?filename={{ i.filename }}">{{ i.filename }}</a></td>
+		<td><a href="{% url "adagios.objectbrowser.views.delete_object" i.item %}">{% trans "Delete Object" %}</a> </td>
         <td> <a href="#">{% trans "Create Reference" %}</a></td>
         <td> <a href="#">{% trans "Manually Edit" %}</a> </td>
 	</tr>

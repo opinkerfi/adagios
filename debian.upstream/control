@@ -2,11 +2,11 @@ Source: adagios
 Maintainer: Pall Sigurdsson <palli@opensource.is>
 Section: python
 Priority: optional
-Build-Depends: python (>= 2.6.6-3~), debhelper (>= 7.4.3)
+Build-Depends: python (>= 2.6.6-3~), debhelper (>= 7.4.3), python-setuptools, coffeescript, gettext
 Standards-Version: 3.9.3
 Homepage: http://adagios.org/
 
-X-Python-Version: >= 2.4
+XS-Python-Version: >= 2.4
 Package: adagios
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}, pynag, python-django, python-simplejson
