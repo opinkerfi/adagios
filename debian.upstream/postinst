@@ -1,2 +1,2 @@
-chown -R nagios:nagios /etc/adagios/
+chown -R nagios:nagios /etc/adagios/ /var/lib/adagios
 service apache2 reload || echo "Failed to reload apache. You have to reload apache to update its configuration"
