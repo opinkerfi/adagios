@@ -46,6 +46,7 @@ import adagios.status.forms
 import adagios.businessprocess
 from django.core.urlresolvers import reverse
 from adagios.status import graphite
+from adagios.status import rekishi
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -351,6 +352,19 @@ def service_detail(request, host_name, service_description):
                 for k,v in graph['metrics'].items():
                     default[k] = v
                 c['graphite_default'] = default
+
+    if adagios.settings.enable_rekishi:
+        print 'perfdata:',perfdata.metrics
+        metrics = [x.label for x in perfdata.metrics]
+        service = c['service_description'].replace(' ', '_')
+        print 'metrics:', metrics
+        print 'service:', service
+        c['rekishi'] = rekishi.get(adagios.settings.rekishi_url,
+                                   c['host_name'],
+                                   service,
+                                   metrics,
+                                   adagios.settings.REKISHI_PERIODS,
+                                   )
     
     return render_to_response('status_detail.html', c, context_instance=RequestContext(request))
 
