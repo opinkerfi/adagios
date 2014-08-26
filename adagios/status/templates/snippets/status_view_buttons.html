@@ -1,0 +1,15 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<div class="btn-group pull-left" id="view_buttons">
+  <a class="btn btn-small dropdown-toggle " data-toggle="dropdown" href="#">
+    <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
+  <ul class="dropdown-menu">
+    <li><a href="?q={{ request.GET.q }}&unhandled"> {% trans "Open Problems" %}</a></li>
+    <li><a href="?q={{ request.GET.q }}&state__isnot=0"> {% trans "All Problems" %}</a></li>
+    <li><a href="?q={{ request.GET.q }}&acknowledged=1"> {% trans "All Acknowledged" %}</a></li>
+    <li><a href="?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> {% trans "All in Downtime" %}</a></li>
+    <li><a href="?q={{ request.GET.q }}&state=0"> {% trans "All OK" %}</a></li>
+    <li><a href="?q={{ request.GET.q }}"> {% trans "Everything" %}</a></li>
+  </ul>
+</div>
