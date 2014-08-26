@@ -354,11 +354,8 @@ def service_detail(request, host_name, service_description):
                 c['graphite_default'] = default
 
     if adagios.settings.enable_rekishi:
-        print 'perfdata:',perfdata.metrics
         metrics = [x.label for x in perfdata.metrics]
         service = c['service_description'].replace(' ', '_')
-        print 'metrics:', metrics
-        print 'service:', service
         c['rekishi'] = rekishi.get(adagios.settings.rekishi_url,
                                    c['host_name'],
                                    service,

@@ -40,6 +40,9 @@
             {% if settings.enable_graphite %}
               <li><a href="#graphite" data-toggle="tab" id="graphite_link">{% trans "Graphite" %}</a></li>
             {% endif %}
+            {% if settings.enable_rekishi %}
+              <li><a href="#rekishi" data-toggle="tab" id="graphite_link">{% trans "Graphs" %}</a></li>
+            {% endif %}
             <li><a href="#custom_variables" data-toggle="tab">{% trans "Custom Variables" %}</a></li>
             <li><a href="#other" data-toggle="tab">{% trans "Debug" %}</a></li>
         </ul>
@@ -536,6 +539,29 @@
                 <div class="tab-pane{% if graph.css_id == settings.GRAPHITE_DEFAULT_TAB %} active{% endif %}" id="graphite_{{ graph.css_id }}">
                   {% for k,v in graph.metrics.items %}
                     <img src="{{ v }}" />
+                    <br /><br />
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        {% if settings.enable_rekishi %}
+        <div class="tab-pane" id="rekishi">
+          <div id="rekishi" class="tabbable"> <!-- Only required for left/right tabs -->
+            <ul class="nav nav-pills" id="rekishi_ul">
+              {% for graph in rekishi %}
+                <li{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} class="active"{% endif %}><a href="#rekishi_{{ graph.css_id }}" id="rekishi_{{ graph.css_id }}_link" data-toggle="tab">{% trans graph.name %}</a></li>
+              {% endfor %}
+            </ul>
+
+            <div class="tab-content" id="graphs_content">
+              {% for graph in rekishi %}
+                <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
+                  {% for k,v in graph.metrics.items %}
+                    {{ graph.css_id }}::{{ graph.metrics }}
                     <br /><br />
                   {% endfor %}
                 </div>

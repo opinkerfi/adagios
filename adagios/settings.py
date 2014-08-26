@@ -215,8 +215,7 @@ REKISHI_PERIODS = [
     ('4 hours',       'hours',        '-4h'),
     ('One day',       'day',          '-1d'),
     ('One week',      'week',         '-1w'),
-    ('One month',     'month',        '-1mon'),
-    ('One year',      'year',         '-1y'),
+    ('30 days',       'month',        '-30d'),
     ]
 
 # Title format to use on all rekishi graphs

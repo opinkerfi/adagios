@@ -34,7 +34,7 @@ def _get_rekishi_url(base, host, service, metric, from_):
     service_ = _compliant_name(service)
     metric_ = _compliant_name(metric)
     base = base.rstrip('/')
-    title = adagios.settings.graphite_title.format(**locals())
+    title = adagios.settings.rekishi_title.format(**locals())
 
     url = "{base}/"
     if host_:
@@ -44,10 +44,9 @@ def _get_rekishi_url(base, host, service, metric, from_):
             if metric_:
                 url += "{metric_}/"
         if from_:
-            url += "?start=now(){from_[0][2]}"
+            url += "?start=now(){from_}"
 
     url = url.format(**locals())
-    print 'url', url
     return url
 
 
@@ -59,7 +58,7 @@ def _compliant_name(name):
     return name
 
 
-def get(base, host, service=None, metrics=None, units=None):
+def get(base, host, service=None, metrics=None, periods=None):
     """ Returns a data structure containg URLs for Graphite.
 
     The structure looks like:
@@ -82,10 +81,10 @@ def get(base, host, service=None, metrics=None, units=None):
     """
     graphs = []
 
-    for name, css_id, unit in units:
+    for name, css_id, period in periods:
         m = {}
         for metric in metrics:
-            m[metric] = _get_rekishi_url(base, host, service, metrics, units)
+            m[metric] = _get_rekishi_url(base, host, service, metric, period)
         graph = dict(name=name, css_id=css_id, metrics=m)
         graphs.append(graph)
     print 'graphs:', graphs
