@@ -18,7 +18,7 @@
 # Create your views here.
 from django.shortcuts import render_to_response, redirect
 from django.core import serializers
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError, QueryDict
 import json
 #from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
@@ -81,7 +81,8 @@ def handle_request(request, module_name, module_path, attribute, format):
             result = item
         else:
             arguments = {}  # request.POST.items()
-            for k, v in request.POST.items():
+            # request.POST has been replaced by request.body between Django 1.4-1.6
+            for k, v in QueryDict(request.body).items():
                 arguments[k.encode('utf-8')] = v.encode('utf-8')
             # Here is a special hack, if the method we are calling has an argument
             # called "request" we will not let the remote user ship it in.

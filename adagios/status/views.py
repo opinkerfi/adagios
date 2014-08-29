@@ -1264,6 +1264,18 @@ def custom_view(request, viewname):
     # Moaaaar data for our templates
     c['view'] = view
 
+    # For the template 'table.html' (and whynot others), determine if displaying
+    # action_buttons is relevant, i.e. if we have results with at least
+    # host_name and service_description.
+    columns = set()
+    for col in view['columns']: # no set comprehension in 2.6 :(
+        columns.add(col['name'])
+
+    if 'host_name' in columns and 'description' in columns:
+        c['action_buttons'] = True
+    else:
+        c['action_buttons'] = False
+
     template = view['metadata'][0].get('template', 'table.html')
 
     return render_to_response(adagios.settings.CUSTOM_TEMPLATES_DIR + template, c,
