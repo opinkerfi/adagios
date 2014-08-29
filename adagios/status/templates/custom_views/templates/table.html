@@ -32,7 +32,9 @@ td {
 
 <div id="template_content">
   {#% include "snippets/status_view_buttons.html" %#}
-  {% include "snippets/status_action_buttons.html" %}
+  {% if action_buttons %}
+    {% include "snippets/status_action_buttons.html" %}
+  {% endif %}
 
   <div class=" pull-right" id="search_box">
     <input name="filter_results"  type="text" id="filter_field" class="input-large search-query" placeholder="filter results" />
@@ -43,7 +45,9 @@ td {
     <table class="table-striped table-hover" id="data-results">
       <thead>
         <tr>
-          <td style="width: 2em;"></td>
+          {% if action_buttons %}
+            <td style="width: 2em;"></td>
+          {% endif %}
           {% for col in view.columns %}
           {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with title=col.name|title|replace:"_, " %}
           {% endfor %}
@@ -52,11 +56,17 @@ td {
       <tbody>
         {% for line in data %}
         <tr>
-          <td>
+          {% if action_buttons %}
+          <td class="selectable">
             <input type="checkbox" name="service"
                    value="{{ service.host_name }}/{{ service.description }}"
-                   class="checkbox_select">
+                   class="checkbox_select chkbox"
+                   data-host_name="{{ line.host_name }}"
+                   data-service_description="{{ line.description }}"
+                   data-object_type="{{ view.metadata.0.data_source }}">
           </td>
+          {% endif %}
+
           {% for col in view.columns %}
           {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with col_name=col.name line=line %}
           {% endfor %}
@@ -66,6 +76,7 @@ td {
     </table>
   </div>
 </div>
+
 {% endblock %}
 
 
@@ -108,6 +119,7 @@ $(".checkbox_select").change(function() {
   else {
     $(this).parent().parent().children().removeClass("row_selected");
   }
+  adagios.status.count_selected_objects();
 });
 </script>
 
