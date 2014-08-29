@@ -48,6 +48,7 @@ td {
           {% if action_buttons %}
             <td style="width: 2em;"></td>
           {% endif %}
+
           {% for col in view.columns %}
           {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with title=col.name|title|replace:"_, " %}
           {% endfor %}
