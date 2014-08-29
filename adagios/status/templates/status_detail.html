@@ -41,7 +41,7 @@
               <li><a href="#graphite" data-toggle="tab" id="graphite_link">{% trans "Graphite" %}</a></li>
             {% endif %}
             {% if settings.enable_rekishi %}
-              <li><a href="#rekishi" data-toggle="tab" id="graphite_link">{% trans "Graphs" %}</a></li>
+              <li id="rekishi_tab"><a href="#rekishi" data-toggle="tab" id="rekishi_link">{% trans "Graphs" %}</a></li>
             {% endif %}
             <li><a href="#custom_variables" data-toggle="tab">{% trans "Custom Variables" %}</a></li>
             <li><a href="#other" data-toggle="tab">{% trans "Debug" %}</a></li>
@@ -561,7 +561,8 @@
               {% for graph in rekishi %}
                 <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
                   {% for k,v in graph.metrics.items %}
-                    {{ graph.css_id }}::{{ graph.metrics }}
+                      <div id="graph_{{ k }}_{{ graph.css_id }}">
+                      </div>
                     <br /><br />
                   {% endfor %}
                 </div>
@@ -838,6 +839,36 @@
                 return "<img src='"+ $(this)[0].href +"' alt='{% trans "Image preview" %}' />";
             }
         });
+        {% if settings.enable_rekishi %}
+            allDygraphs = [];
+            {% for graph in rekishi %}
+                {% for k,v in graph.metrics.items %}
+                    $.get("{{ v }}", function(data){
+                        dg = new Dygraph(
+                            $("#graph_{{ k }}_{{ graph.css_id }}")[0],
+                            data[0].data,
+                            { 
+                                labels: data[0].labels,
+                            }
+                        );
+                        allDygraphs.push(dg);
+                    });
+                {% endfor %}
+            {% endfor %}
+
+            {# Ugly hack to allow graphs to be displayed when switching bootstrap tabs #}
+            {# Hopefully this will not be necessary in BS3 #}
+            $(document).on('click', '#rekishi_tab', function(e){
+                $( allDygraphs ).resize();
+                console.log('Resized by tab');
+            });
+
+            $(document).on('click', '#rekishi li', function(e){
+                $( allDygraphs ).resize();
+                console.log('Resized');
+            });
+
+        {% endif %}
     </script>
 
 {% endblock %}
