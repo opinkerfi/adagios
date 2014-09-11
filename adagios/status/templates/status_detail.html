@@ -561,9 +561,15 @@
               {% for graph in rekishi %}
                 <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
                   {% for k,v in graph.metrics.items %}
-                      <div id="graph_{{ k }}_{{ graph.css_id }}">
-                      </div>
-                    <br /><br />
+                  <div class="row">
+                    <div class="span1"></div>
+                    <div class="rekishi-graph-container span8">
+                      <div id="graph_{{ k }}_{{ graph.css_id }}" width="100%"></div>
+                      <input type="button" value="Reset" class="dygraph-reset-zoom">
+                      <br /><br />
+                    </div>
+                    <div class="span1"></div>
+                  </div>
                   {% endfor %}
                 </div>
               {% endfor %}
@@ -844,11 +850,27 @@
             {% for graph in rekishi %}
                 {% for k,v in graph.metrics.items %}
                     $.get("{{ v }}", function(data){
+
+                        {# Find the units in the returned data so we can use them in axis title #}
+                        var unitsIndex = 0;
+                        for(var i=0; i<data[0].labels.length; i++){
+                            if(data[0].labels[i] == "unit"){
+                                unitsIndex = i;
+                            }
+                        }
+
+                        {# Fix the timestamps to JS dates #}
+                        for(var i=0; i<data[0].data.length; i++){
+                            data[0].data[i][0] = new Date(parseInt(data[0].data[i][0]) * 1000);
+                        }
+
                         dg = new Dygraph(
                             $("#graph_{{ k }}_{{ graph.css_id }}")[0],
                             data[0].data,
                             { 
                                 labels: data[0].labels,
+                                title: "{{ k }}",
+                                ylabel: data[0].data[0][unitsIndex],
                             }
                         );
                         allDygraphs.push(dg);
@@ -856,16 +878,21 @@
                 {% endfor %}
             {% endfor %}
 
+            {# Add functionailty to resetZoom buttons #}
+            $(document).on('click', '.dygraph-reset-zoom', function(e){
+                $( allDygraphs ).each(function(){
+                    this.resetZoom();
+                })
+            });
+
             {# Ugly hack to allow graphs to be displayed when switching bootstrap tabs #}
             {# Hopefully this will not be necessary in BS3 #}
             $(document).on('click', '#rekishi_tab', function(e){
                 $( allDygraphs ).resize();
-                console.log('Resized by tab');
             });
 
             $(document).on('click', '#rekishi li', function(e){
                 $( allDygraphs ).resize();
-                console.log('Resized');
             });
 
         {% endif %}
