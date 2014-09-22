@@ -1,3 +1,4 @@
+
 {% extends "base_status.html" %}
 {% load adagiostags %}
 {% load i18n %}
@@ -32,7 +33,9 @@
             <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
             <li><a href="#information" data-toggle="tab">{% trans "Information" %}</a></li>
             <li><a href="#events" data-toggle="tab" id="history_link">{% trans "History" %}</a></li>
+            {% if settings.enable_pnp4nagios %}
             <li><a href="#graphs" data-toggle="tab" id="graphs_link">{% trans "Graphs" %}</a></li>
+            {% endif %}
             {% if settings.enable_graphite %}
               <li><a href="#graphite" data-toggle="tab" id="graphite_link">{% trans "Graphite" %}</a></li>
             {% endif %}
@@ -115,7 +118,9 @@
                                     <th>{% trans "unit" %}</th>
                                     <th>{% trans "min" %}</th>
                                     <th>{% trans "max" %}</th>
+                                    {% if settings.enable_pnp4nagios %}
                                     <th>{% trans "pnp" %}</th>
+                                    {% endif %}
                                     {% if settings.enable_graphite %}
                                       <th>{% trans "graphite" %}</th>
                                     {% endif %}
@@ -130,9 +135,11 @@
                                         <td> {{ i.uom }}</td>
                                         <td>{{ i.min }}   </td>
                                         <td>{{ i.max }}   </td>
+                                        {% if settings.enable_pnp4nagios %}
                                         <td>
                                             <a href="{% url pnp.views.pnp %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                                         </td>
+                                        {% endif %}
                                         {% if settings.enable_graphite %}
                                           <td><a href="{{ graphite_default|hash:i.label }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a></td>
                                         {% endif %}
@@ -186,14 +193,14 @@
         <div class="tab-pane" id="information">
             <p>
               {% blocktrans with ot=my_object.object_type ci=my_object.check_interval %}
-	      This {{ ot }} is checked every <a href="#">{{ ci }}</a> minutes.
-	      {% endblocktrans %}
-	      
-	      {% blocktrans with mca=my_object.max_check_attempts ri=my_object.retry_interval %}
+              This {{ ot }} is checked every <a href="#">{{ ci }}</a> minutes.
+              {% endblocktrans %}
+              
+              {% blocktrans with mca=my_object.max_check_attempts ri=my_object.retry_interval %}
               When a problem occurs it will be checked <a href="#">{{ mca }}</a> times
               every <a href="#">{{ ri }}</a> minutes before going to
               hard state and start sending out notifications.
-	      {% endblocktrans %}
+              {% endblocktrans %}
             </p>
 
             {% if my_object.notes %}
@@ -234,7 +241,7 @@
                         {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
-			    (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
+                            (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
                         </span>
                     </td>
                 </tr>
@@ -461,6 +468,7 @@
         </div>
 
 
+        {% if settings.enable_graphite %}
         <div class="tab-pane" id="graphs">
                 {% if graph_urls %}
                     <div id="graphs2" class="tabbable"> <!-- Only required for left/right tabs -->
@@ -512,6 +520,7 @@
                     {% blocktrans with ot=my_object.object_type %}No Performance data is available for this {{ ot }}.{% endblocktrans %}
                 {% endif %}
         </div>
+        {% endir %}
         {% if settings.enable_graphite %}
         <div class="tab-pane" id="graphite">
           <div id="graphite" class="tabbable"> <!-- Only required for left/right tabs -->
