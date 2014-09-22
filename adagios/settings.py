@@ -1,3 +1,4 @@
+
 # Adagios is a web based Nagios configuration interface
 #
 # Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
@@ -220,6 +221,7 @@ enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
 enable_bi = True
+enable_pnp4nagios = True
 enable_graphite = False
 contrib_dir = "/var/lib/adagios/contrib/"
 serverside_includes = "/etc/adagios/ssi"
