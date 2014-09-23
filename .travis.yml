@@ -19,7 +19,7 @@ install:
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - sudo pip install okconfig
-  - pip install 'Django<1.5'
+  - pip install 'Django<1.6'
   - pip install simplejson
   - pip install https://github.com/pynag/pynag/zipball/master
   - python setup.py build
