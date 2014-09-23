@@ -24,8 +24,14 @@ BuildRequires: python-setuptools
 Requires: pynag >= 0.8.8
 Requires: httpd
 Requires: mod_wsgi
-Requires: Django
 Requires: sudo
+
+%if 0%{?rhel} >= 6 || 0%{?fedora} >= 20
+Requires: python-django15
+%else
+# Fedora 19, python-django is 1.5
+Requires: python-django
+%endif
 
 %description
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. 
