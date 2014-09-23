@@ -1081,16 +1081,3 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is> 1.0-1
 - new package built with tito
 
-
-* Mon Aug 10 2011 Clint Savage <herlo@fedoraproject.org> 0.2-1
-- Cleaned up pathing and config files
-
-* Mon Apr 11 2011 Clint Savage <herlo@fedoraproject.org> 0.1-3
-- Added dist macro to release line.
-
-* Mon Mar 07 2011 Clint Savage <herlo@fedoraproject.org> 0.1-2
-- Fixed rpmlint errors and warnings.
-
-* Tue Feb 08 2011 Clint Savage <herlo@fedoraproject.org> 0.1-1
-- Initial package build
-
