@@ -1,4 +1,3 @@
-
 # Adagios is a web based Nagios configuration interface
 #
 # Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>

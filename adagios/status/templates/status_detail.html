@@ -1,4 +1,3 @@
-
 {% extends "base_status.html" %}
 {% load adagiostags %}
 {% load i18n %}
@@ -468,7 +467,7 @@
         </div>
 
 
-        {% if settings.enable_graphite %}
+        {% if settings.enable_pnp4nagios %}
         <div class="tab-pane" id="graphs">
                 {% if graph_urls %}
                     <div id="graphs2" class="tabbable"> <!-- Only required for left/right tabs -->
@@ -520,7 +519,7 @@
                     {% blocktrans with ot=my_object.object_type %}No Performance data is available for this {{ ot }}.{% endblocktrans %}
                 {% endif %}
         </div>
-        {% endir %}
+        {% endif %}
         {% if settings.enable_graphite %}
         <div class="tab-pane" id="graphite">
           <div id="graphite" class="tabbable"> <!-- Only required for left/right tabs -->
