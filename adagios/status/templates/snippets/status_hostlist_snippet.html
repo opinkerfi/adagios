@@ -41,7 +41,7 @@
                 </a>
             </td>
             <td>
-                <a id="{{ row.name }}" href="{% url status.views.detail %}?host_name={{ row.name }}">
+                <a id="{{ row.name }}" href="{% url 'status.views.detail' %}?host_name={{ row.name }}">
                     {{ row.name }}
                 </a>
             </td>
@@ -86,7 +86,7 @@
                 <td colspan=5>
                     <div style="margin-left: 10px;" class="circle state_{{ i.1 }}"></div>
                     <span>
-                    <a href="{% url status.views.detail %}?host_name={{ row.name }}&service_description={{ i.0 }}">{{i.0 }}</a> - {{ i.3 }}
+                    <a href="{% url 'status.views.detail' %}?host_name={{ row.name }}&service_description={{ i.0 }}">{{i.0 }}</a> - {{ i.3 }}
                     </span>
                 </td>
             </tr>

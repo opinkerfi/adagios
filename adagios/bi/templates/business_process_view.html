@@ -1,18 +1,19 @@
 {% extends "base_status.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}{% trans "Business Process" %}{% endblock %}
 {% block smallheader %}{% trans "view" %}{% endblock %}
 {% block largeheader %}{% trans "Business Process" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "bi.views.index" %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
 {% block header %}
     {{ block.super }}
-    <link href="{% url media path="css/bi.css" %}" rel="stylesheet">
+    <link href="{% static "css/bi.css" %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -29,7 +30,7 @@
 
 {% block footer %}
     {{ block.super }}
-    <script src="{% url home %}rest/status.js"></script>
+    <script src="{% url "home" %}rest/status.js"></script>
     <script>
         // When graphs link is clicked, simulate a click on 25hours tab as well
         $(document).ready(function() {
@@ -55,7 +56,7 @@
 
             if (my_element.childElementCount == 0) {
                 var spinner = document.createElement( 'img');
-                spinner.setAttribute("src", "{% url media path="external/select2/spinner.gif" %}");
+                spinner.setAttribute("src", "{% static "external/select2/spinner.gif" %}");
                 my_element.appendChild( spinner );
                 var url = '{{ graphs_url }}';
                 $.getJSON(url)
@@ -82,7 +83,7 @@
                                             {% if static %}
                                             new_img.setAttribute("src", item['image_url']);
                                             {% else %}
-                                            new_img.setAttribute("src", "{% url pnp.views.pnp 'image' %}?" + item['image_url'] + "&graph_width=350&graph_height=30");
+                                            new_img.setAttribute("src", "{% url "pnp.views.pnp" 'image' %}?" + item['image_url'] + "&graph_width=350&graph_height=30");
                                             {% endif %}
                                             graph_row.appendChild( new_img );
 

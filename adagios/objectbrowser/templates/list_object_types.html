@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block toolbar %}{% endblock %}
 {% block smallheader %}{% endblock %}
@@ -11,7 +12,7 @@
 
     var currenttab = '#host';
     var currenttable = '#host-table';
-    var BASE_URL = "{% url home %}";
+    var BASE_URL = "{% url "home" %}";
 
 
     $(document).ready(function() {
@@ -293,7 +294,7 @@
     and the user clicks an action button
     -->
     <div id="hidden_bulk_commit_form" class="hide">
-            <form name="bulk" action="{% url bulk_edit %}" method="post">
+            <form name="bulk" action="{% url "bulk_edit" %}" method="post">
                 {% csrf_token %}
             </form>
     </div>
@@ -309,7 +310,7 @@
                         </thead>
                         <tbody id="objectoverview_body">
                             <tr id="objectoverview_loading">
-                            <td colspan=2><img src="{% url media path="external/select2/spinner.gif" %}"> Loading...</td>
+                            <td colspan=2><img src="{% static "external/select2/spinner.gif" %}"> Loading...</td>
                             </tr>
                        </tbody>
                     </table>

@@ -9,7 +9,7 @@
 
 {% block content %}
         {% for i in images %}
-            <li><img width=20 height=20 src="{% url logo i %}">{{ i }}</li>
+            <li><img width=20 height=20 src="{% url "logo" i %}">{{ i }}</li>
         {% endfor %}
     <ul>
     </ul>

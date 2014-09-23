@@ -34,13 +34,13 @@
                 {% endif %}
             </td>
             <td>
-                <a href="{% url status.views.detail %}?contact_name={{ i.author }}">{{ i.author }}</a>
+                <a href="{% url 'status.views.detail' %}?contact_name={{ i.author }}">{{ i.author }}</a>
             </td>
             <td class=small>
                 <div class="circle state_{{ i.host_state }}"></div>
             </td>
             <td>
-                <a href="{% url status.views.detail %}?host_name={{ i.host_name }}">
+                <a href="{% url 'status.views.detail' %}?host_name={{ i.host_name }}">
                     {{ i.host_display_name }}
                 </a>
             </td>
@@ -48,13 +48,13 @@
                 <div class="circle state_{{ i.service_state }}"></div>
             </td>
             <td>
-                <a href="{% url status.views.detail %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
+                <a href="{% url 'status.views.detail' %}?host_name={{ i.host_name }}&service_description={{ i.service_description }}">
                     {{ i.service_display_name}}
                 </a>
             </td>
             <td>{{ i.comment }}</td>
             <td>
-                <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.id }}" onclick="$.getJSON('{% url rest/status %}json/delete_comment?host_name={{ i.host_name }}&service_description={{ i.service_description }}&comment_id={{ i.id }}');">
+                <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.id }}" onclick="$.getJSON('{% url 'rest/status' %}json/delete_comment?host_name={{ i.host_name }}&service_description={{ i.service_description }}&comment_id={{ i.id }}');">
                     <i class="glyph-bin"></i>
                 </button>
             </td>

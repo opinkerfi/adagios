@@ -74,12 +74,18 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = "%s/media/" % (djangopath)
+#MEDIA_ROOT = "%s/media/" % djangopath
+#STATIC_ROOT = "%s/static/" % djangopath
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'media/'
+#MEDIA_URL = None
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+	'%s/static/' % djangopath,
+)
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -132,6 +138,7 @@ INSTALLED_APPS = [
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'django.contrib.staticfiles',
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
@@ -143,7 +150,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     #"django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
+    #"django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages")

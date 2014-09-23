@@ -4,7 +4,7 @@
 {% block title %}{% trans "Add new Object" %}{% endblock %}
 {% block smallheader %}{% trans "Add" %}{% endblock %}
 {% block largeheader %}{{ object_type }}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser" %}</a>{% endblock %}
+{% block nav1 %}<a href="{% url "objectbrowser" %}">{% trans "Object Browser" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 
@@ -15,7 +15,7 @@
     </p>
     {% if object_type != "template" %}
     <div class="alert alert-info">
-    {% url objectbrowser.views.add_object "template" as the_url %}
+    {% url "objectbrowser.views.add_object" "template" as the_url %}
     {% blocktrans %}If you are looking to add a {{ object_type }} template, instead you should be adding a
         <a href="{{ the_url }}?object_type={{ object_type }}">{{ object_type }} template.</a>{% endblocktrans %}
     </div>

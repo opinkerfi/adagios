@@ -6,7 +6,7 @@
 {% block largeheader %}Business Process{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.bi.views.index %}">{% trans "Business Process" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.bi.views.index" %}">{% trans "Business Process" %}</a>{% endblock %}
 
 {% load adagiostags %}
 
@@ -37,7 +37,7 @@
                 <a onclick='toggle_businessprocess($(this));' href="#" data-name="__NAME__" data-for="__ID__-subprocesses" data-count="__LENGTH__">&#x25b7;</a>
 
                 <div title="State is __STATE__" class="circle state___STATE__"></div>
-                <a href="{% url adagios.bi.views.view '__PROCESS_TYPE__' '__NAME__'  %}">__NAME__</a>
+                <a href="{% url "adagios.bi.views.view" '__PROCESS_TYPE__' '__NAME__' %}">__NAME__</a>
 
             <span>__PROCESS_TYPE__ with __LENGTH__ sub processes.</span>
             <span class="pull-right">
@@ -61,7 +61,7 @@
 {% block view_buttons %}{% endblock %}
 {% block action_buttons %}
     <div class="pull-left">
-        <a class="btn" id="open_public_view" href="{% url adagios.bi.views.add %}">
+        <a class="btn" id="open_public_view" href="{% url "adagios.bi.views.add" %}">
             <i class="glyph-circle-plus " title="Add new ..."> </i> {% trans "Create new Business Process" %}
         </a>
     </div>

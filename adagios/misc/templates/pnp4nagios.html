@@ -76,7 +76,7 @@
                     {% for file in pnp_templates.templates %}
 
                         <tr>
-                            <td><a title="{% blocktrans %}Edit {{ file }}{% endblocktrans %}" href="{%  url misc.views.pnp4nagios_edit_template file  %}" >{{ file }}</a></td>
+                            <td><a title="{% blocktrans %}Edit {{ file }}{% endblocktrans %}" href="{% url 'misc.views.pnp4nagios_edit_template' file  %}" >{{ file }}</a></td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -88,5 +88,5 @@
 
 
 {% block toolbar %}
-    <a class="btn btn-small" href="{%  url misc.views.edit_nagios_cfg  %}" >{% trans "Edit nagios.cfg" %}</a>
+    <a class="btn btn-small" href="{% url 'misc.views.edit_nagios_cfg' %}" >{% trans "Edit nagios.cfg" %}</a>
 {% endblock %}

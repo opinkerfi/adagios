@@ -5,7 +5,7 @@
 {% block smallheader %}{% endblock %}
 {% block largeheader %}{% trans "Service Overview" %}{% endblock %}
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.services %}">{% trans "Services" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url 'status.views.services' %}">{% trans "Services" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block sidebar_outer %}
@@ -51,8 +51,8 @@
 			'<input type="hidden" class="input_hostname" name="host_name" value="[[ service.host_name }}">' +
 			'<input type="hidden" class="input_service_description" name="service_description" value="[[ service.description ]]">',
 			  '<div title="' + service.host_plugin_output + '" class="circle  state_' + service.host_state + '"></div>' +
-			'<a href="{% url status.views.detail %}?host_name=[[ service.host_name ]]" title="Details for host [[ service.host_name ]]"> ' + service.host_name + '</a>',
-                    	'<a href="{% url status.views.detail %}?host_name=' + service.host_name + '&service_description=' + service.description + '" title="' + service.status + ' for the past ' + service.last_state_change + '">' +
+			'<a href="{% url 'status.views.detail' %}?host_name=[[ service.host_name ]]" title="Details for host [[ service.host_name ]]"> ' + service.host_name + '</a>',
+                    	'<a href="{% url 'status.views.detail' %}?host_name=' + service.host_name + '&service_description=' + service.description + '" title="' + service.status + ' for the past ' + service.last_state_change + '">' +
                         '<div class="circle circle_' + service.unhandled + '  state_' + service.state + (service.unhandled && service.unhandled || "") + '"> </div> ' + service.description + '</a>' +
                         '<span title="' + service.plugin_output + '" class="service_description_short plugin_output">' +
                                           service.plugin_output +

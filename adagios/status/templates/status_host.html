@@ -3,7 +3,7 @@
 
 {% block title %}{% trans "Hosts" %}{% endblock %}
 {% block nav2 %}
-    <a href="{% url status.views.hosts %}">{% trans "Hosts" %}</a>
+    <a href="{% url 'status.views.hosts' %}">{% trans "Hosts" %}</a>
     {% if host_name %}
     / {{ host_name }}
     {% else %}

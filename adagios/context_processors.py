@@ -188,9 +188,9 @@ def get_tagged_comments(request):
         if tagged_comments > 0:
             return {'tagged_comments': tagged_comments}
         else:
-            return {}
+            return {'tagged_comments': ''}
     except Exception:
-        return {}
+        return {'tagged_comments': ''}
 
 
 def get_unhandled_problems(request):

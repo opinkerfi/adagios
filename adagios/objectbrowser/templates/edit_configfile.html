@@ -115,6 +115,6 @@
 {% block sidebar %}
     <h5>{% trans "Actions" %}</h5>
     <ul class="nav nav-list">
-        <li><a href="{%  url misc.views.edit_nagios_cfg  %}" >{% trans "Geek Edit" %}</a></li>
+        <li><a href="{% url "misc.views.edit_nagios_cfg" %}" >{% trans "Geek Edit" %}</a></li>
     </ul>
 {% endblock %}
