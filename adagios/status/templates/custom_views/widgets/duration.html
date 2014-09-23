@@ -1,0 +1,14 @@
+{% load adagiostags %}
+{% if title %}
+  <th>{{ title }}</th>
+{% else %}
+  {# this allows correct sorting via datatable #}
+  <td>
+    <span style="display: none;">{{ line|hash:col_name }}</span>
+    <span style="font-size: smaller;">
+      {% if line == 0 %}--
+      {% else %}{{ line|hash:col_name|timestamp|timesince }}
+      {% endif %}
+    </span>
+  </td>
+{% endif %}

@@ -311,6 +311,28 @@ button.close.notification {
     margin-top: 20px;
 }
 
+#left_sidebar a {
+    font-weight: normal;
+}
+
+#left_sidebar .nav-header {
+    color: black;
+}
+
+#left_sidebar hr {
+    margin: 2px;
+}
+
+#left_sidebar .custom-view-link {
+    display: inline-block;
+    width: 70%;
+}
+
+#left_sidebar .custom-view-edit {
+    display: inline;
+    width: 10%;
+}
+
 .well {
         background: url('../img/bak.jpg')
 }
@@ -475,10 +497,6 @@ button.close.notification {
     background-color: lightblue;
 }
 
-
-#left_sidebar a {
-    font-weight: normal;
-}
 .small{
     width: 1px;
 }
@@ -545,3 +563,4 @@ div#glyphicons-attribution,
 div#glyphicons-attribution a {
     color: #666;
 }
+
