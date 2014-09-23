@@ -171,9 +171,11 @@ def edit_object(request, object_id=None):
 
     if request.method == 'POST':
         # User is posting data into our form
+        # Uncommenting the following is a good idea if you are troubleshooting
+        # A weird POST, and you want to replicate it in unit tests
+        # print request.POST.urlencode()
         c['form'] = PynagForm(
             pynag_object=my_object,
-            initial=my_object._original_attributes,
             data=request.POST
         )
         if c['form'].is_valid():
