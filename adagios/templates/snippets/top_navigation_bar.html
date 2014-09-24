@@ -50,7 +50,7 @@
                             <form action="{% url 'misc.views.nagios_service' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="start" value="1" />
-                                <input type="image" src="{% static "img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
+                                <input type="image" src="{% url "media" path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
                             </form>
                         </li>
                     {% endif %}

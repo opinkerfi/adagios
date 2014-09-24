@@ -16,10 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url, patterns, include
-from django.conf.urls.static import static
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from adagios import settings
-
+from django.views.static import serve
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -29,13 +27,12 @@ urlpatterns = patterns(
     '',
     # Example:
     url(r'^$', 'adagios.views.index', name="home"),
-    # url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name="media"),
     url(r'^403', 'adagios.views.http_403'),
     url(r'^objectbrowser', include('adagios.objectbrowser.urls')),
     url(r'^status', include('adagios.status.urls')),
     url(r'^misc', include('adagios.misc.urls')),
     url(r'^pnp', include('adagios.pnp.urls')),
-    #url(r'^media(?P<path>.*)$',         serve, {'document_root': settings.MEDIA_ROOT }),
+    url(r'^media(?P<path>.*)$',         serve, {'document_root': settings.STATIC_ROOT }),
     url(r'^rest', include('adagios.rest.urls')),
     url(r'^contrib', include('adagios.contrib.urls')),
 
@@ -49,8 +46,11 @@ urlpatterns = patterns(
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog'),
 )
 
-urlpatterns += staticfiles_urlpatterns()
-
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}, name="media"),
+    )
+        
 
 # from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 #urlpatterns += staticfiles_urlpatterns()

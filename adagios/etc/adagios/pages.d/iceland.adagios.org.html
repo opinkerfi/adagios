@@ -2,15 +2,15 @@
 
 <html>
 <head>
-    <link href="{% static "css/style.css" %}" rel="stylesheet">
-    <link href="{% static "css/status.css" %}" rel="stylesheet">
+    <link href="{% url "media" path="css/style.css" %}" rel="stylesheet">
+    <link href="{% url "media" path="css/status.css" %}" rel="stylesheet">
 
-	    <link href="{% static "css/bi.css" %}" rel="stylesheet">
-<script src="{% static "jquery/jquery-1.9.1.min.js" %}"></script>
-<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+	    <link href="{% url "media" path="css/bi.css" %}" rel="stylesheet">
+<script src="{% url "media" path="jquery/jquery-1.9.1.min.js" %}"></script>
+<script src="{% url "media" path="bootstrap/js/bootstrap.min.js" %}"></script>
 
-<script src="{% static "datatables/js/jquery.dataTables.min.js" %}"></script>
-<script src="{% static "datatables/DT_bootstrap.js" %}"></script>
+<script src="{% url "media" path="datatables/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% url "media" path="datatables/DT_bootstrap.js" %}"></script>
 
 
 </head>
@@ -76,7 +76,7 @@
 
             if (my_element.childElementCount == 0) {
                 var spinner = document.createElement( 'img');
-                spinner.setAttribute("src", "{% static "external/select2/spinner.gif" %}");
+                spinner.setAttribute("src", "{% url "media" path="external/select2/spinner.gif" %}");
                 my_element.appendChild( spinner );
                 var url = '{{ graphs_url }}';
                 $.getJSON(url)

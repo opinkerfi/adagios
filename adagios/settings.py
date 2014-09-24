@@ -73,10 +73,7 @@ USE_L10N = True
 
 
 STATIC_URL = '/media/'
-
-STATICFILES_DIRS = (
-	'%s/media/' % djangopath,
-)
+STATIC_ROOT = '%s/media/' % djangopath
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -129,7 +126,7 @@ INSTALLED_APPS = [
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'django.contrib.staticfiles',
+    #'django.contrib.staticfiles',
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
