@@ -72,19 +72,10 @@ USE_I18N = True
 USE_L10N = True
 
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.lawrence.com/"
-#MEDIA_ROOT = "%s/media/" % djangopath
-#STATIC_ROOT = "%s/static/" % djangopath
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-#MEDIA_URL = None
-STATIC_URL = '/static/'
+STATIC_URL = '/media/'
 
 STATICFILES_DIRS = (
-	'%s/static/' % djangopath,
+	'%s/media/' % djangopath,
 )
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
