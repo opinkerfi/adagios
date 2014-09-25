@@ -552,14 +552,15 @@
         <div class="tab-pane" id="rekishi">
           <div id="rekishi" class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-pills" id="rekishi_ul">
-              {% for graph in rekishi %}
+              {% for graph in rekishi.graphs %}
                 <li{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} class="active"{% endif %}><a href="#rekishi_{{ graph.css_id }}" id="rekishi_{{ graph.css_id }}_link" data-toggle="tab">{% trans graph.name %}</a></li>
               {% endfor %}
             </ul>
 
             <div class="tab-content" id="graphs_content">
-              {% for graph in rekishi %}
+              {% for graph in rekishi.graphs %}
                 <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
+                  <input type="checkbox" id="rekishiEvents">Show events</input>
                   {% for k,v in graph.metrics.items %}
                   <div class="row">
                     <div class="span1"></div>
@@ -847,7 +848,7 @@
         });
         {% if settings.enable_rekishi %}
             allDygraphs = [];
-            {% for graph in rekishi %}
+            {% for graph in rekishi.graphs %}
                 {% for k,v in graph.metrics.items %}
                     $.get("{{ v }}", function(data){
 
@@ -874,6 +875,36 @@
                             }
                         );
                         allDygraphs.push(dg);
+                    });
+                {% endfor %}
+            {% endfor %}
+
+            {% for graph in rekishi.graphs %}
+                {% for k,v in graph.metrics.items %}
+                    $(document).on('change', '#rekishiEvents', function(e){
+                        $.get("{{ rekishi.events_url }}", function(data){
+                            labels = data[0].labels;
+                            events = data[0].data;
+                            annotations = [];
+                            
+                            for(var i=0; i<data[0].data.length; i++){
+                                events[i][0] = new Date(parseInt(events[i][0]) * 1000).getTime();
+                            }
+
+                            for(var i=0; i<events.length; i++){
+                                ann = {
+                                    series : "value",
+                                    x : events[i][0], // Timestamp
+                                    shortText: events[i][4][0],
+                                    text: events[i][3]
+                                };
+
+                                annotations.push(ann);
+                            }
+                            $( allDygraphs ).each(function(){
+                                this.setAnnotations(annotations);
+                            });
+                        });
                     });
                 {% endfor %}
             {% endfor %}

@@ -49,6 +49,35 @@ def _get_rekishi_url(base, host, service, metric, from_):
     url = url.format(**locals())
     return url
 
+def _get_rekishi_events_url(base, host, service, from_):
+    """ Constructs an URL for Rekishi API.
+
+    Args:
+      - base (str): base URL for Graphite access
+      - host (str): hostname
+      - service (str): service, e.g. HTTP
+      - metric (str): metric, e.g. size, time
+      - from_ (str): Graphite time period
+
+    Returns: str
+    """
+    host_ = _compliant_name(host)
+    service_ = _compliant_name(service)
+    base = base.rstrip('/')
+    metric = "events"
+    title = adagios.settings.rekishi_title.format(**locals())
+
+    url = "{base}/"
+    if host_:
+        url += "{host_}/"
+        if service_:
+            url += "{service_}/"
+        url += "?events=true"
+        if from_:
+            url += "&start=now(){from_}"
+
+    url = url.format(**locals())
+    return url
 
 def _compliant_name(name):
     """ Makes the necessary replacements for Graphite. """
@@ -81,6 +110,7 @@ def get(base, host, service=None, metrics=None, periods=None):
     """
     graphs = []
 
+    # import pdb; pdb.set_trace()
     for name, css_id, period in periods:
         m = {}
         for metric in metrics:
@@ -89,4 +119,12 @@ def get(base, host, service=None, metrics=None, periods=None):
         graphs.append(graph)
     print 'graphs:', graphs
 
-    return graphs
+    reki = {}
+    reki['events_url'] = _get_rekishi_events_url(base, host, service, period)
+    reki['graphs'] = graphs
+    reki['host'] = _compliant_name(host)
+    if service:
+        reki['service'] = _compliant_name(service)
+
+    return reki
+
