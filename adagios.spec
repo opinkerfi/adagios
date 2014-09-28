@@ -25,6 +25,7 @@ Requires: pynag >= 0.8.8
 Requires: httpd
 Requires: mod_wsgi
 Requires: sudo
+Requires: python-simplejson
 
 %if 0%{?rhel} >= 6 || 0%{?fedora} >= 20
 Requires: python-django15
