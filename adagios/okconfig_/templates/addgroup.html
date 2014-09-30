@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Add Group" %}{% endblock %}
 {% block smallheader %}{% trans "Add" %}{% endblock %}
 {% block largeheader %}{% trans "Group" %}{% endblock %}
 {% block toolbar %}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.addgroup %}">{% trans "Add Group" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.okconfig_.views.addgroup" %}">{% trans "Add Group" %}</a>{% endblock %}
 
 
 {% block content %}

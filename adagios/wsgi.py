@@ -16,6 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'adagios.settings'
-import django.core.handlers.wsgi
-application = django.core.handlers.wsgi.WSGIHandler()
+
+from pkg_resources import require
+require('Django>=1.5')
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'adagios.settings')
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()

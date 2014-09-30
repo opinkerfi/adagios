@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Edit host" %}{% endblock %}
 {% block smallheader %}{% trans "Edit" %}{% endblock %}
 {% block largeheader %}{% trans "Host thresholds" %}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.choose_host %}">{% trans "Edit Host" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.okconfig_.views.choose_host" %}">{% trans "Edit Host" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 {% block content %}

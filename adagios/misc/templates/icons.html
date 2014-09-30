@@ -1,4 +1,5 @@
 {% extends "base_objectbrowser.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Icons" %}{% endblock %}
@@ -9,7 +10,7 @@
 
 {% block content %}
         {% for i in images %}
-            <li><img width=20 height=20 src="{% url logo i %}">{{ i }}</li>
+            <li><img width=20 height=20 src="{% url "logo" i %}">{{ i }}</li>
         {% endfor %}
     <ul>
     </ul>

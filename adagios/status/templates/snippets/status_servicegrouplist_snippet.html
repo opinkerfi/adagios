@@ -1,4 +1,5 @@
 <!-- snippet status_hostgrouplist_snippet.html starts -->
+{% load url from future %}
 {% load adagiostags %}
 {% load i18n %}
 
@@ -17,9 +18,9 @@
         {% for row in servicegroups %}
 
             <tr class="mainrow">
-                <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.name }}</a></td>
-                <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.alias }}</a></td>
-                <td><a href="{% url adagios.status.views.detail %}?servicegroup_name={{ row.name }}">{{ row.num_services }}</a></td>
+                <td><a href="{% url 'adagios.status.views.detail' %}?servicegroup_name={{ row.name }}">{{ row.name }}</a></td>
+                <td><a href="{% url 'adagios.status.views.detail' %}?servicegroup_name={{ row.name }}">{{ row.alias }}</a></td>
+                <td><a href="{% url 'adagios.status.views.detail' %}?servicegroup_name={{ row.name }}">{{ row.num_services }}</a></td>
                 <td>{{ row.notes }}</td>
                 <td>
                     {% if row.notes_url %}

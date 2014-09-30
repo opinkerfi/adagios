@@ -1,4 +1,5 @@
 <!-- snippet status_contactlist_snippet.html starts -->
+{% load url from future %}
 {% load i18n %}
 
 <table style="font-size: 80%;" class="table well table-condensed table-striped searchtable">
@@ -13,7 +14,7 @@
     {% for i in contacts  %}
         <tr class="mainrow">
             <td>
-                <a href="{% url status.views.detail %}?contact_name={{ i.name }}">{{ i.name }}</a></td>
+                <a href="{% url 'status.views.detail' %}?contact_name={{ i.name }}">{{ i.name }}</a></td>
             <td>{{ i.alias }}</td>
             <td>{{ i.email}}</td>
             <td>{{ i.pager }}</td>
