@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 import pynag.Parsers
 import os
 from django.test.client import RequestFactory
+from django.test import LiveServerTestCase
 import adagios.status
 import adagios.status.utils
 import adagios.status.graphite
@@ -102,7 +103,7 @@ class LiveStatusTestCase(unittest.TestCase):
         tmp = self.loadPage('/status/detail?contactgroup_name=admins')
         self.assertTrue('nagiosadmin' in tmp.content)
 
-        
+
     def testStateHistory(self):
         request = self.factory.get('/status/state_history')
         adagios.status.views.state_history(request)
@@ -158,3 +159,76 @@ class Graphite(unittest.TestCase):
         self.assertTrue(len(result) == 1)
         self.assertTrue('rta' in result[0]['metrics'])
         self.assertTrue('packetloss' in result[0]['metrics'])
+
+
+class SplinterTestCase(LiveServerTestCase):
+    browser = None
+    environment = None
+
+
+    @classmethod
+    def setUpClass(cls):
+        super(SplinterTestCase, cls).setUpClass()
+
+        if 'TEST_SPLINTER' not in os.environ:
+            cls.enable = False
+            return
+        import splinter
+        cls.enable = True
+        cls.nagios_config = adagios.settings.nagios_config
+        cls.environment = adagios.utils.FakeAdagiosEnvironment()
+        cls.environment.create_minimal_environment()
+        cls.environment.configure_livestatus()
+        cls.environment.update_adagios_global_variables()
+        cls.environment.start()
+        cls.livestatus = cls.environment.get_livestatus()
+
+        cls.factory = RequestFactory()
+
+        cls.browser = splinter.Browser()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(SplinterTestCase, cls).tearDownClass()
+        if cls.enable:
+            cls.browser.quit()
+            cls.environment.terminate()
+
+
+    def test_network_parents(self):
+        """Status Overview, Network Parents should show an integer"""
+        if not self.enable:
+            return
+        self.browser.visit(self.live_server_url + "/status")
+
+        # Second link is Network Parents in overview
+        self.assertEqual(self.browser.find_link_by_href(
+            "/status/parents")[1].html.isdigit(), True)
+
+    def test_services_select_all(self):
+        """Loads services list and tries to select everything
+
+        Flow:
+            Load http://<url>/status/services
+            Click select all
+            Look for statustable rows
+            Assert that all rows are checked"""
+
+        if not self.enable:
+            return
+
+        self.browser.visit(self.live_server_url + "/status/services")
+
+        self.browser.find_by_xpath("//input[@class='select_many']").first.click()
+        self.browser.find_by_xpath("//a[@class='select_all']").first.click()
+
+        # Get all statustable rows
+        status_table_rows = self.browser.find_by_xpath(
+            "//table[contains(@class, 'statustable')]"
+        ).first.find_by_xpath("//tbody/tr[contains(@class, 'mainrow')]")
+
+        # Sub-select non-selected
+        for row in status_table_rows:
+            self.assertTrue(row.has_class("row_selected"),
+                            "Non selected row found after selecting all: " + \
+                            row.text)
