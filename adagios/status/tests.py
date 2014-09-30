@@ -183,9 +183,17 @@ class SplinterTestCase(LiveServerTestCase):
         cls.environment.start()
         cls.livestatus = cls.environment.get_livestatus()
 
-        cls.factory = RequestFactory()
+        splinter_args = {}
+        for key, value in os.environ.iteritems():
+            if key.startswith("TEST_SPLINTER_") is False:
+                continue
+            key = key.replace("TEST_SPLINTER_", "").lower()
+            splinter_args[key] = value
 
-        cls.browser = splinter.Browser()
+        if 'url' in splinter_args:
+            splinter_args['driver_name'] = 'remote'
+
+        cls.browser = splinter.Browser(**splinter_args)
 
     @classmethod
     def tearDownClass(cls):
