@@ -68,9 +68,14 @@
                         </td>
                             {% for i in service.metrics %}
                                 <td class="small nowrap">
-                                    <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
-                                        <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
-                                    </a>
+                                    {% if settings.enable_pnp4nagios %}
+                                        <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counte
+r0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
+                                            <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
+                                        </a>
+                                    {% else %}
+                                            <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
+                                    {% endif %}
                                 </td>
                             {% endfor %}
 

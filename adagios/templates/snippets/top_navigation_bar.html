@@ -127,7 +127,9 @@
                             <li><a href="{%  url 'misc.views.gitlog' %}">{% trans "Object History" %}</a></li>
                             <li><a href="{%  url 'misc.views.settings' %}">{% trans "Settings" %}</a></li>
                             <li class="divider"></li>
-                            <li><a href="{%  url 'misc.views.pnp4nagios' %}">{% trans "PNP Integration" %}</a></li>
+                            {% if settings.enable_pnp4nagios %}
+                                <li><a href="{%  url 'misc.views.pnp4nagios' %}">{% trans "PNP Integration" %}</a></li>
+                            {% endif %}
                             <!-- Any extra plugins can put an entry in the menubar -->
                             {% for i in misc_menubar_items %}
                                 <!-- Plugin menubar for {{ i }} -->
