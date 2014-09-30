@@ -34,6 +34,7 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+STATIC_URL = "/media/"
 
 DATABASES = {
     'default': {
