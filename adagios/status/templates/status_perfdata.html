@@ -25,7 +25,9 @@
             <th>min</th>
             <th>max</th>
             <th></th>
-            <th>pnp</th>
+            {% if settings.enable_pnp4nagios %}
+                <th>pnp</th>
+            {% endif %}
         </tr>
         </thead>
     {% for service in perfdata %}
@@ -46,9 +48,11 @@
                 <td>{{ i.min }}   </td>
                 <td>{{ i.max }}   </td>
                 <td class="nowrap"><div class="circle state_{{ i.get_status }}"> </div></td>
-                <td>
-                    <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
-                </td>
+                {% if settings.enable_pnp4nagios %}
+                    <td>
+                        <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
     {% endfor %}
