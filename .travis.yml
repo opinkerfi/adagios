@@ -3,8 +3,8 @@ python:
   - "2.6"
   - "2.7"
 env:
-  - DJANGO_VERSION="Django&lt;1.5"
-  - DJANGO_VERSION="Django&lt;1.6"
+  - DJANGO_VERSION="Django<1.5"
+  - DJANGO_VERSION="Django<1.6"
 script:
   - cd -
   - cd adagios
