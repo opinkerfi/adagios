@@ -23,6 +23,8 @@ from django import forms
 class AdagiosForm(forms.Form):
     """ Base class for all forms in this module. Forms that use pynag in any way should inherit from this one.
     """
+    def _get_changed_data(self):
+        return []
     def clean(self):
         cleaned_data = {}
         tmp = super(AdagiosForm, self).clean()
