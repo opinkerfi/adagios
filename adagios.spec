@@ -29,6 +29,8 @@ Requires: python-simplejson
 
 %if 0%{?rhel} >= 6 || 0%{?fedora} >= 20
 Requires: python-django15
+# Force django upgrade
+Conflicts: Django < 1.4.0
 %else
 # Fedora 19, python-django is 1.5
 Requires: python-django
