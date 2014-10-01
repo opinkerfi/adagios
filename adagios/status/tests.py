@@ -240,3 +240,21 @@ class SplinterTestCase(LiveServerTestCase):
             self.assertTrue(row.has_class("row_selected"),
                             "Non selected row found after selecting all: " + \
                             row.text)
+
+    def test_status_overview_top_alert_producers(self):
+        """Check the top alert producers part of status overview"""
+        if not self.enable:
+            return
+
+        self.browser.visit(self.live_server_url + "/status")
+
+        top_alert_table_rows = self.browser.find_by_xpath(
+            "//table[@id='top_alert_producers']/tbody/tr"
+        )
+
+        count = 0
+        for row in top_alert_table_rows:
+            if 'display' not in row['style']:
+                count += 1
+
+        self.assertTrue(count <= 3, "Top alert producers returns too many rows")
