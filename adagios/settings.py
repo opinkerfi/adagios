@@ -132,6 +132,7 @@ INSTALLED_APPS = [
     'adagios.misc',
     'adagios.pnp',
     'adagios.contrib',
+    'adagios.status',
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
