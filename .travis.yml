@@ -45,6 +45,8 @@ install:
   - sudo service nagios3 reload
   - sudo service npcd start
   - sudo chmod -R 777 /var/lib/nagios3
+  - python -c 'import sys;print sys.path'
+  - python -c 'import okconfig;print okconfig.__file__'
 notifications:
   email: false
 
