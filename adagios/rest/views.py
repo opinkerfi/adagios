@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Create your views here.
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, render
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
 import json
@@ -200,7 +200,9 @@ def javascript(request, module_name, module_path):
         args, varargs, varkw, defaults = argspec
     c['functions'] = members
 
-    return render_to_response('javascript.html', c, content_type="text/javascript", context_instance=RequestContext(request))
+    return render(request, 'javascript.html', c,
+                  content_type="text/javascript",
+                  context_instance=RequestContext(request))
 
 
 class CallFunctionForm(forms.Form):
