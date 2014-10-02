@@ -21,12 +21,8 @@ import os
 import sys
 
 if __name__ == "__main__":
-    print globals()
-    os.path.dirname(os.path.abspath(__file__)) + "/.."
     # Insert PYTHONPATH relative to manage.py
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
-    print os.path.realpath(os.path.dirname(__file__) + "/..")
-    print sys.path
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "adagios.settings")
 
