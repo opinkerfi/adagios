@@ -23,6 +23,7 @@ install:
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - sudo pip install okconfig
+  - pip install okconfig || true
   - pip install $DJANGO_VERSION
   - pip install simplejson
   - pip install https://github.com/pynag/pynag/zipball/master
@@ -45,8 +46,6 @@ install:
   - sudo service nagios3 reload
   - sudo service npcd start
   - sudo chmod -R 777 /var/lib/nagios3
-  - python -c 'import sys;print sys.path'
-  - python -c 'import okconfig;print okconfig.__file__'
 notifications:
   email: false
 
