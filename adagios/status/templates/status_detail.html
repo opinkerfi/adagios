@@ -879,35 +879,37 @@
                 {% endfor %}
             {% endfor %}
 
-            {% for graph in rekishi.graphs %}
-                {% for k,v in graph.metrics.items %}
-                    $(document).on('change', '#rekishiEvents', function(e){
-                        $.get("{{ rekishi.events_url }}", function(data){
-                            labels = data[0].labels;
-                            events = data[0].data;
-                            annotations = [];
-                            
-                            for(var i=0; i<data[0].data.length; i++){
-                                events[i][0] = new Date(parseInt(events[i][0]) * 1000).getTime();
-                            }
+            $(document).on('change', '#rekishiEvents', function(e){
+                if($(this).prop('checked') == true){
+                    $.get("{{ rekishi.events_url }}", function(data){
+                        labels = data[0].labels;
+                        events = data[0].data;
+                        annotations = [];
+                        
+                        for(var i=0; i<data[0].data.length; i++){
+                            events[i][0] = new Date(parseInt(events[i][0]) * 1000).getTime();
+                        }
 
-                            for(var i=0; i<events.length; i++){
-                                ann = {
-                                    series : "value",
-                                    x : events[i][0], // Timestamp
-                                    shortText: events[i][4][0],
-                                    text: events[i][3]
-                                };
+                        for(var i=0; i<events.length; i++){
+                            ann = {
+                                series : "value",
+                                x : events[i][0], // Timestamp
+                                shortText: events[i][2][0],
+                                text: events[i][1]
+                            };
 
-                                annotations.push(ann);
-                            }
-                            $( allDygraphs ).each(function(){
-                                this.setAnnotations(annotations);
-                            });
+                            annotations.push(ann);
+                        }
+                        $( allDygraphs ).each(function(){
+                            this.setAnnotations(annotations);
                         });
                     });
-                {% endfor %}
-            {% endfor %}
+                } else {
+                    $( allDygraphs ).each(function(){
+                        this.setAnnotations({});
+                    });
+                }
+            });
 
             {# Add functionailty to resetZoom buttons #}
             $(document).on('click', '.dygraph-reset-zoom', function(e){
