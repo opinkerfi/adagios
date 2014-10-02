@@ -13,17 +13,6 @@
                     <div class="block" id="page_header">
                         <!-- block page_header starts -->
                         {% block page_header %}
-                            <ul class="breadcrumb">
-                                <li>
-                                    <a href="{% url "home" %}">{% trans "Home" %}</a> <span class="divider">/</span>
-                                </li>
-                                <li>
-                                    {% block nav1 %}
-                                        <a href="{% url "objectbrowser" %}">objectbrowser</a>
-                                    {% endblock %}
-                                    <span class="divider">/</span>
-                                </li>
-                            </ul>
                             <h2>
                                 <i class="icon-th-large"></i> <small>{% block smallheader %}block=smallheader{% endblock%} </small> {% block largeheader %}block=largeheader{% endblock %}
                             </h2>
