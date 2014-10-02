@@ -35,7 +35,7 @@ def get_filelist(path):
     while len(directories_to_check) > 0:
         current_directory = directories_to_check.pop(0)
         for i in os.listdir(current_directory):
-            if i == '.gitignore' or i == "tests.py" or i == "tests.pyc":
+            if i == '.gitignore':
                 continue
             relative_path = current_directory + "/" + i
             if os.path.isfile(relative_path):
