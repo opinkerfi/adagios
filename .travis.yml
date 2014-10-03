@@ -23,6 +23,8 @@ install:
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - sudo pip install okconfig
+  - pip install okconfig || true
+  - okconfig init
   - pip install $DJANGO_VERSION
   - pip install simplejson
   - pip install paramiko
