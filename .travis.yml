@@ -25,6 +25,7 @@ install:
   - sudo pip install okconfig
   - pip install $DJANGO_VERSION
   - pip install simplejson
+  - pip install paramiko
   - pip install https://github.com/pynag/pynag/zipball/master
   - python setup.py build
   - python setup.py install
