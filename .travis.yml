@@ -24,8 +24,8 @@ install:
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
   - pip install https://github.com/opinkerfi/okconfig/zipball/master || true
+  - sudo okconfig init
   - sudo sed -i 's|/etc/nagios/|/etc/nagios3/|' /etc/okconfig.conf
-  - okconfig init
   - pip install $DJANGO_VERSION
   - pip install simplejson
   - pip install paramiko
