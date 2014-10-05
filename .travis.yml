@@ -26,10 +26,11 @@ install:
   - pip install https://github.com/opinkerfi/okconfig/zipball/master || true
   - sudo touch /etc/okconfig.conf
   - sudo chown travis /etc/okconfig.conf
-  - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/okconfig.conf
-  - pynag config --set 'template_directory="/etc/nagios3/okconfig/templates"'  --filename /etc/okconfig.conf
-  - pynag config --set 'examples_directory="/etc/nagios3/okconfig/examples"'  --filename /etc/okconfig.conf
-  - pynag config --set 'destination_directory="/etc/nagios3/okconfig"' --filename /etc/okconfig.conf
+  - echo 'nagios_config /etc/nagios3/nagios.cfg' >> /etc/okconfig.conf
+  - echo 'template_directory /etc/nagios3/okconfig/templates'  >> /etc/okconfig.conf
+  - echo 'examples_directory /etc/nagios3/okconfig/examples'  >> /etc/okconfig.conf
+  - echo 'destination_directory /etc/nagios3/okconfig' >> /etc/okconfig.conf
+  - cat /etc/okconfig.conf
   - okconfig init
   - pip install $DJANGO_VERSION
   - pip install simplejson
@@ -58,4 +59,3 @@ install:
   - sudo chmod -R 777 /var/lib/nagios3
 notifications:
   email: false
-
