@@ -22,8 +22,8 @@ install:
   - sudo chown -R travis /etc/adagios/
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
-  - sudo pip install okconfig
-  - pip install okconfig || true
+  - sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
+  - pip install https://github.com/opinkerfi/okconfig/zipball/master || true
   - okconfig init
   - pip install $DJANGO_VERSION
   - pip install simplejson
