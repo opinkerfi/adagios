@@ -24,8 +24,13 @@ install:
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
   - sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
   - pip install https://github.com/opinkerfi/okconfig/zipball/master || true
-  - sudo okconfig init
-  - sudo sed -i 's|/etc/nagios/|/etc/nagios3/|' /etc/okconfig.conf
+  - sudo touch /etc/okconfig.conf
+  - sudo chown travis /etc/okconfig.conf
+  - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/okconfig.conf
+  - pynag config --set 'template_directory="/etc/nagios3/okconfig/templates"'  --filename /etc/okconfig.conf
+  - pynag config --set 'examples_directory="/etc/nagios3/okconfig/examples"'  --filename /etc/okconfig.conf
+  - pynag config --set 'destination_directory="/etc/nagios3/okconfig"' --filename /etc/okconfig.conf
+  - okconfig init
   - pip install $DJANGO_VERSION
   - pip install simplejson
   - pip install paramiko
@@ -39,6 +44,7 @@ install:
   - pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
+  - mkdir -p /etc/nagios3/okconfig/templates /etc/nagios3/okconfig/examples
   - mkdir -p /etc/nagios3/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
