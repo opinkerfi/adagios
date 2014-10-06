@@ -206,15 +206,14 @@ class PynagForm(AdagiosForm):
                 operator = AttributeList(self.pynag_object.get(k, '')).operator or ''
                 cleaned_data[k] = "%s%s" % (operator, v)
         return cleaned_data
-
-    def _get_changed_data(self):
+    @property
+    def changed_data(self):
         # Fields that do not appear in our POST are not marked as changed data
         # This can happen for example because some views decide not to print all
         # Fields to the browser
-        changed_data = super(PynagForm, self)._get_changed_data()
+        changed_data = super(PynagForm, self).changed_data
         changed_data = filter(lambda x: x in self.data, changed_data)
         return changed_data
-    changed_data = property(_get_changed_data)
 
     def save(self):
         changed_keys = map(lambda x: smart_str(x), self.changed_data)

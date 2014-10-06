@@ -5,6 +5,7 @@ python:
 env:
   - DJANGO_VERSION="Django<1.5"
   - DJANGO_VERSION="Django<1.6"
+  - DJANGO_VERSION="Django<1.7"
 script:
   - cd -
   - cd adagios
@@ -21,18 +22,30 @@ install:
   - sudo chown -R travis /etc/adagios/
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
-  - sudo pip install okconfig
+  - sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
+  - pip install https://github.com/opinkerfi/okconfig/zipball/master || true
+  - sudo touch /etc/okconfig.conf
+  - sudo chown travis /etc/okconfig.conf
+  - echo 'nagios_config /etc/nagios3/nagios.cfg' >> /etc/okconfig.conf
+  - echo 'template_directory /etc/nagios3/okconfig/templates'  >> /etc/okconfig.conf
+  - echo 'examples_directory /etc/nagios3/okconfig/examples'  >> /etc/okconfig.conf
+  - echo 'destination_directory /etc/nagios3/okconfig' >> /etc/okconfig.conf
+  - cat /etc/okconfig.conf
+  - okconfig init
   - pip install $DJANGO_VERSION
   - pip install simplejson
+  - pip install paramiko
   - pip install https://github.com/pynag/pynag/zipball/master
   - python setup.py build
   - python setup.py install
+  - cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
   - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
   - pynag config --set "process_performance_data=1"
   - pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
   - pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
+  - mkdir -p /etc/nagios3/okconfig/templates /etc/nagios3/okconfig/examples
   - mkdir -p /etc/nagios3/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
@@ -46,4 +59,3 @@ install:
   - sudo chmod -R 777 /var/lib/nagios3
 notifications:
   email: false
-
