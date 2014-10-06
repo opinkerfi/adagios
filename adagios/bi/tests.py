@@ -221,6 +221,7 @@ class TestDomainProcess(TestCase):
         self.environment = adagios.utils.FakeAdagiosEnvironment()
         self.environment.create_minimal_environment()
         self.environment.configure_livestatus()
+        self.environment.update_model()
         self.environment.update_adagios_global_variables()
         self.environment.start()
 
@@ -245,6 +246,7 @@ class TestServiceProcess(TestCase):
         self.environment = adagios.utils.FakeAdagiosEnvironment()
         self.environment.create_minimal_environment()
         self.environment.configure_livestatus()
+        self.environment.update_model()
         self.environment.update_adagios_global_variables()
         self.environment.start()
 
@@ -267,6 +269,7 @@ class TestHostProcess(TestCase):
         self.environment = adagios.utils.FakeAdagiosEnvironment()
         self.environment.create_minimal_environment()
         self.environment.configure_livestatus()
+        self.environment.update_model()
         self.environment.update_adagios_global_variables()
         self.environment.start()
 
