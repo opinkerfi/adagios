@@ -84,8 +84,8 @@ MEDIA_URL = '/media/'
 # FROM SFL- should be useless
 # STATIC_URL = '/media/./'
 
-STATIC_URL = '/media/'
-STATIC_ROOT = '%s/media/' % djangopath
+STATIC_URL = '/media/./'
+STATIC_ROOT = '%s/media/./' % djangopath
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
