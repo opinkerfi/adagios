@@ -27,6 +27,8 @@ import adagios.settings
 import time
 import adagios.status.utils
 from django.utils.translation import ugettext as _
+import socket
+
 
 class BusinessProcess(object):
 
@@ -739,9 +741,6 @@ class Domain(Host):
 
     def create_host(self):
         """ Create a new Host object in nagios config and reload nagios  """
-        import pynag.Model
-        import pynag.Control
-        import socket
         try:
             socket.gethostbyname(self.name)
         except Exception:

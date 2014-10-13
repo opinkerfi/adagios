@@ -171,9 +171,11 @@ def edit_object(request, object_id=None):
 
     if request.method == 'POST':
         # User is posting data into our form
+        # Uncommenting the following is a good idea if you are troubleshooting
+        # A weird POST, and you want to replicate it in unit tests
+        # print request.POST.urlencode()
         c['form'] = PynagForm(
             pynag_object=my_object,
-            initial=my_object._original_attributes,
             data=request.POST
         )
         if c['form'].is_valid():
@@ -456,53 +458,6 @@ def _edit_host(request, c):
         pass
 
     return render_to_response('edit_host.html', c, context_instance=RequestContext(request))
-
-
-@adagios_decorator
-def config_health(request):
-    """ Display possible errors in your nagios config
-    """
-    c = dict()
-    c['messages'] = []
-    c['object_health'] = s = {}
-    c['booleans'] = {}
-    services_no_description = Model.Service.objects.filter(
-        register="1", service_description=None)
-    hosts_without_contacts = []
-    hosts_without_services = []
-    objects_with_invalid_parents = []
-    services_without_contacts = []
-    services_using_hostgroups = []
-    services_without_icon_image = []
-    c['booleans'][
-        _('Nagios Service has been reloaded since last configuration change')] = not Model.config.needs_reload()
-    c['booleans'][
-        _('Adagios configuration cache is up-to-date')] = not Model.config.needs_reparse()
-    for i in Model.config.errors:
-        if i.item:
-            Class = Model.string_to_class[i.item['meta']['object_type']]
-            i.model = Class(item=i.item)
-    c['parser_errors'] = Model.config.errors
-    try:
-        import okconfig
-        c['booleans'][
-            _('OKConfig is installed and working')] = okconfig.is_valid()
-    except Exception:
-        c['booleans'][_('OKConfig is installed and working')] = False
-    s['Parser errors'] = Model.config.errors
-    s['Services with no "service_description"'] = services_no_description
-    s['Hosts without any contacts'] = hosts_without_contacts
-    s['Services without any contacts'] = services_without_contacts
-    s['Objects with invalid "use" attribute'] = objects_with_invalid_parents
-    s['Services applied to hostgroups'] = services_using_hostgroups
-    s['Services without a logo'] = services_without_icon_image
-    s['Hosts without Service Checks'] = hosts_without_services
-    if request.GET.has_key('show') and s.has_key(request.GET['show']):
-        objects = s[request.GET['show']]
-        return search_objects(request, objects=objects)
-    else:
-        return render_to_response('suggestions.html', c, context_instance=RequestContext(request))
-
 
 @adagios_decorator
 def show_plugins(request):

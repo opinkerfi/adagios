@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load url from future %}
 {% load i18n %}
 
     <div id="content_div" class="centralized_dashboard">
@@ -23,7 +24,7 @@
                             {% if static %}
                             <a href="/{{ i.process_name }}">{{ i }}</a>
                             {% else %}
-                            <a href="{% url "bi.views.view" i.process_type i.process_name %}">{{ i }}</a>
+                            <a href="{% url 'bi.views.view' i.process_type i.process_name %}">{{ i }}</a>
                             {% endif %}
                         {% else %}
                             {{ i }}

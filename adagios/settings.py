@@ -81,7 +81,11 @@ MEDIA_ROOT = "%s/media/" % djangopath
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
-STATIC_URL = '/media/./'
+# FROM SFL- should be useless
+# STATIC_URL = '/media/./'
+
+STATIC_URL = '/media/'
+STATIC_ROOT = '%s/media/' % djangopath
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -104,7 +108,7 @@ MIDDLEWARE_CLASSES = (
     #'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 LANGUAGES = (
     ('en', 'English'),
@@ -135,6 +139,7 @@ INSTALLED_APPS = [
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'django.contrib.staticfiles',
+    #'django.contrib.staticfiles',
     'adagios.objectbrowser',
     'adagios.rest',
     'adagios.misc',
@@ -146,7 +151,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
     #"django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
+    #"django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages")
@@ -166,7 +171,7 @@ THEME_DEFAULT = 'default'
 THEME_ENTRY_POINT = 'style.css'
 
 # folder where users preferences are stored
-USER_PREFS_PATH = "/etc/adagios/userdata/"
+USER_PREFS_PATH = "/var/lib/adagios/userdata/"
 
 
 # name displayed in the top left corner
@@ -229,6 +234,7 @@ enable_loghandler = False
 enable_authorization = False
 enable_status_view = True
 enable_bi = True
+enable_pnp4nagios = True
 enable_graphite = False
 contrib_dir = "/var/lib/adagios/contrib/"
 serverside_includes = "/etc/adagios/ssi"

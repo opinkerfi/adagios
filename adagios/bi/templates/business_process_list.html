@@ -1,4 +1,5 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}Business Process{% endblock %}
@@ -37,7 +38,7 @@
                 <a onclick='toggle_businessprocess($(this));' href="#" data-name="__NAME__" data-for="__ID__-subprocesses" data-count="__LENGTH__">&#x25b7;</a>
 
                 <div title="State is __STATE__" class="circle state___STATE__"></div>
-                <a href="{% url "adagios.bi.views.view" '__PROCESS_TYPE__' '__NAME__'  %}">__NAME__</a>
+                <a href="{% url "adagios.bi.views.view" '__PROCESS_TYPE__' '__NAME__' %}">__NAME__</a>
 
             <span>__PROCESS_TYPE__ with __LENGTH__ sub processes.</span>
             <span class="pull-right">

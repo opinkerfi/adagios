@@ -2,6 +2,10 @@ language: python
 python:
   - "2.6"
   - "2.7"
+env:
+  - DJANGO_VERSION="Django<1.5"
+  - DJANGO_VERSION="Django<1.6"
+  - DJANGO_VERSION="Django<1.7"
 script:
   - cd -
   - cd adagios
@@ -18,23 +22,31 @@ install:
   - sudo chown -R travis /etc/adagios/
   - sudo usermod -G www-data nagios
   - sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
-  - deactivate
-  - sudo rm -r ~/virtualenv/python*
-  - sudo pip install okconfig
-  - virtualenv ~/virtualenv/python2.6 --system-site-packages
-  - source ~/virtualenv/python2.6/bin/activate
+  - sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
+  - pip install https://github.com/opinkerfi/okconfig/zipball/master || true
+  - sudo touch /etc/okconfig.conf
+  - sudo chown travis /etc/okconfig.conf
+  - echo 'nagios_config /etc/nagios3/nagios.cfg' >> /etc/okconfig.conf
+  - echo 'template_directory /etc/nagios3/okconfig/templates'  >> /etc/okconfig.conf
+  - echo 'examples_directory /etc/nagios3/okconfig/examples'  >> /etc/okconfig.conf
+  - echo 'destination_directory /etc/nagios3/okconfig' >> /etc/okconfig.conf
+  - cat /etc/okconfig.conf
+  - okconfig init
+  - pip install $DJANGO_VERSION
+  - pip install simplejson
+  - pip install paramiko
   - pip install https://github.com/pynag/pynag/zipball/master
   - pip install -r requirements.txt
   - python setup.py build
-  # hack to not trigger error with unittest module discovery (https://travis-ci.org/savoirfairelinux/adagios/builds/31937339)
-  # Only 'develop' doesn't work as Adagios installs files e.g. in /etc/adagios
-  - python setup.py install && python setup.py develop
+  - python setup.py install
+  - cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
   - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
   - pynag config --set "process_performance_data=1"
   - pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
   - pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
+  - mkdir -p /etc/nagios3/okconfig/templates /etc/nagios3/okconfig/examples
   - mkdir -p /etc/nagios3/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
@@ -48,4 +60,3 @@ install:
   - sudo chmod -R 777 /var/lib/nagios3
 notifications:
   email: false
-

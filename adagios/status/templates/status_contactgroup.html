@@ -1,4 +1,5 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{{ contactgroup_name }}{% endblock %}
@@ -6,7 +7,7 @@
 {% block largeheader %}{{ contactgroup_name }} ({{ contactgroup.alias }}){% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url "status.views.contact_list" %}#tab_contactgroups">{% trans "Contactgroups" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url 'status.views.contact_list' %}#tab_contactgroups">{% trans "Contactgroups" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}

@@ -1,5 +1,7 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load adagiostags %}
+{% load static %}
 {% load i18n %}
 {% load staticfiles %}
 
@@ -16,11 +18,11 @@
     {% trans "host" %}
 
     <div class="circle host state_{{ host.state }}"></div>
-    <a href="{% url "status.views.detail" %}?host_name={{ host.name }}">
+    <a href="{% url 'status.views.detail' %}?host_name={{ host.name }}">
         <small>{{ host.display_name }}</small>
     </a>
 {% endblock %}
-{% block nav1 %}<a href="{% url "status.views.services" %}">{% trans "status" %}</a>{% endblock %}
+{% block nav1 %}<a href="{% url 'status.views.services' %}">{% trans "status" %}</a>{% endblock %}
 {% block nav2 %}{{ host_name }} {% if primary_object.object_type == 'service' %}- {{ service_description }}{% endif %}{% endblock %}
 
 
@@ -33,7 +35,9 @@
             <li><a href="#general" data-toggle="tab">{% trans "General" %}</a></li>
             <li><a href="#information" data-toggle="tab">{% trans "Information" %}</a></li>
             <li><a href="#events" data-toggle="tab" id="history_link">{% trans "History" %}</a></li>
+            {% if settings.enable_pnp4nagios %}
             <li><a href="#graphs" data-toggle="tab" id="graphs_link">{% trans "Graphs" %}</a></li>
+            {% endif %}
             {% if settings.enable_graphite %}
               <li><a href="#graphite" data-toggle="tab" id="graphite_link">{% trans "Graphite" %}</a></li>
             {% endif %}
@@ -62,7 +66,7 @@
                 </tr>
                 <tr >
                     <td class="hidden-phone" >{% trans "Host Name" %}</td>
-                    <td><a href="{% url "status.views.detail" %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
+                    <td><a href="{% url 'status.views.detail' %}?host_name={{ host.name  }}" title="{{ host.plugin_output }}">
                         {% if my_object.last_check != 0 %}
                         <div class="circle host state_{{ host.state }}"></div>
                         {% else %}
@@ -116,7 +120,9 @@
                                     <th>{% trans "unit" %}</th>
                                     <th>{% trans "min" %}</th>
                                     <th>{% trans "max" %}</th>
+                                    {% if settings.enable_pnp4nagios %}
                                     <th>{% trans "pnp" %}</th>
+                                    {% endif %}
                                     {% if settings.enable_graphite %}
                                       <th>{% trans "graphite" %}</th>
                                     {% endif %}
@@ -131,9 +137,11 @@
                                         <td> {{ i.uom }}</td>
                                         <td>{{ i.min }}   </td>
                                         <td>{{ i.max }}   </td>
+                                        {% if settings.enable_pnp4nagios %}
                                         <td>
-                                            <a href="{% url "pnp.views.pnp" %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
+                                            <a href="{% url 'pnp.views.pnp' %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                                         </td>
+                                        {% endif %}
                                         {% if settings.enable_graphite %}
                                           <td><a href="{{ graphite_default|hash:i.label }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a></td>
                                         {% endif %}
@@ -187,14 +195,14 @@
         <div class="tab-pane" id="information">
             <p>
               {% blocktrans with ot=my_object.object_type ci=my_object.check_interval %}
-	      This {{ ot }} is checked every <a href="#">{{ ci }}</a> minutes.
-	      {% endblocktrans %}
-	      
-	      {% blocktrans with mca=my_object.max_check_attempts ri=my_object.retry_interval %}
+              This {{ ot }} is checked every <a href="#">{{ ci }}</a> minutes.
+              {% endblocktrans %}
+              
+              {% blocktrans with mca=my_object.max_check_attempts ri=my_object.retry_interval %}
               When a problem occurs it will be checked <a href="#">{{ mca }}</a> times
               every <a href="#">{{ ri }}</a> minutes before going to
               hard state and start sending out notifications.
-	      {% endblocktrans %}
+              {% endblocktrans %}
             </p>
 
             {% if my_object.notes %}
@@ -230,12 +238,12 @@
                     <td>{% trans "Check Period" %}</td>
                     <td>
                         {% if my_object.check_period %}
-                        <a href="{% url "adagios.objectbrowser.views.edit_object" %}?object_type=timeperiod&timeperiod_name={{ my_object.check_period }}">{{ my_object.check_period }}</a>
+                        <a href="{% url 'adagios.objectbrowser.views.edit_object' %}?object_type=timeperiod&timeperiod_name={{ my_object.check_period }}">{{ my_object.check_period }}</a>
                         {% else %}
                         {% trans "Unknown" %}
                         {% endif %}
                         <span class="pull-right">
-			    (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
+                            (currently {% if my_object.in_check_period %}inside{% else %}outside{% endif %} check_period)
                         </span>
                     </td>
                 </tr>
@@ -243,7 +251,7 @@
                     <td>{% trans "Notification Period" %}</td>
                     <td>
                         {% if my_object.notification_period %}
-                        <a href="{% url "adagios.objectbrowser.views.edit_object" %}?object_type=timeperiod&timeperiod_name={{ my_object.notification_period }}">{{ my_object.notification_period }}</a>
+                        <a href="{% url 'adagios.objectbrowser.views.edit_object' %}?object_type=timeperiod&timeperiod_name={{ my_object.notification_period }}">{{ my_object.notification_period }}</a>
                         {% else %}
                         {% trans "Unknown" %}
                         {% endif %}
@@ -334,9 +342,9 @@
                                 {% for i in my_object.downtimes_with_info %}
                                     <div class="alert alert-info">
                                         <button class="close delete_downtime" data-dismiss="alert" title="{% trans "Delete Downtime" %} {{ i.0 }}"
-                                                onclick="$.getJSON('{% url "rest/status" %}json/delete_downtime?downtime_id={{ i.0 }}{% if object_type == 'host' %}&is_service=False{% endif %}');">
+                                                onclick="$.getJSON('{% url 'home' %}rest/status/json/delete_downtime?downtime_id={{ i.0 }}{% if object_type == 'host' %}&is_service=False{% endif %}');">
                                             <i class="glyph-bin"></i></button>
-                                        <i class="glyph-user"></i> <a href="{% url "status.views.detail" %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
+                                        <i class="glyph-user"></i> <a href="{% url 'status.views.detail' %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -355,9 +363,9 @@
                             {% if my_object.comments_with_info %}
                                 {% for i in my_object.comments_with_info %}
                                     <div class="alert alert-info">
-                                        <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url "rest/status" %}json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
+                                        <button class="close delete_comment" data-dismiss="alert" title="Delete comment {{ i.0 }}" onclick="$.getJSON('{% url 'home' %}rest/status/json/delete_comment?host_name={{ host_name }}&service_description={{ service_description }}&comment_id={{ i.0 }}');">
                                             <i class="glyph-bin"></i></button>
-                                        <i class="glyph-user"></i> <a href="{% url "status.views.detail" %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
+                                        <i class="glyph-user"></i> <a href="{% url 'status.views.detail' %}?contact_name={{ i.1 }}">{{ i.1 }}</a>: {{ i.2 }}
                                     </div>
                                 {% endfor %}
                             {% else %}
@@ -387,7 +395,7 @@
                                         {% for parent in parent_level %}
                                             <td>
                                                 <div class="alert host state_{{ parent.state }}">
-                                                    <a href="{% url "status.views.detail" %}?host_name={{ parent.name }}">{{ parent.name }}</a>
+                                                    <a href="{% url 'status.views.detail' %}?host_name={{ parent.name }}">{{ parent.name }}</a>
                                                 </div>
                                             </td>
                                         {% endfor %}
@@ -434,7 +442,7 @@
             {% endif %}
             <p></p>
             {% if my_object.host_custom_variables %}
-                Host <a href="{% url "status.views.detail" %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
+                Host <a href="{% url 'status.views.detail' %}?host_name={{ host_name }}#tab_custom_variables">{{ host_name }}</a> also has some custom variables.
                 <table class="table table-condensed">
                     <tr>
                         <th>
@@ -453,7 +461,7 @@
                 </table>
             {% else %}
             {% endif %}
-            See also <a href="{% url "adagios.objectbrowser.views.edit_object" %}?object_type={{ object_type }}&host_name={{ host_name }}{% if object_type == "service" %}&service_description={{ service_description }}{% endif %}#monitoring_tab">{% trans "Configure check command" %}</a>
+            See also <a href="{% url 'adagios.objectbrowser.views.edit_object' %}?object_type={{ object_type }}&host_name={{ host_name }}{% if object_type == "service" %}&service_description={{ service_description }}{% endif %}#monitoring_tab">{% trans "Configure check command" %}</a>
 
 
         </div>
@@ -462,6 +470,7 @@
         </div>
 
 
+        {% if settings.enable_pnp4nagios %}
         <div class="tab-pane" id="graphs">
                 {% if graph_urls %}
                     <div id="graphs2" class="tabbable"> <!-- Only required for left/right tabs -->
@@ -505,14 +514,15 @@
                         {% trans "Please check that:" %}
                         <ul>
                         <li><a href="{{ pnp_url }}">pnp4nagios</a>{% trans " is installed and working" %}</li>
-                        <li><i>{% trans "PNP Filepath" %}</i>{% trans " is correctly configured under " %}<a href="{% url "misc.views.settings" %}">{% trans "settings" %}</a></li>
+                        <li><i>{% trans "PNP Filepath" %}</i>{% trans " is correctly configured under " %}<a href="{% url 'misc.views.settings' %}">{% trans "settings" %}</a></li>
                         <li>{% trans "User running nagios is a member of the unix groups apache or www-data" %}</li>
-                        <li>{% url "pnp.views.pnp" "json" as the_url %} {% blocktrans %}Click <a href="{{ the_url }}">here</a> to see pnp4nagios output{% endblocktrans %}</li>
+                        <li>{% url 'pnp.views.pnp' "json" as the_url %} {% blocktrans %}Click <a href="{{ the_url }}">here</a> to see pnp4nagios output{% endblocktrans %}</li>
                         </ul>
                     {% endif %}
                     {% blocktrans with ot=my_object.object_type %}No Performance data is available for this {{ ot }}.{% endblocktrans %}
                 {% endif %}
         </div>
+        {% endif %}
         {% if settings.enable_graphite %}
         <div class="tab-pane" id="graphite">
           <div id="graphite" class="tabbable"> <!-- Only required for left/right tabs -->
@@ -546,7 +556,7 @@
         <ul class="nav nav-list">
             {% for i in host.services_with_info %}
                 <li >
-                    <a title="{{ i.3 }}" href="{% url "status.views.detail" %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
+                    <a title="{{ i.3 }}" href="{% url 'status.views.detail' %}?host_name={{ host.name  }}&service_description={{ i.0 }}">
                         <div class="circle state_pending"></div> {{ i.0 }}
                     </a>
                 </li>
@@ -579,7 +589,7 @@
             <h5>{% trans "Is a member of hostgroup:" %}</h5>
             <ul class="nav nav-list">
                 {% for group in hostgroups %}
-                    <li><a target="_blank" href="{% url "status.views.detail" %}?hostgroup_name={{ group.name }}">{{ group.name }}</a></li>
+                    <li><a target="_blank" href="{% url 'status.views.detail' %}?hostgroup_name={{ group.name }}">{{ group.name }}</a></li>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -589,7 +599,7 @@
         <ul class="nav nav-list">
             {% for i in host.parents %}
                 <li>
-                    <a href="{% url "status.views.detail" %}?host_name={{ i }}">
+                    <a href="{% url 'status.views.detail' %}?host_name={{ i }}">
                         {{ i }}
                     </a>
                 </li>
@@ -601,7 +611,7 @@
         <h5>{% trans "Is a member of hostgroups" %}</h5>
         <ul class="nav nav-list">
             {% for group in host.groups %}
-                <li><a href="{% url "status.views.detail" %}?hostgroup_name={{ group  }}">{{ group }}</a></li>
+                <li><a href="{% url 'status.views.detail' %}?hostgroup_name={{ group  }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -610,7 +620,7 @@
         <h5>{% trans "Is a member of contactgroups" %}</h5>
         <ul class="nav nav-list">
             {% for group in my_object.contact_groups %}
-                <li><a href="{% url "adagios.status.views.detail" %}?contactgroup_name={{ group }}">{{ group }}</a></li>
+                <li><a href="{% url 'adagios.status.views.detail' %}?contactgroup_name={{ group }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -619,7 +629,7 @@
         <h5>{% trans "Is a member of servicegroups" %}</h5>
         <ul class="nav nav-list">
             {% for group in service.groups %}
-                <li><a href="{% url "adagios.status.views.detail" %}?servicegroup_name={{ group }}">{{ group }}</a></li>
+                <li><a href="{% url 'adagios.status.views.detail' %}?servicegroup_name={{ group }}">{{ group }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -724,16 +734,16 @@
 
                     if (my_element.childElementCount == 0) {
                         var spinner = document.createElement( 'img');
-                        spinner.setAttribute("src", "{% static "external/select2/select2-spinner.gif" %}");
+                        spinner.setAttribute("src", "{% url "media" path="external/select2/spinner.gif" %}");
                         my_element.appendChild( spinner );
-                        var url = '{% url "pnp.views.pnp" 'json' %}?host={{ host_name }}&srv={{ service_description }}';
+                        var url = '{% url 'pnp.views.pnp' 'json' %}?host={{ host_name }}&srv={{ service_description }}';
                         $.getJSON(url)
                                 .done( function(data) {
                                     var new_img;
                                     $.each(data, function(i, item) {
                                         if (item['title'] == title) {
                                             new_img = document.createElement( 'img');
-                                            new_img.setAttribute("src", "{% url "pnp.views.pnp" 'image' %}?" + item['image_url']);
+                                            new_img.setAttribute("src", "{% url 'pnp.views.pnp' 'image' %}?" + item['image_url']);
                                             my_element.appendChild( new_img );
                                             }
                                         }

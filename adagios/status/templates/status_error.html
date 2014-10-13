@@ -1,4 +1,6 @@
 {% extends "base_status.html" %}
+{% load url from future %}
+{% load static %}
 {% load i18n %}
 
 {% block title %}{% trans "Error" %}{% endblock %}
@@ -44,7 +46,7 @@ service nagios3 reload
             </p>
             <ul>
                 <li>
-                    {% url "url" misc.views.settings as the_url %}{% blocktrans %}Please verify your <a href="{{ the_url }}">settings</a> and check all paths are valid.{% endblocktrans %}
+                    {% url "misc.views.settings" as the_url %}{% blocktrans %}Please verify your <a href="{{ the_url }}">settings</a> and check all paths are valid.{% endblocktrans %}
                 </li>
                 <li>
                     {% trans "check that nagios is in fact running and sudoers.d is correctly configured." %}

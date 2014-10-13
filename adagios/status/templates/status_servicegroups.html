@@ -1,10 +1,11 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Servicegroups" %}{% endblock %}
 
 {% block nav2 %}
-    <a href="{% url "status.views.status_servicegroups" %}">{% trans "Servicegroups" %}</a>
+    <a href="{% url 'status.views.status_servicegroups' %}">{% trans "Servicegroups" %}</a>
 {% endblock %}
 {% block smallheader %}{% endblock %}
 

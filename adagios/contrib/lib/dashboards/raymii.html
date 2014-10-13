@@ -1,4 +1,6 @@
 {% load i18n %}
+{% load url from future %}
+{% load static %}
 
 <html><head> 
     <title>{% trans "Service Status Dashboard" %}</title>
@@ -7,7 +9,8 @@
     <meta name="author" content="Pall Sigurdsson">
     <meta http-equiv="refresh" content="30">
     <meta http-equiv="X-UA-Compatible" content="IE=9">
-    <link href="{% url "home" %}media/external/bootstrap/css/bootstrap-3.1.1.min.css" rel="stylesheet">
+    <!-- Should use static function -->
+    <link href="{% url "media" path="external/bootstrap/css/bootstrap-3.1.1.min.css" %}" rel="stylesheet">
     <script type="text/javascript"src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <style type="text/css">
         a {
@@ -139,7 +142,6 @@
 <script src="{% static "js/adagios_status.js" %}"></script>
 
 <script src="{% static "external/bootstrap-datepicker/js/bootstrap-datepicker.js" %}"></script>
-
 
 <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
     var last_load;

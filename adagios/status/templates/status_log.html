@@ -1,4 +1,5 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Status Log" %}{% endblock %}
@@ -6,7 +7,7 @@
 {% block largeheader %}{% trans "Status Log" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url "status.views.log" %}">{% trans "Log" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url 'status.views.log' %}">{% trans "Log" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}

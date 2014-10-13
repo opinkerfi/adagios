@@ -1,9 +1,11 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
+{% load static %}
 {% load staticfiles %}
 
 {% block title %}Status Overview{% endblock %}
-{% block nav2 %}<a href="{% url "status.views.status_index" %}">{% trans "Overview" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url 'status.views.status_index' %}">{% trans "Overview" %}</a>{% endblock %}
 {% block smallheader %}{% endblock %}
 {% block largeheader %}Status Overview{% endblock %}
 
@@ -25,12 +27,12 @@
                 <tbody>
                 <tr>
                     <td>{% trans "Network Parents" %}</td>
-                    <td><a href="{% url "status.views.network_parents" %}">{{ total_network_parents }}</a></td>
+                    <td><a href="{% url 'status.views.network_parents' %}">{{ total_network_parents }}</a></td>
                     <td>
                         {% if  total_unhandled_network_problems == 0 %}
                         {% else %}
 
-                                <a href="{%  url "status.views.network_parents" %}?unhandled">
+                                <a href="{%  url 'status.views.network_parents' %}?unhandled">
                                     {{ total_unhandled_network_problems }}
                                 </a>
 
@@ -39,11 +41,11 @@
                 </tr>
                 <tr>
                     <td>{% trans "Hosts" %}</td>
-                    <td><a href="{% url "status.views.hosts" %}">{{ total_hosts }}</a></td>
+                    <td><a href="{% url 'status.views.hosts' %}">{{ total_hosts }}</a></td>
                     <td>
                         {% if  unhandled_hosts == 0 %}
                         {% else %}
-                            <a href="{%  url "status.views.hosts" %}?unhandled">
+                            <a href="{%  url 'status.views.hosts' %}?unhandled">
                                 {{ unhandled_hosts }}
                             </a>
                         {% endif %}
@@ -51,11 +53,11 @@
                 </tr>
                 <tr>
                     <td>{% trans "Services" %}</td>
-                    <td><a href="{% url "status.views.services" %}"> {{ total_services }}</a></td>
+                    <td><a href="{% url 'status.views.services' %}"> {{ total_services }}</a></td>
                     <td>
                         {% if  unhandled_services == 0 %}
                         {% else %}
-                            <a href="{%  url "status.views.services" %}?unhandled">
+                            <a href="{%  url 'status.views.services' %}?unhandled">
                                 {{ unhandled_services }}
                             </a>
                         {% endif %}
@@ -231,12 +233,13 @@
     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
     <ul class="dropdown-menu">
-        <li><a href="{% url "adagios.status.views.problems" %}?q={{ request.GET.q }}&unhandled"> {% trans "Open Problems" %}</a></li>
-        <li><a href="{% url "adagios.status.views.problems" %}?q={{ request.GET.q }}&state__isnot=0"> {% trans "All Problems" %}</a></li>
-        <li><a href="{% url "adagios.status.views.problems" %}?q={{ request.GET.q }}&state=0"> {% trans "All OK" %}</a></li>
-        <li><a href="{% url "adagios.status.views.problems" %}?q={{ request.GET.q }}&acknowledged=1"> {% trans "All Acknowledged" %}</a></li>
-        <li><a href="{% url "adagios.status.views.problems" %}?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> {% trans "All in Downtime" %}</a></li>
-        <li><a href="{% url "adagios.status.views.problems" %}?q={{ request.GET.q }}"> {% trans "Everything" %}</a></li>
+
+        <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&unhandled"> {% trans "Open Problems" %}</a></li>
+        <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&state__isnot=0"> {% trans "All Problems" %}</a></li>
+        <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&state=0"> {% trans "All OK" %}</a></li>
+        <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&acknowledged=1"> {% trans "All Acknowledged" %}</a></li>
+        <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&scheduled_downtime_depth__isnot=0"> {% trans "All in Downtime" %}</a></li>
+        <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}"> {% trans "Everything" %}</a></li>
     </ul>
 </div>
 {% endblock %}
@@ -287,8 +290,8 @@
                             var row=table.insertRow(i+1);
                             var cell1=row.insertCell(0);
                             var cell2=row.insertCell(1);
-                            cell1_html = '<a href="{% url "status.views.detail"  %}?host_name=' + host_name + '">' + host_name + '</a>';
-                            cell2_html = '<a href="{% url "status.views.detail" %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
+                            cell1_html = '<a href="{% url 'status.views.detail'  %}?host_name=' + host_name + '">' + host_name + '</a>';
+                            cell2_html = '<a href="{% url 'status.views.detail' %}?&host_name=' + host_name + '#tab_events">' + number_of_alerts + '</a>';
                             cell1.innerHTML=cell1_html;
                             cell2.innerHTML=cell2_html;
                         }

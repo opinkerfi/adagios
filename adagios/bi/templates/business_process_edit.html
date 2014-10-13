@@ -1,4 +1,5 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}Business Process{% endblock %}
@@ -227,7 +228,7 @@
     <a class="btn" id="open_subprocess_modal" data-toggle="modal" data-target="#add_subprocess_modal" href="#">
         <i class="glyph-circle-plus " title="Add new ..."> </i> {% trans "Add sub item" %}
     </a>
-    <a class="btn" id="open_public_view" href="{% url "bi.views.view" bp.process_type bp.name  %}">
+    <a class="btn" id="open_public_view" href="{% url "bi.views.view" bp.process_type bp.name %}">
         <i class="glyph-eye-open " title="Add new ..."> </i> {% trans "Public view for this process" %}
     </a>
     <a class="btn" id="open_graphs_modal" data-toggle="modal" data-target="#add_graph_modal" href="#">

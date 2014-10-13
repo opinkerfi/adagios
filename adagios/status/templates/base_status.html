@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-
-
 {% load staticfiles %}
+{% load url from future %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}{{ block.super }}{% endblock title %}
 {% block smallheader %}{{ block.super }}{% endblock smallheader %}
@@ -329,7 +329,7 @@
                 error: function(data) {
                   adagios.misc.error(gettext("Error sending mail"), "mail_sent");
                 },
-                contentType: "application/json"
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             });
 
         };

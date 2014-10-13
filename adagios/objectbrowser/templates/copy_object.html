@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Copy Object" %}{% endblock %}
@@ -22,9 +23,9 @@
         {% endfor %}
     {% else %}
         <div class="alert alert-info">
-            {% blocktrans with type=i.object_type desc=u.description %}
-	    You are about to copy {{ type }} "{{ desc }}".
-	    {% endblocktrans %}
+            {% blocktrans with type=object.object_type desc=object.description %}
+                You are about to copy {{ type }} "{{ desc }}".
+            {% endblocktrans %}
         </div>
         <p></p>
         <form  action="#" method="POST" class="form-horizontal">{% csrf_token %}
