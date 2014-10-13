@@ -233,7 +233,6 @@
     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
         <i class="glyph-eye-open" title="View"> </i> <span class="caret"></span></a>
     <ul class="dropdown-menu">
-
         <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&unhandled"> {% trans "Open Problems" %}</a></li>
         <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&state__isnot=0"> {% trans "All Problems" %}</a></li>
         <li><a href="{% url 'adagios.status.views.problems' %}?q={{ request.GET.q }}&state=0"> {% trans "All OK" %}</a></li>

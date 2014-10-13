@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 from django.conf.urls import url, patterns, include
 from adagios import settings
 from django.views.static import serve
@@ -55,7 +54,6 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}, name="media"),
     )
-
 
 # from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 #urlpatterns += staticfiles_urlpatterns()
