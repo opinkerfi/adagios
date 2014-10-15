@@ -20,6 +20,7 @@ from datetime import datetime, timedelta
 from django import template
 from django.utils.timesince import timesince
 from django.utils.translation import ugettext as _
+from django.template.defaultfilters import stringfilter
 
 register = template.Library()
 
@@ -27,7 +28,7 @@ register = template.Library()
 def timestamp(value):
     try:
         return datetime.fromtimestamp(value)
-    except AttributeError:
+    except (AttributeError, TypeError):
         return ''
 
 @register.filter("duration")
@@ -36,10 +37,24 @@ def duration(value):
     'value' must be in seconds.
     """
     zero = datetime.min
-    return timesince(zero, zero + timedelta(0, value))
+    try:
+        return timesince(zero, zero + timedelta(0, value))
+    except Exception:
+        return value
 
 @register.filter("hash")
 def hash(h, key):
-    return h[key]
+    try:
+        return h[key]
+    except KeyError as e:
+        return ''
 
-
+@register.filter("replace")
+@stringfilter
+def replace(value, args):
+    """ args must be a comma-separated string: "pattern, replacement" """
+    try:
+        pattern, replacement = args.split(',')
+    except Exception as e:
+        return value
+    return value.replace(pattern, replacement)

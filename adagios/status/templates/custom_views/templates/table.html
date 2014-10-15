@@ -1,0 +1,131 @@
+{% extends view.metadata.0.fullscreen|yesno:'custom_views/base_view_fullscreen.html,custom_views/base_view.html' %}
+{% load adagiostags %}
+{% load i18n %}
+{% load static %}
+
+{% block data %}
+<style type="text/css">
+table {
+  background-color: #f1f1ff;
+}
+
+th {
+  padding-right: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: LOLblue;
+}
+
+tr {
+  border: 1px solid #dddddd;
+}
+
+td {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+#table_data .row_selected {
+  background-color: #ADD8E6;
+}
+</style>
+
+<div id="template_content">
+  {#% include "snippets/status_view_buttons.html" %#}
+  {% if action_buttons %}
+    {% include "snippets/status_action_buttons.html" %}
+  {% endif %}
+
+  <div class=" pull-right" id="search_box">
+    <input name="filter_results"  type="text" id="filter_field" class="input-large search-query" placeholder="filter results" />
+  </div>
+  <br><br>
+
+  <div class="table-responsive" id="table_data">
+    <table class="table-striped table-hover" id="data-results">
+      <thead>
+        <tr>
+          {% if action_buttons %}
+            <td style="width: 2em;"></td>
+          {% endif %}
+
+          {% for col in view.columns %}
+          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with title=col.name|title|replace:"_, " %}
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for line in data %}
+        <tr>
+          {% if action_buttons %}
+          <td class="selectable">
+            <input type="checkbox" name="service"
+                   value="{{ service.host_name }}/{{ service.description }}"
+                   class="checkbox_select chkbox"
+                   data-host_name="{{ line.host_name }}"
+                   data-service_description="{{ line.description }}"
+                   data-object_type="{{ view.metadata.0.data_source }}">
+          </td>
+          {% endif %}
+
+          {% for col in view.columns %}
+          {% include settings.CUSTOM_WIDGETS_PATH|add:col.widget with col_name=col.name line=line %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+{{ block.super }}
+
+{% include "snippets/status_modals.html" %}
+
+<script type="text/javascript">
+ /*
+   Updates the table whenever the filter input field is changed.
+ */
+ $("#filter_field").bind('input', function() {
+   var to_filter = $("#table_data tbody tr");
+   to_filter.show();
+   to_filter.filter(function (index) {
+     return $(this)[0].innerHTML.indexOf($("#filter_field")[0].value) < 0;
+   }).hide();
+ });
+</script>
+
+<script type="text/javascript" src="{% url "media" path="external/datatable/js/datatable.js" %}"></script>
+<script type="text/javascript">
+ $('#data-results').datatable({
+   tableClass: "JustARandomNameDifferentThanDatatable",
+   sort: "*",
+   pageSize: 10000,
+ });
+
+ $(".checkbox_select").each(function() {
+    $( this ).parent().addClass( "selectable" );
+ });
+</script>
+
+<script type="text/javascript">
+/*
+  Binds checkboxes
+  Must be done after Datatable, bug otherwise.
+*/
+$(".checkbox_select").change(function() {
+  if($(this).is(":checked")) {
+    $(this).parent().parent().children().addClass("row_selected");
+  }
+  else {
+    $(this).parent().parent().children().removeClass("row_selected");
+  }
+  adagios.status.count_selected_objects();
+});
+</script>
+
+{% endblock %}
