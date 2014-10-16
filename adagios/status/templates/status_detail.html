@@ -128,6 +128,9 @@
                                     {% if settings.enable_graphite %}
                                       <th>{% trans "graphite" %}</th>
                                     {% endif %}
+                                    {% if settings.enable_rekishi %}
+                                      <th>{% trans "Graphs" %}</th>
+                                    {% endif %}
                                 </tr>
                                 {% for i in perfdata %}
                                     <tr>
@@ -141,11 +144,22 @@
                                         <td>{{ i.max }}   </td>
                                         {% if settings.enable_pnp4nagios %}
                                         <td>
-                                            <a href="{% url 'pnp.views.pnp' %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
+                                            <a href="{% url 'pnp.views.pnp' %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview pnp" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                                         </td>
                                         {% endif %}
                                         {% if settings.enable_graphite %}
-                                          <td><a href="{{ graphite_default|hash:i.label }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a></td>
+                                            <td>
+                                                <a href="{{ graphite_default|hash:i.label }}" class="preview graphite" title="{{ service_description }} {{ i.label }}">
+                                                    <i class="glyph glyph-charts"></i>
+                                                </a>
+                                            </td>
+                                        {% endif %}
+                                        {% if settings.enable_rekishi %} 
+                                            <td>
+                                                <a href="#rekishi_tab" class="preview rekishi" ="rekishi-{{ i.label }}" title="{{ service_description }} {{ i.label }}">
+                                                    <i class="glyph glyph-charts" id="rekishi-preview-{{ i.label }}"></i>
+                                                </a>
+                                            </td>
                                         {% endif %}
                                     </tr>
                                 {% endfor %}
@@ -838,7 +852,7 @@
         });
 
         // Perfomance Graph Preview on hover
-        $("a.preview").popover({
+        $("a.preview.pnp").popover({
             placement: 'top',
             trigger: 'hover',
             template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
@@ -846,6 +860,25 @@
                 return "<img src='"+ $(this)[0].href +"' alt='{% trans "Image preview" %}' />";
             }
         });
+
+        $("a.preview.graphite").popover({
+            placement: 'top',
+            trigger: 'hover',
+            template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
+            content: function() {
+                return "<img src='"+ $(this)[0].href +"' alt='{% trans "Image preview" %}' />";
+            }
+        });
+
+        $("a.preview.rekishi").popover({
+            placement: 'top',
+            trigger: 'hover',
+            template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
+            content: function() {
+                return "<div id=" + $(this)[0].href + ">";
+            }
+        });
+
         {% if settings.enable_rekishi %}
             allDygraphs = [];
             {% for graph in rekishi.graphs %}
@@ -874,7 +907,6 @@
                                 ylabel: data[0].data[0][unitsIndex],
                             }
                         );
-                        allDygraphs.push(dg);
                     });
                 {% endfor %}
             {% endfor %}
