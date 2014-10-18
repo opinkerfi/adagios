@@ -1,0 +1,4 @@
+Not bower dependencies:
+* html5shim (is used by bootstrap and dynamically downloaded from a CDN)
+* jqplot (not properly bowerized yet)
+* DT_bootstrap.{css,js} (upstream has changed and doesn't ship these files anymore

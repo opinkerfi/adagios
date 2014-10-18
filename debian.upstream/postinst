@@ -1,2 +1,4 @@
-chown -R nagios:nagios /etc/adagios/ /var/lib/adagios
+chown -R www-data:www-data /etc/adagios/ /var/lib/adagios
+usermod -G nagios www-data
+chmod -R g+rw /etc/adagios/ /var/lib/adagios
 service apache2 reload || echo "Failed to reload apache. You have to reload apache to update its configuration"

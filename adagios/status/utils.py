@@ -24,7 +24,7 @@ import pynag.Utils
 import pynag.Parsers
 import adagios.settings
 from adagios.misc.rest import add_notification, clear_notification
-import simplejson as json
+import json
 
 from collections import defaultdict
 from adagios import userdata

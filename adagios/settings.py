@@ -72,8 +72,20 @@ USE_I18N = True
 USE_L10N = True
 
 
-STATIC_URL = '/media/'
-STATIC_ROOT = '%s/media/' % djangopath
+# Absolute filesystem path to the directory that will hold user-uploaded files.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = "%s/media/" % djangopath
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = '/media/'
+
+# FROM SFL- should be useless
+# STATIC_URL = '/media/./'
+
+STATIC_URL = '/media/./'
+STATIC_ROOT = '%s/media/./' % djangopath
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -126,6 +138,7 @@ INSTALLED_APPS = [
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'django.contrib.staticfiles',
     #'django.contrib.staticfiles',
     'adagios.objectbrowser',
     'adagios.rest',
@@ -177,6 +190,12 @@ TOPMENU_ITEMS = [
     ('Nagios',    'nagios',        'misc.views.nagios',                     'glyph-list'),
 
 ]
+
+# Custom views
+CUSTOM_TEMPLATES_DIR = 'custom_views/templates/'
+# this will be avoided one day with Django 1.7 (render_to_response(..., dirs=[...]))
+CUSTOM_TEMPLATES_PATH = '%s/status/templates/%s/' % (djangopath, CUSTOM_TEMPLATES_DIR)
+CUSTOM_WIDGETS_PATH = '%s/status/templates/custom_views/widgets/' % djangopath
 
 # Graphite #
 

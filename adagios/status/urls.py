@@ -40,6 +40,10 @@ urlpatterns = patterns('adagios',
                         url(r'^/services/?$', 'status.views.services'),
                         url(r'^/state_history/?$', 'status.views.state_history'),
                         url(r'^/backends/?$', 'status.views.backends'),
+                        url(r'^/custom/edit/(?P<viewname>.+)/?$', 'status.views.custom_edit'),
+                        url(r'^/custom/edit/?$', 'status.views.custom_edit'),
+                        url(r'^/custom/view/(?P<viewname>.+)/?$', 'status.views.custom_view'),
+                        url(r'^/custom/delete/(?P<viewname>.+)/?$', 'status.views.custom_delete'),
 
 
 

@@ -3,8 +3,7 @@ window.adagios = window.adagios || {};
 adagios.status = adagios.status || {};
 adagios.objectbrowser = adagios.objectbrowser || {};
 adagios.misc = adagios.misc || {};
-adagios.bi = adagios.bi || {};
-
+adagios.bi = adagios.bi || {};
 adagios.misc.__notification_id_counter = 0;
 
 
@@ -739,10 +738,10 @@ adagios.status.reschedule = function() {
         host_name =  item['host_name'];
         service_description = item['service_description'] || '';
         object_type = item['object_type'];
-        if (object_type == 'host') {
+        if (object_type == 'host' || object_type == 'hosts') {
             hostlist = hostlist + ';' + host_name;
         }
-        else if (object_type == 'service') {
+        else if (object_type == 'service' || object_type == 'services') {
             servicelist = servicelist + ';' + host_name + ',' + service_description;
         }
     });

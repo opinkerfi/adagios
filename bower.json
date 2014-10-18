@@ -1,0 +1,23 @@
+{
+  "name": "adagios",
+  "version": "1.5.0",
+  "homepage": "https://github.com/opinkerfi/adagios",
+  "authors": [
+    "see AUTHORS"
+  ],
+  "license": "AGPL3",
+  "private": true,
+  "ignore": [
+    "adagios/media/external/"
+  ],
+  "dependencies": {
+    "chosen": "0.9.8",
+    "datatable": "git://github.com/Holt59/datatable.git",
+    "datatables": "~1.10.2",
+    "jquery": "1.9.1",
+    "jquery-ui": "1.10.4",
+    "select2": "git://github.com/ivaynberg/select2.git",
+    "bootstrap2.3.2": "git://github.com/alonisser/bower-bootstrap-2.3.2-legacy.git#~2.3.2",
+    "bootstrap-datepicker": "~1.3.0"
+  }
+}

@@ -110,7 +110,7 @@ def advanced_edit(request, object_id):
         c['my_object'] = o
     except Exception, e:
         # This is an ugly hack. If unknown object ID was specified and it so happens to
-        # Be the same as a brand new empty object definition we will assume that we are
+        # be the same as a brand new empty object definition we will assume that we are
         # to create a new object definition instead of throwing error because ours was
         # not found.
         for i in Model.string_to_class.values():

@@ -1,0 +1,7 @@
+{% load adagiostags %}
+{% if title %}
+  <th>{{ title }}</th>
+{% else %}
+  {# we don't use <small> because bootstrap overrides it #}
+  <td><span style="font-size: smaller;">{{ line|hash:col_name }}</span></td>
+{% endif %}

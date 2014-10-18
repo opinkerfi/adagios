@@ -18,7 +18,7 @@
 from pynag.Utils import PynagError, defaultdict
 
 __author__ = 'palli'
-import simplejson as json
+import json
 import pynag.Model
 import pynag.Parsers
 import pynag.Control

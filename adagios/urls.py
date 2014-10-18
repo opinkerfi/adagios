@@ -18,6 +18,7 @@
 from django.conf.urls import url, patterns, include
 from adagios import settings
 from django.views.static import serve
+from django.conf.urls.static import static
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -44,13 +45,15 @@ urlpatterns = patterns(
 
     # Internationalization
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog'),
-)
 
-if settings.DEBUG:
-    urlpatterns += patterns('',
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}, name="media"),
-    )
-        
+    # Static files
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}, name="media"),
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+#if settings.DEBUG:
+#    urlpatterns += patterns('',
+#    )
 
 # from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 #urlpatterns += staticfiles_urlpatterns()
