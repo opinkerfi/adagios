@@ -88,6 +88,7 @@ class LiveStatusTestCase(unittest.TestCase):
         self.loadPage('/status/servicegroups')
         self.loadPage('/status/map')
         self.loadPage('/status/dashboard')
+        self.loadPage('/status/custom/edit?datasource=hosts')
 
     def test_status_detail(self):
         """ Tests for /status/detail """

@@ -24,8 +24,9 @@ from os.path import dirname
 from collections import defaultdict
 import json
 import traceback
+import functools
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, Http404
 from django.template import RequestContext
 from django.utils.encoding import smart_str
 from django.core.context_processors import csrf
@@ -43,7 +44,11 @@ from adagios.pnp.functions import run_pnp
 from adagios.status import utils
 import adagios.status.rest
 import adagios.status.forms
+from adagios.status import custom_forms
+from adagios.status import custom_filters
+from adagios.status import custom_utils
 import adagios.businessprocess
+from adagios import userdata
 from django.core.urlresolvers import reverse
 from adagios.status import graphite
 
@@ -1216,3 +1221,163 @@ def backends(request):
     for i, v in backends.items():
         v.test(raise_error=False)
     return render_to_response('status_backends.html', locals(), context_instance=RequestContext(request))
+
+@adagios_decorator
+def custom_view(request, viewname):
+    c = {}
+    c['messages'] = []
+    c['errors'] = []
+
+
+    # View management
+    user = userdata.User(request)
+    c['viewname'] = viewname
+    if not user.views:
+        user.views = {}
+        user.save()
+        raise Http404(_("You don't have any view defined."))
+    if viewname not in user.views.keys():
+        raise Http404(_("This view doesn't exist."))
+    view = user.views[viewname]
+
+    # Data pre-processing
+    livestatus = utils.livestatus(request)
+    livestatus_query = custom_utils.data_to_query(view)
+
+    # Query execution
+    try:
+        # the split is a workaround for pynag and the 'Stats:' clause
+        c['data'] = livestatus.query(*livestatus_query.split('\n'))
+    except Exception as e:
+        # Any exception in livestatus query here is a critical error
+        error = _('Error in LiveStatus query')
+        c['errors'].append(error)
+        c['errors'].append(e.message)
+        return error_page(request, c)
+
+    # Data post-processing
+    # sorting
+    c['data'] = sorted(c['data'],
+                       key=functools.partial(custom_utils.sort_data,
+                                             sorts=view['sorts']))
+
+    # Moaaaar data for our templates
+    c['view'] = view
+
+    # For the template 'table.html' (and whynot others), determine if displaying
+    # action_buttons is relevant, i.e. if we have results with at least
+    # host_name and service_description.
+    columns = set()
+    for col in view['columns']: # no set comprehension in 2.6 :(
+        columns.add(col['name'])
+
+    if 'host_name' in columns and 'description' in columns:
+        c['action_buttons'] = True
+    else:
+        c['action_buttons'] = False
+
+    template = view['metadata'][0].get('template', 'table.html')
+
+    return render_to_response(adagios.settings.CUSTOM_TEMPLATES_DIR + template, c,
+                              context_instance=RequestContext(request))
+
+@adagios_decorator
+def custom_edit(request, viewname=None):
+    user = userdata.User(request)
+    if not user.views:
+        user.views = {}
+
+    c = {}
+    c['viewname'] = viewname
+
+    # first, we need to figure out the datasource, because the forms depend on it
+    try:
+        datasource = (request.GET.get('datasource', False)
+                      or request.POST.get('metadata-0-data_source', False)
+                      or user.views[viewname]['metadata'][0]['data_source'])
+    except Exception as e:
+        raise Exception(_('No datasource found.'))
+
+    # class attributes which will get passed to our forms classes
+    form_attrs = {'datasource': datasource}
+
+    c['categories'] = custom_forms.get_categories(form_attrs)
+
+    if request.method == 'POST':
+        for el in c['categories']:
+            # we add the form(s) to our category
+            el['forms'] = el['form_class'](
+                request.POST,
+                prefix=el['id'])
+
+            # if there is an error somewhere, we mark the form as errored
+            el['errors'] = any([x.errors for x in el['forms']])
+
+        if all([x['forms'].is_valid() for x in c['categories']]):
+            # all forms are valid
+            new_viewname = c['categories'][0]['forms'].cleaned_data[0]['view_name']
+
+            if viewname != new_viewname:
+                if viewname is not None:
+                    # the user has renamed the view
+                    del user.views[viewname]
+                # let's make sure the new name doesn't exist, and add underscores if yes
+                while new_viewname in user.views:
+                    new_viewname += '_'
+
+            viewname = new_viewname
+
+            user.views[viewname] = {}
+            for el in c['categories']:
+                user.views[viewname][el['id']] = el['forms'].cleaned_data
+            # and let's update the view name, in the case it has changed
+            # done here because request.POST is immutable
+            user.views[viewname]['metadata'][0]['view_name'] = viewname
+
+            user.save()
+            return redirect(custom_edit, viewname=viewname)
+
+    elif request.method == 'GET':
+        if viewname:
+            try:
+                initial = user.views[viewname]
+            except KeyError:
+                raise Http404(_("This view doesn't exist."))
+        else:
+            initial = {'metadata': [],
+                       'columns': [],
+                       'filters': [],
+                       'sorts': [],
+                       'stats': [],
+                       }
+            # If you want an empty field at form creation, just replace
+            # [] by [None].
+            # The [None] hack is a workaround to make Django create
+            # formsets with one form, thus permitting to keep extra=0
+            # in formset_factory. As of Django 1.7, it will be better
+            # to use min_num=1.
+
+        for el in c['categories']:
+            el['forms'] = el['form_class'](
+                initial=initial[el['id']],
+                prefix=el['id'])
+
+        c['categories'][0]['forms'][0].fields['data_source'].initial = datasource
+
+    c['datasource'] = datasource
+    return render_to_response('custom_edit.html', c,
+                              context_instance=RequestContext(request))
+
+@adagios_decorator
+def custom_delete(request, viewname):
+    user = userdata.User(request)
+    c = {}
+    try:
+        del user.views[viewname]
+    except Exception:
+        # the user tried to delete a view which he created but didn't save
+        pass
+
+    user.save()
+    return redirect(status_index)
+

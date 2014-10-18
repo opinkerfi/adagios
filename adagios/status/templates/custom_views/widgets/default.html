@@ -1,0 +1,6 @@
+{% load adagiostags %}
+{% if title %}
+  <th>{{ title }}</th>
+{% else %}
+  <td>{{ line|hash:col_name }}</td>
+{% endif %}
