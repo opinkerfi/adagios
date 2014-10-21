@@ -32,6 +32,13 @@ import adagios.settings
 import adagios.utils
 import simplejson as json
 
+try:
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    enable_selenium = True
+except ImportError:
+    enable_selenium = False
+
 
 class LiveStatusTestCase(unittest.TestCase):
 
@@ -174,19 +181,19 @@ class Graphite(unittest.TestCase):
         self.assertTrue('packetloss' in result[0]['metrics'])
 
 
-class SplinterTestCase(LiveServerTestCase):
-    browser = None
+class SeleniumTestCase(LiveServerTestCase):
+    driver = None
     environment = None
 
 
     @classmethod
     def setUpClass(cls):
-        super(SplinterTestCase, cls).setUpClass()
+        super(SeleniumTestCase, cls).setUpClass()
 
-        if 'TEST_SPLINTER' not in os.environ:
+        if enable_selenium is False:
             cls.enable = False
             return
-        import splinter
+
         cls.enable = True
         cls.nagios_config = adagios.settings.nagios_config
         cls.environment = adagios.utils.FakeAdagiosEnvironment()
@@ -196,23 +203,13 @@ class SplinterTestCase(LiveServerTestCase):
         cls.environment.start()
         cls.livestatus = cls.environment.get_livestatus()
 
-        splinter_args = {}
-        for key, value in os.environ.iteritems():
-            if key.startswith("TEST_SPLINTER_") is False:
-                continue
-            key = key.replace("TEST_SPLINTER_", "").lower()
-            splinter_args[key] = value
-
-        if 'url' in splinter_args:
-            splinter_args['driver_name'] = 'remote'
-
-        cls.browser = splinter.Browser(**splinter_args)
+        cls.driver = webdriver.Firefox()
 
     @classmethod
     def tearDownClass(cls):
-        super(SplinterTestCase, cls).tearDownClass()
+        super(SeleniumTestCase, cls).tearDownClass()
         if cls.enable:
-            cls.browser.quit()
+            cls.driver.close()
             cls.environment.terminate()
 
 
@@ -220,11 +217,11 @@ class SplinterTestCase(LiveServerTestCase):
         """Status Overview, Network Parents should show an integer"""
         if not self.enable:
             return
-        self.browser.visit(self.live_server_url + "/status")
+        self.driver.get(self.live_server_url + "/status")
 
         # Second link is Network Parents in overview
-        self.assertEqual(self.browser.find_link_by_href(
-            "/status/parents")[1].html.isdigit(), True)
+        self.assertEqual(self.driver.find_elements(By.XPATH,
+            "//a[@href='/status/parents']")[1].text.isdigit(), True)
 
     def test_services_select_all(self):
         """Loads services list and tries to select everything
@@ -238,19 +235,19 @@ class SplinterTestCase(LiveServerTestCase):
         if not self.enable:
             return
 
-        self.browser.visit(self.live_server_url + "/status/services")
+        self.driver.get(self.live_server_url + "/status/services")
 
-        self.browser.find_by_xpath("//input[@class='select_many']").first.click()
-        self.browser.find_by_xpath("//a[@class='select_all']").first.click()
+        self.driver.find_element_by_xpath("//input[@class='select_many']").click()
+        self.driver.find_element_by_xpath("//a[@class='select_all']").click()
 
         # Get all statustable rows
-        status_table_rows = self.browser.find_by_xpath(
+        status_table_rows = self.driver.find_element_by_xpath(
             "//table[contains(@class, 'statustable')]"
-        ).first.find_by_xpath("//tbody/tr[contains(@class, 'mainrow')]")
+        ).find_elements(By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
 
         # Sub-select non-selected
         for row in status_table_rows:
-            self.assertTrue(row.has_class("row_selected"),
+            self.assertTrue('row_selected' in row.get_attribute('class'),
                             "Non selected row found after selecting all: " + \
                             row.text)
 
@@ -259,15 +256,15 @@ class SplinterTestCase(LiveServerTestCase):
         if not self.enable:
             return
 
-        self.browser.visit(self.live_server_url + "/status")
+        self.driver.get(self.live_server_url + "/status")
 
-        top_alert_table_rows = self.browser.find_by_xpath(
+        top_alert_table_rows = self.driver.find_elements(By.XPATH,
             "//table[@id='top_alert_producers']/tbody/tr"
         )
 
         count = 0
         for row in top_alert_table_rows:
-            if 'display' not in row['style']:
+            if 'display' not in row.get_attribute('style'):
                 count += 1
 
         self.assertTrue(count <= 3, "Top alert producers returns too many rows")
