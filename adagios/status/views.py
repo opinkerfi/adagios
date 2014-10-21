@@ -331,13 +331,14 @@ def service_detail(request, host_name, service_description):
         c['errors'].append(e)
 
     # Lets get some graphs
-    try:
-        tmp = run_pnp("json", host=host_name)
-        tmp = json.loads(tmp)
-    except Exception, e:
-        tmp = []
-        c['pnp4nagios_error'] = e
-    c['graph_urls'] = tmp
+    if adagios.settings.enable_pnp4nagios:
+        try:
+            tmp = run_pnp("json", host=host_name)
+            tmp = json.loads(tmp)
+        except Exception, e:
+            tmp = []
+            c['pnp4nagios_error'] = e
+        c['graph_urls'] = tmp
     
     if adagios.settings.enable_graphite:
         metrics = [x.label for x in perfdata.metrics]

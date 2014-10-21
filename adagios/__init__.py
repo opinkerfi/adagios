@@ -17,7 +17,7 @@
 
 import os.path
 
-__version__ = '1.5.0'
+__version__ = '1.6.0'
 
 notifications = {}
 active_plugins = {}
@@ -45,7 +45,7 @@ def add_plugin(name="myplugin", modulepath=None):
     #adagios.settings.INSTALLED_APPS.append(modulepath)
     # Add plugin to urls
     import adagios.urls
-    from django.conf.urls.defaults import patterns,include
+    from django.conf.urls import patterns, include
     new_pattern = patterns('',
         (r'^%s'%name, include("%s.urls" % modulepath) ),
     )

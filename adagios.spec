@@ -7,7 +7,7 @@
 %define release 1
 
 Name: adagios
-Version: 1.5.0
+Version: 1.6.0
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
@@ -24,8 +24,17 @@ BuildRequires: python-setuptools
 Requires: pynag >= 0.8.8
 Requires: httpd
 Requires: mod_wsgi
-Requires: Django
 Requires: sudo
+Requires: python-simplejson
+
+%if 0%{?rhel} >= 6 || 0%{?fedora} >= 20
+Requires: python-django15
+# Force django upgrade
+Conflicts: Django < 1.4.0
+%else
+# Fedora 19, python-django is 1.5
+Requires: python-django
+%endif
 
 %description
 Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. 
@@ -1074,17 +1083,4 @@ rm -rf $RPM_BUILD_ROOT
 
 * Tue Mar 13 2012 Pall Sigurdsson <palli@opensource.is> 1.0-1
 - new package built with tito
-
-
-* Mon Aug 10 2011 Clint Savage <herlo@fedoraproject.org> 0.2-1
-- Cleaned up pathing and config files
-
-* Mon Apr 11 2011 Clint Savage <herlo@fedoraproject.org> 0.1-3
-- Added dist macro to release line.
-
-* Mon Mar 07 2011 Clint Savage <herlo@fedoraproject.org> 0.1-2
-- Fixed rpmlint errors and warnings.
-
-* Tue Feb 08 2011 Clint Savage <herlo@fedoraproject.org> 0.1-1
-- Initial package build
 

@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Copy Object" %}{% endblock %}
 {% block smallheader %}{% trans "Copy" %}{% endblock %}
 {% block largeheader %}{{ object.object_type }}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser" %}</a>{% endblock %}
+{% block nav1 %}<a href="{% url "objectbrowser" %}">{% trans "Object Browser" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 
@@ -14,7 +15,7 @@
             <div class="alert alert-success">
                 <button class="close" data-dismiss="alert">×</button>
                 <strong>{% trans "Success!" %}</strong>
-		{% url edit_object i.id as the_url %}
+		{% url "edit_object" i.id as the_url %}
                 {% blocktrans with type=i.object_type desc=u.description file=i.filename %}
 		{{ type }} <a href="{{ the_url }}">"{{ desc }}"</a> was successfully saved to {{ file }}.
 		{% endblocktrans %}
@@ -22,9 +23,9 @@
         {% endfor %}
     {% else %}
         <div class="alert alert-info">
-            {% blocktrans with type=i.object_type desc=u.description %}
-	    You are about to copy {{ type }} "{{ desc }}".
-	    {% endblocktrans %}
+            {% blocktrans with type=object.object_type desc=object.description %}
+                You are about to copy {{ type }} "{{ desc }}".
+            {% endblocktrans %}
         </div>
         <p></p>
         <form  action="#" method="POST" class="form-horizontal">{% csrf_token %}

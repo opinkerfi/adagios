@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Install Agent" %}${% endblock %}
 {% block smallheader %}{% trans "Install" %}{% endblock %}
 {% block largeheader %}{% trans "Agent" %}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.install_agent %}">{% trans "Install Agent" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.okconfig_.views.install_agent" %}">{% trans "Install Agent" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 {% block footer %}
     <script>

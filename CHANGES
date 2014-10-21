@@ -1,4 +1,13 @@
-Changes in NEXT
+Changes in master
+=================
+
+Summary of features:
+
+* Allow disabling pnp4nagios
+    enable_pnp4nagios is now configurable. If false the Graphs link is removed
+    from the status view.
+
+Changes in 1.6.0
 ========================
 
 Summary of features:

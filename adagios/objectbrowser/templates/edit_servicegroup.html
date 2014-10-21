@@ -1,4 +1,5 @@
 {% extends "edit_object.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{{  block.super }}{% endblock %}
@@ -44,7 +45,7 @@
                                 {% if effective_memberof %}
                                     <p>
                                         {% for group in effective_memberof %}
-                                            <label><a href="{% url adagios.objectbrowser.views.edit_object group.id %}">{{group.servicegroup_name}}</a></label>
+                                            <label><a href="{% url "adagios.objectbrowser.views.edit_object" group.id %}">{{group.servicegroup_name}}</a></label>
                                         {% endfor %}
                                     </p>
                                 {% endif %}
@@ -73,7 +74,7 @@
                             {% if effective_services %}
                                 <p>
                                     {% for i in effective_services %}
-                                        <label><a href="{% url adagios.objectbrowser.views.edit_object i.id %}">{{i.description}}</a></label>
+                                        <label><a href="{% url "adagios.objectbrowser.views.edit_object" i.id %}">{{i.description}}</a></label>
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -88,7 +89,7 @@
         <div class="tab-pane" id="advanced">
             <!-- All Attributes -->
             <h2>All Attributes</h2>
-            <form action="{% url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
+            <form action="{% url "objectbrowser.views.advanced_edit" my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
                 {% include "bootstrap_fields.html" with fields=advanced_form %}
                 <div class="form-actions">
                     <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>

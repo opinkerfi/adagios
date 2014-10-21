@@ -1,4 +1,5 @@
 {% extends "edit_object.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}{% endblock %}
@@ -141,7 +142,7 @@
                 </div>
         </form>
             <div class="tab-pane" id="advanced">
-                <form action="{%  url objectbrowser.views.advanced_edit my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
+                <form action="{% url 'objectbrowser.views.advanced_edit' my_object.id %}" method="post" class="form-horizontal">{% csrf_token %}
 
                     {% include "bootstrap_fields.html" with fields=advanced_form %}
                     <div class="form-actions">

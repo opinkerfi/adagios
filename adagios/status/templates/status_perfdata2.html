@@ -1,4 +1,5 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Performance Data Metrics" %}{% endblock %}
@@ -6,7 +7,7 @@
 {% block largeheader %}{% trans "Performance Data Metrics" %}{% endblock %}
 
 {% block nav1 %}{{ block.super }}{% endblock %}
-{% block nav2 %}<a href="{% url status.views.perfdata %}">{% trans "Performance Data" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url 'status.views.perfdata' %}">{% trans "Performance Data" %}</a>{% endblock %}
 {% load adagiostags %}
 
 {% block content %}
@@ -60,17 +61,22 @@
 
                         <td class="small nowrap">
                             <div class="circle state_{{ service.host_state }}"></div>
-                            <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
+                            <a href="{% url 'adagios.status.views.detail' %}?host_name={{ service.host_name }}">{{ service.host_name }}</a>
                         </td>
                         <td>
                             <div class="circle state_{{ service.state }}"></div>
-                            <a href="{% url adagios.status.views.detail %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
+                            <a href="{% url 'adagios.status.views.detail' %}?host_name={{ service.host_name }}&service_description={{ service.description }}">{{ service.description }}</a>
                         </td>
                             {% for i in service.metrics %}
                                 <td class="small nowrap">
-                                    <a href="{% url pnp.views.pnp %}/image?host={{ service.host_name }}&source={{ forloop.counter0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
-                                        <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
-                                    </a>
+                                    {% if settings.enable_pnp4nagios %}
+                                        <a href="{% url "pnp.views.pnp" %}/image?host={{ service.host_name }}&source={{ forloop.counte
+r0 }}&srv={{ service.description }}" class="preview" title="{{ service.description }} {{ i.label }}">
+                                            <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
+                                        </a>
+                                    {% else %}
+                                            <span class="status_{{ i.get_status }}">{{ i.value }} {{ i.uom }}</span>
+                                    {% endif %}
                                 </td>
                             {% endfor %}
 

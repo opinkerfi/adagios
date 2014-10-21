@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}Objectbrowser{% endblock %}
@@ -12,17 +13,6 @@
                     <div class="block" id="page_header">
                         <!-- block page_header starts -->
                         {% block page_header %}
-                            <ul class="breadcrumb">
-                                <li>
-                                    <a href="{% url home %}">{% trans "Home" %}</a> <span class="divider">/</span>
-                                </li>
-                                <li>
-                                    {% block nav1 %}
-                                        <a href="{% url objectbrowser %}">objectbrowser</a>
-                                    {% endblock %}
-                                    <span class="divider">/</span>
-                                </li>
-                            </ul>
                             <h2>
                                 <i class="icon-th-large"></i> <small>{% block smallheader %}block=smallheader{% endblock%} </small> {% block largeheader %}block=largeheader{% endblock %}
                             </h2>
@@ -80,29 +70,29 @@
 
                                     {% if my_object %}
                                         <li><a data-toggle="modal" href="#geek_edit"><i class="icon-pencil"></i> {% trans "Geek Edit" %}</a></li>
-                                        <li><a href="{%  url objectbrowser.views.copy_object my_object.id %}"><i class="icon-copy"></i>
+                                        <li><a href="{% url "objectbrowser.views.copy_object" my_object.id %}"><i class="icon-copy"></i>
 					    {% blocktrans with type=my_object.object_type %}
 					    Copy this {{ type }}
 					    {% endblocktrans %}</a></li>
-                                        <li><a href="{%  url objectbrowser.views.delete_object my_object.id %}"><i class="icon-trash"></i>
+                                        <li><a href="{% url "objectbrowser.views.delete_object" my_object.id %}"><i class="icon-trash"></i>
 					    {% blocktrans with type=my_object.object_type %}Delete this {{  type }}
 					    {% endblocktrans %}</a></li>
                                     {% endif %}
 
                                     {% if plugins.status and my_object.object_type == 'service' and my_object.register == '1' %}
                                         <li>
-                                            <a href="{% url adagios.status.views.detail %}?host_name={{  my_object.host_name }}&service_description={{  my_object.service_description }}">
+                                            <a href="{% url "adagios.status.views.detail" %}?host_name={{  my_object.host_name }}&service_description={{  my_object.service_description }}">
                                                 <i class="glyph-table"></i> {% trans "Show Status information" %}</a>
                                         </li>
                                     {% endif %}
 
                                     {% if plugins.status and  my_object.object_type == 'host' and my_object.register == '1' %}
                                         <li>
-                                            <a href="{% url adagios.status.views.detail %}?host_name={{  my_object.host_name }}">
+                                            <a href="{% url "adagios.status.views.detail" %}?host_name={{  my_object.host_name }}">
                                                 <i class="glyph-table"></i> {% trans "Show Status information" %}</a>
                                         </li>
                                         <li>
-                                            <a href="{%  url objectbrowser.views.add_object 'service' %}?host_name={{ my_object.host_name }}">
+                                            <a href="{% url "objectbrowser.views.add_object" 'service' %}?host_name={{ my_object.host_name }}">
                                                 <i class="icon-edit"></i> {% trans "Add Service Checks" %}
                                             </a>
                                         </li>
@@ -127,7 +117,7 @@
                                     <h5>{% trans "Templates" %}</h5>
                                     <ul class="nav nav-list">
                                         {% for i in effective_parents %}
-                                            <li><a href="{% url edit_object i.id %}">{{ i.name }}</a></li>
+                                            <li><a href="{% url "edit_object" i.id %}">{{ i.name }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -137,7 +127,7 @@
                                         {% for i in effective_services %}
                                             {% if i.register == "1" %}
                                             <li>
-                                                <a href="{% url edit_object i.id %}">
+                                                <a href="{% url "edit_object" i.id %}">
                                                     {{ i.service_description }}
                                                 </a>
                                             </li>
@@ -146,7 +136,7 @@
                                         {% for i in effective_services %}
                                             {% if i.register == "0" %}
                                             <li>
-                                                <a href="{% url edit_object i.id %}" style="color: grey" title="This Service check is not registered (inactive)">
+                                                <a href="{% url "edit_object" i.id %}" style="color: grey" title="This Service check is not registered (inactive)">
                                                     {% if i.service_description %}
                                                         {{ i.service_description }}
                                                     {% else %}
@@ -163,7 +153,7 @@
                                     <h5>{% trans "Contactgroups" %}</h5>
                                     <ul class="nav nav-list">
                                         {% for i in effective_contactgroups %}
-                                            <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+                                            <li><a href="{% url "edit_object" i.id %}">{{ i.description }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -171,7 +161,7 @@
                                     <h5>{% trans "Hostgroups" %}</h5>
                                     <ul class="nav nav-list">
                                         {% for i in effective_hostgroups %}
-                                            <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+                                            <li><a href="{% url "edit_object" i.id %}">{{ i.description }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -179,7 +169,7 @@
                                     <h5>{% trans "Servicegroups" %}</h5>
                                     <ul class="nav nav-list">
                                         {% for i in effective_servicegroups %}
-                                            <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+                                            <li><a href="{% url "edit_object" i.id %}">{{ i.description }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -187,7 +177,7 @@
                                     <h5>{% trans "Hosts" %}</h5>
                                     <ul class="nav nav-list">
                                         {% for i in effective_hosts %}
-                                            <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+                                            <li><a href="{% url "edit_object" i.id %}">{{ i.description }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -195,14 +185,14 @@
                                     <h5>{% trans "Contacts" %}</h5>
                                     <ul class="nav nav-list">
                                         {% for i in effective_contacts %}
-                                            <li><a href="{% url edit_object i.id %}">{{ i.description }}</a></li>
+                                            <li><a href="{% url "edit_object" i.id %}">{{ i.description }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
                                 {% if effective_command %}
                                     <h5>{% trans "Check Command" %}</h5>
                                     <ul class="nav nav-list">
-                                        <li><a href="{% url edit_object effective_command.id %}">{{ effective_command.description }}</a></li>
+                                        <li><a href="{% url "edit_object" effective_command.id %}">{{ effective_command.description }}</a></li>
                                     </ul>
                                 {% endif %}
 
@@ -240,7 +230,7 @@
                                 </div>
                                 {% if my_object %}
                                 <div class="modal hide fade" id="geek_edit">
-                                    <form action="{% url objectbrowser.views.geek_edit my_object.id %}" method="post">{% csrf_token %}
+                                    <form action="{% url "objectbrowser.views.geek_edit" my_object.id %}" method="post">{% csrf_token %}
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
                                             <h3>{% trans "Geek Edit" %}</h3>
