@@ -102,7 +102,7 @@ def update_eventhandlers(request):
 
 def get_available_themes():
     """ Returns a tuple with the name of themes that are available in media/theme directory """
-    theme_dir = os.path.join(adagios.settings.MEDIA_ROOT, adagios.settings.THEMES_FOLDER)
+    theme_dir = os.path.join(adagios.settings.STATIC_ROOT, adagios.settings.THEMES_FOLDER)
 
     result = []
     for root, dirs, files in os.walk(theme_dir):

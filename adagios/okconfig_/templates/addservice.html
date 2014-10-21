@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Add Service" %}{% endblock %}
@@ -7,7 +8,7 @@
 {% block toolbar %}{% endblock %}
 {% block header %}
 {% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.addservice %}">{% trans "Add Service" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.okconfig_.views.addservice" %}">{% trans "Add Service" %}</a>{% endblock %}
 
 {% block content %}
 

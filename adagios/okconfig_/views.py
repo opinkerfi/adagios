@@ -20,7 +20,6 @@
 from django.shortcuts import render_to_response, redirect
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
-from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.template import RequestContext
 from django.utils.translation import ugettext as _

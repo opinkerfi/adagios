@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Objectbrowser - Object not found" %}{% endblock %}
@@ -23,7 +24,7 @@
                    {% trans "On rare occations this can happen if you just made changes to your object and its object id changed because it now looks differently in the config files." %}
                </p>
                <p>
-                   {% trans "In any case, you can try browsing for your object in the" %} <a href="{% url adagios.objectbrowser.views.list_object_types %}">objectbrowser</a>
+                   {% trans "In any case, you can try browsing for your object in the" %} <a href="{% url "adagios.objectbrowser.views.list_object_types" %}">objectbrowser</a>
                </p>
             {% endif %}
         </div>

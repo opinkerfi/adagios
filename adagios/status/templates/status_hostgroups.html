@@ -1,9 +1,10 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Hostgroups" %}{% endblock %}
 {% block nav2 %}
-    <a href="{% url status.views.status_hostgroups %}">{% trans "Hostgroups" %}</a>
+    <a href="{% url 'status.views.status_hostgroups' %}">{% trans "Hostgroups" %}</a>
     {% if hostgroup_name %}
     / {{ hostgroup_name }}
     {% else %}

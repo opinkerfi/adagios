@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Edit Host" %}{% endblock %}
 {% block smallheader %}{% trans "Edit" %}{% endblock %}
 {% block largeheader %}{% trans "Host" %}{% endblock %}
-{% block nav2 %}<a href="{% url adagios.okconfig_.views.edit host_name %}">{% trans "Edit Host" %}</a>{% endblock %}
+{% block nav2 %}<a href="{% url "adagios.okconfig_.views.edit" host_name %}">{% trans "Edit Host" %}</a>{% endblock %}
 {% block toolbar %}{% endblock %}
 
 {% block content %}
@@ -24,8 +25,8 @@
 
     <!-- <button class="btn btn-success">Run all Service checks</button> -->
     <div style="margin: 16px">
-        <a href="{% url okconfig_.views.install_agent %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">{% trans "Install Agent" %}</a>
-        <a href="{% url okconfig_.views.addtemplate %}/?host_name={{ myhost.host_name }}" class="btn btn-success">{% trans "Add templates" %}</a>
+        <a href="{% url "okconfig_.views.install_agent" %}/?remote_host={{ myhost.host_name }}" class="btn btn-success">{% trans "Install Agent" %}</a>
+        <a href="{% url "okconfig_.views.addtemplate" %}/?host_name={{ myhost.host_name }}" class="btn btn-success">{% trans "Add templates" %}</a>
     </div>
 
     <h3>{% trans "Services of this host:" %}</h3>

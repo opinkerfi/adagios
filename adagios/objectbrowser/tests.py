@@ -26,6 +26,7 @@ import pynag.Model
 import adagios.settings
 import adagios.utils
 import adagios.objectbrowser.forms
+import re
 
 from adagios.objectbrowser.forms import PynagAutoCompleteField
 
@@ -129,9 +130,9 @@ class TestPynagForm(unittest.TestCase):
         self.assertEqual(200, response.status_code)
 
         # See if the output more or less makes sense
-        search_string = '<input type="text" name="advanced-host_name" value="{host_name}"'
-        search_string = search_string.format(host_name=host_name)
-        self.assertTrue(search_string in response.content)
+        search_string_re = '<input[^>]* name="advanced-host_name"[^>]* value="{host_name}"'
+        search_string_re = search_string_re.format(host_name=host_name)
+        self.assertTrue(re.search(search_string_re, response.content))
 
         # Check the actual form we were sent
         form = response.context['form']

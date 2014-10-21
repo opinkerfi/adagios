@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}{% trans "Bulk edit" %}{% endblock %}
@@ -69,7 +70,7 @@
                 description = $(this).find('.description').text();
                 status_span = $(this).find('#result_' + index);
                 status_span.text('Pending ...');
-                url = "{% url objectbrowser.views.add_to_group %}/" + group_type + "/" + group_name;
+                url = "{% url "objectbrowser.views.add_to_group" %}/" + group_type + "/" + group_name;
                 url = url.split("?")[0];
                 url = url + "?" + object_type + '=' + description;
                 data = {};

@@ -30,6 +30,7 @@ import adagios.status.utils
 import adagios.status.graphite
 import adagios.settings
 import adagios.utils
+import simplejson as json
 
 
 class LiveStatusTestCase(unittest.TestCase):
@@ -128,6 +129,18 @@ class LiveStatusTestCase(unittest.TestCase):
         response = c.post('/rest/status/json/submit_check_result', data=data)
         self.assertEqual(200, response.status_code)
 
+    def test_rest_top_alert_producers(self):
+        """ Test adagios.rest.status.top_alert_producers
+        """
+        c = Client()
+        data = {}
+        data['limit'] = '1'
+        response = c.post('/rest/status/json/top_alert_producers', data=data)
+        self.assertEqual(200, response.status_code)
+
+        json_reply = json.loads(response.content)
+        self.assertFalse(len(json_reply) > 1, "Too many objects returned" \
+                         " limit is 1, json:\n" + str(json_reply))
 
 class Graphite(unittest.TestCase):
     def test__get_graphite_url(self):

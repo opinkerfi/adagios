@@ -1,10 +1,11 @@
 {% extends "base_status.html" %}
+{% load url from future %}
 {% load i18n %}
 
 {% block title %}Add new Object{% endblock %}
 {% block smallheader %}Add{% endblock %}
 {% block largeheader %}{{ object_type }}{% endblock %}
-{% block nav1 %}<a href="{% url objectbrowser %}">{% trans "Object Browser"%}</a>{% endblock %}
+{% block nav1 %}<a href="{% url "objectbrowser" %}">{% trans "Object Browser"%}</a>{% endblock %}
 
 {% block toolbar %}
 {% endblock %}
