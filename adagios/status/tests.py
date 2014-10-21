@@ -191,10 +191,8 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).setUpClass()
 
         if enable_selenium is False:
-            cls.enable = False
             return
 
-        cls.enable = True
         cls.nagios_config = adagios.settings.nagios_config
         cls.environment = adagios.utils.FakeAdagiosEnvironment()
         cls.environment.create_minimal_environment()
@@ -208,21 +206,21 @@ class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def tearDownClass(cls):
         super(SeleniumTestCase, cls).tearDownClass()
-        if cls.enable:
+        if enable_selenium:
             cls.driver.close()
             cls.environment.terminate()
 
 
+    @unittest.skipUnless(enable_selenium, 'Requires selenium')
     def test_network_parents(self):
         """Status Overview, Network Parents should show an integer"""
-        if not self.enable:
-            return
         self.driver.get(self.live_server_url + "/status")
 
         # Second link is Network Parents in overview
         self.assertEqual(self.driver.find_elements(By.XPATH,
             "//a[@href='/status/parents']")[1].text.isdigit(), True)
 
+    @unittest.skipUnless(enable_selenium, 'Requires selenium')
     def test_services_select_all(self):
         """Loads services list and tries to select everything
 
@@ -231,9 +229,6 @@ class SeleniumTestCase(LiveServerTestCase):
             Click select all
             Look for statustable rows
             Assert that all rows are checked"""
-
-        if not self.enable:
-            return
 
         self.driver.get(self.live_server_url + "/status/services")
 
@@ -251,10 +246,9 @@ class SeleniumTestCase(LiveServerTestCase):
                             "Non selected row found after selecting all: " + \
                             row.text)
 
+    @unittest.skipUnless(enable_selenium, 'Requires selenium')
     def test_status_overview_top_alert_producers(self):
         """Check the top alert producers part of status overview"""
-        if not self.enable:
-            return
 
         self.driver.get(self.live_server_url + "/status")
 
