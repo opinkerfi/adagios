@@ -82,7 +82,7 @@ update_debian_changelog() {
     changelog=$(mktemp)
     echo "${project_name} (${new_version}-${current_release}) unstable; urgency=low" > ${changelog}
     echo "" >> ${changelog}
-    echo " * New upstream version" >> ${changelog}
+    echo "  * New upstream version" >> ${changelog}
     echo "" >> ${changelog}
     echo " -- ${NAME} <${MAIL}>  ${DATE}" >> ${changelog}
     echo "" >> ${changelog}
