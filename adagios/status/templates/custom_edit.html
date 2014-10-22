@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load i18n %}
 {% load adagiostags %}
 
@@ -52,14 +53,16 @@ tbody:nth-child(odd){
   </div>
   <div class="form-actions">
     <button class="btn btn-success" type="submit">{% trans "Save" %}</button>
-    <a href="javascript:$('#areyousure').toggle('400');" class="btn">{% trans "Delete view" %}</a>
+    {% if viewname %}
+    <a onclick="$('#areyousure').toggle('400');" class="btn">{% trans "Delete view" %}</a>
     <div id="areyousure" class="alert alert-error hide">
       {% blocktrans %}
         Are you sure you want to delete the view {{ viewname }}?
       {% endblocktrans %}
-      <a href="{% url "status.views.custom_delete" viewname %}" class="btn btn-danger">{% trans "Yes" %}</a>
-      <a href="javascript:$('#areyousure').toggle('400');" class="btn btn-success">{% trans "No" %}</a>
+        <a href="{% url "status.views.custom_delete" viewname %}" class="btn btn-danger">{% trans "Yes" %}</a>
+      <a onclick="$('#areyousure').toggle('400');" class="btn btn-success">{% trans "No" %}</a>
     </div>
+    {% endif %}
   </div>
 </form>
 <!-- forms store, it's like AppStore but free -->
@@ -93,7 +96,7 @@ tbody:nth-child(odd){
 }
 
 </style>
-"
+
 <script src="{% url "media" path="external/jquery-ui-1.10.4.custom/jquery-ui-1.10.4.custom.min.js" %}"></script>
 
 <script type="text/javascript">
