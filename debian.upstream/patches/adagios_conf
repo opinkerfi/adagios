@@ -1,0 +1,62 @@
+Index: adagios/adagios/etc/adagios/adagios.conf
+===================================================================
+--- adagios.orig/adagios/etc/adagios/adagios.conf
++++ adagios/adagios/etc/adagios/adagios.conf
+@@ -1,24 +1,24 @@
+ # nagios_config - Path to your nagios configuration file
+ # If set, adagios will use this file to manage your object
+ # definitions. If set to None, adagios will search most common
+-# paths like /etc/nagios/nagios.cfg for it
+-#nagios_config = "/etc/nagios/nagios.cfg"
+-nagios_config = "/etc/nagios/nagios.cfg"
++# paths like /etc/nagios3/nagios.cfg for it
++#nagios_config = "/etc/nagios3/nagios.cfg"
++nagios_config = "/etc/nagios3/nagios.cfg"
+ 
+ # This should be the URL to your nagios server. If set, then
+ # Adagios can link you directly from configuration to live object.
+ # If you don't need this feature. Set nagios_url to '' or None
+-#nagios_url = "http://mynagiosserver/nagios"
+-nagios_url = "/nagios"
++#nagios_url = "http://mynagiosserver/nagios3"
++nagios_url = "/nagios3"
+ 
+-# destination_directory - Where adagios will store new objects
++# destination_directory ="/etc/nagios3/adagios/"
+ # by default. You should make sure that this directory exists
+-# and nagios.cfg has a cfg_dir=/etc/nagios/adagios/
+-destination_directory = "/etc/nagios/adagios/"
++# and nagios.cfg has a cfg_dir=/etc/nagios3/adagios/
++destination_directory ="/etc/nagios3/adagios/"
+ 
+ # livestatus_path - Path to livestatus socket
+ livestatus_path = None
+-# enable_githandler - If set to true, and your /etc/nagios/ directory
++# enable_githandler - If set to true, and your /etc/nagios3/ directory
+ # is a git repository. adagios will automatically commit changes when
+ # they are made.
+ enable_githandler = True
+@@ -34,11 +34,11 @@ auto_reload = False
+ 
+ # nagios_init_script - Path to init script used to start/stop nagios
+ # Adagios uses this to reload nagios after configuration changes
+-nagios_init_script="sudo /etc/init.d/nagios"
++nagios_init_script="sudo /etc/init.d/nagios3"
+ 
+ # nagios_binary - Path to your nagios binary
+-# Adagios uses this to run "nagios -v /etc/nagios/nagios.cfg"
+-nagios_binary="/usr/sbin/nagios"
++# Adagios uses this to run "nagios -v /etc/nagios3/nagios.cfg"
++nagios_binary="/usr/sbin/nagios3"
+ 
+ 
+ # escape_html_tags - Escape html tags in status view
+@@ -57,7 +57,7 @@ warn_if_selinux_is_active=True
+ # This is used for integrated graphs into the status view
+ # if you do not use pnp or do not need the status view of adagios
+ # simply change this to any other file that exists
+-pnp_filepath="/usr/share/nagios/html/pnp4nagios/index.php"
++pnp_filepath="/usr/share/pnp4nagios/html/index.php"
+     
+ 
+ # contrib_dir - Path to user contributed views
