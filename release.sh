@@ -7,8 +7,7 @@ current_version=$(grep ^Version: $project_name.spec | awk '{ print $2 }')
 current_release=$(grep "define release" $project_name.spec | awk '{ print $3 }')
 
 UPDATE_INFO_FILE=$(mktemp)
-freecode_file=$(mktemp)
-trap "rm -f ${UPDATE_INFO_FILE} ${freecode_file}" EXIT
+trap "rm -f ${UPDATE_INFO_FILE}" EXIT
 
 if [ -z "$EDITOR" ]; then
     EDITOR=vi
@@ -33,8 +32,6 @@ main() {
 
     upload_to_pypi || echo FAIL
 
-    upload_to_freecode || echo FAIL
-
     echo "### All Done"
 }
 
@@ -55,61 +52,6 @@ git_push() {
     ask "Upload to github?" || return 0
     git push origin master || return 1
     git push --tags origin master || return 1
-}
-
-
-upload_to_freecode() {
-    ask "Upload to freecode?" || return 0
-    update_freecode_info
-    error=0
-    which freecode-submit &> /dev/null || error=1
-    grep freecode ~/.netrc &> /dev/null || error=1
-
-    if [ $error -gt 0 ]; then
-        echo freecode-submit missing, please install and update .netrc appropriately
-        echo
-        echo use yum install freecode-submit or equivilent for your distribution
-        echo
-        echo Next you have to find your API key on freecode.com and put it into ~/.netrc
-        echo
-        echo 'echo "machine freecode account <apikey> password none" >> ~/.netrc'
-        return 1
-    fi
-
-    echo "Project: $project_name" > ${freecode_file}
-    echo "Version: ${new_version}" >> ${freecode_file}
-    echo "Hide: N" >> ${freecode_file}
-    echo "Website-URL: http://${project_name}/" >> ${freecode_file}
-    echo "Tar/GZ-URL: https://pypi.python.org/packages/source/p/${project_name}/${project_name}-${new_version}.tar.gz" >> ${freecode_file}
-
-    grep -A24 '^$' ${UPDATE_INFO_FILE} >> ${freecode_file}
-    freecode-submit < ${freecode_file}
-
-}
-
-
-
-update_freecode_info() {
-    echo "Current version is: $current_version" > ${UPDATE_INFO_FILE}
-    echo "New version number: ${new_version}" >> ${UPDATE_INFO_FILE}
-    echo 'Summary: <one line summary>' >> ${UPDATE_INFO_FILE}
-    echo '' >> ${UPDATE_INFO_FILE}
-    echo '<full description>' >> ${UPDATE_INFO_FILE}
-    ${EDITOR} ${UPDATE_INFO_FILE}
-
-    new_version=$(grep '^New version number:' ${UPDATE_INFO_FILE} | sed 's/^New version number: *//' | sed 's/ *$//')
-    short_desc=$(grep '^Summary:' ${UPDATE_INFO_FILE} | sed 's/^Summary: *//')
-
-    # Some sanity checking
-    if [ -z "${new_version}" ]; then
-        echo "New version is required"
-        exit 1
-    fi
-    if [ -z "${short_desc}" ]; then
-        echo "Summary is required"
-        exit 1
-    fi
-
 }
 
 
@@ -140,7 +82,7 @@ update_debian_changelog() {
     changelog=$(mktemp)
     echo "${project_name} (${new_version}-${current_release}) unstable; urgency=low" > ${changelog}
     echo "" >> ${changelog}
-    echo " * New upstream version" >> ${changelog}
+    echo "  * New upstream version" >> ${changelog}
     echo "" >> ${changelog}
     echo " -- ${NAME} <${MAIL}>  ${DATE}" >> ${changelog}
     echo "" >> ${changelog}

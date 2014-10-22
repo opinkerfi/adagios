@@ -1,11 +1,18 @@
-Changes in master
-=================
+Changes in 1.6.1
+========================
 
 Summary of features:
 
 * Allow disabling pnp4nagios
     enable_pnp4nagios is now configurable. If false the Graphs link is removed
     from the status view.
+
+* Django support expanded
+    Runs on Django 1.4, 1.5 and 1.6.
+
+* Rework forms in "Configure"
+    Forms within objectbrowser (Configure) have gotten a quite the rewrite and
+    many bugs have been fixed.
 
 Changes in 1.6.0
 ========================
