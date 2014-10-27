@@ -26,6 +26,8 @@ import adagios.exceptions
 import adagios.settings
 import os
 import pynag.Utils.misc
+from django.test import LiveServerTestCase
+from django.utils import unittest
 
 from django.utils.translation import ugettext as _
 
@@ -169,4 +171,39 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
         if self._adagios_settings_copy:
             self.restore_adagios_global_variables()
         super(FakeAdagiosEnvironment, self).terminate()
+
+
+class SeleniumTestCase(LiveServerTestCase):
+    driver = None
+    environment = None
+
+
+
+    @classmethod
+    def setUpClass(cls):
+        super(SeleniumTestCase, cls).setUpClass()
+
+        try:
+            from selenium import webdriver
+            from selenium.webdriver.common.by import By
+
+        except ImportError:
+            raise unittest.SkipTest("No selenium installed")
+
+        cls.nagios_config = adagios.settings.nagios_config
+        cls.environment = adagios.utils.FakeAdagiosEnvironment()
+        cls.environment.create_minimal_environment()
+        cls.environment.configure_livestatus()
+        cls.environment.update_adagios_global_variables()
+        cls.environment.start()
+        cls.livestatus = cls.environment.get_livestatus()
+        cls.By = By
+
+        cls.driver = webdriver.Firefox()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(SeleniumTestCase, cls).tearDownClass()
+        cls.driver.close()
+        cls.environment.terminate()
 

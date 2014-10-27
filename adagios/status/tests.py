@@ -32,13 +32,6 @@ import adagios.settings
 import adagios.utils
 import simplejson as json
 
-try:
-    from selenium import webdriver
-    from selenium.webdriver.common.by import By
-    enable_selenium = True
-except ImportError:
-    enable_selenium = False
-
 
 class LiveStatusTestCase(unittest.TestCase):
 
@@ -181,46 +174,15 @@ class Graphite(unittest.TestCase):
         self.assertTrue('packetloss' in result[0]['metrics'])
 
 
-class SeleniumTestCase(LiveServerTestCase):
-    driver = None
-    environment = None
-
-
-    @classmethod
-    def setUpClass(cls):
-        super(SeleniumTestCase, cls).setUpClass()
-
-        if enable_selenium is False:
-            return
-
-        cls.nagios_config = adagios.settings.nagios_config
-        cls.environment = adagios.utils.FakeAdagiosEnvironment()
-        cls.environment.create_minimal_environment()
-        cls.environment.configure_livestatus()
-        cls.environment.update_adagios_global_variables()
-        cls.environment.start()
-        cls.livestatus = cls.environment.get_livestatus()
-
-        cls.driver = webdriver.Firefox()
-
-    @classmethod
-    def tearDownClass(cls):
-        super(SeleniumTestCase, cls).tearDownClass()
-        if enable_selenium:
-            cls.driver.close()
-            cls.environment.terminate()
-
-
-    @unittest.skipUnless(enable_selenium, 'Requires selenium')
+class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
     def test_network_parents(self):
         """Status Overview, Network Parents should show an integer"""
         self.driver.get(self.live_server_url + "/status")
 
         # Second link is Network Parents in overview
-        self.assertEqual(self.driver.find_elements(By.XPATH,
+        self.assertEqual(self.driver.find_elements(self.By.XPATH,
             "//a[@href='/status/parents']")[1].text.isdigit(), True)
 
-    @unittest.skipUnless(enable_selenium, 'Requires selenium')
     def test_services_select_all(self):
         """Loads services list and tries to select everything
 
@@ -238,7 +200,7 @@ class SeleniumTestCase(LiveServerTestCase):
         # Get all statustable rows
         status_table_rows = self.driver.find_element_by_xpath(
             "//table[contains(@class, 'statustable')]"
-        ).find_elements(By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
+        ).find_elements(self.By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
 
         # Sub-select non-selected
         for row in status_table_rows:
@@ -246,13 +208,12 @@ class SeleniumTestCase(LiveServerTestCase):
                             "Non selected row found after selecting all: " + \
                             row.text)
 
-    @unittest.skipUnless(enable_selenium, 'Requires selenium')
     def test_status_overview_top_alert_producers(self):
         """Check the top alert producers part of status overview"""
 
         self.driver.get(self.live_server_url + "/status")
 
-        top_alert_table_rows = self.driver.find_elements(By.XPATH,
+        top_alert_table_rows = self.driver.find_elements(self.By.XPATH,
             "//table[@id='top_alert_producers']/tbody/tr"
         )
 
