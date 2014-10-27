@@ -1,0 +1,9 @@
+Index: adagios/adagios/etc/sudoers.d/adagios
+===================================================================
+--- adagios.orig/adagios/etc/sudoers.d/adagios
++++ adagios/adagios/etc/sudoers.d/adagios
+@@ -1,3 +1,3 @@
+ Defaults:nagios    !requiretty
+-nagios             ALL = (root) NOPASSWD: /etc/init.d/nagios
++nagios             ALL = (root) NOPASSWD: /etc/init.d/nagios3
+ 

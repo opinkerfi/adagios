@@ -1,0 +1,13 @@
+Index: adagios/adagios/settings.py
+===================================================================
+--- adagios.orig/adagios/settings.py
++++ adagios/adagios/settings.py
+@@ -257,7 +257,7 @@ adagios_configfile = "/etc/adagios/adagi
+ 
+ try:
+     if not os.path.exists(adagios_configfile):
+-        alternative_adagios_configfile = "%s/adagios.conf" % djangopath
++        alternative_adagios_configfile = "%s/adagios/adagios.conf" % djangopath
+         message = "Config file '{adagios_configfile}' not found. Using {alternative_adagios_configfile} instead."
+         warn(message.format(**locals()))
+         adagios_configfile = alternative_adagios_configfile

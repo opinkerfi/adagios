@@ -1,0 +1,21 @@
+Index: adagios/adagios/apache/adagios.conf
+===================================================================
+--- adagios.orig/adagios/apache/adagios.conf
++++ adagios/adagios/apache/adagios.conf
+@@ -1,6 +1,6 @@
+ 
+ # Create the wsgi process group
+-WSGISocketPrefix run/wsgi
++#WSGISocketPrefix run/wsgi
+ WSGIDaemonProcess adagios user=nagios group=nagios processes=1 threads=25
+ WSGIScriptAlias /adagios /usr/lib/python2.7/site-packages/adagios/wsgi.py
+ 
+@@ -13,7 +13,7 @@ Alias /adagios/media /usr/lib/python2.7/
+ 
+    AuthName "Nagios Access"
+    AuthType Basic
+-   AuthUserFile /etc/nagios/passwd
++   AuthUserFile /etc/nagios3/htpasswd.users
+    Require valid-user
+    # Redirect /adagios to /adagios/
+    # So path to css/javascript works
