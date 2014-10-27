@@ -181,14 +181,14 @@ class SeleniumTestCase(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(SeleniumTestCase, cls).setUpClass()
-
         try:
             from selenium import webdriver
             from selenium.webdriver.common.by import By
 
         except ImportError:
             raise unittest.SkipTest("No selenium installed")
+
+        super(SeleniumTestCase, cls).setUpClass()
 
         cls.nagios_config = adagios.settings.nagios_config
         cls.environment = adagios.utils.FakeAdagiosEnvironment()
@@ -197,13 +197,12 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.environment.update_adagios_global_variables()
         cls.environment.start()
         cls.livestatus = cls.environment.get_livestatus()
-        cls.By = By
 
         cls.driver = webdriver.Firefox()
 
     @classmethod
     def tearDownClass(cls):
         super(SeleniumTestCase, cls).tearDownClass()
-        cls.driver.close()
         cls.environment.terminate()
+        cls.driver.close()
 
