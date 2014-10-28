@@ -31,6 +31,7 @@ from django.utils import unittest
 
 from django.utils.translation import ugettext as _
 
+SELENIUM_DRIVER = None
 
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
     livestatus = adagios.status.utils.livestatus(None)
@@ -177,14 +178,11 @@ class SeleniumTestCase(LiveServerTestCase):
     driver = None
     environment = None
 
-
-
     @classmethod
     def setUpClass(cls):
+        global SELENIUM_DRIVER
         try:
             from selenium import webdriver
-            from selenium.webdriver.common.by import By
-
         except ImportError:
             raise unittest.SkipTest("No selenium installed")
 
@@ -198,11 +196,17 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.environment.start()
         cls.livestatus = cls.environment.get_livestatus()
 
-        cls.driver = webdriver.Firefox()
+        if not SELENIUM_DRIVER:
+            SELENIUM_DRIVER = webdriver.Firefox()
+
+        cls.driver = SELENIUM_DRIVER
 
     @classmethod
     def tearDownClass(cls):
-        super(SeleniumTestCase, cls).tearDownClass()
+        # Exit browser when all tests are done
+        import atexit
+        atexit.register(cls.driver.close)
+
         cls.environment.terminate()
-        cls.driver.close()
+        super(SeleniumTestCase, cls).tearDownClass()
 
