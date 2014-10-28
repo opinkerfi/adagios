@@ -28,6 +28,7 @@ import os
 import pynag.Utils.misc
 from django.test import LiveServerTestCase
 from django.utils import unittest
+import atexit
 
 from django.utils.translation import ugettext as _
 
@@ -212,16 +213,15 @@ class SeleniumTestCase(LiveServerTestCase):
                 SELENIUM_DRIVER = webdriver.Remote(desired_capabilities=capabilities, command_executor="http://%s" % hub_url)
             else:
                 SELENIUM_DRIVER = webdriver.Firefox()
+            # Exit browser when all tests are done
+            atexit.register(SELENIUM_DRIVER.close)
+
 
 
         cls.driver = SELENIUM_DRIVER
 
     @classmethod
     def tearDownClass(cls):
-        # Exit browser when all tests are done
-        import atexit
-        atexit.register(cls.driver.close)
-
         cls.environment.terminate()
         super(SeleniumTestCase, cls).tearDownClass()
 
