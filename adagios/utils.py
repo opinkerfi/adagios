@@ -214,7 +214,7 @@ class SeleniumTestCase(LiveServerTestCase):
             else:
                 SELENIUM_DRIVER = webdriver.Firefox()
             # Exit browser when all tests are done
-            atexit.register(SELENIUM_DRIVER.close)
+            atexit.register(SELENIUM_DRIVER.quit)
 
 
 
