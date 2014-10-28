@@ -32,6 +32,11 @@ import adagios.settings
 import adagios.utils
 import simplejson as json
 
+try:
+    from selenium.webdriver.common.by import By
+except ImportError:
+    pass
+
 
 class LiveStatusTestCase(unittest.TestCase):
 
@@ -180,7 +185,7 @@ class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
         self.driver.get(self.live_server_url + "/status")
 
         # Second link is Network Parents in overview
-        self.assertEqual(self.driver.find_elements(self.By.XPATH,
+        self.assertEqual(self.driver.find_elements(By.XPATH,
             "//a[@href='/status/parents']")[1].text.isdigit(), True)
 
     def test_services_select_all(self):
@@ -200,7 +205,7 @@ class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
         # Get all statustable rows
         status_table_rows = self.driver.find_element_by_xpath(
             "//table[contains(@class, 'statustable')]"
-        ).find_elements(self.By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
+        ).find_elements(By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
 
         # Sub-select non-selected
         for row in status_table_rows:
@@ -213,7 +218,7 @@ class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
 
         self.driver.get(self.live_server_url + "/status")
 
-        top_alert_table_rows = self.driver.find_elements(self.By.XPATH,
+        top_alert_table_rows = self.driver.find_elements(By.XPATH,
             "//table[@id='top_alert_producers']/tbody/tr"
         )
 
