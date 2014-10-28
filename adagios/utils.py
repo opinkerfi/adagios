@@ -208,8 +208,8 @@ class SeleniumTestCase(LiveServerTestCase):
                 username = os.environ["SAUCE_USERNAME"]
                 access_key = os.environ["SAUCE_ACCESS_KEY"]
 
-                hub_url = "%s:%s@localhost:4445" % (username, access_key)
-                SELENIUM_DRIVER = webdriver.Remote(desired_capabilities=capabilities, command_executor="http://%s/wd/hub" % hub_url)
+                hub_url = "%s:%s@ondemand.saucelabs.com/wd/hub" % (username, access_key)
+                SELENIUM_DRIVER = webdriver.Remote(desired_capabilities=capabilities, command_executor="http://%s" % hub_url)
             else:
                 SELENIUM_DRIVER = webdriver.Firefox()
 
