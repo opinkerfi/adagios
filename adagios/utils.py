@@ -198,10 +198,12 @@ class SeleniumTestCase(LiveServerTestCase):
 
         if not SELENIUM_DRIVER:
             if 'TRAVIS' in os.environ:
-                capabilities = {}
+                capabilities = webdriver.DesiredCapabilities.CHROME
                 capabilities["build"] = os.environ["TRAVIS_BUILD_NUMBER"]
                 capabilities["tags"] = [os.environ["TRAVIS_PYTHON_VERSION"], "CI"]
                 capabilities["tunnel-identifier"] = os.environ["TRAVIS_JOB_NUMBER"]
+                capabilities['platform'] = "Windows 8.1"
+                capabilities['version'] = "31"
 
                 username = os.environ["SAUCE_USERNAME"]
                 access_key = os.environ["SAUCE_ACCESS_KEY"]
