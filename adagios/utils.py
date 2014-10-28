@@ -197,7 +197,20 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.livestatus = cls.environment.get_livestatus()
 
         if not SELENIUM_DRIVER:
-            SELENIUM_DRIVER = webdriver.Firefox()
+            if 'TRAVIS' in os.environ:
+                capabilities = {}
+                capabilities["build"] = os.environ["TRAVIS_BUILD_NUMBER"]
+                capabilities["tags"] = [os.environ["TRAVIS_PYTHON_VERSION"], "CI"]
+                capabilities["tunnel-identifier"] = os.environ["TRAVIS_JOB_NUMBER"]
+
+                username = os.environ["SAUCE_USERNAME"]
+                access_key = os.environ["SAUCE_ACCESS_KEY"]
+
+                hub_url = "%s:%s@localhost:4445" % (username, access_key)
+                SELENIUM_DRIVER = webdriver.Remote(desired_capabilities=capabilities, command_executor="http://%s/wd/hub" % hub_url)
+            else:
+                SELENIUM_DRIVER = webdriver.Firefox()
+
 
         cls.driver = SELENIUM_DRIVER
 
