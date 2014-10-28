@@ -570,8 +570,8 @@ class SeleniumObjectBrowserTestCase(adagios.utils.SeleniumTestCase):
         except TimeoutException:
             self.assertTrue(False, "Timed out waiting for host table to load")
 
-        self.assertTrue(len(host_table_rows) > 1,
-                        "No table rows in objecttable")
+        self.assertTrue(len(host_table_rows) > 0,
+                        "No table rows in host-table")
 
 _TEST_SERVICE = """
 define service {
