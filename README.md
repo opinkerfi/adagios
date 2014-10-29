@@ -4,6 +4,9 @@ Adagios is a web based Nagios configuration interface built to be simple and int
 
 Project website is at http://adagios.org
 
+[![Build Status](https://travis-ci.org/opinkerfi/adagios.svg?branch=master)](https://travis-ci.org/nopinkerfi/adagios) [![Sauce Test Status](https://saucelabs.com/buildstatus/tommi)](https://saucelabs.com/u/tommi)
+
+
 Live Demo
 =========
 http://demo.adagios.org/
