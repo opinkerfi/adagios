@@ -26,9 +26,13 @@ import adagios.exceptions
 import adagios.settings
 import os
 import pynag.Utils.misc
+from django.test import LiveServerTestCase
+from django.utils import unittest
+import atexit
 
 from django.utils.translation import ugettext as _
 
+SELENIUM_DRIVER = None
 
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
     livestatus = adagios.status.utils.livestatus(None)
@@ -169,4 +173,55 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
         if self._adagios_settings_copy:
             self.restore_adagios_global_variables()
         super(FakeAdagiosEnvironment, self).terminate()
+
+
+class SeleniumTestCase(LiveServerTestCase):
+    driver = None
+    environment = None
+
+    @classmethod
+    def setUpClass(cls):
+        global SELENIUM_DRIVER
+        try:
+            from selenium import webdriver
+        except ImportError:
+            raise unittest.SkipTest("No selenium installed")
+
+        super(SeleniumTestCase, cls).setUpClass()
+
+        cls.nagios_config = adagios.settings.nagios_config
+        cls.environment = adagios.utils.FakeAdagiosEnvironment()
+        cls.environment.create_minimal_environment()
+        cls.environment.configure_livestatus()
+        cls.environment.update_adagios_global_variables()
+        cls.environment.start()
+        cls.livestatus = cls.environment.get_livestatus()
+
+        if not SELENIUM_DRIVER:
+            if 'TRAVIS' in os.environ:
+                capabilities = webdriver.DesiredCapabilities.CHROME
+                capabilities["build"] = os.environ["TRAVIS_BUILD_NUMBER"]
+                capabilities["tags"] = [os.environ["TRAVIS_PYTHON_VERSION"], "CI"]
+                capabilities["tunnel-identifier"] = os.environ["TRAVIS_JOB_NUMBER"]
+                capabilities['platform'] = "Windows 8.1"
+                capabilities['version'] = "31"
+
+                username = os.environ["SAUCE_USERNAME"]
+                access_key = os.environ["SAUCE_ACCESS_KEY"]
+
+                hub_url = "%s:%s@ondemand.saucelabs.com/wd/hub" % (username, access_key)
+                SELENIUM_DRIVER = webdriver.Remote(desired_capabilities=capabilities, command_executor="http://%s" % hub_url)
+            else:
+                SELENIUM_DRIVER = webdriver.Firefox()
+            # Exit browser when all tests are done
+            atexit.register(SELENIUM_DRIVER.quit)
+
+
+
+        cls.driver = SELENIUM_DRIVER
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.environment.terminate()
+        super(SeleniumTestCase, cls).tearDownClass()
 

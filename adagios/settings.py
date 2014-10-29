@@ -34,6 +34,7 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+STATIC_URL = "/media/"
 
 DATABASES = {
     'default': {
@@ -306,3 +307,6 @@ PREFS_DEFAULT = {
     'theme': THEME_DEFAULT,
     'refresh_rate': refresh_rate
 }
+
+# Allow tests to run server on multiple ports
+os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000-9000'
