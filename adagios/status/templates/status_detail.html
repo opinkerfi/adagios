@@ -571,16 +571,16 @@
               {% endfor %}
             </ul>
 
+            <input type="checkbox" id="rekishiEvents"> {% trans "Show events" %}</input>
             <div class="tab-content" id="graphs_content">
               {% for graph in rekishi.graphs %}
                 <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
-                  <input type="checkbox" id="rekishiEvents">Show events</input>
                   {% for k,v in graph.metrics.items %}
                   <div class="row">
                     <div class="span1"></div>
                     <div class="rekishi-graph-container span8">
                       <div id="graph_{{ k }}_{{ graph.css_id }}" width="100%"></div>
-                      <input type="button" value="Reset" class="dygraph-reset-zoom">
+                      <input type="button" value="{% trans "Zoom out" %}" class="dygraph-reset-zoom">
                       <br /><br />
                     </div>
                     <div class="span1"></div>
@@ -907,6 +907,7 @@
                                 ylabel: data[0].data[0][unitsIndex],
                             }
                         );
+                        allDygraphs.push(dg);
                     });
                 {% endfor %}
             {% endfor %}
@@ -944,7 +945,7 @@
             });
 
             {# Add functionailty to resetZoom buttons #}
-            $(document).on('click', '.dygraph-reset-zoom', function(e){
+            $('input.dygraph-reset-zoom').click( function(){
                 $( allDygraphs ).each(function(){
                     this.resetZoom();
                 })
