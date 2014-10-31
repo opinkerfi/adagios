@@ -16,6 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import re
+
 import adagios.settings
 
 def _get_rekishi_url(base, host, service, metric, from_):
@@ -110,18 +112,38 @@ def get(base, host, service=None, metrics=None, periods=None):
     """
     graphs = []
 
-    # import pdb; pdb.set_trace()
-    for name, css_id, period in periods:
-        m = {}
-        for metric in metrics:
-            m[metric] = _get_rekishi_url(base, host, service, metric, period)
-        graph = dict(name=name, css_id=css_id, metrics=m)
-        graphs.append(graph)
-    print 'graphs:', graphs
+    multis = {"s": 1,
+              "m": 60,
+              "h": 60 * 60,
+              "d": 60 * 60 * 24,
+              "w": 60 * 60 * 24 * 7,
+              }
+
+    def add_period_in_sec(period):
+        p = {}
+        p["name"] = period[0]
+        p["css_id"] = period[1]
+        p["period_str"] = period[2]
+        try:
+            integer, multi = re.search("([-0-9]*)([A-Za-z]*)", period[2]).groups()
+            p["period_sec"] = int(integer) * multis[multi]
+        except Exception as exp:
+            pass
+        return p
+
+    periods = map(add_period_in_sec, periods)
+
+    period = "%ds" % min([p["period_sec"] for p in  periods])
+
+    m = {}
+    for metric in metrics:
+        m[metric] = _get_rekishi_url(base, host, service, metric, period)
+    graphs.append(m)
 
     reki = {}
     reki['events_url'] = _get_rekishi_events_url(base, host, service, period)
     reki['graphs'] = graphs
+    reki['periods'] = periods
     reki['host'] = _compliant_name(host)
     if service:
         reki['service'] = _compliant_name(service)

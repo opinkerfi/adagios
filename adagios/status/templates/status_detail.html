@@ -566,20 +566,19 @@
         <div class="tab-pane" id="rekishi">
           <div id="rekishi" class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-pills" id="rekishi_ul">
-              {% for graph in rekishi.graphs %}
-                <li{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} class="active"{% endif %}><a href="#rekishi_{{ graph.css_id }}" id="rekishi_{{ graph.css_id }}_link" data-toggle="tab">{% trans graph.name %}</a></li>
-              {% endfor %}
+            {% for period in rekishi.periods %}
+               <li{% if period.css_id == settings.REKISHI_DEFAULT_TAB %} class="active"{% endif %}><a href="#" id="rekishi_{{ period.css_id }}" range="{{ period.period_sec }}">{% trans period.name %}</a>
+            {% endfor %}
             </ul>
 
             <input type="checkbox" id="rekishiEvents"> {% trans "Show events" %}</input>
-            <div class="tab-content" id="graphs_content">
               {% for graph in rekishi.graphs %}
                 <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
-                  {% for k,v in graph.metrics.items %}
+                  {% for k,v in graph.items %}
                   <div class="row">
                     <div class="span1"></div>
                     <div class="rekishi-graph-container span8">
-                      <div id="graph_{{ k }}_{{ graph.css_id }}" width="100%"></div>
+                      <div id="graph_{{ k }}" width="100%"></div>
                       <input type="button" value="{% trans "Zoom out" %}" class="dygraph-reset-zoom">
                       <br /><br />
                     </div>
@@ -588,7 +587,6 @@
                   {% endfor %}
                 </div>
               {% endfor %}
-            </div>
           </div>
         </div>
         {% endif %}
@@ -881,8 +879,9 @@
 
         {% if settings.enable_rekishi %}
             allDygraphs = [];
+            var blockRedraw = false;
             {% for graph in rekishi.graphs %}
-                {% for k,v in graph.metrics.items %}
+                {% for k,v in graph.items %}
                     $.get("{{ v }}", function(data){
 
                         {# Find the units in the returned data so we can use them in axis title #}
@@ -899,12 +898,28 @@
                         }
 
                         dg = new Dygraph(
-                            $("#graph_{{ k }}_{{ graph.css_id }}")[0],
+                            $("#graph_{{ k }}")[0],
                             data[0].data,
                             { 
                                 labels: data[0].labels,
+                                animatedZooms: true,
                                 title: "{{ k }}",
                                 ylabel: data[0].data[0][unitsIndex],
+                                drawCallback: function(me, initial) {
+                                                if (blockRedraw || initial) return;
+                                                blockRedraw = true;
+                                                var range = me.xAxisRange();
+                                                var yrange = me.yAxisRange();
+                                                $( allDygraphs ).each( function(){
+                                                    if (this != me) {
+                                                    this.updateOptions({
+                                                        dateWindow: range,
+                                                        valueRange: yrange
+                                                      });
+                                                    }
+                                                });
+                                                blockRedraw = false;
+                                              }
                             }
                         );
                         allDygraphs.push(dg);
@@ -951,6 +966,39 @@
                 })
             });
 
+
+            var desired_range = null;
+            function approach_range() {
+                if (!desired_range) return;
+                $( allDygraphs ).each(function(){
+                    // go halfway there
+                    var range = this.xAxisRange();
+                    if (Math.abs(desired_range[0] - range[0]) < 60 &&
+                        Math.abs(desired_range[1] - range[1]) < 60) {
+                      this.updateOptions({dateWindow: desired_range});
+                      // (do not set another timeout.)
+                    } else {
+                      var new_range;
+                      new_range = [0.5 * (desired_range[0] + range[0]),
+                                   0.5 * (desired_range[1] + range[1])];
+                      this.updateOptions({dateWindow: new_range});
+                      animate();
+                    }
+                });
+            }
+
+            function animate() {
+                setTimeout(approach_range, 50);
+            }
+
+            function zoom(res) {
+                $( allDygraphs ).each(function(){
+                    var w = this.xAxisRange();
+                    desired_range = [ w[1] + res * 1000, w[1] ];
+                    animate();
+                });
+            }
+
             {# Ugly hack to allow graphs to be displayed when switching bootstrap tabs #}
             {# Hopefully this will not be necessary in BS3 #}
             $(document).on('click', '#rekishi_tab', function(e){
@@ -960,6 +1008,16 @@
             $(document).on('click', '#rekishi li', function(e){
                 $( allDygraphs ).resize();
             });
+
+            {# Handle rekishi zoom #}
+            {% for period in rekishi.periods %}
+                $("a#rekishi_{{ period.css_id }}").click( function() {
+                    var range = $(this).attr("range");
+                    zoom(range);
+                    return false;
+                });
+            {% endfor %}
+
 
         {% endif %}
     </script>
