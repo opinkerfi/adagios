@@ -206,7 +206,7 @@ GRAPHITE_DEFAULT_TAB = 'day'
 # rekishi #
 
 # the url where to fetch data and images
-rekishi_url = "http://localhost:8086"
+rekishi_url = "/rekishi/api/v1/dg/"
 
 # time ranges for generated graphs
 # the CSS identifier only needs to be unique here (it will be prefixed)
@@ -318,6 +318,8 @@ if enable_status_view:
     plugins['status'] = 'adagios.status'
 if enable_bi:
     plugins['bi'] = 'adagios.bi'
+if enable_rekishi:
+    plugins['rekishi'] = 'rekishi'
 
 for k, v in plugins.items():
     INSTALLED_APPS.append(v)
