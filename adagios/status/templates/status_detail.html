@@ -745,7 +745,6 @@
                     })
                     .fail( function(data) {
                         $('#effective_check_command').text(gettext("Failed to load check_command."));
-                        console.log(data);
                     });
 
             {% if not settings.escape_html_tags %}
@@ -927,10 +926,13 @@
                 {% endfor %}
             {% endfor %}
 
-            $(document).on('change', '#rekishiEvents', function(e){
+            $("input#rekishiEvents").change( function() {
                 if($(this).prop('checked') == true){
                     $.get("{{ rekishi.events_url }}", function(data){
                         labels = data[0].labels;
+                        time_i = labels.indexOf("time");
+                        state_i = labels.indexOf("state");
+                        output_i = labels.indexOf("output");
                         events = data[0].data;
                         annotations = [];
                         
@@ -939,14 +941,18 @@
                         }
 
                         for(var i=0; i<events.length; i++){
-                            ann = {
-                                series : "value",
-                                x : events[i][0], // Timestamp
-                                shortText: events[i][2][0],
-                                text: events[i][1]
-                            };
-
-                            annotations.push(ann);
+                            if ( events[i][time_i] != null &&
+                                 events[i][state_i] != null &&
+                                 events[i][output_i] != null )
+                                {
+                                ann = {
+                                    series : "value",
+                                    x : events[i][time_i], // Timestamp
+                                    shortText: events[i][state_i][0],
+                                    text: events[i][output_i],
+                                };
+                                annotations.push(ann);
+                            }
                         }
                         $( allDygraphs ).each(function(){
                             this.setAnnotations(annotations);
