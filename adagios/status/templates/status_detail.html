@@ -156,9 +156,12 @@
                                         {% endif %}
                                         {% if settings.enable_rekishi %} 
                                             <td>
-                                                <a href="#rekishi_tab" class="preview rekishi" ="rekishi-{{ i.label }}" title="{{ service_description }} {{ i.label }}">
+                                                <a href="#" graph="{{ i.label }}" id="pre_{{ i.label }}" class="preview rekishi" title="{{ service_description }} {{ i.label }}">
                                                     <i class="glyph glyph-charts" id="rekishi-preview-{{ i.label }}"></i>
                                                 </a>
+                                                <div id="rekishi-pre_graph-container_{{ i.label }}">
+                                                    <div id="pre_graph_{{ i.label }}" style="max-height: 200px; max-width: 480px;" ></div>
+                                                </div>
                                             </td>
                                         {% endif %}
                                     </tr>
@@ -872,19 +875,11 @@
             }
         });
 
-        $("a.preview.rekishi").popover({
-            placement: 'top',
-            trigger: 'hover',
-            template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
-            content: function() {
-                return "<div id=" + $(this)[0].href + ">";
-            }
-        });
 
         {% if settings.enable_rekishi %}
             // Handle reload on graphs tab
             $( document ).ready( function() {
-                if ($("li#rekishi_tab").hasClass("active")) {
+                if ($("ul#objecttab > li").hasClass("active")) {
                     draw_graph();
                 }
             });
@@ -980,8 +975,28 @@
                                 max = $(this)[critical_i]
                             }
                         });
+                        // Build pre_graph
+                        pre_dg = new Dygraph(
+                            $("#pre_graph_{{ k }}")[0],
+                            graph_data,
+                            {
+                                labels: graph_labels,
+                                title: title,
+                                colors: ['#489CDF', '#FFDE00', 'red'],
+                                strokeWidth: 2,
+                                {{ k }}: {fillGraph: true},
+                                labelsKMG2: true,
+                                legend: 'never',
+                                showLabelsOnHighlight: false,
+                                ylabel: data[0].data[0][unitsIndex],
+//                                valueRange: [min, max],
+//                                yRangePad: 20,
+                                dateWindow: time_range
+                            }
+                        );
                         // Build graph
-                        dg = new Dygraph(
+                        if ($("li#rekishi_tab").hasClass("active")) {
+                          dg = new Dygraph(
                             $("#graph_{{ k }}")[0],
                             graph_data,
                             { 
@@ -1020,12 +1035,26 @@
                                                 blockRedraw = false;
                                               }
                             }
-                        );
-                        allDygraphs.push(dg);
+                          );
+                          allDygraphs.push(dg);
+                        }
                     });
+                $("a#pre_{{ k }}").popover('show').popover('hide')
                 {% endfor %}
             {% endfor %}
             }
+
+           {% for graph in rekishi.graphs %}
+              {% for k,v in graph.items %}
+                $("a#pre_{{ k }}").popover({
+                    placement: 'top',
+                    trigger: 'hover',
+                    template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 530px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
+                    content: $("#rekishi-pre_graph-container_{{ k }}")
+                });
+              {% endfor %}
+            {% endfor %}
+
 
             $("input#rekishiEvents").change( function() {
                 if($(this).prop('checked') == true){
