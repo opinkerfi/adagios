@@ -84,7 +84,7 @@ def _get_rekishi_events_url(base, host, service, from_):
 def _compliant_name(name):
     """ Makes the necessary replacements for Graphite. """
     if name == '_HOST_':
-        return '__HOST__'
+        return '_self_'
     # name = ILLEGAL_CHAR.sub('_', name)
     return name
 
