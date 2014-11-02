@@ -40,6 +40,9 @@
             {% if settings.enable_graphite %}
               <li><a href="#graphite" data-toggle="tab" id="graphite_link">{% trans "Graphite" %}</a></li>
             {% endif %}
+            {% if settings.enable_rekishi %}
+              <li id="rekishi_tab"><a href="#rekishi" data-toggle="tab" id="rekishi_link">{% trans "Graphs" %}</a></li>
+            {% endif %}
             <li><a href="#custom_variables" data-toggle="tab">{% trans "Custom Variables" %}</a></li>
             <li><a href="#other" data-toggle="tab">{% trans "Debug" %}</a></li>
         </ul>
@@ -125,6 +128,9 @@
                                     {% if settings.enable_graphite %}
                                       <th>{% trans "graphite" %}</th>
                                     {% endif %}
+                                    {% if settings.enable_rekishi %}
+                                      <th>{% trans "Graphs" %}</th>
+                                    {% endif %}
                                 </tr>
                                 {% for i in perfdata %}
                                     <tr>
@@ -138,11 +144,25 @@
                                         <td>{{ i.max }}   </td>
                                         {% if settings.enable_pnp4nagios %}
                                         <td>
-                                            <a href="{% url 'pnp.views.pnp' %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
+                                            <a href="{% url 'pnp.views.pnp' %}/image?host={{ host.name }}&source={{ i.i }}&srv={{ service_description }}" class="preview pnp" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a>
                                         </td>
                                         {% endif %}
                                         {% if settings.enable_graphite %}
-                                          <td><a href="{{ graphite_default|hash:i.label }}" class="preview" title="{{ service_description }} {{ i.label }}"><i class="glyph glyph-charts"></i></a></td>
+                                            <td>
+                                                <a href="{{ graphite_default|hash:i.label }}" class="preview graphite" title="{{ service_description }} {{ i.label }}">
+                                                    <i class="glyph glyph-charts"></i>
+                                                </a>
+                                            </td>
+                                        {% endif %}
+                                        {% if settings.enable_rekishi %} 
+                                            <td>
+                                                <a href="#" graph="{{ i.label }}" id="pre_{{ i.label }}" class="preview rekishi" title="{{ service_description }} {{ i.label }}">
+                                                    <i class="glyph glyph-charts" id="rekishi-preview-{{ i.label }}"></i>
+                                                </a>
+                                                <div id="rekishi-pre_graph-container_{{ i.label }}">
+                                                    <div id="pre_graph_{{ i.label }}" style="max-height: 200px; max-width: 480px;" ></div>
+                                                </div>
+                                            </td>
                                         {% endif %}
                                     </tr>
                                 {% endfor %}
@@ -545,6 +565,40 @@
         </div>
         {% endif %}
         
+        {% if settings.enable_rekishi %}
+        <div class="tab-pane" id="rekishi">
+          <div id="rekishi" class="tabbable"> <!-- Only required for left/right tabs -->
+            <div class="row">
+              <div class="span1"></div>
+              <div class="span11">
+                <ul class="nav nav-pills" id="rekishi_ul">
+                  {% for period in rekishi.periods %}
+                    <li{% if period.css_id == settings.REKISHI_DEFAULT_TAB %} class="active"{% endif %}><a href="#" id="rekishi_{{ period.css_id }}" range="{{ period.period_sec }}">{% trans period.name %}</a>
+                  {% endfor %}
+                </ul>
+                <input type="checkbox" id="rekishiEvents"> {% trans "Show events" %}</input>
+              </div>
+            </div>
+
+              {% for graph in rekishi.graphs %}
+                <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
+                  {% for k,v in graph.items %}
+                <hr/>
+                  <div class="row">
+                    <div class="rekishi-graph-container span9" style="position: relative; height: 320px;">
+                      <div id="graph_{{ k }}" style="position: absolute; left: 10px; right: 10px; top: 40px; bottom: 10px;"></div>
+                    </div>
+                    <div class="span3">
+                    <div id="{{ k }}_legend"></div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        
         </div>
       </div>
 
@@ -699,7 +753,6 @@
                     })
                     .fail( function(data) {
                         $('#effective_check_command').text(gettext("Failed to load check_command."));
-                        console.log(data);
                     });
 
             {% if not settings.escape_html_tags %}
@@ -804,7 +857,7 @@
         });
 
         // Perfomance Graph Preview on hover
-        $("a.preview").popover({
+        $("a.preview.pnp").popover({
             placement: 'top',
             trigger: 'hover',
             template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
@@ -812,6 +865,291 @@
                 return "<img src='"+ $(this)[0].href +"' alt='{% trans "Image preview" %}' />";
             }
         });
+
+        $("a.preview.graphite").popover({
+            placement: 'top',
+            trigger: 'hover',
+            template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 600px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
+            content: function() {
+                return "<img src='"+ $(this)[0].href +"' alt='{% trans "Image preview" %}' />";
+            }
+        });
+
+
+        {% if settings.enable_rekishi %}
+            // Handle reload on graphs tab
+            $( document ).ready( function() {
+                if ($("ul#objecttab > li").hasClass("active")) {
+                    draw_graph();
+                }
+            });
+
+            // Handle click on graph tab
+            $("li#rekishi_tab").click( function(){
+                draw_graph();
+            });
+
+            // Prepare variables
+            allDygraphs = [];
+            var blockRedraw = false;
+
+            // Graphs function
+            function draw_graph(){
+                // Get default time window
+                var now = new Date().getTime();
+                var time_range = [now + parseInt($("ul#rekishi_ul > li.active > a").attr("range")) * 1000, now];
+
+            {% for graph in rekishi.graphs %}
+                {% for k,v in graph.items %}
+                    $.get("{{ v }}", function(data){
+
+                        {# Find the units in the returned data so we can use them in axis title #}
+                        var unitsIndex = 0;
+                        for(var i=0; i<data[0].labels.length; i++){
+                            if(data[0].labels[i] == "unit"){
+                                unitsIndex = i;
+                            }
+                        }
+
+                        {# Fix the timestamps to JS dates #}
+                        for(var i=0; i<data[0].data.length; i++){
+                            data[0].data[i][0] = new Date(parseInt(data[0].data[i][0]) * 1000);
+                        }
+
+                        // Get indexes of datas
+                        var critical_i = data[0].labels.indexOf("critical");
+                        var warning_i = data[0].labels.indexOf("warning");
+                        var min_i = data[0].labels.indexOf("min");
+                        var max_i = data[0].labels.indexOf("max");
+                        var value_i = data[0].labels.indexOf("value");
+                        var time_i = data[0].labels.indexOf("time");
+                        var unit_i = data[0].labels.indexOf("unit");
+                        // Set datas
+                        graph_data = new Array();
+                        $(data[0].data).each( function() {
+                            d = new Array();
+                            d[0] = $(this)[time_i];
+                            d[1] = $(this)[value_i];
+                            d[2] = $(this)[warning_i];
+                            d[3] = $(this)[critical_i];
+                            graph_data.push(d);
+                        });
+                        // Set graph labels
+                        graph_labels = new Array();
+                        graph_labels[0] = "time";
+                        graph_labels[1] = "{{ k }}";
+                        graph_labels[2] = "warning";
+                        graph_labels[3] = "critical";
+                        // Set title
+                        var title = "{{ k }}";
+                        var unit = data[0].data[0][unit_i];
+                        if ( unit ) {
+                            title = title + " (" + unit + ")";
+                        }
+                        // set min and max
+                        var max = 0;
+                        var min = 0;
+                        $(data[0].data).each( function() {
+                            if ( min > $(this)[min_i] ){
+                                min = $(this)[min_i]
+                            }
+                            if ( min > $(this)[value_i] ){
+                                min = $(this)[value_i]
+                            }
+                            if ( min > $(this)[warning_i] ){
+                                min = $(this)[warning_i]
+                            }
+                            if ( min > $(this)[critical_i] ){
+                                min = $(this)[critical_i]
+                            }
+                            if ( max < $(this)[max_i] ){
+                                max = $(this)[max_i]
+                            }
+                            if ( max < $(this)[value_i] ){
+                                max = $(this)[value_i]
+                            }
+                            if ( max < $(this)[warning_i] ){
+                                max = $(this)[warning_i]
+                            }
+                            if ( max < $(this)[critical_i] ){
+                                max = $(this)[critical_i]
+                            }
+                        });
+                        // Build pre_graph
+                        pre_dg = new Dygraph(
+                            $("#pre_graph_{{ k }}")[0],
+                            graph_data,
+                            {
+                                labels: graph_labels,
+                                title: title,
+                                colors: ['#489CDF', '#FFDE00', 'red'],
+                                strokeWidth: 2,
+                                {{ k }}: {fillGraph: true},
+                                labelsKMG2: true,
+                                legend: 'never',
+                                showLabelsOnHighlight: false,
+                                ylabel: data[0].data[0][unitsIndex],
+//                                valueRange: [min, max],
+//                                yRangePad: 20,
+                                dateWindow: time_range
+                            }
+                        );
+                        // Build graph
+                        if ($("li#rekishi_tab").hasClass("active")) {
+                          dg = new Dygraph(
+                            $("#graph_{{ k }}")[0],
+                            graph_data,
+                            { 
+                                labels: graph_labels,
+                                animatedZooms: true,
+                                title: title,
+                                colors: ['#489CDF', '#FFDE00', 'red'],
+                                strokeWidth: 2,
+                                {{ k }}: {fillGraph: true},
+                                labelsKMG2: true,
+                                labelsSeparateLines: true,
+                                legend: 'always',
+                                highlightCircleSize: 5,
+                                //drawPoints: true,
+                                labelsDiv: document.getElementById('{{ k }}_legend'),
+//                                showRangeSelector: true,
+//                                rangeSelectorHeight: 30,
+//                                rangeSelectorPlotStrokeColor: '#808FAB',
+//                                rangeSelectorPlotFillColor: '#A7B1C4',
+                                ylabel: data[0].data[0][unitsIndex],
+                                dateWindow: time_range,
+                                valueRange: [min, max],
+                                yRangePad: 20,
+                                // Handle synced graphs zoom
+                                drawCallback: function(me, initial) {
+                                                if (blockRedraw || initial) return;
+                                                blockRedraw = true;
+                                                var range = me.xAxisRange();
+                                                $( allDygraphs ).each( function(){
+                                                    if (this != me) {
+                                                    this.updateOptions({
+                                                        dateWindow: range
+                                                      });
+                                                    }
+                                                });
+                                                blockRedraw = false;
+                                              }
+                            }
+                          );
+                          allDygraphs.push(dg);
+                        }
+                    });
+                $("a#pre_{{ k }}").popover('show').popover('hide')
+                {% endfor %}
+            {% endfor %}
+            }
+
+           {% for graph in rekishi.graphs %}
+              {% for k,v in graph.items %}
+                $("a#pre_{{ k }}").popover({
+                    placement: 'top',
+                    trigger: 'hover',
+                    template: '<div class="popover"><div class="arrow"></div><div class="popover-inner" style="width: 530px"><h3 class="popover-title"></h3><div class="popover-content" style="min-height: 200px"><p></p></div></div></div>',
+                    content: $("#rekishi-pre_graph-container_{{ k }}")
+                });
+              {% endfor %}
+            {% endfor %}
+
+
+            $("input#rekishiEvents").change( function() {
+                if($(this).prop('checked') == true){
+                    $.get("{{ rekishi.events_url }}", function(data){
+                        // Get labels
+                        labels = data[0].labels;
+                        time_i = labels.indexOf("time");
+                        state_i = labels.indexOf("state");
+                        output_i = labels.indexOf("output");
+                        events = data[0].data;
+                        annotations = [];
+                        // Fix time
+                        for(var i=0; i<data[0].data.length; i++){
+                            events[i][0] = new Date(parseInt(events[i][0]) * 1000).getTime();
+                        }
+                        // Annotations
+                        $( allDygraphs ).each(function(){
+                            var value_name = this.getLabels()[1];
+                            for(var i=0; i<events.length; i++){
+                                // Prepare annotations
+                                if ( events[i][time_i] != null &&
+                                     events[i][state_i] != null &&
+                                     events[i][output_i] != null )
+                                    {
+                                    ann = {
+                                        series : value_name,
+                                        x : events[i][time_i], // Timestamp
+                                        shortText: events[i][state_i][0],
+                                        text: events[i][output_i],
+                                    };
+                                    annotations.push(ann);
+                                }
+                            }
+                            // Add annotations
+                            this.setAnnotations(annotations);
+                        });
+                    });
+                } else {
+                    $( allDygraphs ).each(function(){
+                        this.setAnnotations({});
+                    });
+                }
+            });
+
+            var desired_range = null;
+            function approach_range() {
+                if (!desired_range) return;
+                $( allDygraphs ).each(function(){
+                    // go halfway there
+                    var range = this.xAxisRange();
+                    if (Math.abs(desired_range[0] - range[0]) < 60 &&
+                        Math.abs(desired_range[1] - range[1]) < 60) {
+                      this.updateOptions({dateWindow: desired_range});
+                      // (do not set another timeout.)
+                    } else {
+                      var new_range;
+                      new_range = [0.5 * (desired_range[0] + range[0]),
+                                   0.5 * (desired_range[1] + range[1])];
+                      this.updateOptions({dateWindow: new_range});
+                      animate();
+                    }
+                });
+            }
+
+            function animate() {
+                setTimeout(approach_range, 50);
+            }
+
+            function zoom(time_range) {
+                $( allDygraphs ).each(function(){
+                    this.updateOptions({dateWindow: time_range});
+                    // We disable zoom animation cause FF 31 is really slow with
+                    //desired_range = time_range;
+                    //animate();
+                });
+            }
+
+            {# Handle rekishi zoom #}
+            {% for period in rekishi.periods %}
+                $("a#rekishi_{{ period.css_id }}").click( function() {
+                    // Get range
+                    var now = new Date().getTime();
+                    var time_range = [now + parseInt($(this).attr("range")) * 1000, now];
+                    // Set button classes
+                    $("ul#rekishi_ul li").removeClass("active");
+                    $(this).parent().addClass("active");
+                    // Zoom
+                    zoom(time_range);
+                    // Disable link
+                    return false;
+                });
+            {% endfor %}
+
+
+        {% endif %}
     </script>
 
 {% endblock %}
