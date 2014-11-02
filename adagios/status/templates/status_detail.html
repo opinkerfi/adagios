@@ -565,24 +565,29 @@
         {% if settings.enable_rekishi %}
         <div class="tab-pane" id="rekishi">
           <div id="rekishi" class="tabbable"> <!-- Only required for left/right tabs -->
-            <ul class="nav nav-pills" id="rekishi_ul">
-            {% for period in rekishi.periods %}
-               <li{% if period.css_id == settings.REKISHI_DEFAULT_TAB %} class="active"{% endif %}><a href="#" id="rekishi_{{ period.css_id }}" range="{{ period.period_sec }}">{% trans period.name %}</a>
-            {% endfor %}
-            </ul>
+            <div class="row">
+              <div class="span1"></div>
+              <div class="span11">
+                <ul class="nav nav-pills" id="rekishi_ul">
+                  {% for period in rekishi.periods %}
+                    <li{% if period.css_id == settings.REKISHI_DEFAULT_TAB %} class="active"{% endif %}><a href="#" id="rekishi_{{ period.css_id }}" range="{{ period.period_sec }}">{% trans period.name %}</a>
+                  {% endfor %}
+                </ul>
+                <input type="checkbox" id="rekishiEvents"> {% trans "Show events" %}</input>
+              </div>
+            </div>
 
-            <input type="checkbox" id="rekishiEvents"> {% trans "Show events" %}</input>
               {% for graph in rekishi.graphs %}
                 <div class="tab-pane{% if graph.css_id == settings.REKISHI_DEFAULT_TAB %} active{% endif %}" id="rekishi_{{ graph.css_id }}">
                   {% for k,v in graph.items %}
+                <hr/>
                   <div class="row">
-                    <div class="span1"></div>
-                    <div class="rekishi-graph-container span8">
-                      <div id="graph_{{ k }}" width="100%"></div>
-                      <input type="button" value="{% trans "Zoom out" %}" class="dygraph-reset-zoom">
-                      <br /><br />
+                    <div class="rekishi-graph-container span9" style="position: relative; height: 320px;">
+                      <div id="graph_{{ k }}" style="position: absolute; left: 10px; right: 10px; top: 40px; bottom: 10px;"></div>
                     </div>
-                    <div class="span1"></div>
+                    <div class="span3">
+                    <div id="{{ k }}_legend"></div>
+                    </div>
                   </div>
                   {% endfor %}
                 </div>
@@ -877,8 +882,28 @@
         });
 
         {% if settings.enable_rekishi %}
+            // Handle reload on graphs tab
+            $( document ).ready( function() {
+                if ($("li#rekishi_tab").hasClass("active")) {
+                    draw_graph();
+                }
+            });
+
+            // Handle click on graph tab
+            $("li#rekishi_tab").click( function(){
+                draw_graph();
+            });
+
+            // Prepare variables
             allDygraphs = [];
             var blockRedraw = false;
+
+            // Graphs function
+            function draw_graph(){
+                // Get default time window
+                var now = new Date().getTime();
+                var time_range = [now + parseInt($("ul#rekishi_ul > li.active > a").attr("range")) * 1000, now];
+
             {% for graph in rekishi.graphs %}
                 {% for k,v in graph.items %}
                     $.get("{{ v }}", function(data){
@@ -896,24 +921,99 @@
                             data[0].data[i][0] = new Date(parseInt(data[0].data[i][0]) * 1000);
                         }
 
+                        // Get indexes of datas
+                        var critical_i = data[0].labels.indexOf("critical");
+                        var warning_i = data[0].labels.indexOf("warning");
+                        var min_i = data[0].labels.indexOf("min");
+                        var max_i = data[0].labels.indexOf("max");
+                        var value_i = data[0].labels.indexOf("value");
+                        var time_i = data[0].labels.indexOf("time");
+                        var unit_i = data[0].labels.indexOf("unit");
+                        // Set datas
+                        graph_data = new Array();
+                        $(data[0].data).each( function() {
+                            d = new Array();
+                            d[0] = $(this)[time_i];
+                            d[1] = $(this)[value_i];
+                            d[2] = $(this)[warning_i];
+                            d[3] = $(this)[critical_i];
+                            graph_data.push(d);
+                        });
+                        // Set graph labels
+                        graph_labels = new Array();
+                        graph_labels[0] = "time";
+                        graph_labels[1] = "{{ k }}";
+                        graph_labels[2] = "warning";
+                        graph_labels[3] = "critical";
+                        // Set title
+                        var title = "{{ k }}";
+                        var unit = data[0].data[0][unit_i];
+                        if ( unit ) {
+                            title = title + " (" + unit + ")";
+                        }
+                        // set min and max
+                        var max = 0;
+                        var min = 0;
+                        $(data[0].data).each( function() {
+                            if ( min > $(this)[min_i] ){
+                                min = $(this)[min_i]
+                            }
+                            if ( min > $(this)[value_i] ){
+                                min = $(this)[value_i]
+                            }
+                            if ( min > $(this)[warning_i] ){
+                                min = $(this)[warning_i]
+                            }
+                            if ( min > $(this)[critical_i] ){
+                                min = $(this)[critical_i]
+                            }
+                            if ( max < $(this)[max_i] ){
+                                max = $(this)[max_i]
+                            }
+                            if ( max < $(this)[value_i] ){
+                                max = $(this)[value_i]
+                            }
+                            if ( max < $(this)[warning_i] ){
+                                max = $(this)[warning_i]
+                            }
+                            if ( max < $(this)[critical_i] ){
+                                max = $(this)[critical_i]
+                            }
+                        });
+                        // Build graph
                         dg = new Dygraph(
                             $("#graph_{{ k }}")[0],
-                            data[0].data,
+                            graph_data,
                             { 
-                                labels: data[0].labels,
+                                labels: graph_labels,
                                 animatedZooms: true,
-                                title: "{{ k }}",
+                                title: title,
+                                colors: ['#489CDF', '#FFDE00', 'red'],
+                                strokeWidth: 2,
+                                {{ k }}: {fillGraph: true},
+                                labelsKMG2: true,
+                                labelsSeparateLines: true,
+                                legend: 'always',
+                                highlightCircleSize: 5,
+                                //drawPoints: true,
+                                labelsDiv: document.getElementById('{{ k }}_legend'),
+//                                showRangeSelector: true,
+//                                rangeSelectorHeight: 30,
+//                                rangeSelectorPlotStrokeColor: '#808FAB',
+//                                rangeSelectorPlotFillColor: '#A7B1C4',
                                 ylabel: data[0].data[0][unitsIndex],
+                                dateWindow: time_range,
+                                valueRange: [min, max],
+                                yRangePad: 20,
+                                // Handle synced graphs zoom
                                 drawCallback: function(me, initial) {
                                                 if (blockRedraw || initial) return;
                                                 blockRedraw = true;
                                                 var range = me.xAxisRange();
-                                                var yrange = me.yAxisRange();
                                                 $( allDygraphs ).each( function(){
                                                     if (this != me) {
                                                     this.updateOptions({
-                                                        dateWindow: range,
-                                                        valueRange: yrange
+                                                        dateWindow: range
                                                       });
                                                     }
                                                 });
@@ -925,36 +1025,41 @@
                     });
                 {% endfor %}
             {% endfor %}
+            }
 
             $("input#rekishiEvents").change( function() {
                 if($(this).prop('checked') == true){
                     $.get("{{ rekishi.events_url }}", function(data){
+                        // Get labels
                         labels = data[0].labels;
                         time_i = labels.indexOf("time");
                         state_i = labels.indexOf("state");
                         output_i = labels.indexOf("output");
                         events = data[0].data;
                         annotations = [];
-                        
+                        // Fix time
                         for(var i=0; i<data[0].data.length; i++){
                             events[i][0] = new Date(parseInt(events[i][0]) * 1000).getTime();
                         }
-
-                        for(var i=0; i<events.length; i++){
-                            if ( events[i][time_i] != null &&
-                                 events[i][state_i] != null &&
-                                 events[i][output_i] != null )
-                                {
-                                ann = {
-                                    series : "value",
-                                    x : events[i][time_i], // Timestamp
-                                    shortText: events[i][state_i][0],
-                                    text: events[i][output_i],
-                                };
-                                annotations.push(ann);
-                            }
-                        }
+                        // Annotations
                         $( allDygraphs ).each(function(){
+                            var value_name = this.getLabels()[1];
+                            for(var i=0; i<events.length; i++){
+                                // Prepare annotations
+                                if ( events[i][time_i] != null &&
+                                     events[i][state_i] != null &&
+                                     events[i][output_i] != null )
+                                    {
+                                    ann = {
+                                        series : value_name,
+                                        x : events[i][time_i], // Timestamp
+                                        shortText: events[i][state_i][0],
+                                        text: events[i][output_i],
+                                    };
+                                    annotations.push(ann);
+                                }
+                            }
+                            // Add annotations
                             this.setAnnotations(annotations);
                         });
                     });
@@ -964,14 +1069,6 @@
                     });
                 }
             });
-
-            {# Add functionailty to resetZoom buttons #}
-            $('input.dygraph-reset-zoom').click( function(){
-                $( allDygraphs ).each(function(){
-                    this.resetZoom();
-                })
-            });
-
 
             var desired_range = null;
             function approach_range() {
@@ -997,29 +1094,27 @@
                 setTimeout(approach_range, 50);
             }
 
-            function zoom(res) {
+            function zoom(time_range) {
                 $( allDygraphs ).each(function(){
-                    var w = this.xAxisRange();
-                    desired_range = [ w[1] + res * 1000, w[1] ];
-                    animate();
+                    this.updateOptions({dateWindow: time_range});
+                    // We disable zoom animation cause FF 31 is really slow with
+                    //desired_range = time_range;
+                    //animate();
                 });
             }
-
-            {# Ugly hack to allow graphs to be displayed when switching bootstrap tabs #}
-            {# Hopefully this will not be necessary in BS3 #}
-            $(document).on('click', '#rekishi_tab', function(e){
-                $( allDygraphs ).resize();
-            });
-
-            $(document).on('click', '#rekishi li', function(e){
-                $( allDygraphs ).resize();
-            });
 
             {# Handle rekishi zoom #}
             {% for period in rekishi.periods %}
                 $("a#rekishi_{{ period.css_id }}").click( function() {
-                    var range = $(this).attr("range");
-                    zoom(range);
+                    // Get range
+                    var now = new Date().getTime();
+                    var time_range = [now + parseInt($(this).attr("range")) * 1000, now];
+                    // Set button classes
+                    $("ul#rekishi_ul li").removeClass("active");
+                    $(this).parent().addClass("active");
+                    // Zoom
+                    zoom(time_range);
+                    // Disable link
                     return false;
                 });
             {% endfor %}
