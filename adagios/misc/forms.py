@@ -27,10 +27,11 @@ from django.utils.translation import ugettext as _
 import os.path
 from adagios import settings
 import adagios.utils
-from pynag import Model, Control
+from pynag import Model
 from django.core.mail import EmailMultiAlternatives
 import pynag.Parsers
 import pynag.Control.Command
+import adagios.daemon
 
 
 TOPIC_CHOICES = (
@@ -488,31 +489,25 @@ class NagiosServiceForm(forms.Form):
 
     def save(self):
         #nagios_bin = self.cleaned_data['nagios_bin']
+        daemon = adagios.daemon.Daemon()
         if "reload" in self.data:
-            command = "reload"
+            command = daemon.reload
         elif "restart" in self.data:
-            command = "restart"
+            command = daemon.restart
         elif "stop" in self.data:
-            command = "stop"
+            command = daemon.stop
         elif "start" in self.data:
-            command = "start"
+            command = daemon.start
         elif "status" in self.data:
-            command = "status"
+            command = daemon.status
         elif "verify" in self.data:
-            command = "verify"
+            command = daemon.verify_config
         else:
             raise Exception(_("Unknown command"))
-        self.command = command
-        nagios_init = settings.nagios_init_script
-        nagios_binary = settings.nagios_binary
-        nagios_config = settings.nagios_config or pynag.Model.config.cfg_file
-        if command == "verify":
-            command = "%s -v '%s'" % (nagios_binary, nagios_config)
-        else:
-            command = "%s %s" % (nagios_init, command)
-        code, stdout, stderr = pynag.Utils.runCommand(command)
-        self.stdout = stdout or ""
-        self.stderr = stderr or ""
+   
+        code = command()
+        self.stdout = daemon.stdout or ""
+        self.stderr = daemon.stderr or ""
         self.exit_code = code
 
     def verify(self):

@@ -37,6 +37,11 @@ class Daemon(object):
             config['service_name'] = settings.nagios_service
 
         self.pynag_daemon = daemon(**config)
+        self.stdout = self.pynag_daemon.stdout
+        self.stderr = self.pynag_daemon.stderr
+
+    def verify_config(self):
+        return self.pynag_daemon.verify_config()
 
     def running(self):
         return self.pynag_daemon.running()

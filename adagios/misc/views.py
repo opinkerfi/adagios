@@ -31,7 +31,7 @@ import mimetypes
 
 import pynag.Model
 import pynag.Utils
-import pynag.Control
+import adagios.daemon
 import pynag.Model.EventHandlers
 import pynag.Utils
 import os.path
@@ -199,15 +199,13 @@ def nagios_service(request):
                 if i.strip().startswith('Error:'):
                     c['errors'].append(i)
     c['form'] = form
-    service = pynag.Control.daemon(
-        nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
-    c['status'] = s = service.status()
-    if s == 0:
+    daemon = adagios.daemon.Daemon()
+    if daemon.running():
+        c['status'] = 0
         c['friendly_status'] = "running"
-    elif s == 1:
-        c['friendly_status'] = "not running"
     else:
-        c['friendly_status'] = 'unknown (exit status %s)' % (s, )
+        c['status'] = 1
+        c['friendly_status'] = "not running"
     needs_reload = pynag.Model.config.needs_reload()
     c['needs_reload'] = needs_reload
     return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))
