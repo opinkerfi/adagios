@@ -28,11 +28,11 @@ import platform
 import re
 from pynag import Model
 from pynag import Parsers
-from pynag import Control
 from pynag import Utils
 from pynag import __version__
 from socket import gethostbyname_ex
 import adagios.settings
+from adagios.daemon import Daemon
 from django.utils.translation import ugettext as _
 
 
@@ -240,11 +240,7 @@ def set_maincfg_attribute(attribute, new_value, old_value='None', append=False):
 
 def reload_nagios():
     """ Reloads nagios. Returns "Success" on Success """
-    daemon = Control.daemon(
-        nagios_cfg=Model.config.cfg_file,
-        nagios_init=adagios.settings.nagios_init_script,
-        nagios_bin=adagios.settings.nagios_binary
-    )
+    daemon = Daemon()
     result = {}
     if daemon.reload() == 0:
         result['status'] = _("success")

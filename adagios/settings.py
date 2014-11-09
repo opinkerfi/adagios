@@ -209,6 +209,7 @@ GRAPHITE_DEFAULT_TAB = 'day'
 nagios_config = None  # Sensible default is "/etc/nagios/nagios.cfg"
 nagios_url = "/nagios"
 nagios_init_script = "/etc/init.d/nagios"
+nagios_service = "nagios"
 nagios_binary = "/usr/bin/nagios"
 livestatus_path = None
 enable_githandler = False

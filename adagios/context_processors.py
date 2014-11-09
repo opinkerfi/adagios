@@ -21,6 +21,7 @@ import getpass
 
 from adagios import notifications, settings, add_plugin
 from adagios.misc.rest import add_notification, clear_notification
+from adagios.daemon import Daemon
 
 import pynag.Model.EventHandlers
 import pynag.Parsers
@@ -285,11 +286,8 @@ def check_destination_directory(request):
 def check_nagios_running(request):
     """ Notify user if nagios is not running """
     try:
-        if pynag.Model.config is None:
-            pynag.Model.config = pynag.Parsers.config(
-                adagios.settings.nagios_config)
-        nagios_pid = pynag.Model.config._get_pid()
-        return {"nagios_running": (nagios_pid is not None)}
+        d = Daemon()
+        return {"nagios_running": (d.running())}
     except Exception:
         return {}
 
