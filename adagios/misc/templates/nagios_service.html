@@ -47,7 +47,7 @@
             {% endif %}
         </div>
 
-        {% if not stdout and not stderr %}
+        {% if exit_code != 0 %}
             <div class="alert alert-danger">
                 <p>
                     {% blocktrans %}Something does not smell right. We ran {{ command }} and got no output.

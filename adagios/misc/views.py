@@ -194,6 +194,7 @@ def nagios_service(request):
             c['stdout'] = form.stdout
             c['stderr'] = form.stderr
             c['command'] = form.command
+            c['exit_code'] = form.exit_code
 
             for i in form.stdout.splitlines():
                 if i.strip().startswith('Error:'):

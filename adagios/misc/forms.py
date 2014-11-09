@@ -492,16 +492,22 @@ class NagiosServiceForm(forms.Form):
         daemon = adagios.daemon.Daemon()
         if "reload" in self.data:
             command = daemon.reload
+            self.command = "reload"
         elif "restart" in self.data:
             command = daemon.restart
+            self.command = "restart"
         elif "stop" in self.data:
             command = daemon.stop
+            self.command = "stop"
         elif "start" in self.data:
             command = daemon.start
+            self.command = "start"
         elif "status" in self.data:
             command = daemon.status
+            self.command = "status"
         elif "verify" in self.data:
             command = daemon.verify_config
+            self.command = "verify"
         else:
             raise Exception(_("Unknown command"))
    

@@ -37,27 +37,40 @@ class Daemon(object):
             config['service_name'] = settings.nagios_service
 
         self.pynag_daemon = daemon(**config)
+
+    def _runcommand(self, command):
+        return_code = command()
         self.stdout = self.pynag_daemon.stdout
         self.stderr = self.pynag_daemon.stderr
+        return return_code
 
     def verify_config(self):
-        return self.pynag_daemon.verify_config()
+        return self._runcommand(self.pynag_daemon.verify_config)
 
     def running(self):
-        return self.pynag_daemon.running()
+        return self._runcommand(self.pynag_daemon.running)
 
     def stop(self):
-        return self.pynag_daemon.stop()
+        return self._runcommand(self.pynag_daemon.stop)
 
     def start(self):
-        return self.pynag_daemon.start()
+        return self._runcommand(self.pynag_daemon.start)
+
+    def restart(self):
+        return self._runcommand(self.pynag_daemon.restart)
 
     def reload(self):
-        return self.pynag_daemon.reload()
+        return self._runcommand(self.pynag_daemon.reload)
 
     def verify_config(self):
-        return self.pynag_daemon.verify_config()
+        success = self._runcommand(self.pynag_daemon.verify_config)
+        if success:
+            return 0
+        else:
+            return 1
 
+    def status(self):
+        return self._runcommand(self.pynag_daemon.status)
 
 
 # vim: sts=4 expandtab autoindent
