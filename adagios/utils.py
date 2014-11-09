@@ -17,19 +17,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import multiprocessing
 import adagios.status.utils
-import time
 import adagios
 import pynag.Model
 import adagios.exceptions
 import adagios.settings
 import os
 import pynag.Utils.misc
-from django.test import LiveServerTestCase
-from django.utils import unittest
-import atexit
-
+from multiprocessing.pool import ThreadPool
 from django.utils.translation import ugettext as _
 
 SELENIUM_DRIVER = None
@@ -56,7 +51,6 @@ def wait_for_service(host_name, service_description, condition='last_check >= 0'
         WaitObject=waitobject
     )
 
-from multiprocessing.pool import ThreadPool
 
 
 class Task(object):
