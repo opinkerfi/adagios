@@ -26,7 +26,7 @@ def get_remote_webdriver(capabilities=None):
     access_key = os.environ.get("SAUCE_ACCESS_KEY")
     hub_url = os.environ.get('SAUCE_HUBURL', "ondemand.saucelabs.com/wd/hub")
 
-    if username and access_keys:
+    if username and access_key:
         hub_url = "%s:%s@%s" % (username, access_key, hub_url)
 
     return webdriver.Remote(desired_capabilities=capabilities,
