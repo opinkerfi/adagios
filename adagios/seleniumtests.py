@@ -40,6 +40,13 @@ class SeleniumTestCase(LiveServerTestCase):
         if not webdriver:
             raise unittest.SkipTest("No selenium installed")
 
+        # Tests for pull requests from forks do not get the SAUCE_USERNAME
+        # exposed because of security considerations. Skip selenium tests for
+        # those tests
+        if os.environ.get('TRAVIS_BUILD_NUMBER') and \
+           not os.environ.get('SAUCE_USERNAME'):
+            raise unittest.SkipTest("Travis with no sauce username, skipping")
+
         super(SeleniumTestCase, cls).setUpClass()
 
         cls.nagios_config = adagios.settings.nagios_config
