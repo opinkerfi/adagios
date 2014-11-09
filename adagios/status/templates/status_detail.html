@@ -689,6 +689,12 @@
                 $('#acknowledge_text').html('Is acknowledged');
             {% endif %}
 
+             // Disable recheck button if active checks are not enabled
+             {% if my_object.active_checks_enabled == 0 %}
+                 $('#reschedule_button').attr('disabled','disabled');
+                 $('#rescheduled_text').html('Active checks disabled');
+             {% endif %}
+
             // Fetch the effective check command for this object
             var parameters = {};
             parameters['host_name'] = "{{ host_name }}";
