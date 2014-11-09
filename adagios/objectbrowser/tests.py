@@ -27,6 +27,7 @@ import adagios.settings
 import adagios.utils
 import adagios.objectbrowser.forms
 import re
+import adagios.seleniumtests
 
 from adagios.objectbrowser.forms import PynagAutoCompleteField
 
@@ -534,44 +535,46 @@ class TestPynagChoiceField(unittest.TestCase):
         field.set_prefix('')
         self.assertEqual('', field.get_prefix())
 
-class SeleniumObjectBrowserTestCase(adagios.utils.SeleniumTestCase):
+class SeleniumObjectBrowserTestCase(adagios.seleniumtests.SeleniumTestCase):
     def test_contacts_loading(self):
         """Test if contacts under configure loads"""
-        self.driver.get(self.live_server_url + "/objectbrowser/#contact-tab_tab")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/objectbrowser/#contact-tab_tab")
 
-        wait = WebDriverWait(self.driver, 10)
+            wait = WebDriverWait(driver, 10)
 
-        try:
-            # Get all host rows
-            contact_table_rows = wait.until(
-                EC.presence_of_all_elements_located((
-                    By.XPATH,
-                    "//table[contains(@id, 'contact-table')]/tbody/tr"))
-            )
-        except TimeoutException:
-            self.assertTrue(False, "Timed out waiting for contact table to load")
+            try:
+                # Get all host rows
+                contact_table_rows = wait.until(
+                    EC.presence_of_all_elements_located((
+                        By.XPATH,
+                        "//table[contains(@id, 'contact-table')]/tbody/tr"))
+                )
+            except TimeoutException:
+                self.assertTrue(False, "Timed out waiting for contact table to load")
 
-        self.assertTrue(len(contact_table_rows) > 0,
-                        "No table rows in contact table")
+            self.assertTrue(len(contact_table_rows) > 0,
+                            "No table rows in contact table")
 
     def test_hosts_loading(self):
         """Test if hosts under configure loads"""
-        self.driver.get(self.live_server_url + "/objectbrowser")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/objectbrowser")
 
-        wait = WebDriverWait(self.driver, 10)
+            wait = WebDriverWait(driver, 10)
 
-        try:
-            # Get all host rows
-            host_table_rows = wait.until(
-                EC.presence_of_all_elements_located((
-                    By.XPATH,
-                    "//table[contains(@id, 'host-table')]/tbody/tr"))
-            )
-        except TimeoutException:
-            self.assertTrue(False, "Timed out waiting for host table to load")
+            try:
+                # Get all host rows
+                host_table_rows = wait.until(
+                    EC.presence_of_all_elements_located((
+                        By.XPATH,
+                        "//table[contains(@id, 'host-table')]/tbody/tr"))
+                )
+            except TimeoutException:
+                self.assertTrue(False, "Timed out waiting for host table to load")
 
-        self.assertTrue(len(host_table_rows) > 0,
-                        "No table rows in host-table")
+            self.assertTrue(len(host_table_rows) > 0,
+                            "No table rows in host-table")
 
 _TEST_SERVICE = """
 define service {
