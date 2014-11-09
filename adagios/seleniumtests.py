@@ -49,13 +49,6 @@ class SeleniumTestCase(LiveServerTestCase):
 
         super(SeleniumTestCase, cls).setUpClass()
 
-        cls.nagios_config = adagios.settings.nagios_config
-        cls.environment = adagios.utils.FakeAdagiosEnvironment()
-        cls.environment.create_minimal_environment()
-        cls.environment.configure_livestatus()
-        cls.environment.update_adagios_global_variables()
-        cls.environment.start()
-        cls.livestatus = cls.environment.get_livestatus()
         cls.drivers = []
 
         if 'SELENIUM_REMOTE_TESTS' in os.environ or \
@@ -67,6 +60,14 @@ class SeleniumTestCase(LiveServerTestCase):
             # Use the firefox webdriver
             firefox = webdriver.Firefox()
             cls.drivers.append(firefox)
+
+        cls.nagios_config = adagios.settings.nagios_config
+        cls.environment = adagios.utils.FakeAdagiosEnvironment()
+        cls.environment.create_minimal_environment()
+        cls.environment.configure_livestatus()
+        cls.environment.update_adagios_global_variables()
+        cls.environment.start()
+        cls.livestatus = cls.environment.get_livestatus()
 
     @classmethod
     def tearDownClass(cls):
