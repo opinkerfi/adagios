@@ -1,0 +1,3 @@
+[submodule "adagios/media/external"]
+	path = adagios/media/external
+	url = https://github.com/opinkerfi/adagios-dependencies
