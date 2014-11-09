@@ -9,6 +9,29 @@ try:
 except ImportError:
     webdriver = None
 
+def get_remote_webdriver(capabilities=None):
+    """Get remote webdriver. Configured using environment variables
+    to setup where the remote webdriver is. options could be a local
+    install or using the setup at saucelabs"""
+
+    if not capabilities:
+        capabilities = webdriver.DesiredCapabilities.FIREFOX
+
+    # Saucelabs setup,
+    capabilities["build"] = os.environ.get("TRAVIS_BUILD_NUMBER")
+    capabilities["tags"] = [os.environ.get("TRAVIS_PYTHON_VERSION"), "CI"]
+    capabilities["tunnel-identifier"] = os.environ.get("TRAVIS_JOB_NUMBER")
+
+    username = os.environ.get("SAUCE_USERNAME")
+    access_key = os.environ.get("SAUCE_ACCESS_KEY")
+    hub_url = os.environ.get('SAUCE_HUBURL', "ondemand.saucelabs.com/wd/hub")
+
+    if username and access_keys:
+        hub_url = "%s:%s@%s" % (username, access_key, hub_url)
+
+    return webdriver.Remote(desired_capabilities=capabilities,
+                            command_executor="http://%s" % hub_url)
+
 class SeleniumTestCase(LiveServerTestCase):
     environment = None
 
@@ -27,21 +50,16 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.environment.start()
         cls.livestatus = cls.environment.get_livestatus()
         cls.drivers = []
-        if 'SAUCE_USERNAME' in os.environ:
-            capabilities = webdriver.DesiredCapabilities.FIREFOX
-            capabilities["build"] = os.environ["TRAVIS_BUILD_NUMBER"]
-            capabilities["tags"] = [os.environ["TRAVIS_PYTHON_VERSION"], "CI"]
-            capabilities["tunnel-identifier"] = os.environ["TRAVIS_JOB_NUMBER"]
 
-            username = os.environ["SAUCE_USERNAME"]
-            access_key = os.environ["SAUCE_ACCESS_KEY"]
-
-            hub_url = "%s:%s@ondemand.saucelabs.com/wd/hub" % (username, access_key)
-            cls.drivers.append(webdriver.Remote(
-                      desired_capabilities=capabilities,
-                      command_executor="http://%s" % hub_url))
+        if 'SELENIUM_REMOTE_TESTS' in os.environ or \
+           'TRAVIS_BUILD_NUMBER' in os.environ:
+            # Fire up remote webdriver
+            remote = get_remote_webdriver()
+            cls.drivers.append(remote)
         else:
-            cls.drivers.append(webdriver.Firefox())
+            # Use the firefox webdriver
+            firefox = webdriver.Firefox()
+            cls.drivers.append(firefox)
 
     @classmethod
     def tearDownClass(cls):
