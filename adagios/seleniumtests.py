@@ -6,6 +6,7 @@ import os
 
 try:
     from selenium import webdriver
+    from selenium.common.exceptions import WebDriverException
 except ImportError:
     webdriver = None
 
@@ -51,15 +52,19 @@ class SeleniumTestCase(LiveServerTestCase):
 
         cls.drivers = []
 
-        if 'SELENIUM_REMOTE_TESTS' in os.environ or \
-           'TRAVIS_BUILD_NUMBER' in os.environ:
-            # Fire up remote webdriver
-            remote = get_remote_webdriver()
-            cls.drivers.append(remote)
-        else:
-            # Use the firefox webdriver
-            firefox = webdriver.Firefox()
-            cls.drivers.append(firefox)
+        try:
+            if 'SELENIUM_REMOTE_TESTS' in os.environ or \
+               'TRAVIS_BUILD_NUMBER' in os.environ:
+                # Fire up remote webdriver
+                remote = get_remote_webdriver()
+                cls.drivers.append(remote)
+            else:
+                # Use the firefox webdriver
+                firefox = webdriver.Firefox()
+                cls.drivers.append(firefox)
+        except WebDriverException as error:
+            raise unittest.SkipTest("Exception in running webdriver, skipping " \
+                         "selenium tests: %s" % str(error))
 
         cls.nagios_config = adagios.settings.nagios_config
         cls.environment = adagios.utils.FakeAdagiosEnvironment()
