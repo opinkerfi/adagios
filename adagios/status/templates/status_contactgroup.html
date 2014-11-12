@@ -23,9 +23,11 @@
 
 
         <div class="tab-pane" id="contacts">
-            {% if contacts %}
+            {% if contactgroup %}
                 {% blocktrans %}{{ contactgroup_name }} Has the following members:{% endblocktrans %}
-                {% include "snippets/status_contactlist_snippet.html" %}
+                {% for x in contactgroup.members %}
+                <a href="{% url status.views.detail %}?contact_name={{ x }}">{{ x }}</a>,
+                {% endfor %}
             {% else %}
                 {% blocktrans %}{{ contactgroup_name }} Has no contacts.{% endblocktrans %}
             {% endif %}
