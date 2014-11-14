@@ -1128,7 +1128,7 @@ def contactgroup_detail(request, contactgroup_name):
 
     # Members of this contactgroup
     contacts = []
-    for contact_name in contactgroup
+    for contact_name in contactgroup['members']:
         contact = l.get_contact(contact_name)
         contacts.append(contact)
     c['contacts'] = contacts
