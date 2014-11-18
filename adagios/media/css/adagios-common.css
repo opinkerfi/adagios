@@ -3,6 +3,10 @@ body {
     padding-top: 40px;
 }
 
+#top_navigation_bar img.brand {
+    padding: 3px 10px 3px 10px;
+}
+
 /* default style for links */
 a {
     color: #4b4b4b;
