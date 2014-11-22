@@ -31,6 +31,7 @@ import adagios.status.graphite
 import adagios.settings
 import adagios.utils
 import simplejson as json
+import adagios.seleniumtests
 
 try:
     from selenium.webdriver.common.by import By
@@ -179,14 +180,15 @@ class Graphite(unittest.TestCase):
         self.assertTrue('packetloss' in result[0]['metrics'])
 
 
-class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
+class SeleniumStatusTestCase(adagios.seleniumtests.SeleniumTestCase):
     def test_network_parents(self):
         """Status Overview, Network Parents should show an integer"""
-        self.driver.get(self.live_server_url + "/status")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/status")
 
-        # Second link is Network Parents in overview
-        self.assertEqual(self.driver.find_elements(By.XPATH,
-            "//a[@href='/status/parents']")[1].text.isdigit(), True)
+            # Second link is Network Parents in overview
+            self.assertEqual(driver.find_elements(By.XPATH,
+                "//a[@href='/status/parents']")[1].text.isdigit(), True)
 
     def test_services_select_all(self):
         """Loads services list and tries to select everything
@@ -197,34 +199,35 @@ class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
             Look for statustable rows
             Assert that all rows are checked"""
 
-        self.driver.get(self.live_server_url + "/status/services")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/status/services")
 
-        self.driver.find_element_by_xpath("//input[@class='select_many']").click()
-        self.driver.find_element_by_xpath("//a[@class='select_all']").click()
+            driver.find_element_by_xpath("//input[@class='select_many']").click()
+            driver.find_element_by_xpath("//a[@class='select_all']").click()
 
-        # Get all statustable rows
-        status_table_rows = self.driver.find_element_by_xpath(
-            "//table[contains(@class, 'statustable')]"
-        ).find_elements(By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
+            # Get all statustable rows
+            status_table_rows = driver.find_element_by_xpath(
+                "//table[contains(@class, 'statustable')]"
+            ).find_elements(By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
 
-        # Sub-select non-selected
-        for row in status_table_rows:
-            self.assertTrue('row_selected' in row.get_attribute('class'),
-                            "Non selected row found after selecting all: " + \
-                            row.text)
+            # Sub-select non-selected
+            for row in status_table_rows:
+                self.assertTrue('row_selected' in row.get_attribute('class'),
+                                "Non selected row found after selecting all: " + \
+                                row.text)
 
     def test_status_overview_top_alert_producers(self):
         """Check the top alert producers part of status overview"""
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/status")
 
-        self.driver.get(self.live_server_url + "/status")
+            top_alert_table_rows = driver.find_elements(By.XPATH,
+                "//table[@id='top_alert_producers']/tbody/tr"
+            )
 
-        top_alert_table_rows = self.driver.find_elements(By.XPATH,
-            "//table[@id='top_alert_producers']/tbody/tr"
-        )
+            count = 0
+            for row in top_alert_table_rows:
+                if 'display' not in row.get_attribute('style'):
+                    count += 1
 
-        count = 0
-        for row in top_alert_table_rows:
-            if 'display' not in row.get_attribute('style'):
-                count += 1
-
-        self.assertTrue(count <= 3, "Top alert producers returns too many rows")
+            self.assertTrue(count <= 3, "Top alert producers returns too many rows")
