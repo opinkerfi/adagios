@@ -28,7 +28,7 @@ from adagios.objectbrowser.help_text import object_definitions
 from pynag.Model import ObjectDefinition
 from adagios.forms import AdagiosForm
 import adagios.misc.rest
-
+import adagios.settings
 
 # These fields are special, they are a comma seperated list, and may or
 # may not have +/- in front of them.
@@ -757,7 +757,7 @@ class AddObjectForm(PynagForm):
         # Some object types we will suggest a template:
         if object_type in ('host', 'contact', 'service'):
             self.fields['use'] = self.get_pynagField('use')
-            self.fields['use'].initial = str('generic-%s' % object_type)
+            self.fields['use'].initial = self.get_template_if_it_exists()
             self.fields['use'].help_text = _("Inherit attributes from this template")
         if object_type == 'host':
             self.fields['host_name'] = self.get_pynagField('host_name', required=True)
@@ -780,6 +780,28 @@ class AddObjectForm(PynagForm):
             initial_value = initial.get(field_name, None)
             if initial_value:
                 field.initial = str(initial_value)
+
+    def get_template_if_it_exists(self):
+        """Get name of a default template when adding new host/service/contact
+
+        We will use settings.default_{object_type}_template as a parent by default.
+
+        Returns:
+            String. Name of default template to use. Empty string if
+            settings.default_{object_type}_template does not exist in current config.
+        """
+        if self.pynag_object.object_type == 'service':
+            template_name = adagios.settings.default_service_template
+        elif self.pynag_object.object_type == 'host':
+            template_name = adagios.settings.default_host_template
+        elif self.pynag_object.object_type == 'contact':
+            template_name = adagios.settings.default_contact_template
+        else:
+            template_name = 'generic-%s' % self.pynag_object.object_type
+
+        if self.pynag_object.objects.filter(name=template_name):
+            return template_name
+        return ''
 
     def clean(self):
         cleaned_data = super(AddObjectForm, self).clean()
