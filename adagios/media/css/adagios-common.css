@@ -463,6 +463,11 @@ button.close.notification {
 .table-condensed td {
     line-height: 10px;
 }
+
+td#effective_check_command {
+    line-height: 18px;
+}
+
 .circle {
     border-radius: 50%;
     width: 12px;
