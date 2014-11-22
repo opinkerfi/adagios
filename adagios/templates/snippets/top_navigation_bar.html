@@ -14,7 +14,10 @@
             </a>
 
             <!-- Logo in top nav -->
-            <a class="brand" href="{% url 'home' %}">{{ settings.TOPMENU_HOME }}</a>
+            <img class=brand src={% url "media" path="img/adagios-logo-32.png" %}/>
+            <a class="brand" href="{% url 'home' %}">
+                {{ settings.TOPMENU_HOME }}
+            </a>
             <div class="nav-collapse">
                 <ul class="nav" id="top_navigation_menuitems">
                   {% for item in settings.TOPMENU_ITEMS %}
