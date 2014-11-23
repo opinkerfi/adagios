@@ -25,7 +25,6 @@ from django.utils.translation import ugettext as _
 from pynag import Model
 from pynag.Utils import AttributeList
 from adagios.objectbrowser.help_text import object_definitions
-from pynag.Model import ObjectDefinition
 from adagios.forms import AdagiosForm
 import adagios.misc.rest
 
@@ -55,6 +54,7 @@ HOST_NOTIFICATION_OPTIONS = (
 
 BOOLEAN_CHOICES = (('', 'not set'), ('1', '1'), ('0', '0'))
 
+
 class PynagAutoCompleteField(forms.CharField):
     """ Behaves like Charfield, but includes data-choices for select2 autocomplete. """
     def __init__(self, object_type, inline_help_text=None, complete="shortname", *args, **kwargs):
@@ -78,7 +78,7 @@ class PynagAutoCompleteField(forms.CharField):
 
         # Give our widget a unique css class
         self.widget.attrs['class'] = self.widget.attrs.get('class', '')
-        self.widget.attrs['class'] += ' pynag-autocomplete ';
+        self.widget.attrs['class'] += ' pynag-autocomplete '
 
         # Hardcode widget length to 500px, because select2 plays badly
         # with css
@@ -94,6 +94,7 @@ class PynagAutoCompleteField(forms.CharField):
         shortnames = filter(lambda x: x, shortnames)
 
         return shortnames
+
     def get_all_object_names(self, object_type):
         """ Returns a list of all object names (name attribute) for a given object type. """
         objects = self.get_all_objects(object_type)
@@ -122,6 +123,7 @@ class PynagAutoCompleteField(forms.CharField):
             a = str(a)
             value = a
         return value
+
 
 class PynagChoiceField(forms.MultipleChoiceField):
 
@@ -165,6 +167,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
     def get_prefix(self):
         return self.__prefix
 
+
 class PynagRadioWidget(forms.widgets.HiddenInput):
 
     """ Special Widget designed to make Nagios attributes with 0/1 values look like on/off buttons """
@@ -206,6 +209,7 @@ class PynagForm(AdagiosForm):
                 operator = AttributeList(self.pynag_object.get(k, '')).operator or ''
                 cleaned_data[k] = "%s%s" % (operator, v)
         return cleaned_data
+
     @property
     def changed_data(self):
         # Fields that do not appear in our POST are not marked as changed data
@@ -564,7 +568,7 @@ class CopyObjectForm(AdagiosForm):
     def save(self):
         # If copy() returns a single object, lets transform it into a list
         tmp = self.pynag_object.copy(**self.cleaned_data)
-        if not type(tmp) == type([]):
+        if not isinstance(tmp, list):
             tmp = [tmp]
         self.copied_objects = tmp
 
@@ -578,11 +582,8 @@ class CopyObjectForm(AdagiosForm):
         value = smart_str(self.cleaned_data[field_name])
         try:
             self.pynag_object.objects.get_by_shortname(value)
-            raise forms.ValidationError(
-                _("A %(object_type)s with %(field_name)s='%(value)s' already exists.") % {'object_type': object_type,
-                                                                                          'field_name': field_name,
-                                                                                          'value': value,
-                                                                                         })
+            values = {'object_type': object_type, 'field_name': field_name, 'value': value}
+            raise forms.ValidationError(_("A %(object_type)s with %(field_name)s='%(value)s' already exists.") % values)
         except KeyError:
             return value
 
