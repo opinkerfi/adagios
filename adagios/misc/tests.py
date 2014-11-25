@@ -38,7 +38,7 @@ class FakeAdagiosEnvironment(unittest.TestCase):
         fake_adagios = self.fake_adagios
 
         # Make sure temporary environment gets created
-        fake_adagios.create_minimal_environment()
+        fake_adagios.create_minimal_environment(backend=adagios.settings.BACKEND)
         self.assertTrue(os.path.exists(fake_adagios.adagios_config_file))
 
         # Make sure adagios.settings is updated

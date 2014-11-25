@@ -165,10 +165,10 @@ class TestBusinessProcessLogic(TestCase):
     """ This class responsible for testing business classes logic """
     def setUp(self):
         self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
+        self.environment.create_minimal_environment(backend=adagios.settings.BACKEND)
         self.environment.configure_livestatus()
         self.environment.update_adagios_global_variables()
-        self.environment.start()
+        self.environment.start(start_command=adagios.settings.ENGINE_START_COMMAND)
 
         self.livestatus = self.environment.get_livestatus()
         self.livestatus.test()
@@ -177,7 +177,7 @@ class TestBusinessProcessLogic(TestCase):
         BusinessProcess._default_filename = filename
 
     def tearDown(self):
-        self.environment.terminate()
+        self.environment.terminate(stop_command=adagios.settings.ENGINE_STOP_COMMAND)
         os.remove(BusinessProcess._default_filename)
 
     def testBestAndWorstState(self):
