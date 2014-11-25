@@ -34,6 +34,37 @@ state[0] = "ok"
 state[1] = "warning"
 state[2] = "critical"
 
+# A special keyword that can be added to some filters to look specifically for 'unhandled' problems.
+_UNHANDLED = 'unhandled'
+
+# This key is often passed via querystring as a means to do a 'fuzzy' search of an object.
+_SEARCH_KEYWORD = 'q'
+
+# This is mapping is how we define a service as 'unhandled'
+_UNHANDLED_SERVICES_FILTER = {
+    'state__isnot': 0,
+    'acknowledged': 0,
+    'scheduled_downtime_depth': 0,
+    'host_state': 0,
+    'host_scheduled_downtime_depth': 0,
+    'host_acknowledged': 0,
+}
+
+_DEFAULT_SERVICE_COLUMNS = [
+    'host_name', 'description', 'plugin_output', 'last_check', 'host_state',
+    'state', 'scheduled_downtime_depth', 'last_state_change', 'acknowledged',
+    'downtimes', 'host_downtimes', 'comments_with_info',
+]
+
+_DEFAULT_HOST_COLUMNS = [
+    'name', 'plugin_output', 'last_check', 'state', 'services', 'downtimes',
+    'last_state_change', 'acknowledged', 'parents', 'childs',  'address',
+    'comments_with_info', 'scheduled_downtime_depth', 'num_services_crit',
+    'num_services_warn', 'num_services_unknown', 'num_services_ok',
+    'num_services_pending', 'services_with_info', 'services_with_state',
+]
+
+
 def get_all_backends():
     # TODO: Properly support multiple instances, using split here is not a good idea
     backends = adagios.settings.livestatus_path or ''
@@ -137,11 +168,7 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
         arguments.append('Filter: plugin_output ~~ %s' % i)
         arguments.append('Or: 3')
     if fields is None:
-        fields = [
-            'name', 'plugin_output', 'last_check', 'state', 'services', 'services_with_info', 'services_with_state',
-            'parents', 'childs', 'address', 'last_state_change', 'acknowledged', 'downtimes', 'comments_with_info',
-            'scheduled_downtime_depth', 'num_services_crit', 'num_services_warn', 'num_services_unknown',
-            'num_services_ok', 'num_services_pending']
+        fields = _DEFAULT_HOST_COLUMNS
     # fields should be a list, lets create a Column: query for livestatus
     if isinstance(fields, (str, unicode)):
         fields = fields.split(',')
@@ -189,20 +216,20 @@ def get_hosts(request, tags=None, fields=None, *args, **kwargs):
     return result
 
 
-def get_services(request=None, tags=None, fields=None, *args, **kwargs):
-    """ Get a list of services from mk_livestatus.
+def get_services(request=None, fields=None, *args, **kwargs):
+    """ Get a list of services from Livestatus.
 
-        This is a wrapper around pynag.Parsers.mk_livestatus().query()
+        This is a wrapper around pynag.Parsers.Livestatus.query()
 
         Arguments:
-            requests - Not in use
-            tags     - List of 'tags' that will be passed on as a filter to the services.
-                       Example of service tags are: problem, unhandled, ishandled,
-            fields   - If fields=None, return all columns, otherwise return only the columns provided.
-                       fields can be either a list or a comma seperated string
-        Any *args will be passed directly to livestatus
+            requests: Django request object.
+            fields: List of strings. If defined, collect these specific columns from livestatus. Otherwise a
+              sane default from _DEFAULT_SERVICE_COLUMNS will be returned.
+            *args will be passed directly to livestatus
+            **kwargs passed in will be converted to livestatus 'Filter:' strings
 
-        Any **kwargs passed in will be converted to livestatus 'Filter:' strings
+        Returns:
+            List of dicts. The output from livestatus query.
 
         Examples:
         get_services(host_name='localhost') # same as livestatus.query('GET services','Filter: host_name = localhost')
@@ -210,50 +237,49 @@ def get_services(request=None, tags=None, fields=None, *args, **kwargs):
         get_services('Authuser: admin', host_name='localhost')
 
     """
-    if 'q' in kwargs:
-        q = kwargs.get('q')
-        del kwargs['q']
-    else:
-        q = []
-    if not isinstance(q, list):
-        q = [q]
+    # By default the search dialog in adagios does a 'fuzzy search' of several fields
+    # Lets extract it from our query, so we don't confuse livestatus.
+    search_parameter = kwargs.pop(_SEARCH_KEYWORD, None)
 
-    # If keyword "unhandled" is in kwargs, then we will fetch unhandled
-    # services only
-    if 'unhandled' in kwargs:
-        del kwargs['unhandled']
-        kwargs['state__isnot'] = 0
-        kwargs['acknowledged'] = 0
-        kwargs['scheduled_downtime_depth'] = 0
-        kwargs['host_scheduled_downtime_depth'] = 0
-        kwargs['host_acknowledged'] = 0
-        kwargs['host_state'] = 0
-    arguments = pynag.Utils.grep_to_livestatus(*args, **kwargs)
+    # If the unhandled keyword appears in our querystring, we automatically add
+    # some search filters:
+    if kwargs.pop(_UNHANDLED, False):
+        kwargs.update(_UNHANDLED_SERVICES_FILTER)
 
-    # If q was added, it is a fuzzy filter on services
-    for i in q:
-        arguments.append('Filter: host_name ~~ %s' % i.encode('utf-8'))
-        arguments.append('Filter: description ~~ %s' % i.encode('utf-8'))
-        arguments.append('Filter: plugin_output ~~ %s' % i.encode('utf-8'))
-        arguments.append('Filter: host_address ~~ %s' % i.encode('utf-8'))
-        arguments.append('Or: 4')
+    query = pynag.Parsers.LivestatusQuery('GET services', *args, **kwargs)
 
-    if fields is None:
-        fields = [
-            'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state', 'scheduled_downtime_depth',
-            'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
-    # fields should be a list, lets create a Column: query for livestatus
-    if isinstance(fields, (str, unicode)):
-        fields = fields.split(',')
-    if len(fields) > 0:
-        argument = 'Columns: %s' % (' '.join(fields))
-        arguments.append(argument)
+    if search_parameter:
+        if isinstance(search_parameter, list):
+            search_parameter = search_parameter[0]
+        search_parameter = search_parameter.encode('utf-8')
+        query.add_filters(host_name__contains=search_parameter)
+        query.add_filters(description__contains=search_parameter)
+        query.add_filters(plugin_output__contains=search_parameter)
+        query.add_filters(host_address__contains=search_parameter)
+        query.add_header_line('Or: 4')
+
+    # Specify which columns are going to be in our service request:
+    fields = fields or _DEFAULT_SERVICE_COLUMNS
+    query.set_columns(*fields)
+
     l = livestatus(request)
-    result = l.get_services(*arguments)
+    services = l.query(query)
 
+    # TODO: Can we get rid of this function in the future and workaround this another way ?
+    _add_custom_tags_to_services(services)
+    return services
+
+
+def _add_custom_tags_to_services(services):
+    """Add custom tags like 'unhandled' or 'problem' to a list of services.
+
+    Args:
+        services. List of dict. Usually the output from a livestatus query.
+
+    """
     # Add custom tags to our service list
     try:
-        for service in result:
+        for service in services:
             # Tag the service with tags such as problems and unhandled
             service_tags = []
             if service['state'] != 0:
@@ -276,15 +302,9 @@ def get_services(request=None, tags=None, fields=None, *args, **kwargs):
                 service_tags.append('downtime')
             service['tags'] = ' '.join(service_tags)
             service['status'] = state[service['state']]
-
-        if isinstance(tags, str):
-            tags = [tags]
-        if isinstance(tags, list):
-            result = pynag.Utils.grep(result, tags__contains=tags)
     except Exception:
         pass
-    return result
-
+    return services
 
 def get_contacts(request, *args, **kwargs):
     l = livestatus(request)
