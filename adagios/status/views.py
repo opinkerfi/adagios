@@ -965,7 +965,7 @@ def comment_list(request):
 
 @adagios_decorator
 def downtime_list(request):
-    """ Display a list of all comments """
+    """ Display a list of all downtimes """
     c = {}
     c['messages'] = []
     c['errors'] = []
@@ -976,7 +976,7 @@ def downtime_list(request):
 
 @adagios_decorator
 def acknowledgement_list(request):
-    """ Display a list of all comments """
+    """ Display a list of all acknowledgements """
     c = {}
     c['messages'] = []
     c['errors'] = []
