@@ -42,6 +42,7 @@ except ImportError:
     # selenium tests are skipped if selenium is not available
     pass
 
+
 class TestObjectBrowser(unittest.TestCase):
 
     def testNagiosConfigFile(self):
@@ -534,6 +535,26 @@ class TestPynagChoiceField(unittest.TestCase):
 
         field.set_prefix('')
         self.assertEqual('', field.get_prefix())
+
+
+class AddObjectForm(unittest.TestCase):
+
+    def setUp(self):
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_model()
+        self.environment.update_adagios_global_variables()
+        self.addCleanup(self.environment.terminate)
+
+    def test_get_template_if_it_exists(self):
+        form = adagios.objectbrowser.forms.AddObjectForm('host')
+        self.assertEqual(adagios.settings.default_host_template, form.get_template_if_it_exists())
+
+    def test_get_template_if_it_exists_nonexistant(self):
+        host = pynag.Model.Host.objects.get_by_name(adagios.settings.default_host_template)
+        host.delete()
+        form = adagios.objectbrowser.forms.AddObjectForm('host')
+        self.assertEqual('', form.get_template_if_it_exists())
 
 class SeleniumObjectBrowserTestCase(adagios.seleniumtests.SeleniumTestCase):
     def test_contacts_loading(self):
