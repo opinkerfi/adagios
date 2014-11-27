@@ -32,6 +32,7 @@ import time
 import datetime
 from adagios import __version__
 from adagios import userdata
+from adagios.status import custom_columns
 
 from django.utils.translation import ugettext as _
 
@@ -81,6 +82,8 @@ def on_page_load(request):
     for k, v in get_all_backends(request).items():
         results[k] = v
     for k, v in get_all_nonworking_backends(request).items():
+        results[k] = v
+    for k, v in get_livestatus_datasources(request).items():
         results[k] = v
     return results
 
@@ -374,6 +377,12 @@ def get_all_nonworking_backends(request):
     b = [x for x in get_all_backends(request)['backends']
          if not Livestatus(x).test(raise_error=False)]
     return {'nonworking_backends': b}
+
+def get_livestatus_datasources(request):
+    result = {}
+    result['livestatus_datasources'] = sorted(custom_columns.all_columns.keys())
+    return result
+
 
 if __name__ == '__main__':
     on_page_load(request=None)

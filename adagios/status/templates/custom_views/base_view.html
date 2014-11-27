@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block title %}{% trans "Custom view" %}: {{ viewname }}{% endblock %}
+{% block smallheader %}{% endblock %}
+{% block largeheader %}{% trans "Custom view" %}: {{ viewname }}{% endblock %}
+{% block toolbar %}{% endblock %}
+
+
+
+{% block action_buttons %}
+{% endblock %}
+
+{% block content %}
+
+<style type="text/css">
+ #template_content { height: 600px; }
+</style>
+
+{% block data %}
+
+{% endblock data %}
+
+{% endblock content %}
+
+{% block footer %}
+{{ block.super }}
+
+{% if view.metadata.0.reload_interval %}
+  <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+   $(document).ready(function() {
+     // Set a reload
+     adagios.misc.timed_reload({{ view.metadata.0.reload_interval }});
+   });
+  </script>
+{% endif %}
+{% endblock %}

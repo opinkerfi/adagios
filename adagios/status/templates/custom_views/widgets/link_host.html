@@ -1,0 +1,9 @@
+{% load adagiostags %}
+{% load url from future %}
+{% if title %}
+  <th>{{ title }}</th>
+{% else %}
+  <td>
+    <a href="{% url "status.views.detail" %}?host_name={{ line|hash:col_name }}&backend={{ line.backend }}">{{ line|hash:col_name }}</a>
+  </td>
+{% endif %}

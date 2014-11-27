@@ -1,0 +1,8 @@
+{% load adagiostags %}
+{% if title %}
+  <th>{{ title }}</th>
+{% else %}
+  <td>
+    <i class="glyph-chat glyph-grey" rel="tooltip" title="{{ col_name }}" data-content="<div class='alert alert-info'>{{ line|hash:col_name }}</div>"></i>
+  </td>
+{% endif %}
