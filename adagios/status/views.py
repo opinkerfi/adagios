@@ -93,10 +93,7 @@ def network_parents(request):
     """ List of hosts that are network parents """
     c = {}
     c['messages'] = []
-    authuser = request.GET.get('contact_name', None)
-    livestatus = utils.livestatus(request)
-    fields = "name childs state scheduled_downtime_depth address last_check last_state_change acknowledged downtimes services services_with_info".split()
-    hosts = utils.get_hosts(request, 'Filter: childs !=', fields=fields, **request.GET)
+    hosts = utils.get_hosts(request, **request.GET)
     host_dict = {}
     map(lambda x: host_dict.__setitem__(x['name'], x), hosts)
     c['hosts'] = []
