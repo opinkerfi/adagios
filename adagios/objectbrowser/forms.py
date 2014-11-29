@@ -25,10 +25,9 @@ from django.utils.translation import ugettext as _
 from pynag import Model
 from pynag.Utils import AttributeList
 from adagios.objectbrowser.help_text import object_definitions
-from pynag.Model import ObjectDefinition
 from adagios.forms import AdagiosForm
 import adagios.misc.rest
-
+import adagios.settings
 
 # These fields are special, they are a comma seperated list, and may or
 # may not have +/- in front of them.
@@ -55,6 +54,7 @@ HOST_NOTIFICATION_OPTIONS = (
 
 BOOLEAN_CHOICES = (('', 'not set'), ('1', '1'), ('0', '0'))
 
+
 class PynagAutoCompleteField(forms.CharField):
     """ Behaves like Charfield, but includes data-choices for select2 autocomplete. """
     def __init__(self, object_type, inline_help_text=None, complete="shortname", *args, **kwargs):
@@ -78,7 +78,7 @@ class PynagAutoCompleteField(forms.CharField):
 
         # Give our widget a unique css class
         self.widget.attrs['class'] = self.widget.attrs.get('class', '')
-        self.widget.attrs['class'] += ' pynag-autocomplete ';
+        self.widget.attrs['class'] += ' pynag-autocomplete '
 
         # Hardcode widget length to 500px, because select2 plays badly
         # with css
@@ -94,6 +94,7 @@ class PynagAutoCompleteField(forms.CharField):
         shortnames = filter(lambda x: x, shortnames)
 
         return shortnames
+
     def get_all_object_names(self, object_type):
         """ Returns a list of all object names (name attribute) for a given object type. """
         objects = self.get_all_objects(object_type)
@@ -122,6 +123,7 @@ class PynagAutoCompleteField(forms.CharField):
             a = str(a)
             value = a
         return value
+
 
 class PynagChoiceField(forms.MultipleChoiceField):
 
@@ -165,6 +167,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
     def get_prefix(self):
         return self.__prefix
 
+
 class PynagRadioWidget(forms.widgets.HiddenInput):
 
     """ Special Widget designed to make Nagios attributes with 0/1 values look like on/off buttons """
@@ -206,6 +209,7 @@ class PynagForm(AdagiosForm):
                 operator = AttributeList(self.pynag_object.get(k, '')).operator or ''
                 cleaned_data[k] = "%s%s" % (operator, v)
         return cleaned_data
+
     @property
     def changed_data(self):
         # Fields that do not appear in our POST are not marked as changed data
@@ -388,7 +392,9 @@ class PynagForm(AdagiosForm):
             field_name)
         if inherited_value is not None:
             self.add_placeholder(
-                field, _('%(inherited_value)s (inherited from template)') % {'inherited_value': inherited_value})
+                field,
+                _('%(inherited_value)s (inherited from template)') % {'inherited_value': smart_str(inherited_value)}
+            )
 
         if field_name in MULTICHOICE_FIELDS:
             self.add_css_tag(field=field, css_tag="multichoice")
@@ -528,13 +534,15 @@ class CopyObjectForm(AdagiosForm):
         # object it is
         if pynag_object['register'] == '0':
             if pynag_object.name is None:
-                new_generic_name = "%s-copy" % pynag_object.get_description()
+                new_generic_name = "%s-copy" % smart_str(pynag_object.get_description())
             else:
-                new_generic_name = '%s-copy' % pynag_object.name
+                new_generic_name = '%s-copy' % smart_str(pynag_object.name)
             self.fields['name'] = forms.CharField(
-                initial=new_generic_name, help_text=_("Select a new generic name for this %(object_type)s") % {'object_type': object_type})
+                initial=new_generic_name,
+                help_text=_("Select a new generic name for this %(object_type)s") % {'object_type': object_type}
+            )
         elif object_type == 'host':
-            new_host_name = "%s-copy" % pynag_object.get_description()
+            new_host_name = "%s-copy" % smart_str(pynag_object.get_description())
             self.fields['host_name'] = forms.CharField(
                 help_text=_("Select a new host name for this host"), initial=new_host_name)
             self.fields['address'] = forms.CharField(
@@ -542,25 +550,25 @@ class CopyObjectForm(AdagiosForm):
             self.fields['recursive'] = forms.BooleanField(
                 required=False, label="Copy Services", help_text=_("Check this box if you also want to copy all services of this host."))
         elif object_type == 'service':
-            service_description = "%s-copy" % pynag_object.service_description
+            service_description = "%s-copy" % smart_str(pynag_object.service_description)
             self.fields['host_name'] = forms.CharField(
                 help_text=_("Select a new host name for this service"), initial=pynag_object.host_name)
             self.fields['service_description'] = forms.CharField(
                 help_text=_("Select new service description for this service"), initial=service_description)
         else:
             field_name = "%s_name" % object_type
-            initial = "%s-copy" % pynag_object[field_name]
+            initial = "%s-copy" % smart_str(pynag_object[field_name])
             help_text = object_definitions[
                 object_type][field_name].get('help_text')
             if help_text == '':
-                help_text = _("Please specify a new %(field_name)s") % {'field_name': field_name}
+                help_text = _("Please specify a new %(field_name)s") % {'field_name': smart_str(field_name)}
             self.fields[field_name] = forms.CharField(
                 initial=initial, help_text=help_text)
 
     def save(self):
         # If copy() returns a single object, lets transform it into a list
         tmp = self.pynag_object.copy(**self.cleaned_data)
-        if not type(tmp) == type([]):
+        if not isinstance(tmp, list):
             tmp = [tmp]
         self.copied_objects = tmp
 
@@ -574,11 +582,8 @@ class CopyObjectForm(AdagiosForm):
         value = smart_str(self.cleaned_data[field_name])
         try:
             self.pynag_object.objects.get_by_shortname(value)
-            raise forms.ValidationError(
-                _("A %(object_type)s with %(field_name)s='%(value)s' already exists.") % {'object_type': object_type,
-                                                                                          'field_name': field_name,
-                                                                                          'value': value,
-                                                                                         })
+            values = {'object_type': object_type, 'field_name': field_name, 'value': value}
+            raise forms.ValidationError(_("A %(object_type)s with %(field_name)s='%(value)s' already exists.") % values)
         except KeyError:
             return value
 
@@ -739,7 +744,7 @@ class AddTemplateForm(PynagForm):
             objectdefinition.objects.get_by_name(name)
             raise forms.ValidationError(
                 _("A %(object_type)s with name='%(name)s' already exists.") % {'object_type': object_type,
-                                                                               'name': name,
+                                                                               'name': smart_str(name),
                                                                                })
         except KeyError:
             pass
@@ -757,7 +762,7 @@ class AddObjectForm(PynagForm):
         # Some object types we will suggest a template:
         if object_type in ('host', 'contact', 'service'):
             self.fields['use'] = self.get_pynagField('use')
-            self.fields['use'].initial = str('generic-%s' % object_type)
+            self.fields['use'].initial = self.get_template_if_it_exists()
             self.fields['use'].help_text = _("Inherit attributes from this template")
         if object_type == 'host':
             self.fields['host_name'] = self.get_pynagField('host_name', required=True)
@@ -780,6 +785,28 @@ class AddObjectForm(PynagForm):
             initial_value = initial.get(field_name, None)
             if initial_value:
                 field.initial = str(initial_value)
+
+    def get_template_if_it_exists(self):
+        """Get name of a default template when adding new host/service/contact
+
+        We will use settings.default_{object_type}_template as a parent by default.
+
+        Returns:
+            String. Name of default template to use. Empty string if
+            settings.default_{object_type}_template does not exist in current config.
+        """
+        if self.pynag_object.object_type == 'service':
+            template_name = adagios.settings.default_service_template
+        elif self.pynag_object.object_type == 'host':
+            template_name = adagios.settings.default_host_template
+        elif self.pynag_object.object_type == 'contact':
+            template_name = adagios.settings.default_contact_template
+        else:
+            template_name = 'generic-%s' % self.pynag_object.object_type
+
+        if self.pynag_object.objects.filter(name=template_name):
+            return template_name
+        return ''
 
     def clean(self):
         cleaned_data = super(AddObjectForm, self).clean()
@@ -815,7 +842,7 @@ class AddObjectForm(PynagForm):
                 existing_hosts = Model.Host.objects.filter(host_name=i)
                 if not existing_hosts:
                     raise forms.ValidationError(
-                        _("Could not find host called '%(i)s'") % {'i': i})
+                        _("Could not find host called '%(i)s'") % {'i': smart_str(i)})
                 return smart_str(self.cleaned_data['host_name'])
         return self._clean_shortname()
 
@@ -829,7 +856,7 @@ class AddObjectForm(PynagForm):
                 existing_hostgroups = Model.Hostgroup.objects.filter(hostgroup_name=i)
                 if not existing_hostgroups:
                     raise forms.ValidationError(
-                        _("Could not find hostgroup called '%(i)s'") % {'i': i})
+                        _("Could not find hostgroup called '%(i)s'") % {'i': smart_str(i)})
                 return smart_str(self.cleaned_data['hostgroup_name'])
         return self._clean_shortname()
 
@@ -846,7 +873,7 @@ class AddObjectForm(PynagForm):
             raise forms.ValidationError(
                 _("A %(object_type)s with %(field_name)s='%(value)s' already exists.") % {'object_type': object_type,
                                                                                           'field_name': field_name,
-                                                                                          'value': value,
+                                                                                          'value': smart_str(value),
                                                                                           })
         except KeyError:
             return value

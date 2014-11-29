@@ -160,6 +160,9 @@ class AdagiosSettingsForm(forms.Form):
     graphite_url = forms.CharField(help_text="Path to your graphite install.", required=False)
     graphite_querystring = forms.CharField(help_text="Querystring that is passed into graphite's /render method. {host} is replaced with respective hostname while {host_} will apply common graphite escaping. i.e. example.com -> example_com", required=False)
     graphite_title = forms.CharField(help_text="Use this title on all graphs coming from graphite", required=False)
+    default_host_template = forms.CharField(help_text="Use this template by default when adding new hosts.")
+    default_service_template = forms.CharField(help_text="Use this template by default when adding new services.")
+    default_contact_template = forms.CharField(help_text="Use this template by default when adding new contacts.")
     include = forms.CharField(
         required=False, help_text=_("Include configuration options from files matching this pattern"))
 

@@ -873,6 +873,18 @@ def state_history(request):
                 service['sla'] += last_item['duration_percent']
             else:
                 service['num_problems'] += 1
+    live_services = livestatus.get_services("Columns: host_name description")
+
+    # Convert live services into "host_name/description" strings:
+    live_service_names = ["%s/%s" % (x['host_name'], x['description']) for x in live_services]
+
+    # Collect a list of service_names that are in our log, but not in livestatus:
+    dead_service_names = [x for x in services if x not in live_service_names]
+
+    # Remove all dead service names from state history:
+    for short_name in dead_service_names:
+        services.pop(short_name)
+
     c['services'] = services
     c['start_time'] = start_time
     c['end_time'] = end_time
@@ -960,7 +972,7 @@ def comment_list(request):
 
 @adagios_decorator
 def downtime_list(request):
-    """ Display a list of all comments """
+    """ Display a list of all downtimes """
     c = {}
     c['messages'] = []
     c['errors'] = []
@@ -971,7 +983,7 @@ def downtime_list(request):
 
 @adagios_decorator
 def acknowledgement_list(request):
-    """ Display a list of all comments """
+    """ Display a list of all acknowledgements """
     c = {}
     c['messages'] = []
     c['errors'] = []
@@ -1117,12 +1129,16 @@ def contactgroup_detail(request, contactgroup_name):
     c['services'] = l.query(
         'GET services', "Filter: contact_groups >= %s" % contactgroup_name)
 
-    # Services this contact can see
+    # Hosts this contact can see
     c['hosts'] = l.query(
         'GET hosts', "Filter: contact_groups >= %s" % contactgroup_name)
 
-    # Contact groups
-    #c['contacts'] = l.query('GET contacts', 'Filter: contactgroup_ >= %s' % contact_name)
+    # Members of this contactgroup
+    contacts = []
+    for contact_name in contactgroup['members']:
+        contact = l.get_contact(contact_name)
+        contacts.append(contact)
+    c['contacts'] = contacts
 
     return render_to_response('status_contactgroup.html', c, context_instance=RequestContext(request))
 
