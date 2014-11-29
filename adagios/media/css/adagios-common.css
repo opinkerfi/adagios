@@ -534,6 +534,13 @@ td#effective_check_command {
     padding:  4px 4px 4px 14px;
 }
 
+#search_dialog input[type="checkbox"] {
+    margin: 0;
+}
+#search_dialog table, tr {
+    border: 1px solid #efefef;
+    width: 100%;
+}
 .ssi-overwrite, .ssi-append {
     display: none;
 }
