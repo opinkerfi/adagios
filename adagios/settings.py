@@ -179,6 +179,26 @@ TOPMENU_ITEMS = [
 
 ]
 
+# This mapping shows how we define a service as 'unhandled'
+UNHANDLED_SERVICES = {
+    'state__isnot': 0,
+    'acknowledged': 0,
+    'scheduled_downtime_depth': 0,
+    'host_state': 0,
+    'host_scheduled_downtime_depth': 0,
+    'host_acknowledged': 0,
+}
+
+
+# This mapping shows how we define a host as 'unhandled'
+UNHANDLED_HOSTS = {
+    'state': 1,
+    'acknowledged': 0,
+    'scheduled_downtime_depth': 0
+}
+
+
+
 # Graphite #
 
 # the url where to fetch data and images

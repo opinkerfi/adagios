@@ -70,25 +70,6 @@ _DEFAULT_HOST_COLUMNS = [
 ]
 
 
-# This mapping shows how we define a service as 'unhandled'
-_FILTER_UNHANDLED_SERVICES = {
-    'state__isnot': 0,
-    'acknowledged': 0,
-    'scheduled_downtime_depth': 0,
-    'host_state': 0,
-    'host_scheduled_downtime_depth': 0,
-    'host_acknowledged': 0,
-}
-
-
-# This mapping shows how we define a host as 'unhandled'
-_FILTER_UNHANDLED_HOSTS = {
-    'state': 1,
-    'acknowledged': 0,
-    'scheduled_downtime_depth': 0
-}
-
-
 # Use these fields when making a generic search for hosts
 _GENERIC_SEARCH_FIELDS_HOST = [
     'name__contains', 'address__contains', 'plugin_output__contains', 'alias__contains']
@@ -233,7 +214,7 @@ def _process_querystring_for_host(*args, **kwargs):
     # If the unhandled keyword appears in our querystring, we automatically add
     # some search filters:
     if kwargs.pop(_UNHANDLED, False):
-        kwargs.update(_FILTER_UNHANDLED_HOSTS)
+        kwargs.update(adagios.settings.UNHANDLED_HOSTS)
 
     # If _IN_SCHEDULED_DOWNTIME querystring is applied, we have to transmute it
     # To a different query that livestatus understands:
@@ -323,7 +304,7 @@ def _process_querystring_for_service(*args, **kwargs):
     # If the unhandled keyword appears in our querystring, we automatically add
     # some search filters:
     if kwargs.pop(_UNHANDLED, False):
-        kwargs.update(_FILTER_UNHANDLED_SERVICES)
+        kwargs.update(adagios.settings.UNHANDLED_SERVICES)
 
     # If _IN_SCHEDULED_DOWNTIME querystring is applied, we have to transmute it
     # To a different query that livestatus understands:
