@@ -102,8 +102,14 @@
         <li{% if urlname == 'adagios.status.views.perfdata2' %} class="active"{% endif %}><a href="{% url "status.views.perfdata2" %}">{% trans "Performance Data 2" %}</a></li>
         <li{% if urlname == 'adagios.bi.views.index' %} class="active"{% endif %}><a href="{% url "bi.views.index" %}">{% trans "Business Intelligence" %}</a></li>
         <li{% if urlname == 'adagios.status.views.dashboard' %} class="active"{% endif %}><a href="{% url "status.views.dashboard" %}">{% trans "Dashboard" %}</a></li>
-      </ul>
-    </div>
+
+        <li class="nav-header" style="color: black">
+            {% trans "Saved Searches" %}
+            <a class="pull-right" href="#"  id="save_search_button" data-toggle="modal" data-target="#save_search_modal" style="padding: 0">(+)</a>
+        </li>
+    </ul>
+    <ul class="nav nav-list" id="saved_searches_list"></ul>
+</div>
     {% endblock left_sidebar %}
     <!-- block left_sidebar ends -->
 

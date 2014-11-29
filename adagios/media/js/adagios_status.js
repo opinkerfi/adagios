@@ -7,6 +7,9 @@ adagios.bi = adagios.bi || {};
 
 adagios.misc.__notification_id_counter = 0;
 
+// When saved search items are added to the left sidebar, this is what they look like:
+adagios.misc._saved_search_element = '<li><div><a  href="URL">NAME</a><button type="button" class="pull-right close" onclick=adagios.misc.delete_saved_search("NAME");>&times;</button></div></li>';
+
 
 $(document).ready(function() {
 
@@ -45,6 +48,12 @@ $(document).ready(function() {
 
     // Make search dialog option match current query:
     adagios.misc.populate_search_with_querystring_fields($('#search_dialog'));
+
+    // Populate all the fields in saved_search_modal.
+    adagios.misc.prepare_saved_search_modal($('#saved_searches_header'));
+
+    // If we have any saved searches, show them in the side menu:
+    adagios.misc.populate_saved_searches_sidemenu();
 
     // Handle user contributed ssi overwrites
     adagios.misc.ssi_overwrites();
@@ -1029,4 +1038,53 @@ adagios.misc.populate_search_with_querystring_fields = function(dom) {
         check_box_selector = 'input[name=' + key + '][value=' + value + ']';
         dom.find(check_box_selector).prop('checked', true);
     }
+};
+
+
+// Prep work for saved_search modal
+adagios.misc.prepare_saved_search_modal = function() {
+    var save_search_modal = $("#save_search_modal");
+    var save_search_form = save_search_modal.find('#save_search_form');
+
+    save_search_modal.on('shown', function () {
+        document.getElementById('id_save_search_name').focus();
+    });
+
+    save_search_form.submit(function(e) {
+        var parameters = {
+            'name': $('#save_search_form').find('#id_save_search_name').val(),
+            'url': window.location.href
+        };
+
+        adagios.rest.adagios.save_search(parameters).always(function() {
+            $('#save_search_modal').modal('hide');
+            adagios.misc.populate_saved_searces_sidemenu();
+        });
+        e.preventDefault();
+        return false
+    });
+};
+
+// Add to the left side menu all saved searches for a given user:
+adagios.misc.populate_saved_searches_sidemenu = function(dom) {
+    dom = dom || $('#saved_searches_header');
+    var child_dom = $("#saved_searches_list");
+    var search_name, search_url, html;
+    child_dom.empty();
+    adagios.rest.adagios.get_saved_searches().done( function(data) {
+        for (search_name in data) {
+            if (data.hasOwnProperty(search_name)) {
+                search_url = data[search_name];
+                html = adagios.misc._saved_search_element.replace(/URL/g, search_url).replace(/NAME/g, search_name);
+                child_dom.append(html);
+            }
+        }
+    });
+};
+
+// Removes a single item from saved search menu.
+adagios.misc.delete_saved_search = function(name) {
+    adagios.rest.adagios.delete_saved_search({'name': name}).done(function() {
+        window.location.reload();
+    });
 };
