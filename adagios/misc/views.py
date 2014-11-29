@@ -351,8 +351,7 @@ def mail(request):
         services = request.GET.getlist(
             'service') or request.GET.getlist('service[]')
         if not services and not hosts:
-            c['form'].services = adagios.status.utils.get_services(
-                request, host_name='localhost')
+            c['form'].services = adagios.status.utils.get_services(request, host_name='localhost')
     elif request.method == 'POST':
         c['form'] = forms.SendEmailForm(remote_user, data=request.POST)
         services = request.POST.getlist('service') or request.POST.getlist('service[]')
@@ -375,10 +374,8 @@ def mail(request):
     for i in services:
         try:
             host_name, service_description = i.split('/', 1)
-            service = adagios.status.utils.get_services(request,
-                                                        host_name=host_name,
-                                                        service_description=service_description
-                                                        )
+            service = adagios.status.utils.get_services(
+                request, host_name=host_name, service_description=service_description)
             if not service:
                 c['errors'].append(
                     _('Service "%s"" not found. Maybe a typo or you do not have access to it ?') % i)
