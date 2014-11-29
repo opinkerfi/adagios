@@ -1,6 +1,15 @@
 <!-- snippet misc_mail_servicelist.html ends -->
 {% load adagiostags %}
 {% load i18n %}
+
+<!-- begin serverside includes -->
+{% for ssi_header in ssi_headers %}
+    <!-- including content from {{ ssi_header }} -->
+    {% ssi ssi_header parsed %}
+    <!-- end of file {{ ssi_header }} -->
+{% endfor %}
+<!-- end of serverside includes -->
+
 {% if please_skipt_this %}
     <style>
         /* we use http://beaker.mailchimp.com/inline-css Dont remove this style */
@@ -46,4 +55,11 @@ The following {{ services|length }} items were {% if acknowledged_or_not %}{% el
 </table>
 
 total {{ services|length }} objects.
+<!-- begin serverside includes -->
+{% for ssi_footer in ssi_footers %}
+    <!-- including content from {{ ssi_footer }} -->
+    {% ssi ssi_footer parsed %}
+    <!-- end of file {{ ssi_footer }} -->
+{% endfor %}
+<!-- end of serverside includes -->
 <!-- snippet misc_mail_servicelist.html ends -->
