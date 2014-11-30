@@ -73,6 +73,7 @@ class TestObjectBrowser(unittest.TestCase):
 
         self.loadPage('/objectbrowser/plugins')
         self.loadPage('/objectbrowser/nagios.cfg')
+        self.loadPage('/objectbrowser/import')
         self.loadPage('/objectbrowser/geek_edit', 404)
         self.loadPage('/objectbrowser/advanced_edit', 404)
 
@@ -536,6 +537,37 @@ class TestPynagChoiceField(unittest.TestCase):
         field.set_prefix('')
         self.assertEqual('', field.get_prefix())
 
+
+class TestImportObjectsForm(unittest.TestCase):
+    def setUp(self):
+        self.nagios_config = adagios.settings.nagios_config
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_adagios_global_variables()
+        self.environment.update_model()
+        self.addCleanup(self.environment.terminate)
+        self.form = adagios.objectbrowser.forms.ImportObjectsForm()
+        self.initial = {
+            'objects': 'host_name,address\nlocalhost,127.0.0.1',
+            'object_type': 'host',
+            'seperator': ',',
+            'destination_filename': '',
+        }
+
+    def test_is_valid_initial_is_false(self):
+        self.assertEqual(False, self.form.is_valid())
+
+    def test_is_valid_normal(self):
+        form = adagios.objectbrowser.forms.ImportObjectsForm(data=self.initial)
+        self.assertTrue(form.is_valid())
+
+    def test_save(self):
+        self.assertFalse(pynag.Model.Host.objects.filter(shortname='localhost'))
+        form = adagios.objectbrowser.forms.ImportObjectsForm(data=self.initial)
+        form.is_valid()
+        objects = form.save()
+        self.assertEqual(1, len(objects))
+        self.assertTrue(pynag.Model.Host.objects.filter(shortname='localhost'))
 
 class AddObjectForm(unittest.TestCase):
 

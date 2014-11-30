@@ -27,7 +27,7 @@ urlpatterns = patterns('adagios',
 
 
     url(r'^/edit/(?P<object_id>.+?)?$', 'objectbrowser.views.edit_object', name="edit_object"),
-
+    url(r'^/import/?$', 'objectbrowser.views.import_objects'),
     url(r'^/edit/?$', 'objectbrowser.views.edit_object'),
     url(r'^/copy_and_edit/(?P<object_id>.+?)?$', 'objectbrowser.views.copy_and_edit_object'),
 

@@ -924,3 +924,15 @@ def copy_and_edit_object(request, object_id):
     return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': o.get_id()}))
 
 
+@adagios_decorator
+def import_objects(request):
+    if request.method == 'POST':
+            form = ImportObjectsForm(data=request.POST)
+            if form.is_valid():
+                duplicate_objects = form.get_duplicate_pynag_objects()
+                unique_objects = form.get_unique_pynag_objects()
+                if 'save-button' in request.POST:
+                    saved_objects = form.save()
+    else:
+        form = ImportObjectsForm(initial=request.GET)
+    return render_to_response('import_objects.html', locals(), context_instance=RequestContext(request))
