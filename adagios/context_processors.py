@@ -105,7 +105,8 @@ def get_serverside_includes(request):
         result['ssi_headers'] = []
         result['ssi_footers'] = []
         dirname = adagios.settings.serverside_includes
-        current_url = resolve_urlname(request)
+        current_url = resolve_urlname(request).get('urlname')
+        print "current url = ", current_url
         if not dirname:
             return {}
         if not os.path.isdir(dirname):
