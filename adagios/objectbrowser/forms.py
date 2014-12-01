@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 
 from pynag import Model
 from pynag.Utils import AttributeList
+from pynag.Utils import importer
 from adagios.objectbrowser.help_text import object_definitions
 from adagios.forms import AdagiosForm
 import adagios.misc.rest
@@ -51,8 +52,19 @@ HOST_NOTIFICATION_OPTIONS = (
     ('s', 'scheduled_downtime')
 )
 
+# All objects definition types in our config, in a form that is good for pynag forms
+ALL_OBJECT_TYPES = sorted(map(lambda x: (x, x), Model.string_to_class.keys()))
 
+# When boolean fields are set in configuration, generally 1=True and 0=False
 BOOLEAN_CHOICES = (('', 'not set'), ('1', '1'), ('0', '0'))
+
+
+_INITIAL_OBJECTS_IMPORT = """\
+host_name,address,use
+
+localhost,127.0.0.1,generic-host
+otherhost,127.0.0.2,generic-host
+"""
 
 
 class PynagAutoCompleteField(forms.CharField):
@@ -716,14 +728,10 @@ class CheckCommandForm(PynagForm):
         self.fields['check_command'] = self.get_pynagField('check_command')
 
 
-choices_for_all_types = sorted(
-    map(lambda x: (x, x), Model.string_to_class.keys()))
-
-
 class AddTemplateForm(PynagForm):
 
     """ Use this form to add one template """
-    object_type = forms.ChoiceField(choices=choices_for_all_types)
+    object_type = forms.ChoiceField(choices=ALL_OBJECT_TYPES)
     name = forms.CharField(max_length=100)
 
     def __init__(self, *args, **kwargs):
@@ -877,3 +885,66 @@ class AddObjectForm(PynagForm):
                                                                                           })
         except KeyError:
             return value
+
+
+class ImportObjectsForm(AdagiosForm):
+    object_type = forms.ChoiceField(
+        choices=ALL_OBJECT_TYPES, help_text=_('Imported objects are all of this type'), initial='host')
+    seperator = forms.CharField(
+        help_text=_('Columns are seperated by this letter'), initial=',')
+    destination_filename = forms.CharField(
+        help_text=_('Save objects in this file. If empty pynag will find the best place to store each object'),
+        initial='', required=False)
+    objects = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder':_INITIAL_OBJECTS_IMPORT}),
+        help_text=_("First line should be column headers, e.g. host_name,address"),
+        initial=_INITIAL_OBJECTS_IMPORT,
+        )
+
+    def parse_objects_from_form(self):
+        cleaned_data = self.clean()
+        objects = cleaned_data['objects']
+        object_type = cleaned_data['object_type']
+        destination_filename = self.cleaned_data['destination_filename']
+        seperator = cleaned_data['seperator']
+        parsed_objects = importer.parse_csv_string(objects, seperator=seperator)
+        pynag_objects = importer.dict_to_pynag_objects(parsed_objects, object_type=object_type)
+
+        for pynag_object in pynag_objects:
+            if destination_filename:
+                pynag_object.set_filename(destination_filename)
+            else:
+                pynag_object.set_filename(pynag_object.get_suggested_filename())
+        return pynag_objects
+
+    def get_duplicate_pynag_objects(self):
+        pynag_objects = self.parse_objects_from_form()
+        duplicates = []
+        short_names = []
+        for pynag_object in pynag_objects:
+            short_name = pynag_object.get_description()
+            if not short_name:
+                continue
+            if pynag_object.objects.filter(shortname=short_name) or short_name in short_names:
+                duplicates.append(pynag_object)
+            short_names.append(short_name)
+        return duplicates
+
+    def get_unique_pynag_objects(self):
+        objects = self.parse_objects_from_form()
+        duplicates = self.get_duplicate_pynag_objects()
+        unique_objects = [i for i in objects if i not in duplicates]
+        return unique_objects
+
+    def clean_destination_filename(self):
+        destination_filename = self.cleaned_data['destination_filename']
+        if not destination_filename:
+            return None
+        if destination_filename not in Model.config.get_cfg_files():
+            raise forms.ValidationError(_('Sorry, you can only write files inside current config directories.'))
+
+    def save(self):
+        pynag_objects = self.get_unique_pynag_objects()
+        for pynag_object in pynag_objects:
+            pynag_object.save()
+        return pynag_objects

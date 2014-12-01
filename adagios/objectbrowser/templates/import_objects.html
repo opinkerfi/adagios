@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Import objects" %}{% endblock %}
+{% block smallheader %}{% trans "Import" %}{% endblock %}
+{% block largeheader %}{% trans "Objects" %}{% endblock %}
+{% block nav1 %}{% trans "Import Objects" %}{% endblock %}
+{% block toolbar %}{% endblock %}
+{% block footer %}
+    <script>
+        $('table#many').dataTable( {
+                    "sPaginationType": "bootstrap",
+                    "sScrollY": "260px",
+                    "bAutoWidth": false,
+                    "bScrollCollapse": true,
+                    "bPaginate": false,
+                    "sDom": 'rtp'
+                }
+        );
+    </script>
+{% endblock %}
+
+{%  block content %}
+
+    <div class="alert alert-info">
+        <p>This form is meant for bulk importing objects from a comma seperated file or or string.</p>
+        <p>Only use this if you know what you are doing.</p>
+    </div>
+
+    {% if saved_objects %}
+        <div class="alert alert-success">{{ saved_objects|length }} objects saved.</div>
+        <table class="table">
+            <tr>
+                <th>Object Type</th>
+                <th>Short Name</th>
+                <th>File Name</th>
+            </tr>
+            {% for i in saved_objects %}
+                <tr>
+                    <td>{{ i.object_type }}</td>
+                    <td>
+                        <a href="{% url "objectbrowser.views.edit_object" %}?object_type={{ i.object_type }}&shortname={{ i.shortname }}">
+                            {{ i.shortname }}
+                        </a>
+                    </td>
+                    <td>{{ i.filename }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <form action="#" method="post" class="form-horizontal">{% csrf_token %}
+            {% for i in duplicate_objects %}
+                <div class="alert alert-warning">{{ i.object_type }} '{{ i.shortname }}' already exists in config. Not overwriting.</div>
+            {% endfor %}
+            {% if unique_objects %}
+                Preview of objects to be saved:
+                <pre>
+                {% for i in unique_objects %}{{ ''|linebreaks }}# {{ i.filename }}{{ i|linebreaks }}{% endfor %}
+                </pre>
+                <div class=hide>{% include "bootstrap_fields.html" with fields=form %}</div>
+                <button class="btn btn-primary" name=save-button type="submit">Save</button>
+
+            {% else %}
+                {% include "bootstrap_fields.html" with fields=form %}
+                <div class="form-actions">
+                    <button class="btn btn-primary" name=preview-button type="submit">Preview</button>
+                </div>
+            {% endif%}
+
+        </form>
+    {% endif %}
+{%  endblock %}
+
