@@ -8,7 +8,7 @@ adagios.bi = adagios.bi || {};
 adagios.misc.__notification_id_counter = 0;
 
 // When saved search items are added to the left sidebar, this is what they look like:
-adagios.misc._saved_search_element = '<li><div><a  href="URL">NAME</a><button type="button" class="pull-right close" onclick=adagios.misc.delete_saved_search("NAME");>&times;</button></div></li>';
+adagios.misc._saved_search_element = '<li><div><a  href="URL">NAME</a><button type="button" class="pull-right close" onclick=\'adagios.misc.delete_saved_search("NAME");\'>&times;</button></div></li>';
 
 
 $(document).ready(function() {
