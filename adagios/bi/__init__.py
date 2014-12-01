@@ -433,6 +433,12 @@ class BusinessProcess(object):
         for i in json_data:
             if self.name == i.get('name'):
                 json_data.remove(i)
+                continue
+            # Remove this process if its referenced in other processes:
+            sub_processes = i.get('processes', [])
+            i['processes'] = [x for x in sub_processes
+                              if x['process_name'] != self.name or x['process_type'] != self.process_type]
+
         json_string = json.dumps(json_data, indent=4)
         self._write_file(json_string)
 
