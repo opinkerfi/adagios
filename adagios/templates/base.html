@@ -41,7 +41,7 @@
 
 <body>
 
-<!-- begin serverside includes -->
+<!-- begin serverside includes from common-header.ssi and {{ urlname }}-header.ssi -->
 {% for ssi_header in ssi_headers %}
     <!-- including content from {{ ssi_header }} -->
     {% ssi ssi_header parsed %}
@@ -224,7 +224,7 @@
 {% endblock %}
 <!-- block footer ends -->
 
-<!-- begin serverside includes -->
+<!-- begin serverside includes for common-footer.ssi and {{ urlname }}-footer.ssi -->
 {% for ssi_footer in ssi_footers %}
     <!-- including content from {{ ssi_footer }} -->
     {% ssi ssi_footer parsed %}
