@@ -160,6 +160,29 @@ class TestBusinessProcess(TestCase):
         except Exception, e:
             self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
 
+    def test_delete(self):
+        bp1 = BusinessProcess('bp1')
+        bp1.save()
+
+        bp2 = BusinessProcess('bp2')
+        bp2.save()
+
+        self.assertEqual(['bp1', 'bp2'], get_all_process_names())
+
+    def test_delete_recursive(self):
+        bp1 = BusinessProcess('bp1')
+        bp2 = BusinessProcess('bp2')
+        bp1.save()
+        bp2.save()
+        bp1.add_process('bp2', 'businessprocess')
+        bp1.save()
+
+        self.assertEqual(1, len(bp1.get_processes()))
+
+        bp2.delete()
+        bp1 = get_business_process('bp1')
+        self.assertFalse(bp1.get_processes())
+
 
 class TestBusinessProcessLogic(TestCase):
     """ This class responsible for testing business classes logic """
