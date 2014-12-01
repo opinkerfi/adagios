@@ -470,6 +470,35 @@
         </div>
         <!-- Advanced search modal ends -->
 
+        <!-- Save search modal -->
+        <div class="modal hide fade" id="save_search_modal">
+            <form class="form-horizontal" id="save_search_form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3>{% trans "Save Current View as a search" %}</h3>
+                </div>
+
+                <div class="modal-body">
+                    <div class="control-group">
+                        <label class="control-label" for="id_save_search_name">
+                            {% trans "Name" %}
+                        </label>
+                        <div class="controls">
+                            <input id="id_save_search_name" type="text" class="required" value="" name="name" />
+                        </div>
+                        <div class=hide>
+                            <input type="text" id="id_save_search_url" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#save_search_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                    <button type="submit" id="wish_submit_button" class="btn">{% trans "Save this search" %}</button>
+                </div>
+            </form>
+        </div>
+        <!-- Save search modal ends -->
     </div>
 
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
@@ -602,6 +631,7 @@
                 return false;
             });
         };
+
 
 
         // This function responsible for acknowledge on all selected rows

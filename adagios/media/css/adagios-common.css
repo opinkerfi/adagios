@@ -541,6 +541,15 @@ td#effective_check_command {
     border: 1px solid #efefef;
     width: 100%;
 }
+
+#save_search_button {
+    padding-right: 0;
+}
+
+#saved_searches_list {
+    padding-right: 0
+}
+
 .ssi-overwrite, .ssi-append {
     display: none;
 }

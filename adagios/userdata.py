@@ -23,8 +23,11 @@ import collections
 
 import settings
 
+
 class User(object):
     """ Handles authentified users, provides preferences management. """
+    # Name of saved searches key
+    SAVED_SEARCHES = 'saved_searches'
     def __init__(self, request, autosave=False):
         """ Instantiates one user's preferences.
 

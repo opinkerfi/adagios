@@ -19,7 +19,10 @@
 
 from django.utils import unittest
 from django.test.client import Client
+from django.test.client import RequestFactory
 import adagios.utils
+import adagios.misc.rest
+import adagios.userdata
 import os
 
 
@@ -120,3 +123,44 @@ class MiscTestCase(unittest.TestCase):
         r = self.load_get('/status')
         assert 'Free beer' in r.content
 
+
+class RestTest(unittest.TestCase):
+    """Tests for adagios.misc.rest"""
+    def setUp(self):
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_adagios_global_variables()
+
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/')
+        self.user = adagios.userdata.User(self.request)
+        self.user._username = 'test'
+        self.user.__dict__ = {}
+        self.user.save()
+
+    def tearDown(self):
+        self.environment.terminate()
+
+    def test_save_search(self):
+        adagios.misc.rest.save_search(self.request, 'test', 'http://localhost')
+        user = adagios.userdata.User(self.request)
+        self.assertEqual({'test':'http://localhost'}, user.to_dict()['saved_searches'])
+
+    def test_get_saved_searches(self):
+        adagios.misc.rest.save_search(self.request, 'test', 'http://adagios')
+        self.assertEqual({'test':'http://adagios'}, adagios.misc.rest.get_saved_searches(self.request))
+
+    def test_save_search_raises_on_no_name(self):
+        with self.assertRaises(ValueError):
+            adagios.misc.rest.save_search(self.request, '', 'http://localhost')
+
+    def test_save_search_raises_on_no_url(self):
+        with self.assertRaises(ValueError):
+            adagios.misc.rest.save_search(self.request, 'name', '')
+
+    def test_delete_saved_search(self):
+        adagios.misc.rest.save_search(self.request, 'test', 'http://adagios')
+        self.assertEqual({'test':'http://adagios'}, adagios.misc.rest.get_saved_searches(self.request))
+
+        adagios.misc.rest.delete_saved_search(self.request, 'test')
+        self.assertFalse(adagios.misc.rest.get_saved_searches(self.request))
