@@ -43,6 +43,9 @@ $(document).ready(function() {
     // Fix console logging for internet explorer
     adagios.misc.internet_explorer_console_fix();
 
+    // Make search dialog option match current query:
+    adagios.misc.populate_search_with_querystring_fields($('#search_dialog'));
+
     // Handle user contributed ssi overwrites
     adagios.misc.ssi_overwrites();
 
@@ -994,4 +997,36 @@ adagios.objectbrowser.autocomplete_for_multichoicefields = function() {
 	    choices = choices.split(',');
 	    $(this).select2({tags:choices});
     });
+};
+
+// Returns a list of all querystring keys and values in current web page
+adagios.misc.get_querystring_list = function() {
+    var querystring = window.location.search.substr(1).split('&');
+    var key, value, current_querystring_item;
+    var result = [];
+    for (var i = 0; i < querystring.length; ++i) {
+        current_querystring_item = querystring[i].split('=');
+        key = current_querystring_item[0];
+        value = current_querystring_item[1];
+        result.push([key, value]);
+    }
+    return result;
+};
+
+// Reads current querystring and makes sure that when search dialog
+// is opened, it will match was was put in querystring.
+adagios.misc.populate_search_with_querystring_fields = function(dom) {
+    var querystring_list = adagios.misc.get_querystring_list();
+    var key, value, check_box_selector;
+    for (var i = 0; i < querystring_list.length; ++i) {
+        key = querystring_list[i][0];
+        value = querystring_list[i][1];
+        if (key == 'q') {
+            dom.find('#id_search_modal_q').val(value);
+            continue;
+        }
+        // If we find a checkbox with same name and value, make sure it is checked:
+        check_box_selector = 'input[name=' + key + '][value=' + value + ']';
+        dom.find(check_box_selector).prop('checked', true);
+    }
 };
