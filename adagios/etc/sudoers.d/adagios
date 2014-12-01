@@ -1,3 +1,5 @@
-Defaults:nagios    !requiretty
-nagios             ALL = (root) NOPASSWD: /etc/init.d/nagios
+Defaults:%nagios    !requiretty
+%nagios             ALL = (root) NOPASSWD: /etc/init.d/nagios
+%nagios             ALL = (root) NOPASSWD: /sbin/service nagios *
+%nagios             ALL = (root) NOPASSWD: /usr/sbin/nagios -v /etc/nagios/nagios.cfg
 
