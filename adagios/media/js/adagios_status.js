@@ -1058,7 +1058,7 @@ adagios.misc.prepare_saved_search_modal = function() {
 
         adagios.rest.adagios.save_search(parameters).always(function() {
             $('#save_search_modal').modal('hide');
-            adagios.misc.populate_saved_searces_sidemenu();
+            adagios.misc.populate_saved_searches_sidemenu();
         });
         e.preventDefault();
         return false
