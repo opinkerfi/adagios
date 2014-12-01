@@ -38,6 +38,8 @@ from django.utils.translation import ugettext as _
 def on_page_load(request):
     """ Collection of actions that take place every page load """
     results = {}
+    update_global_variables()
+
     for k, v in reload_configfile(request).items():
         results[k] = v
     for k, v in get_httpuser(request).items():
@@ -83,6 +85,11 @@ def on_page_load(request):
     for k, v in get_all_nonworking_backends(request).items():
         results[k] = v
     return results
+
+
+def update_global_variables():
+    """Updates all required global variables."""
+    pynag.Model.cfg_file = adagios.settings.nagios_config
 
 
 def get_current_time(request):
