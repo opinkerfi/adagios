@@ -1035,7 +1035,8 @@ adagios.misc.populate_search_with_querystring_fields = function(dom) {
             continue;
         }
         // If we find a checkbox with same name and value, make sure it is checked:
-        check_box_selector = 'input[name=' + key + '][value=' + value + ']';
+        check_box_selector = 'input[name="KEY"][value="VALUE"]';
+        check_box_selector = check_box_selector.replace('KEY', key).replace('VALUE', value);
         dom.find(check_box_selector).prop('checked', true);
     }
 };
