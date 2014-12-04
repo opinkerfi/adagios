@@ -36,25 +36,7 @@
     {{ block.super }}
 
     <script>
-        function timedRefresh(timeoutPeriod) {
-            var interval = setInterval(refreshPage, timeoutPeriod);
-        }
-
-        function refreshPage() {
-            var checked_boxes = $( ".selectable :checked" );
-            var shown_modals = $("div .modal.in");
-            if (checked_boxes.length + shown_modals.length == 0) {
-                console.log("Refreshing page...");
-                location.reload();
-            }
-            else {
-                console.log("Canceled auto-refresh of page because input boxes or modals have been edited");
-                clearInterval(1);
-            }
-        }
-
-        $(document).ready(function() {
-            timedRefresh(30000);
-        });
+        // Set a reload in X seconds
+        adagios.misc.timed_reload({{ user_data.refresh_rate }});
     </script>
 {% endblock %}
