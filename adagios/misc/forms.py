@@ -94,6 +94,7 @@ class ContactUsForm(forms.Form):
         """) % {'topic': topic, 'sender': sender, 'message': message}
         send_mail(subject, msg, from_address, to_address, fail_silently=False)
 
+
 class UserdataForm(forms.Form):
     language = forms.ChoiceField(
         choices=settings.LANGUAGES,
@@ -125,6 +126,9 @@ class AdagiosSettingsForm(forms.Form):
     livestatus_path = forms.CharField(
         help_text=_("Path to MK Livestatus socket. If left empty Adagios will try to autodiscover from your nagios.cfg"),
         required=False,
+    )
+    livestatus_limit = forms.IntegerField(
+        help_text=_("Limit the number of rows shown per page in the status view to this."),
     )
     enable_githandler = forms.BooleanField(
         required=False, initial=settings.enable_githandler, help_text=_("If set. Adagios will commit any changes it makes to git repository."))

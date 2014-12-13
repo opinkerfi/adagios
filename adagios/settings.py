@@ -231,6 +231,7 @@ nagios_url = "/nagios"
 nagios_init_script = "/etc/init.d/nagios"
 nagios_binary = "/usr/bin/nagios"
 livestatus_path = None
+livestatus_limit = 500
 default_host_template = 'generic-host'
 default_service_template = 'generic-service'
 default_contact_template = 'generic-contact'
