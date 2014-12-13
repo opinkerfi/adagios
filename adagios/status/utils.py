@@ -542,3 +542,33 @@ def grep_to_livestatus(object_type, *args, **kwargs):
 
     return list(args) + result
 
+
+def get_log_instance(request):
+    """ Get an instance of pynag.Utils.LogFiles
+
+    Returns:
+        An instance of pynag.Utils.LogFiles
+    """
+
+    return pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
+
+
+def get_log_entries(request, *args, **kwargs):
+    """ Get log entries via pynag.Utils.LogFiles
+
+    Returns:
+        Log entries that matches the search query in (list of dict)
+    """
+    log = get_log_instance(request)
+    return log.get_log_entries(*args, **kwargs)
+
+
+def get_state_history(request, *args, **kwargs):
+    """ Get state history via pynag.Utils.LogFiles
+
+    Returns:
+        Log entries that matches the search query in (list of dict)
+    """
+    log = get_log_instance(request)
+    return log.get_state_history(*args, **kwargs)
+
