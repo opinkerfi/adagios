@@ -42,6 +42,8 @@ _UNHANDLED = 'unhandled'
 # This key is often passed via querystring as a means to do a 'fuzzy' search of an object.
 _SEARCH_KEYWORD = 'q'
 
+# This keyword is used to define how many rows the we should return
+_LIMIT_KEYWORD = 'limit'
 
 # This is a common querystring key to filter for hosts/services in downtime.
 _IN_SCHEDULED_DOWNTIME = 'in_scheduled_downtime'
@@ -172,18 +174,18 @@ def add_statistics_to_hosts(result):
             pass
 
 
-def _search_multiple_attributes(query, attributes, value):
-    """Adds search filter to query that allows searching for multiple attributes.
+def _search_multiple_attributes(search_query, attributes, value):
+    """Adds search filter to search_query that allows searching for multiple attributes.
 
     Args:
-        query: pynag.Parsers.LivestatusQuery object. Filters will be adde to this query.
+        search_query: pynag.Parsers.LivestatusQuery object. Filters will be adde to this search_query.
         attributes: List of strings. All the fields we want to search in.
         value: String. Value we want to search for.
     """
     for attribute in attributes:
-        query.add_filter(attribute, value)
+        search_query.add_filter(attribute, value)
     if len(attributes) > 1:
-        query.add_or_statement(len(attributes))
+        search_query.add_or_statement(len(attributes))
 
 
 def _process_querystring_for_host(*args, **kwargs):
@@ -232,12 +234,26 @@ def _process_querystring_for_host(*args, **kwargs):
         kwargs['state'] = kwargs.pop('host_state')
 
     query = pynag.Parsers.LivestatusQuery('GET hosts', *args, **kwargs)
+
     if search_parameter:
         if isinstance(search_parameter, list):
             search_parameter = search_parameter[0]
         _search_multiple_attributes(query, _GENERIC_SEARCH_FIELDS_HOST, search_parameter)
 
     return query
+
+
+def _get_limit_from_kwargs(kwargs):
+    """Remove _LIMIT from kwargs if present, and convert to int.
+
+    Returns:
+        Integer. 'limit' if it was inside kwargs, otherwise adagios.settings.livestatus_limit
+    """
+    limit = kwargs.pop(_LIMIT_KEYWORD, adagios.settings.livestatus_limit)
+    if isinstance(limit, list):
+        limit = limit[0]
+    limit = int(limit)
+    return limit
 
 
 def get_hosts(request, fields=None, *args, **kwargs):
@@ -255,7 +271,12 @@ def get_hosts(request, fields=None, *args, **kwargs):
     Returns:
         List of dicts. The output from livestatus query.
     """
+    limit = _get_limit_from_kwargs(kwargs)
     query = _process_querystring_for_host(*args, **kwargs)
+    if limit:
+        query.set_limit(limit)
+    else:
+        query.remove_limit()
 
     if fields is None:
         fields = _DEFAULT_HOST_COLUMNS
@@ -272,6 +293,9 @@ def get_hosts(request, fields=None, *args, **kwargs):
     
     hosts.sort(reverse=True, cmp=lambda a, b: cmp(a.get('num_problems'), b.get('num_problems')))
     hosts.sort(reverse=True, cmp=lambda a, b: cmp(a.get('state'), b.get('state')))
+
+    if limit:
+        return hosts[:limit]
     return hosts
 
 
@@ -315,6 +339,7 @@ def _process_querystring_for_service(*args, **kwargs):
         kwargs.update(_IN_SCHEDULED_DOWNTIME_MAP[in_scheduled_downtime])
 
     query = pynag.Parsers.LivestatusQuery('GET services', *args, **kwargs)
+
     if search_parameter:
         if isinstance(search_parameter, list):
             search_parameter = search_parameter[0]
@@ -343,7 +368,12 @@ def get_services(request=None, fields=None, *args, **kwargs):
         Returns:
             List of dicts. The output from livestatus query.
     """
+    limit = _get_limit_from_kwargs(kwargs)
     query = _process_querystring_for_service(*args, **kwargs)
+    if limit:
+        query.set_limit(limit)
+    else:
+        query.remove_limit()
 
     fields = fields or _DEFAULT_SERVICE_COLUMNS
     if not isinstance(fields, list):  # HACK, we still have web rest queries that reference us like this
@@ -355,6 +385,9 @@ def get_services(request=None, fields=None, *args, **kwargs):
 
     # TODO: Can we get rid of this function in the future and workaround this another way ?
     _add_custom_tags_to_services(services)
+
+    if limit:
+        return services[:limit]
     return services
 
 
@@ -393,6 +426,7 @@ def _add_custom_tags_to_services(services):
     except Exception:
         pass
     return services
+
 
 def get_contacts(request, *args, **kwargs):
     l = livestatus(request)
@@ -484,65 +518,6 @@ def get_statistics(request, *args, **kwargs):
     return c
 
 
-def grep_to_livestatus(object_type, *args, **kwargs):
-    """ Take querystring parameters from django request object, and returns list of livestatus queries
-
-        Should support both hosts and services.
-
-        It does minimal support for views have hosts and services in same view and user wants to
-        enter some querystring parameters for both.
-
-    """
-    result = []
-    for key in kwargs:
-        if hasattr(kwargs, 'getlist'):
-            values = kwargs.getlist(key)
-        else:
-            values = [kwargs.get(key)]
-
-        if object_type == 'host' and key.startswith('service_'):
-            continue
-        if object_type == 'host' and key == 'description':
-            continue
-        if object_type == 'host' and key in ('host_scheduled_downtime_depth', 'host_acknowledged', 'host_state'):
-            key = key[len('host_'):]
-        if object_type == 'service' and key in ('service_state', 'service_description'):
-            key = key[len('service_'):]
-
-        if object_type == 'service' and key == 'unhandled':
-            tmp = {}
-            tmp['state__isnot'] = 0
-            tmp['acknowledged'] = 0
-            tmp['scheduled_downtime_depth'] = 0
-            tmp['host_scheduled_downtime_depth'] = 0
-            tmp['host_acknowledged'] = 0
-            tmp['host_state'] = 0
-            result += pynag.Utils.grep_to_livestatus(**kwargs)
-        elif object_type == 'host' and key == 'unhandled':
-            tmp = {}
-            tmp['state__isnot'] = 0
-            tmp['acknowledged'] = 0
-            tmp['scheduled_downtime_depth'] = 0
-        elif object_type == 'host' and key == 'q':
-            for i in values:
-                result.append('Filter: name ~~ %s' % i)
-                result.append('Filter: address ~~ %s' % i)
-                result.append('Filter: plugin_output ~~ %s' % i)
-                result.append('Or: 3')
-        elif object_type == 'service' and key == 'q':
-            for i in values:
-                result.append('Filter: host_name ~~ %s' % i)
-                result.append('Filter: description ~~ %s' % i)
-                result.append('Filter: plugin_output ~~ %s' % i)
-                result.append('Filter: host_address ~~ %s' % i)
-                result.append('Or: 4')
-        else:
-            for value in values:
-                result += pynag.Utils.grep_to_livestatus(**{key: value})
-
-    return list(args) + result
-
-
 def get_log_entries(request, *args, **kwargs):
     """ Get log entries via pynag.Utils.LogFiles
 
@@ -565,4 +540,3 @@ def get_state_history(request, *args, **kwargs):
         return []
     log = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
     return log.get_state_history(*args, **kwargs)
-
