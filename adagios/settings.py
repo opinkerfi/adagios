@@ -242,6 +242,7 @@ enable_status_view = True
 enable_bi = True
 enable_pnp4nagios = True
 enable_graphite = False
+enable_local_logs = True
 contrib_dir = "/var/lib/adagios/contrib/"
 serverside_includes = "/etc/adagios/ssi"
 escape_html_tags = True

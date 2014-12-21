@@ -516,3 +516,27 @@ def get_statistics(request, *args, **kwargs):
 
     c['total_network_parents'], c['total_network_problems'] = tmp
     return c
+
+
+def get_log_entries(request, *args, **kwargs):
+    """ Get log entries via pynag.Utils.LogFiles
+
+    Returns:
+        Log entries that matches the search query in (list of dict)
+    """
+    if not adagios.settings.enable_local_logs:
+        return []
+    log = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
+    return log.get_log_entries(*args, **kwargs)
+
+
+def get_state_history(request, *args, **kwargs):
+    """ Get state history via pynag.Utils.LogFiles
+
+    Returns:
+        Log entries that matches the search query in (list of dict)
+    """
+    if not adagios.settings.enable_local_logs:
+        return []
+    log = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
+    return log.get_state_history(*args, **kwargs)

@@ -140,6 +140,9 @@ class AdagiosSettingsForm(forms.Form):
     enable_status_view = forms.BooleanField(
         required=False, initial=settings.enable_status_view,
         help_text=_("If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect"))
+    enable_local_logs = forms.BooleanField(
+        required=False, initial=settings.enable_local_logs,
+        help_text=_("If set, allow adagios to read logfiles from the monitoring engine. Might be performance sensitive)"))
     auto_reload = forms.BooleanField(
         required=False, initial=settings.auto_reload,
         help_text=_("If set. Nagios is reloaded automatically after every change."))
