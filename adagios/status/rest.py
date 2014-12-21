@@ -456,7 +456,8 @@ def delete_downtime(downtime_id, is_service=True):
         pynag.Control.Command.del_host_downtime(downtime_id)
     return "ok"
 
-def top_alert_producers(limit=5, start_time=None, end_time=None):
+
+def top_alert_producers(request, limit=5, start_time=None, end_time=None):
     """ Return a list of ["host_name",number_of_alerts]
 
      Arguments:
@@ -467,8 +468,7 @@ def top_alert_producers(limit=5, start_time=None, end_time=None):
         start_time = None
     if end_time == '':
         end_time = None
-    l = pynag.Parsers.LogFiles()
-    log = l.get_state_history(start_time=start_time, end_time=end_time)
+    log = adagios.status.utils.get_state_history(request, start_time=start_time, end_time=end_time)
     top_alert_producers = collections.defaultdict(int)
     for i in log:
         if 'host_name' in i and 'state' in i and i['state'] > 0:
@@ -480,7 +480,7 @@ def top_alert_producers(limit=5, start_time=None, end_time=None):
     return top_alert_producers
 
 
-def log_entries(*args, **kwargs):
+def log_entries(request, *args, **kwargs):
     """ Same as pynag.Parsers.Logfiles().get_log_entries()
 
     Arguments:
@@ -494,11 +494,12 @@ def log_entries(*args, **kwargs):
    List of dicts
 
     """
-    l = pynag.Parsers.LogFiles()
-    return l.get_log_entries(*args, **kwargs)
+    return adagios.status.utils.get_log_entries(request, *args, **kwargs)
 
 
-def state_history(start_time=None, end_time=None, object_type=None, host_name=None, service_description=None, hostgroup_name=None):
+def state_history(
+        request, start_time=None, end_time=None, object_type=None, host_name=None,
+        service_description=None, hostgroup_name=None):
     """ Returns a list of dicts, with the state history of hosts and services. Parameters behaves similar to get_log_entries
 
     """
@@ -510,8 +511,9 @@ def state_history(start_time=None, end_time=None, object_type=None, host_name=No
         host_name = None
     if service_description == '':
         service_description = None
-    l = pynag.Parsers.LogFiles()
-    log_entries = l.get_state_history(start_time=start_time, end_time=end_time, host_name=host_name, service_description=service_description)
+    log_entries = adagios.status.utils.get_state_history(
+        request, start_time=start_time, end_time=end_time,
+        host_name=host_name, service_description=service_description)
     if object_type == 'host' or object_type == 'service':
         pass
     elif object_type == 'hostgroup':
@@ -543,6 +545,7 @@ def state_history(start_time=None, end_time=None, object_type=None, host_name=No
             i['bootstrap_status'] = css_hint[i['state']]
 
     return log_entries
+
 
 def _get_service_model(host_name, service_description=None):
     """ Return one pynag.Model.Service object for one specific service as seen

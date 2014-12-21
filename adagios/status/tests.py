@@ -189,18 +189,18 @@ class UtilsTest(unittest.TestCase):
     def test_search_multiple_attributes_multiple_attributes(self):
         attributes = ['host_name', 'address']
         adagios.status.utils._search_multiple_attributes(self.host_query, attributes, 'test')
-        expected_query = 'GET hosts\nFilter: host_name = test\nFilter: address = test\nOr: 2\n'
+        expected_query = 'GET hosts\nFilter: host_name = test\nFilter: address = test\nOr: 2\n\n'
         self.assertEqual(expected_query, self.host_query.get_query())
 
     def test_search_multiple_attributes_one_attribute(self):
         attributes = ['host_name']
         adagios.status.utils._search_multiple_attributes(self.host_query, attributes, 'test')
-        expected_query = 'GET hosts\nFilter: host_name = test\n'
+        expected_query = 'GET hosts\nFilter: host_name = test\n\n'
         self.assertEqual(expected_query, self.host_query.get_query())
 
     def test_search_multiple_attributes_empty(self):
         adagios.status.utils._search_multiple_attributes(self.host_query, [], 'test')
-        expected_query = 'GET hosts\n'
+        expected_query = 'GET hosts\n\n'
         self.assertEqual(expected_query, self.host_query.get_query())
 
     def test__process_querystring_for_host_empty(self):

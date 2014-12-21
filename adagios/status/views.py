@@ -193,8 +193,7 @@ def snippets_log(request):
     if service_description == "_HOST_":
         service_description = None
 
-    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    log = l.get_state_history(host_name=host_name, service_description=service_description)
+    log = utils.get_state_history(host_name=host_name, service_description=service_description)
 
     # If hostgroup_name was specified, lets get all log entries that belong to that hostgroup
     if host_name and service_description:
@@ -272,8 +271,6 @@ def service_detail(request, host_name, service_description):
             return service_detail(request, host_name, service_description=tmp)
         primary_object = my_host
         c['service_description'] = '_HOST_'
-        #c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
-        #    host_name=host_name, service_description=None)
     else:
         try:
             c['service'] = my_service = livestatus.get_service(
@@ -283,8 +280,6 @@ def service_detail(request, host_name, service_description):
             my_service['short_name'] = "%s/%s" % (
                 my_service['host_name'], my_service['description'])
             primary_object = my_service
-            #c['log'] = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config).get_state_history(
-            #    host_name=host_name, service_description=service_description)
         except IndexError:
             c['errors'].append(
                 _("Could not find any service named '%s'") % service_description)
@@ -755,8 +750,6 @@ def _status_combined(request, optimized=False):
         c['host_status'] = 0
     else:
         c['host_status'] = map(lambda x: 100 * x / host_totals, host_status)
-    #l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    #c['log'] = reversed(l.get_state_history())
     return c
 
 
@@ -805,8 +798,7 @@ def state_history(request):
         start_time = end_time - seconds_today
     start_time = int(start_time)
 
-    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    c['log'] = log = l.get_state_history(start_time=start_time, end_time=end_time,strict=False)
+    c['log'] = log = utils.get_state_history(request, start_time=start_time, end_time=end_time,strict=False)
     total_duration = end_time - start_time
     c['total_duration'] = total_duration
     css_hint = {}
@@ -935,9 +927,8 @@ def _status_log(request):
         k = str(k)
         v = str(v)
         kwargs[k] = v
-    l = pynag.Parsers.LogFiles(maincfg=adagios.settings.nagios_config)
-    c['log'] = l.get_log_entries(
-        start_time=start_time, end_time=end_time, **kwargs)[-limit:]
+    c['log'] = utils.get_log_entries(
+        request, start_time=start_time, end_time=end_time, **kwargs)[-limit:]
     c['log'].reverse()
     c['logs'] = {'all': []}
     for line in c['log']:
@@ -1054,8 +1045,7 @@ def contact_detail(request, contact_name):
         'GET services', "Filter: contacts >= %s" % contact_name)
 
     # Activity log
-    c['log'] = pynag.Parsers.LogFiles(
-        maincfg=adagios.settings.nagios_config).get_log_entries(search=str(contact_name))
+    c['log'] = utils.get_log_entries(request, search=str(contact_name))
 
     # Contact groups
     c['groups'] = l.query(
