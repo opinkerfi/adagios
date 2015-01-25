@@ -767,10 +767,10 @@ def dashboard(request):
     c['messages'] = []
     c['errors'] = []
 
-    c['host_problems'] = utils.get_hosts(request, state='1', unhandled='', **request.GET)
+    c['host_problems'] = utils.get_hosts(request, unhandled=True, **request.GET)
 
     # Service problems
-    c['service_problems'] = utils.get_services(request, host_state="0", unhandled='', **request.GET)
+    c['service_problems'] = utils.get_services(request, unhandled=True, **request.GET)
 
     # Sort problems by state and last_check as secondary sort field
     c['service_problems'].sort(
