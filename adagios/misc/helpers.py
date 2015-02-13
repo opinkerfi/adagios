@@ -251,7 +251,7 @@ def reload_nagios():
         result['message'] = _('Nagios Successfully reloaded')
     else:
         result['status'] = _("error")
-        result['message'] = _("Failed to reload nagios (do you have enough permissions?)")
+        result['message'] = _("Failed to reload nagios (config error?)")
     return result
 
 
