@@ -262,7 +262,6 @@ class PynagForm(AdagiosForm):
             # Additionally, update the field for the return form
             self.fields[k] = self.get_pynagField(k, css_tag="defined")
             self.fields[k].value = value
-        self.pynag_object.save()
 
         try:
             self.pynag_object.save()
