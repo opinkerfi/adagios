@@ -193,7 +193,7 @@ def snippets_log(request):
     if service_description == "_HOST_":
         service_description = None
 
-    log = utils.get_state_history(host_name=host_name, service_description=service_description)
+    log = utils.get_state_history(request, host_name=host_name, service_description=service_description)
 
     # If hostgroup_name was specified, lets get all log entries that belong to that hostgroup
     if host_name and service_description:
