@@ -262,8 +262,18 @@ class PynagForm(AdagiosForm):
             # Additionally, update the field for the return form
             self.fields[k] = self.get_pynagField(k, css_tag="defined")
             self.fields[k].value = value
-        self.pynag_object.save()
-        adagios.misc.rest.add_notification(message=_("Object successfully saved"), level="success", notification_type="show_once")
+
+        try:
+            self.pynag_object.save()
+            adagios.misc.rest.add_notification(message=_(
+                "Object successfully saved"),
+                level="success",
+                notification_type="show_once")
+        except IOError:
+            adagios.misc.rest.add_notification(message=_(
+                "Object cannot be saved : Permission denied on file system"),
+                level="danger",
+                notification_type="show_once")
 
     def __init__(self, pynag_object, *args, **kwargs):
         self.pynag_object = p = pynag_object
