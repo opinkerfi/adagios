@@ -264,12 +264,12 @@ def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
     #WaitCondition = "last_check > %s" % int(time.time()- 1)
     for i in hostlist.split(';'):
         if not i: continue
-        reschedule(request, host_name=i, service_description=None, check_time=check_time)
+        reschedule(request, host_name=i, service_description=None, check_time=int(check_time))
         #task.add(wait, 'hosts', i, WaitCondition)
     for i in servicelist.split(';'):
         if not i: continue
         host_name,service_description = i.split(',')
-        reschedule(request, host_name=host_name, service_description=service_description, check_time=check_time)
+        reschedule(request, host_name=host_name, service_description=service_description, check_time=int(check_time))
         #WaitObject = "{h};{s}".format(h=host_name, s=service_description)
         #task.add(wait, 'services', WaitObject, WaitCondition)
     return {'message': _("command sent successfully")}
