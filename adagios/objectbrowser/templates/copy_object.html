@@ -16,7 +16,7 @@
                 <button class="close" data-dismiss="alert">×</button>
                 <strong>{% trans "Success!" %}</strong>
 		{% url "edit_object" i.id as the_url %}
-                {% blocktrans with type=i.object_type desc=u.description file=i.filename %}
+                {% blocktrans with type=i.object_type desc=i.description file=i.filename %}
 		{{ type }} <a href="{{ the_url }}">"{{ desc }}"</a> was successfully saved to {{ file }}.
 		{% endblocktrans %}
             </div>
