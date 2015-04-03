@@ -31,9 +31,9 @@ def pnp(request, pnp_command='image'):
     c['messages'] = []
     c['errors'] = []
     result = run_pnp(pnp_command, **request.GET)
-    mimetype = "text"
+    content_type = "text"
     if pnp_command == 'image':
-        mimetype = "image/png"
+        content_type = "image/png"
     elif pnp_command == 'json':
-        mimetype = "application/json"
-    return HttpResponse(result, mimetype)
+        content_type = "application/json"
+    return HttpResponse(result, content_type=content_type)

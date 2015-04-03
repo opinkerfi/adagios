@@ -53,6 +53,15 @@ class LiveStatusTestCase(unittest.TestCase):
         except KeyError, e:
             self.assertEqual(True, _("Unhandled exception while loading %(path)s: %(exc)s") % {'path': path, 'exc': e})
 
+    def testGetAllHostsViaJSON(self):
+        """Test fetching hosts via json"""
+        path = "/rest/status/json/hosts"
+        data = {'fields': 'host_name'}
+        c = Client()
+        response = c.post(path=path, data=data)
+        json_data = json.loads(response.content)
+        self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
+        self.assertIn("localhost", [x['name'] for x in json_data])
 
     def loadPage(self, url):
         """ Load one specific page, and assert if return code is not 200 """
