@@ -16,22 +16,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url, patterns
-from django.conf import settings
 
 urlpatterns = patterns('',
-                      (r'^/test/?', 'adagios.misc.views.test'),
-                      (r'^/paste/?', 'adagios.misc.views.paste'),
-                      (r'^/?$', 'adagios.misc.views.index'),
+                      url(r'^/test/?', 'adagios.misc.views.test'),
+                      url(r'^/paste/?', 'adagios.misc.views.paste'),
+                      url(r'^/?$', 'adagios.misc.views.index'),
 
-                      (r'^/settings/?', 'adagios.misc.views.settings'),
-                      (r'^/preferences/?', 'adagios.misc.views.preferences'),
-                      (r'^/nagios/?', 'adagios.misc.views.nagios'),
-                      (r'^/iframe/?', 'adagios.misc.views.iframe'),
-                      (r'^/gitlog/?', 'adagios.misc.views.gitlog'),
-                      (r'^/service/?', 'adagios.misc.views.nagios_service'),
-                      (r'^/pnp4nagios/?$', 'adagios.misc.views.pnp4nagios'),
-                      (r'^/pnp4nagios/edit(?P<filename>.+)$', 'adagios.misc.views.pnp4nagios_edit_template'),
-                      (r'^/mail', 'adagios.misc.views.mail'),
-                       url(r'^/images/(?P<path>.+)$', 'django.views.static.serve', {'document_root': '/usr/share/nagios3/htdocs/images/logos/'}, name="logo"),
-                      (r'^/images/?$', 'adagios.misc.views.icons'),
+                      url(r'^/settings/?', 'adagios.misc.views.settings'),
+                      url(r'^/preferences/?', 'adagios.misc.views.preferences'),
+                      url(r'^/nagios/?', 'adagios.misc.views.nagios'),
+                      url(r'^/iframe/?', 'adagios.misc.views.iframe'),
+                      url(r'^/gitlog/?', 'adagios.misc.views.gitlog'),
+                      url(r'^/service/?', 'adagios.misc.views.nagios_service'),
+                      url(r'^/pnp4nagios/?$', 'adagios.misc.views.pnp4nagios'),
+                      url(r'^/pnp4nagios/edit(?P<filename>.+)$', 'adagios.misc.views.pnp4nagios_edit_template'),
+                      url(r'^/mail', 'adagios.misc.views.mail'),
+                      url(r'^/images/(?P<path>.+)$', 'django.views.static.serve', {'document_root': '/usr/share/nagios3/htdocs/images/logos/'}, name="logo"),
+                      url(r'^/images/?$', 'adagios.misc.views.icons'),
                       )

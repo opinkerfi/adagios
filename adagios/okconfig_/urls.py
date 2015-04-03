@@ -16,19 +16,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url, patterns
-from django.conf import settings
 
 urlpatterns = patterns('adagios',
 
-                       #(r'^/?$', 'okconfig_.views.index'),
-                      (r'^/scan_network/?', 'okconfig_.views.scan_network'),
-                      (r'^/addgroup/?', 'okconfig_.views.addgroup'),
-                      (r'^/addtemplate/?', 'okconfig_.views.addtemplate'),
-                      (r'^/addhost/?', 'okconfig_.views.addhost'),
-                      (r'^/addservice/?', 'okconfig_.views.addservice'),
-                      (r'^/install_agent/?', 'okconfig_.views.install_agent'),
-                      (r'^/edit/?$', 'okconfig_.views.choose_host'),
-                      (r'^/edit/(?P<host_name>.+)$', 'okconfig_.views.edit'),
-                      (r'^/verify_okconfig/?',
+                      url(r'^/scan_network/?', 'okconfig_.views.scan_network'),
+                      url(r'^/addgroup/?', 'okconfig_.views.addgroup'),
+                      url(r'^/addtemplate/?', 'okconfig_.views.addtemplate'),
+                      url(r'^/addhost/?', 'okconfig_.views.addhost'),
+                      url(r'^/addservice/?', 'okconfig_.views.addservice'),
+                      url(r'^/install_agent/?', 'okconfig_.views.install_agent'),
+                      url(r'^/edit/?$', 'okconfig_.views.choose_host'),
+                      url(r'^/edit/(?P<host_name>.+)$', 'okconfig_.views.edit'),
+                      url(r'^/verify_okconfig/?',
                        'okconfig_.views.verify_okconfig'),
-                       )
+                      )
