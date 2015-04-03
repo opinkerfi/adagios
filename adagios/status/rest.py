@@ -262,14 +262,20 @@ def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
     """
     #task = adagios.utils.Task()
     #WaitCondition = "last_check > %s" % int(time.time()- 1)
+    if isinstance(check_time, float):
+        check_time = int(check_time)
+
     for i in hostlist.split(';'):
         if not i: continue
-        reschedule(request, host_name=i, service_description=None, check_time=int(check_time))
+        reschedule(request, host_name=i, service_description=None,
+                   check_time=check_time)
         #task.add(wait, 'hosts', i, WaitCondition)
     for i in servicelist.split(';'):
         if not i: continue
         host_name,service_description = i.split(',')
-        reschedule(request, host_name=host_name, service_description=service_description, check_time=int(check_time))
+        reschedule(request, host_name=host_name,
+                   service_description=service_description,
+                   check_time=check_time)
         #WaitObject = "{h};{s}".format(h=host_name, s=service_description)
         #task.add(wait, 'services', WaitObject, WaitCondition)
     return {'message': _("command sent successfully")}
@@ -286,7 +292,10 @@ def reschedule(request, host_name=None, service_description=None, check_time=Non
     """
 
     if check_time is None or check_time is '':
-        check_time = time.time()
+        check_time = int(time.time())
+    elif isinstance(check_time, float):
+        check_time = int(check_time)
+
     if service_description in (None, '', u'', '_HOST_', 'undefined'):
         service_description = ""
         pynag.Control.Command.schedule_forced_host_check(
