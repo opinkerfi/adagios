@@ -95,21 +95,21 @@ def handle_request(request, module_name, module_path, attribute, format):
     if format == 'json':
         result = json.dumps(
             result, ensure_ascii=False, sort_keys=True, skipkeys=True, indent=4)
-        mimetype = 'application/javascript'
+        content_type = 'application/javascript'
     elif format == 'xml':
             # TODO: For some reason Ubuntu does not have this module. Where is
             # it? Should we use lxml instead ?
         import xml.marshal.generic
         result = xml.marshal.generic.dumps(result)
-        mimetype = 'application/xml'
+        content_type = 'application/xml'
     elif format == 'txt':
         result = str(result)
-        mimetype = 'text/plain'
+        content_type = 'text/plain'
     else:
         raise BaseException(
             _("Unsupported format: '%s'. Valid formats: json xml txt") %
             format)
-    return HttpResponse(result, mimetype=mimetype)
+    return HttpResponse(result, content_type=content_type)
 
 
 @adagios_decorator
