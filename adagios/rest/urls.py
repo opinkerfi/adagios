@@ -16,8 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url, patterns
-from django.conf import settings
-
 
 urlpatterns = patterns('adagios',
                        url(r'^/?$', 'rest.views.list_modules'),

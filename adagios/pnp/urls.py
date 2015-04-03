@@ -16,8 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url, patterns
-from django.conf import settings
 
 urlpatterns = patterns('adagios',
-                      (r'^/(?P<pnp_command>.+)?$', 'pnp.views.pnp'),
+                      url(r'^/(?P<pnp_command>.+)?$', 'pnp.views.pnp'),
                        )

@@ -16,12 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url, patterns
-from django.conf import settings
 
 urlpatterns = patterns('adagios',
-                      (r'^/$', 'contrib.views.index'),
-                      (r'^/(?P<arg1>.+)?$', 'contrib.views.contrib'),
-                      (r'^/(?P<arg1>.+)/(?P<arg2>.+)/?$', 'contrib.views.contrib'),
-                      (r'^/(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/?$', 'contrib.views.contrib'),
-                      (r'^/(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/(?P<arg4>.+)/?$', 'contrib.views.contrib'),
+                      url(r'^/$', 'contrib.views.index'),
+                      url(r'^/(?P<arg1>.+)?$', 'contrib.views.contrib'),
+                      url(r'^/(?P<arg1>.+)/(?P<arg2>.+)/?$', 'contrib.views.contrib'),
+                      url(r'^/(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/?$', 'contrib.views.contrib'),
+                      url(r'^/(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/(?P<arg4>.+)/?$', 'contrib.views.contrib'),
                        )
