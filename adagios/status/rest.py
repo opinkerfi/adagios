@@ -287,11 +287,10 @@ def reschedule(request, host_name=None, service_description=None, check_time=Non
       check_time -- timestamp of when to execute this check, if left empty, execute right now
       wait -- If set to 1, function will not return until check has been rescheduled
     """
-
     if check_time is None or check_time is '':
-        check_time = int(time.time())
-    elif isinstance(check_time, float):
-        check_time = int(check_time)
+        check_time = time.time()
+
+    check_time = int(check_time)
 
     if service_description in (None, '', u'', '_HOST_', 'undefined'):
         service_description = ""
