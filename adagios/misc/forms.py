@@ -520,7 +520,7 @@ class NagiosServiceForm(forms.Form):
             self.command = "verify"
         else:
             raise Exception(_("Unknown command"))
-   
+
         code = command()
         self.stdout = daemon.stdout or ""
         self.stderr = daemon.stderr or ""
