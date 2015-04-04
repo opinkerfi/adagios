@@ -262,9 +262,6 @@ def reschedule_many(request, hostlist, servicelist, check_time=None, **kwargs):
     """
     #task = adagios.utils.Task()
     #WaitCondition = "last_check > %s" % int(time.time()- 1)
-    if isinstance(check_time, float):
-        check_time = int(check_time)
-
     for i in hostlist.split(';'):
         if not i: continue
         reschedule(request, host_name=i, service_description=None,
