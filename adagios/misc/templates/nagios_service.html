@@ -47,10 +47,10 @@
             {% endif %}
         </div>
 
-        {% if exit_code != 0 %}
+        {% if stderr|slice:":5" == 'sudo:' %}
             <div class="alert alert-danger">
                 <p>
-                    {% blocktrans %}Something does not smell right. We ran {{ command }} and got no output.
+                    {% blocktrans %}Something does not smell right. We ran {{ command }} and got the error above.
                     Usually when this happens there is a problem with sudoers configuration.{% endblocktrans %}
                 </p>
                 <p>
@@ -59,7 +59,7 @@
                 </p>
             <pre>
                 Defaults:{{ local_user }}    !requiretty
-                {{ local_user }} ALL = (root) NOPASSWD: /etc/init.d/nagios3
+                {{ local_user }} ALL = (root) NOPASSWD: /sbin/service nagios *
             </pre>
             </div>
         {% endif %}
