@@ -826,6 +826,17 @@ class AddObjectForm(PynagForm):
             return template_name
         return ''
 
+    @property
+    def changed_data(self):
+        """Get a list of fields that have changed.
+
+         In the case of new object, we treat every field as a changed field, so that default
+         values will be included in the newly created object.
+
+        See https://github.com/opinkerfi/adagios/issues/527
+        """
+        return self.fields.keys()
+
     def clean(self):
         cleaned_data = super(AddObjectForm, self).clean()
         if self.pynag_object.object_type == 'service':
