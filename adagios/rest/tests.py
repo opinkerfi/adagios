@@ -27,8 +27,24 @@ from django.test.client import Client
 from django.utils.translation import ugettext as _
 import json
 
+import adagios.utils
+
 
 class LiveStatusTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.configure_livestatus()
+        self.environment.update_adagios_global_variables()
+        self.environment.start()
+
+        self.livestatus = self.environment.get_livestatus()
+        self.livestatus.test()
+
+    def tearDown(self):
+        self.environment.terminate()
+
     def testPageLoad(self):
         """ Smoke Test for various rest modules """
         self.loadPage('/rest')
@@ -61,7 +77,8 @@ class LiveStatusTestCase(unittest.TestCase):
         response = c.post(path=path, data=data)
         json_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
-        self.assertIn("localhost", [x['name'] for x in json_data])
+        self.assertEqual(['ok_host'], [x['name'] for x in json_data])
+        self.assertEqual(['name', 'backend'], json_data[0].keys())
 
     def loadPage(self, url):
         """ Load one specific page, and assert if return code is not 200 """
