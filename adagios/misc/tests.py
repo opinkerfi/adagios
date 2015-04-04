@@ -62,9 +62,7 @@ class FakeAdagiosEnvironment(unittest.TestCase):
 class MiscTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
+        self.environment = adagios.utils.get_test_environment()
 
     def tearDown(self):
         self.environment.terminate()
@@ -127,9 +125,7 @@ class MiscTestCase(unittest.TestCase):
 class RestTest(unittest.TestCase):
     """Tests for adagios.misc.rest"""
     def setUp(self):
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
+        self.environment = adagios.utils.get_test_environment()
 
         self.factory = RequestFactory()
         self.request = self.factory.get('/')

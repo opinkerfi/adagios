@@ -33,17 +33,9 @@ import adagios.utils
 class LiveStatusTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        self.environment.configure_livestatus()
-        self.environment.update_adagios_global_variables()
+        self.environment = adagios.utils.get_test_environment()
         self.environment.start()
-
-        self.livestatus = self.environment.get_livestatus()
-        self.livestatus.test()
-
-    def tearDown(self):
-        self.environment.terminate()
+        self.addCleanup(self.environment.terminate)
 
     def testPageLoad(self):
         """ Smoke Test for various rest modules """
