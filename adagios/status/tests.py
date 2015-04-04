@@ -32,6 +32,8 @@ import adagios.settings
 import adagios.utils
 import simplejson as json
 import adagios.seleniumtests
+from mock import patch
+import adagios.status.rest
 
 try:
     from selenium.webdriver.common.by import By
@@ -340,3 +342,50 @@ class SeleniumStatusTestCase(adagios.seleniumtests.SeleniumTestCase):
                     count += 1
 
             self.assertTrue(count <= 3, "Top alert producers returns too many rows")
+
+class RestTests(unittest.TestCase):
+    def test_reschedule_raises_on_float_string_check_time(self):
+        """reschedule should raise on string float"""
+        self.assertRaises(ValueError, adagios.status.rest.reschedule,
+                          request={},
+                          host_name='localhost',
+                          check_time='1.1')
+
+    @patch('pynag.Control.Command.schedule_forced_host_check')
+    def test_reschedule_calls_host_check_with_int_check_time(self,
+                                                             mock_host_check):
+        """reschedule converts to int before calling schedule_forced_host_check
+        """
+        mock_host_check.return_value = None
+        adagios.status.rest.reschedule(request={},
+                                       host_name='localhost',
+                                       check_time=1.1)
+        mock_host_check.assert_called_once_with(host_name='localhost',
+                                                check_time=1)
+
+    @patch('time.time')
+    @patch('pynag.Control.Command.schedule_forced_host_check')
+    def test_reschedule_uses_current_time_with_no_check_time(
+            self, mock_host_check, mock_time):
+        """reschedule uses current time as int when no check_time specified"""
+        mock_host_check.return_value = None
+        mock_time.return_value = 7357.7357
+        adagios.status.rest.reschedule(request={},
+                                       host_name='localhost')
+        mock_host_check.assert_called_once_with(host_name='localhost',
+                                                check_time=7357)
+
+    @patch('time.time')
+    @patch('pynag.Control.Command.schedule_forced_host_check')
+    def test_reschedule_calls_host_check_with_current_time_when_empty_string(
+            self,
+            mock_host_check,
+            mock_time):
+        """reschedule called with empty string sets check_time to current"""
+        mock_host_check.return_value = None
+        mock_time.return_value = 7357.7357
+        adagios.status.rest.reschedule(request={},
+                                       host_name='localhost',
+                                       check_time='')
+        mock_host_check.assert_called_once_with(host_name='localhost',
+                                                check_time=7357)
