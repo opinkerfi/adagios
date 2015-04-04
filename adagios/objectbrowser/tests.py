@@ -101,13 +101,8 @@ class TestObjectBrowser(unittest.TestCase):
 class TestPynagForm(unittest.TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        #self.environment.configure_livestatus()
-        self.environment.update_adagios_global_variables()
-        self.environment.update_model()
-        #self.environment.start()
-        #self.livestatus = cls.environment.get_livestatus()
+        self.environment = adagios.utils.get_test_environment()
+        self.addCleanup(self.environment.terminate)
 
     def _create_new_host(self):
         host_name = 'unique foo'
@@ -122,9 +117,6 @@ class TestPynagForm(unittest.TestCase):
         self.assertTrue(hosts, "There should be one host named %s" % host_name)
 
         return hosts[0]
-
-    def tearDown(self):
-        self.environment.terminate()
 
     def testBasicEdit(self):
         base_url = '/objectbrowser/edit/'
@@ -422,13 +414,8 @@ class TestPynagForm(unittest.TestCase):
 class TestPynagAutoCompleteField(unittest.TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
-        self.environment.update_model()
-
-    def tearDown(self):
-        self.environment.terminate()
+        self.environment = adagios.utils.get_test_environment()
+        self.addCleanup(self.environment.terminate)
 
     def test_init(self):
         field = PynagAutoCompleteField('host')
@@ -481,13 +468,8 @@ class TestPynagAutoCompleteField(unittest.TestCase):
 class TestPynagChoiceField(unittest.TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
-        self.environment.update_model()
-
-    def tearDown(self):
-        self.environment.terminate()
+        self.environment = adagios.utils.get_test_environment()
+        self.addCleanup(self.environment.terminate)
 
     def test_prepare_value(self):
         field = adagios.objectbrowser.forms.PynagChoiceField(initial=None)
@@ -541,11 +523,10 @@ class TestPynagChoiceField(unittest.TestCase):
 class TestImportObjectsForm(unittest.TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        self.environment.update_adagios_global_variables()
-        self.environment.update_model()
+
+        self.environment = adagios.utils.get_test_environment()
         self.addCleanup(self.environment.terminate)
+
         self.form = adagios.objectbrowser.forms.ImportObjectsForm()
         self.initial = {
             'objects': 'host_name,address\nlocalhost,127.0.0.1',
@@ -572,10 +553,7 @@ class TestImportObjectsForm(unittest.TestCase):
 class AddObjectForm(unittest.TestCase):
 
     def setUp(self):
-        self.environment = adagios.utils.FakeAdagiosEnvironment()
-        self.environment.create_minimal_environment()
-        self.environment.update_model()
-        self.environment.update_adagios_global_variables()
+        self.environment = adagios.utils.get_test_environment()
         self.addCleanup(self.environment.terminate)
 
     def test_get_template_if_it_exists(self):

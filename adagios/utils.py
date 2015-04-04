@@ -168,4 +168,17 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
             self.restore_adagios_global_variables()
         super(FakeAdagiosEnvironment, self).terminate()
 
+def get_test_environment():
+    """Get a fake adagios environment for testing purposes.
 
+    Convenvience method for getting and starting a fake nagios environment.
+
+    Returns:
+        FakeAdagiosEnvironment instance.
+    """
+    environment = FakeAdagiosEnvironment()
+    environment.create_minimal_environment()
+    environment.update_model()
+    environment.update_adagios_global_variables()
+    environment.configure_livestatus()
+    return environment
