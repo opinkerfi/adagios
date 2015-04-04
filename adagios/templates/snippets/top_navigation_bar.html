@@ -14,7 +14,10 @@
             </a>
 
             <!-- Logo in top nav -->
-            <a class="brand" href="{% url 'home' %}">{{ settings.TOPMENU_HOME }}</a>
+            <img class=brand src={% url "media" path="img/adagios-logo-32.png" %}>
+            <a class="brand" href="{% url 'home' %}">
+                {{ settings.TOPMENU_HOME }}
+            </a>
             <div class="nav-collapse">
                 <ul class="nav" id="top_navigation_menuitems">
                   {% for item in settings.TOPMENU_ITEMS %}
@@ -125,6 +128,7 @@
                             <li class="divider"></li>
                             <li><a href="{%  url 'objectbrowser.views.show_plugins' %}">{% trans "Missing Plugins" %}</a></li>
                             <li><a href="{%  url 'objectbrowser.views.edit_nagios_cfg' %}">{% trans "Edit nagios.cfg" %}</a></li>
+                            <li><a href="{%  url 'objectbrowser.views.import_objects' %}">{% trans "Import Objects" %}</a></li>
                             <li><a href="{%  url 'misc.views.nagios_service' %}">{% trans "Nagios Service" %}</a></li>
                             <li><a href="{%  url 'misc.views.gitlog' %}">{% trans "Object History" %}</a></li>
                             <li><a href="{%  url 'misc.views.settings' %}">{% trans "Settings" %}</a></li>

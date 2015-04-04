@@ -95,6 +95,7 @@ class ContactUsForm(forms.Form):
         """) % {'topic': topic, 'sender': sender, 'message': message}
         send_mail(subject, msg, from_address, to_address, fail_silently=False)
 
+
 class UserdataForm(forms.Form):
     language = forms.ChoiceField(
         choices=settings.LANGUAGES,
@@ -127,6 +128,9 @@ class AdagiosSettingsForm(forms.Form):
         help_text=_("Path to MK Livestatus socket. If left empty Adagios will try to autodiscover from your nagios.cfg"),
         required=False,
     )
+    livestatus_limit = forms.IntegerField(
+        help_text=_("Limit the number of rows shown per page in the status view to this."),
+    )
     enable_githandler = forms.BooleanField(
         required=False, initial=settings.enable_githandler, help_text=_("If set. Adagios will commit any changes it makes to git repository."))
     enable_loghandler = forms.BooleanField(
@@ -137,6 +141,9 @@ class AdagiosSettingsForm(forms.Form):
     enable_status_view = forms.BooleanField(
         required=False, initial=settings.enable_status_view,
         help_text=_("If set. Enable status view which is an alternative to nagios legacy web interface. You will need to restart web server for the changes to take effect"))
+    enable_local_logs = forms.BooleanField(
+        required=False, initial=settings.enable_local_logs,
+        help_text=_("If set, allow adagios to read logfiles from the monitoring engine. Might be performance sensitive)"))
     auto_reload = forms.BooleanField(
         required=False, initial=settings.auto_reload,
         help_text=_("If set. Nagios is reloaded automatically after every change."))
@@ -161,6 +168,9 @@ class AdagiosSettingsForm(forms.Form):
     graphite_url = forms.CharField(help_text="Path to your graphite install.", required=False)
     graphite_querystring = forms.CharField(help_text="Querystring that is passed into graphite's /render method. {host} is replaced with respective hostname while {host_} will apply common graphite escaping. i.e. example.com -> example_com", required=False)
     graphite_title = forms.CharField(help_text="Use this title on all graphs coming from graphite", required=False)
+    default_host_template = forms.CharField(help_text="Use this template by default when adding new hosts.")
+    default_service_template = forms.CharField(help_text="Use this template by default when adding new services.")
+    default_contact_template = forms.CharField(help_text="Use this template by default when adding new contacts.")
     include = forms.CharField(
         required=False, help_text=_("Include configuration options from files matching this pattern"))
 

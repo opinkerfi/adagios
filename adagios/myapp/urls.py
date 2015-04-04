@@ -18,7 +18,7 @@
 from django.conf.urls import url, patterns
 
 urlpatterns = patterns('adagios',
-                      (r'^/?$', 'myapp.views.hello_world'),
-                      (r'^/url1?$', 'myapp.views.hello_world'),
-                      (r'^/url2?$', 'myapp.views.hello_world'),
+                      url(r'^/?$', 'myapp.views.hello_world'),
+                      url(r'^/url1?$', 'myapp.views.hello_world'),
+                      url(r'^/url2?$', 'myapp.views.hello_world'),
                        )

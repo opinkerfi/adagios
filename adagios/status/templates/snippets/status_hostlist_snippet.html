@@ -95,5 +95,12 @@
     {% endfor %}
     </tbody>
 </table>
+{% if hosts|length == settings.livestatus_limit %}
+    {% blocktrans with length=hosts|length %}Results limited to {{ length }} hosts{% endblocktrans %}
+    <a href="{{ request.get_full_path }}?&limit=0">{% blocktrans %}See all{% endblocktrans %}</a>
+
+{% else %}
+    {% blocktrans with length=hosts|length %}{{ length }} hosts found.{% endblocktrans %}
+{% endif %}
 
 <!-- snippet status_hostlist_snippet.html ends -->

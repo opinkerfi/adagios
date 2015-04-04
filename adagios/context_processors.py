@@ -39,6 +39,8 @@ from django.utils.translation import ugettext as _
 def on_page_load(request):
     """ Collection of actions that take place every page load """
     results = {}
+    update_global_variables()
+
     for k, v in reload_configfile(request).items():
         results[k] = v
     for k, v in get_httpuser(request).items():
@@ -86,6 +88,11 @@ def on_page_load(request):
     return results
 
 
+def update_global_variables():
+    """Updates all required global variables."""
+    pynag.Model.cfg_file = adagios.settings.nagios_config
+
+
 def get_current_time(request):
     """ Make current timestamp available to templates
     """
@@ -106,7 +113,7 @@ def get_serverside_includes(request):
         result['ssi_headers'] = []
         result['ssi_footers'] = []
         dirname = adagios.settings.serverside_includes
-        current_url = resolve_urlname(request)
+        current_url = resolve_urlname(request).get('urlname')
         if not dirname:
             return {}
         if not os.path.isdir(dirname):

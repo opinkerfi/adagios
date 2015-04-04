@@ -95,6 +95,12 @@
         {% endfor %}
     </tbody>
 </table>
-{% blocktrans with length=services|length %}{{ length }} objects found.{% endblocktrans %}
+{% if services|length == settings.livestatus_limit %}
+    {% blocktrans with length=services|length %}Results limited to {{ length }} services{% endblocktrans %}
+    <a href="{{ request.get_full_path }}?&limit=0">{% blocktrans %}See all{% endblocktrans %}</a>
+
+{% else %}
+    {% blocktrans with length=services|length %}{{ length }} services found.{% endblocktrans %}
+{% endif %}
 
 <!-- snippet status_servicelist_snippet.html ends -->

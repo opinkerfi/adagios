@@ -179,6 +179,26 @@ TOPMENU_ITEMS = [
 
 ]
 
+# This mapping shows how we define a service as 'unhandled'
+UNHANDLED_SERVICES = {
+    'state__isnot': 0,
+    'acknowledged': 0,
+    'scheduled_downtime_depth': 0,
+    'host_state': 0,
+    'host_scheduled_downtime_depth': 0,
+    'host_acknowledged': 0,
+}
+
+
+# This mapping shows how we define a host as 'unhandled'
+UNHANDLED_HOSTS = {
+    'state': 1,
+    'acknowledged': 0,
+    'scheduled_downtime_depth': 0
+}
+
+
+
 # Graphite #
 
 # the url where to fetch data and images
@@ -213,6 +233,10 @@ nagios_init_script = None
 nagios_service = "nagios"
 nagios_binary = "/usr/bin/nagios"
 livestatus_path = None
+livestatus_limit = 500
+default_host_template = 'generic-host'
+default_service_template = 'generic-service'
+default_contact_template = 'generic-contact'
 enable_githandler = False
 enable_loghandler = False
 enable_authorization = False
@@ -220,6 +244,7 @@ enable_status_view = True
 enable_bi = True
 enable_pnp4nagios = True
 enable_graphite = False
+enable_local_logs = True
 contrib_dir = "/var/lib/adagios/contrib/"
 serverside_includes = "/etc/adagios/ssi"
 escape_html_tags = True

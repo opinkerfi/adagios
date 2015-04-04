@@ -110,12 +110,14 @@ def get_task(task_id="someid"):
             return current_task
     raise KeyError(_("Task not '%s' Found") % task_id)
 
+
 def get_user_preferences(request):
     try:
         user = userdata.User(request)
     except Exception as e:
         raise e
     return user.to_dict()
+
 
 def set_user_preference(request, **kwargs):
     try:
@@ -127,3 +129,36 @@ def set_user_preference(request, **kwargs):
         if not k.startswith('_'):
             user.set_pref(k, v)
     user.save()
+
+
+def save_search(request, name, url):
+    """Create a new saved search, which will be accessible from main menu."""
+    user = userdata.User(request)
+    user_data = user.to_dict()
+    if not name:
+        raise ValueError("You must provide a name for this search")
+    if not url:
+        raise ValueError("You must provide a url for this search")
+    url = url.strip('#')
+    saved_searches = user_data.get(userdata.User.SAVED_SEARCHES, {})
+    saved_searches[name] = url
+    user.set_pref(userdata.User.SAVED_SEARCHES, saved_searches)
+    user.save()
+
+
+def get_saved_searches(request):
+    """Get a list of all saved searches for this user."""
+    user_data = get_user_preferences(request)
+    saved_searches = user_data.get(userdata.User.SAVED_SEARCHES, {})
+    return saved_searches
+
+
+def delete_saved_search(request, name):
+    """Delete one specific saved search for this user."""
+    user = userdata.User(request)
+    user_data = user.to_dict()
+    saved_searches = user_data.get(userdata.User.SAVED_SEARCHES, {})
+    saved_searches.pop(name, None)
+    user.set_pref(userdata.User.SAVED_SEARCHES, saved_searches)
+    user.save()
+

@@ -3,6 +3,10 @@ body {
     padding-top: 40px;
 }
 
+#top_navigation_bar img.brand {
+    padding: 3px 10px 3px 10px;
+}
+
 /* default style for links */
 a {
     color: #4b4b4b;
@@ -463,6 +467,11 @@ button.close.notification {
 .table-condensed td {
     line-height: 10px;
 }
+
+td#effective_check_command {
+    line-height: 18px;
+}
+
 .circle {
     border-radius: 50%;
     width: 12px;
@@ -523,6 +532,22 @@ button.close.notification {
 #status_dashboard .alert {
     margin-bottom: 0;
     padding:  4px 4px 4px 14px;
+}
+
+#search_dialog input[type="checkbox"] {
+    margin: 0;
+}
+#search_dialog table, tr {
+    border: 1px solid #efefef;
+    width: 100%;
+}
+
+#save_search_button {
+    padding-right: 0;
+}
+
+#saved_searches_list {
+    padding-right: 0
 }
 
 .ssi-overwrite, .ssi-append {

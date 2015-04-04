@@ -41,7 +41,7 @@
 
 <body>
 
-<!-- begin serverside includes -->
+<!-- begin serverside includes from common-header.ssi and {{ urlname }}-header.ssi -->
 {% for ssi_header in ssi_headers %}
     <!-- including content from {{ ssi_header }} -->
     {% ssi ssi_header parsed %}
@@ -102,8 +102,14 @@
         <li{% if urlname == 'adagios.status.views.perfdata2' %} class="active"{% endif %}><a href="{% url "status.views.perfdata2" %}">{% trans "Performance Data 2" %}</a></li>
         <li{% if urlname == 'adagios.bi.views.index' %} class="active"{% endif %}><a href="{% url "bi.views.index" %}">{% trans "Business Intelligence" %}</a></li>
         <li{% if urlname == 'adagios.status.views.dashboard' %} class="active"{% endif %}><a href="{% url "status.views.dashboard" %}">{% trans "Dashboard" %}</a></li>
-      </ul>
-    </div>
+
+        <li class="nav-header" style="color: black">
+            {% trans "Saved Searches" %}
+            <a class="pull-right" href="#"  id="save_search_button" data-toggle="modal" data-target="#save_search_modal" style="padding: 0">(+)</a>
+        </li>
+    </ul>
+    <ul class="nav nav-list" id="saved_searches_list"></ul>
+</div>
     {% endblock left_sidebar %}
     <!-- block left_sidebar ends -->
 
@@ -161,7 +167,56 @@
 
 
 <!-- Miscellaneous stuff starts here -->
+<!-- Wish modal -->
+<div class="modal hide fade" id="wish_modal">
+    <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h3>{% trans "Make a wish" %}</h3>
+        </div>
+        <div class="modal-body">
+            <p>{% trans "Anything cool you think Adagios could be doing for you?" %}
+            </p>
+            <p>
+            {% trans "Sweet! Ask for it here, and we'll see what we can do." %}
+            </p>
+            <p>
+                    {% trans "We'd love to hear from you, but we cannot guarantee that your wish will come true." %}
+            </p>
+            <label class="hide" for="wish_textarea"></label>
+            <textarea  id="wish_textarea" style="width:100%;" cols="200" rows="10" name="wish" placeholder="{% trans "I wish this page could..." %}"></textarea>
+            <hr>
+            <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
+            <label class="pull-left" for="id_bribes">{% trans "I'll back it up with bribes." %}</label>
+        </div>
 
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>{% trans "Cancel" %}</a>
+            <button type="submit" id="wish_submit_button" class="btn">{% trans "Make a wish" %}</button>
+        </div>
+    </form>
+</div>
+<!-- Wish modal ends -->
+
+
+<!-- Misc - General purpose modal modal, originally destined to show error messages -->
+<div class="modal hide fade" id="misc_modal">
+    <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="misc_modal_body">
+
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>{% trans "Close" %}</a>
+        </div>
+    </form>
+</div>
+<!-- Misc modal ends -->
 
 
 <!-- error_messages -->
@@ -224,7 +279,7 @@
 {% endblock %}
 <!-- block footer ends -->
 
-<!-- begin serverside includes -->
+<!-- begin serverside includes for common-footer.ssi and {{ urlname }}-footer.ssi -->
 {% for ssi_footer in ssi_footers %}
     <!-- including content from {{ ssi_footer }} -->
     {% ssi ssi_footer parsed %}

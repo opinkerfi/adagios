@@ -27,6 +27,7 @@ import adagios.settings
 import adagios.utils
 import adagios.objectbrowser.forms
 import re
+import adagios.seleniumtests
 
 from adagios.objectbrowser.forms import PynagAutoCompleteField
 
@@ -40,6 +41,7 @@ try:
 except ImportError:
     # selenium tests are skipped if selenium is not available
     pass
+
 
 class TestObjectBrowser(unittest.TestCase):
 
@@ -71,6 +73,7 @@ class TestObjectBrowser(unittest.TestCase):
 
         self.loadPage('/objectbrowser/plugins')
         self.loadPage('/objectbrowser/nagios.cfg')
+        self.loadPage('/objectbrowser/import')
         self.loadPage('/objectbrowser/geek_edit', 404)
         self.loadPage('/objectbrowser/advanced_edit', 404)
 
@@ -534,44 +537,97 @@ class TestPynagChoiceField(unittest.TestCase):
         field.set_prefix('')
         self.assertEqual('', field.get_prefix())
 
-class SeleniumObjectBrowserTestCase(adagios.utils.SeleniumTestCase):
+
+class TestImportObjectsForm(unittest.TestCase):
+    def setUp(self):
+        self.nagios_config = adagios.settings.nagios_config
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_adagios_global_variables()
+        self.environment.update_model()
+        self.addCleanup(self.environment.terminate)
+        self.form = adagios.objectbrowser.forms.ImportObjectsForm()
+        self.initial = {
+            'objects': 'host_name,address\nlocalhost,127.0.0.1',
+            'object_type': 'host',
+            'seperator': ',',
+            'destination_filename': '',
+        }
+
+    def test_is_valid_initial_is_false(self):
+        self.assertEqual(False, self.form.is_valid())
+
+    def test_is_valid_normal(self):
+        form = adagios.objectbrowser.forms.ImportObjectsForm(data=self.initial)
+        self.assertTrue(form.is_valid())
+
+    def test_save(self):
+        self.assertFalse(pynag.Model.Host.objects.filter(shortname='localhost'))
+        form = adagios.objectbrowser.forms.ImportObjectsForm(data=self.initial)
+        form.is_valid()
+        objects = form.save()
+        self.assertEqual(1, len(objects))
+        self.assertTrue(pynag.Model.Host.objects.filter(shortname='localhost'))
+
+class AddObjectForm(unittest.TestCase):
+
+    def setUp(self):
+        self.environment = adagios.utils.FakeAdagiosEnvironment()
+        self.environment.create_minimal_environment()
+        self.environment.update_model()
+        self.environment.update_adagios_global_variables()
+        self.addCleanup(self.environment.terminate)
+
+    def test_get_template_if_it_exists(self):
+        form = adagios.objectbrowser.forms.AddObjectForm('host')
+        self.assertEqual(adagios.settings.default_host_template, form.get_template_if_it_exists())
+
+    def test_get_template_if_it_exists_nonexistant(self):
+        host = pynag.Model.Host.objects.get_by_name(adagios.settings.default_host_template)
+        host.delete()
+        form = adagios.objectbrowser.forms.AddObjectForm('host')
+        self.assertEqual('', form.get_template_if_it_exists())
+
+class SeleniumObjectBrowserTestCase(adagios.seleniumtests.SeleniumTestCase):
     def test_contacts_loading(self):
         """Test if contacts under configure loads"""
-        self.driver.get(self.live_server_url + "/objectbrowser/#contact-tab_tab")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/objectbrowser/#contact-tab_tab")
 
-        wait = WebDriverWait(self.driver, 10)
+            wait = WebDriverWait(driver, 10)
 
-        try:
-            # Get all host rows
-            contact_table_rows = wait.until(
-                EC.presence_of_all_elements_located((
-                    By.XPATH,
-                    "//table[contains(@id, 'contact-table')]/tbody/tr"))
-            )
-        except TimeoutException:
-            self.assertTrue(False, "Timed out waiting for contact table to load")
+            try:
+                # Get all host rows
+                contact_table_rows = wait.until(
+                    EC.presence_of_all_elements_located((
+                        By.XPATH,
+                        "//table[contains(@id, 'contact-table')]/tbody/tr"))
+                )
+            except TimeoutException:
+                self.assertTrue(False, "Timed out waiting for contact table to load")
 
-        self.assertTrue(len(contact_table_rows) > 0,
-                        "No table rows in contact table")
+            self.assertTrue(len(contact_table_rows) > 0,
+                            "No table rows in contact table")
 
     def test_hosts_loading(self):
         """Test if hosts under configure loads"""
-        self.driver.get(self.live_server_url + "/objectbrowser")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/objectbrowser")
 
-        wait = WebDriverWait(self.driver, 10)
+            wait = WebDriverWait(driver, 10)
 
-        try:
-            # Get all host rows
-            host_table_rows = wait.until(
-                EC.presence_of_all_elements_located((
-                    By.XPATH,
-                    "//table[contains(@id, 'host-table')]/tbody/tr"))
-            )
-        except TimeoutException:
-            self.assertTrue(False, "Timed out waiting for host table to load")
+            try:
+                # Get all host rows
+                host_table_rows = wait.until(
+                    EC.presence_of_all_elements_located((
+                        By.XPATH,
+                        "//table[contains(@id, 'host-table')]/tbody/tr"))
+                )
+            except TimeoutException:
+                self.assertTrue(False, "Timed out waiting for host table to load")
 
-        self.assertTrue(len(host_table_rows) > 0,
-                        "No table rows in host-table")
+            self.assertTrue(len(host_table_rows) > 0,
+                            "No table rows in host-table")
 
 _TEST_SERVICE = """
 define service {

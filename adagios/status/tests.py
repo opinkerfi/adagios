@@ -31,6 +31,7 @@ import adagios.status.graphite
 import adagios.settings
 import adagios.utils
 import simplejson as json
+import adagios.seleniumtests
 
 try:
     from selenium.webdriver.common.by import By
@@ -179,14 +180,124 @@ class Graphite(unittest.TestCase):
         self.assertTrue('packetloss' in result[0]['metrics'])
 
 
-class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
+class UtilsTest(unittest.TestCase):
+    """Tests for adagios.status.utils"""
+    def setUp(self):
+        self.host_query = pynag.Parsers.LivestatusQuery('GET hosts')
+        self.service_query = pynag.Parsers.LivestatusQuery('GET services')
+
+    def test_search_multiple_attributes_multiple_attributes(self):
+        attributes = ['host_name', 'address']
+        adagios.status.utils._search_multiple_attributes(self.host_query, attributes, 'test')
+        expected_query = 'GET hosts\nFilter: host_name = test\nFilter: address = test\nOr: 2\n\n'
+        self.assertEqual(expected_query, self.host_query.get_query())
+
+    def test_search_multiple_attributes_one_attribute(self):
+        attributes = ['host_name']
+        adagios.status.utils._search_multiple_attributes(self.host_query, attributes, 'test')
+        expected_query = 'GET hosts\nFilter: host_name = test\n\n'
+        self.assertEqual(expected_query, self.host_query.get_query())
+
+    def test_search_multiple_attributes_empty(self):
+        adagios.status.utils._search_multiple_attributes(self.host_query, [], 'test')
+        expected_query = 'GET hosts\n\n'
+        self.assertEqual(expected_query, self.host_query.get_query())
+
+    def test__process_querystring_for_host_empty(self):
+        query = adagios.status.utils._process_querystring_for_host()
+        self.assertEqual(self.host_query, query)
+
+    def test__process_querystring_for_host_one_kwarg(self):
+        query = adagios.status.utils._process_querystring_for_host(state="1")
+        self.host_query.add_filter('state', '1')
+        self.assertEqual(self.host_query, query)
+
+    def test__process_querystring_for_host_two_kwargs(self):
+        query = adagios.status.utils._process_querystring_for_host(state="1", host_name="localhost")
+        self.host_query.add_filters(state=1, host_name="localhost")
+        self.assertEqual(self.host_query, query)
+
+    def test__process_querystring_for_host_generic_search(self):
+        search = "test"
+        query = adagios.status.utils._process_querystring_for_host(q=search)
+        self.host_query.add_filter('name__contains', search)
+        self.host_query.add_filter('address__contains', search)
+        self.host_query.add_filter('plugin_output__contains', search)
+        self.host_query.add_filter('alias__contains', search)
+        self.host_query.add_or_statement(4)
+        self.assertEqual(self.host_query, query)
+
+    def test__process_querystring_for_host_unhandled(self):
+        query = adagios.status.utils._process_querystring_for_host(unhandled=True)
+        self.host_query.add_filter('scheduled_downtime_depth', 0)
+        self.host_query.add_filter('state', 1)
+        self.host_query.add_filter('acknowledged', 0)
+        self.assertEqual(self.host_query, query)
+
+    def test__process_querystring_for_host_downtime_on(self):
+        query = adagios.status.utils._process_querystring_for_host(in_scheduled_downtime="1")
+        self.host_query.add_filter('scheduled_downtime_depth__gt', 0)
+        self.assertEqual(self.host_query, query)
+
+    def test__process_querystring_for_host_downtime_off(self):
+        query = adagios.status.utils._process_querystring_for_host(in_scheduled_downtime="0")
+        self.host_query.add_filter('scheduled_downtime_depth', 0)
+        self.assertEqual(self.host_query, query)
+
+    def test__process_querystring_for_service_empty(self):
+        query = adagios.status.utils._process_querystring_for_service()
+        self.assertEqual(self.service_query, query)
+
+    def test__process_querystring_for_service_one_kwarg(self):
+        query = adagios.status.utils._process_querystring_for_service(state="1")
+        self.service_query.add_filter('state', '1')
+        self.assertEqual(self.service_query, query)
+
+    def test__process_querystring_for_service_two_kwargs(self):
+        query = adagios.status.utils._process_querystring_for_service(state="1", description="localservice")
+        self.service_query.add_filters(state=1, description="localservice")
+        self.assertEqual(self.service_query, query)
+
+    def test__process_querystring_for_service_generic_search(self):
+        search = "test"
+        query = adagios.status.utils._process_querystring_for_service(q=search)
+        self.service_query.add_filter('host_name__contains', search)
+        self.service_query.add_filter('description__contains', search)
+        self.service_query.add_filter('plugin_output__contains', search)
+        self.service_query.add_filter('host_address__contains', search)
+        self.service_query.add_or_statement(4)
+        self.assertEqual(self.service_query, query)
+
+    def test__process_querystring_for_service_unhandled(self):
+        query = adagios.status.utils._process_querystring_for_service(unhandled=True)
+        self.service_query.add_filter('host_scheduled_downtime_depth', 0)
+        self.service_query.add_filter('host_state', 0)
+        self.service_query.add_filter('scheduled_downtime_depth', 0)
+        self.service_query.add_filter('acknowledged', 0)
+        self.service_query.add_filter('state__isnot', 0)
+        self.service_query.add_filter('host_acknowledged', 0)
+        self.assertEqual(self.service_query, query)
+
+    def test__process_querystring_for_service_downtime_on(self):
+        query = adagios.status.utils._process_querystring_for_service(in_scheduled_downtime="1")
+        self.service_query.add_filter('scheduled_downtime_depth__gt', 0)
+        self.assertEqual(self.service_query, query)
+
+    def test__process_querystring_for_service_downtime_off(self):
+        query = adagios.status.utils._process_querystring_for_service(in_scheduled_downtime="0")
+        self.service_query.add_filter('scheduled_downtime_depth', 0)
+        self.assertEqual(self.service_query, query)
+
+
+class SeleniumStatusTestCase(adagios.seleniumtests.SeleniumTestCase):
     def test_network_parents(self):
         """Status Overview, Network Parents should show an integer"""
-        self.driver.get(self.live_server_url + "/status")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/status")
 
-        # Second link is Network Parents in overview
-        self.assertEqual(self.driver.find_elements(By.XPATH,
-            "//a[@href='/status/parents']")[1].text.isdigit(), True)
+            # Second link is Network Parents in overview
+            self.assertEqual(driver.find_elements(By.XPATH,
+                "//a[@href='/status/parents']")[1].text.isdigit(), True)
 
     def test_services_select_all(self):
         """Loads services list and tries to select everything
@@ -197,34 +308,35 @@ class SeleniumStatusTestCase(adagios.utils.SeleniumTestCase):
             Look for statustable rows
             Assert that all rows are checked"""
 
-        self.driver.get(self.live_server_url + "/status/services")
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/status/services")
 
-        self.driver.find_element_by_xpath("//input[@class='select_many']").click()
-        self.driver.find_element_by_xpath("//a[@class='select_all']").click()
+            driver.find_element_by_xpath("//input[@class='select_many']").click()
+            driver.find_element_by_xpath("//a[@class='select_all']").click()
 
-        # Get all statustable rows
-        status_table_rows = self.driver.find_element_by_xpath(
-            "//table[contains(@class, 'statustable')]"
-        ).find_elements(By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
+            # Get all statustable rows
+            status_table_rows = driver.find_element_by_xpath(
+                "//table[contains(@class, 'statustable')]"
+            ).find_elements(By.XPATH, "//tbody/tr[contains(@class, 'mainrow')]")
 
-        # Sub-select non-selected
-        for row in status_table_rows:
-            self.assertTrue('row_selected' in row.get_attribute('class'),
-                            "Non selected row found after selecting all: " + \
-                            row.text)
+            # Sub-select non-selected
+            for row in status_table_rows:
+                self.assertTrue('row_selected' in row.get_attribute('class'),
+                                "Non selected row found after selecting all: " + \
+                                row.text)
 
     def test_status_overview_top_alert_producers(self):
         """Check the top alert producers part of status overview"""
+        for driver in self.drivers:
+            driver.get(self.live_server_url + "/status")
 
-        self.driver.get(self.live_server_url + "/status")
+            top_alert_table_rows = driver.find_elements(By.XPATH,
+                "//table[@id='top_alert_producers']/tbody/tr"
+            )
 
-        top_alert_table_rows = self.driver.find_elements(By.XPATH,
-            "//table[@id='top_alert_producers']/tbody/tr"
-        )
+            count = 0
+            for row in top_alert_table_rows:
+                if 'display' not in row.get_attribute('style'):
+                    count += 1
 
-        count = 0
-        for row in top_alert_table_rows:
-            if 'display' not in row.get_attribute('style'):
-                count += 1
-
-        self.assertTrue(count <= 3, "Top alert producers returns too many rows")
+            self.assertTrue(count <= 3, "Top alert producers returns too many rows")

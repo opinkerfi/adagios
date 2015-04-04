@@ -113,6 +113,7 @@
                 <div class=" pull-right" id="search_box">
                     <form action="{% url "status.views.services" %}" method="get" >
                         <div class="pull-left">
+                            <a href="#"  data-toggle="modal" data-target="#search_modal">Advanced search</a>
                             <input name="q"  type="text" id="search_field"  value="{{ request.GET.q }}" class="input-large search-query" placeholder="search hosts, services, etc..." />
                         </div>
                     </form>
@@ -297,56 +298,207 @@
         </div>
         <!-- Mail modal ends -->
 
-        <!-- Misc - General purpose modal modal, originally destined to show error messages -->
-        <div class="modal hide fade" id="misc_modal">
-            <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
+        <!-- Advanced search Modal -->
+        <div class="modal hide fade" id="search_modal">
+            <form class="form-horizontal" action="{% url "status.views.services" %}" >
                 <div class="modal-header">
+
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3>{% trans "Advanced search" %}</h3>
                 </div>
                 <div class="modal-body">
-                    <div id="misc_modal_body">
 
+                    <div id="search_dialog">
+                        <div class="control-group">
+                            <input id="id_search_modal_q" value="{{ request.GET.q }}" type="text" placeholder="Has the words" name="q" style="width: 100%"/>
+                        </div>
+
+                        <div class="control-group">
+                            <table>
+                                <tr>
+                                    <th class="pull-left">Service state:</th>
+                                    <td><input type="checkbox" name="state" value="0" /> OK</td>
+                                    <td><input type="checkbox" name="state" value="1" /> Warning</td>
+                                    <td><input type="checkbox" name="state" value="2" /> Critical</td>
+                                    <td><input type="checkbox" name="state" value="3" /> Unknown</td>
+                                </tr>
+                                <tr>
+                                    <th class="pull-left">Host state:</th>
+                                    <td><input type="checkbox" name="host_state" value="0" />Up</td>
+                                    <td><input type="checkbox" name="host_state" value="1" />Down</td>
+                                    <td><input type="checkbox" name="host_state" value="2" />Unreachable</td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="control-group">
+
+                            <div class="pull-left">
+                                <table>
+                                    <tr>
+                                        <th class="pull-left">Service Properties:</th>
+                                        <th>Yes</th>
+                                        <th>No</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Scheduled Downtime:" %}</td>
+                                        <td><input type="checkbox"  name="in_scheduled_downtime" value="1" /></td>
+                                        <td><input type="checkbox"  name="in_scheduled_downtime" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Acknowledged:" %}</td>
+                                        <td><input type="checkbox"  name="acknowledged" value="1" /></td>
+                                        <td><input type="checkbox"  name="acknowledged" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Active Checks Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="active_checks_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="active_checks_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Event Handler Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="event_handler_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="event_handler_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Flap Detection Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="flap_detection_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="flap_detection_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Notifications Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="notifications_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="notifications_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Accepts Passive Checks:" %}</td>
+                                        <td><input type="checkbox"  name="accept_passive_checks" value="1" /></td>
+                                        <td><input type="checkbox"  name="accept_passive_checks" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Hard State:" %}</td>
+                                        <td><input type="checkbox"  name="state_type" value="1" /></td>
+                                        <td><input type="checkbox"  name="state_type" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Check Period:" %}</td>
+                                        <td><input type="checkbox"  name="in_check_period" value="1" /></td>
+                                        <td><input type="checkbox"  name="in_check_period" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Notification Period:" %}</td>
+                                        <td><input type="checkbox"  name="in_notification_period" value="1" /></td>
+                                        <td><input type="checkbox"  name="in_notification_period" value="0" /></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="pull-right">
+                                <table>
+                                    <tr>
+                                        <th class="pull-left">Host Properties:</th>
+                                        <th>Yes</th>
+                                        <th>No</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Scheduled Downtime:" %}</td>
+                                        <td><input type="checkbox"  name="in_scheduled_downtime" value="1" /></td>
+                                        <td><input type="checkbox"  name="in_scheduled_downtime" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Acknowledged:" %}</td>
+                                        <td><input type="checkbox"  name="host_acknowledged" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_acknowledged" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Active Checks Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="host_active_checks_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_active_checks_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Event Handler Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="host_event_handler_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_event_handler_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Flap Detection Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="host_flap_detection_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_flap_detection_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Notifications Enabled:" %}</td>
+                                        <td><input type="checkbox"  name="host_notifications_enabled" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_notifications_enabled" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "Accepts Passive Checks:" %}</td>
+                                        <td><input type="checkbox"  name="host_accept_passive_checks" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_accept_passive_checks" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Hard State:" %}</td>
+                                        <td><input type="checkbox"  name="host_state_type" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_state_type" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Check Period:" %}</td>
+                                        <td><input type="checkbox"  name="host_in_check_period" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_in_check_period" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% trans "In Notification Period:" %}</td>
+                                        <td><input type="checkbox"  name="host_in_notification_period" value="1" /></td>
+                                        <td><input type="checkbox"  name="host_in_notification_period" value="0" /></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn" onclick='$("#search_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                   <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+                 </div>
+            </form>
+        </div>
+        <!-- Advanced search modal ends -->
+
+        <!-- Save search modal -->
+        <div class="modal hide fade" id="save_search_modal">
+            <form class="form-horizontal" id="save_search_form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3>{% trans "Save Current View as a search" %}</h3>
+                </div>
+
+                <div class="modal-body">
+                    <div class="control-group">
+                        <label class="control-label" for="id_save_search_name">
+                            {% trans "Name" %}
+                        </label>
+                        <div class="controls">
+                            <input id="id_save_search_name" type="text" class="required" value="" name="name" />
+                        </div>
+                        <div class=hide>
+                            <input type="text" id="id_save_search_url" value="">
+                        </div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <a href="#" class="btn" onclick='$("#misc_modal").modal("hide");'>{% trans "Close" %}</a>
+                    <a href="#" class="btn" onclick='$("#save_search_modal").modal("hide");'>{% trans "Cancel" %}</a>
+                    <button type="submit" id="wish_submit_button" class="btn">{% trans "Save this search" %}</button>
                 </div>
             </form>
         </div>
-        <!-- Misc modal ends -->
-
-        <!-- Wish modal -->
-        <div class="modal hide fade" id="wish_modal">
-            <form class="form-horizontal" action="https://opensource.ok.is/cgi-bin/wish.cgi" >
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3>{% trans "Make a wish" %}</h3>
-                </div>
-                <div class="modal-body">
-                    <p>{% trans "Anything cool you think Adagios could be doing for you?" %}
-                    </p>
-                    <p>
-                    {% trans "Sweet! Ask for it here, and we'll see what we can do." %}
-                    </p>
-                    <p>
-                            {% trans "We'd love to hear from you, but we cannot guarantee that your wish will come true." %}
-                    </p>
-                    <label class="hide" for="wish_textarea"></label>
-                    <textarea  id="wish_textarea" style="width:100%;" cols="200" rows="10" name="wish" placeholder="{% trans "I wish this page could..." %}"></textarea>
-                    <hr>
-                    <input name="bribes" id="id_bribes" class="pull-left" type="checkbox"  />
-                    <label class="pull-left" for="id_bribes">{% trans "I'll back it up with bribes." %}</label>
-                </div>
-
-                <div class="modal-footer">
-                    <a href="#" class="btn" onclick='$("#wish_modal").modal("hide");'>{% trans "Cancel" %}</a>
-                    <button type="submit" id="wish_submit_button" class="btn">{% trans "Make a wish" %}</button>
-                </div>
-            </form>
-        </div>
-        <!-- Wish modal ends -->
-
+        <!-- Save search modal ends -->
     </div>
 
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
@@ -479,6 +631,7 @@
                 return false;
             });
         };
+
 
 
         // This function responsible for acknowledge on all selected rows
