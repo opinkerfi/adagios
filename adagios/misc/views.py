@@ -182,9 +182,7 @@ def nagios_service(request):
     c = {}
     c['errors'] = []
     c['messages'] = []
-    nagios_bin = adagios.settings.nagios_binary
-    nagios_init = adagios.settings.nagios_init_script
-    nagios_cfg = adagios.settings.nagios_config
+
     if request.method == 'GET':
         form = forms.NagiosServiceForm(initial=request.GET)
     else:
