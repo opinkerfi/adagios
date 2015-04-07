@@ -121,8 +121,10 @@ class AdagiosSettingsForm(forms.Form):
     nagios_url = forms.CharField(required=False, initial=settings.nagios_url,
                                  help_text=_("URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi."))
     nagios_service = forms.CharField(
+        required=False,
         help_text=_("The name of the nagios service, commonly nagios or nagios3. Adagios will use this when stopping/starting/reloading nagios"))
     nagios_init_script = forms.CharField(
+        required=False,
         help_text=_("You should define either 'Nagios service' or 'Nagios init script'. Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios"))
     nagios_binary = forms.CharField(
         help_text=_("Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'"))
@@ -206,7 +208,7 @@ class AdagiosSettingsForm(forms.Form):
         filename = self.cleaned_data['nagios_init_script']
         if filename.startswith('sudo'):
             self.check_file_exists(filename.split()[1])
-        else:
+        elif filename:
             self.check_file_exists(filename)
         return filename
 
