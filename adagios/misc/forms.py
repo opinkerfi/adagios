@@ -120,8 +120,10 @@ class AdagiosSettingsForm(forms.Form):
         required=False, initial=settings.destination_directory, help_text=_("Where to save new objects that adagios creates."))
     nagios_url = forms.CharField(required=False, initial=settings.nagios_url,
                                  help_text=_("URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi."))
+    nagios_service = forms.CharField(
+        help_text=_("The name of the nagios service, commonly nagios or nagios3. Adagios will use this when stopping/starting/reloading nagios"))
     nagios_init_script = forms.CharField(
-        help_text=_("Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios"))
+        help_text=_("You should define either 'Nagios service' or 'Nagios init script'. Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios"))
     nagios_binary = forms.CharField(
         help_text=_("Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'"))
     livestatus_path = forms.CharField(
