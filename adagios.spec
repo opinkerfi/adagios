@@ -27,12 +27,11 @@ Requires: mod_wsgi
 Requires: sudo
 Requires: python-simplejson
 
-%if 0%{?rhel} >= 6 || 0%{?fedora} >= 20
+%if 0%{?rhel} == 6
 Requires: python-django15
 # Force django upgrade
 Conflicts: Django < 1.4.0
 %else
-# Fedora 19, python-django is 1.5
 Requires: python-django
 %endif
 
@@ -42,7 +41,7 @@ Adagios is a web based Nagios configuration interface build to be simple and int
 %prep
 %setup -qn %{name}-%{version} -n %{name}-%{version}
 VERSION=%{version}
-echo %{release} | grep -q git && VERSION=$VERSION-%{release}
+echo %{release} | grep -q git && VERSION=$VERSION-%{release}
 sed -i "s/^__version__.*/__version__ = '$VERSION'/" adagios/__init__.py
 
 %build
@@ -50,7 +49,6 @@ python setup.py build
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
-#chmod a+x %{buildroot}%{python_sitelib}/adagios/manage.py
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
 install %{buildroot}%{python_sitelib}/adagios/apache/adagios.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/adagios.conf
 
