@@ -199,6 +199,7 @@ def nagios_service(request):
                     c['errors'].append(i)
     c['form'] = form
     daemon = adagios.daemon.Daemon()
+    c['nagios_bin'] = daemon.nagios_bin
     if daemon.running():
         c['status'] = 0
         c['friendly_status'] = "running"

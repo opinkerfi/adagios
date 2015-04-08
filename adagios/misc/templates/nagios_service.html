@@ -58,8 +58,9 @@
                     Your <a>/etc/sudoers.d/adagios</a> should have something like this:{% endblocktrans %}
                 </p>
             <pre>
-                Defaults:{{ local_user }}    !requiretty
-                {{ local_user }} ALL = (root) NOPASSWD: /sbin/service nagios *
+Defaults:{{ local_user }}    !requiretty
+{{ local_user }} ALL = (root) NOPASSWD: /sbin/service nagios *
+{{ local_user }} ALL = (root) NOPASSWD: {{ nagios_bin }} -v *
             </pre>
             </div>
         {% endif %}
