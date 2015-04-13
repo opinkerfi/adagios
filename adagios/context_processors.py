@@ -345,10 +345,7 @@ def reload_configfile(request):
     """ Load the configfile from settings.adagios_configfile and put its content in adagios.settings. """
     try:
         clear_notification("configfile")
-        locals = {}
-        execfile(settings.adagios_configfile, globals(), locals)
-        for k, v in locals.items():
-            settings.__dict__[k] = v
+        settings.reload_configfile()
     except Exception, e:
         add_notification(
             level="warning", message=str(e), notification_id="configfile")
