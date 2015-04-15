@@ -170,8 +170,10 @@ class PynagChoiceField(forms.MultipleChoiceField):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields
-        else:
-            raise ValueError("Expected string. Got %s" % type(value))
+        if isinstance(value, list):
+            return value
+
+        raise ValueError("Expected string. Got %s" % type(value))
 
     def set_prefix(self, value):
         self.__prefix = value
