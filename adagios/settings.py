@@ -277,21 +277,27 @@ PROFILE_LOG_BASE = "/var/lib/adagios"
 adagios_configfile = "/etc/adagios/adagios.conf"
 
 
-try:
-    if not os.path.exists(adagios_configfile):
-        alternative_adagios_configfile = "%s/adagios.conf" % djangopath
-        message = "Config file '{adagios_configfile}' not found. Using {alternative_adagios_configfile} instead."
-        warn(message.format(**locals()))
-        adagios_configfile = alternative_adagios_configfile
-        open(adagios_configfile, "a").close()
+def reload_configfile(adagios_configfile=None):
+    "Process adagios.conf style file and any includes; updating the settings"
+    if not adagios_configfile:
+        adagios_configfile = globals()['adagios_configfile']
+    try:
+        if not os.path.exists(adagios_configfile):
+            alternative_adagios_configfile = "%s/adagios.conf" % djangopath
+            message = "Config file '{adagios_configfile}' not found. Using {alternative_adagios_configfile} instead."
+            warn(message.format(**locals()))
+            adagios_configfile = alternative_adagios_configfile
+            open(adagios_configfile, "a").close()
 
-    execfile(adagios_configfile)
-    # if config has any default include, lets include that as well
-    configfiles = glob(include)
-    for configfile in configfiles:
-        execfile(configfile)
-except IOError, e:
-    warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
+        execfile(adagios_configfile, globals())
+        # if config has any default include, lets include that as well
+        configfiles = glob(include)
+        for configfile in configfiles:
+            execfile(configfile, globals())
+    except IOError, e:
+        warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
+
+reload_configfile()
 
 try:
     from django.utils.crypto import get_random_string

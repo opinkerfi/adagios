@@ -110,22 +110,6 @@ def get_available_themes():
     return result
 
 
-def reload_config_file(adagios_configfile=None):
-    """ Reloads adagios.conf and populates updates adagios.settings accordingly.
-
-    Args:
-        adagios_configfile: Full path to adagios.conf. If None then use settings.adagios_configfile
-    """
-    if not adagios_configfile:
-        adagios_configfile = adagios.settings.adagios_configfile
-
-    # Using execfile might not be optimal outside strict settings.py usage, but
-    # lets do things exactly like settings.py does it.
-    execfile(adagios_configfile)
-    config_values = locals()
-    adagios.settings.__dict__.update(config_values)
-
-
 class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
     _adagios_settings_copy = None
 
@@ -143,7 +127,8 @@ class FakeAdagiosEnvironment(pynag.Utils.misc.FakeNagiosEnvironment):
         adagios.settings.USER_PREFS_PATH = self.adagios_config_dir + "/userdata"
         adagios.settings.nagios_config = self.cfg_file
         adagios.settings.livestatus_path = self.livestatus_socket_path
-        reload_config_file(self.adagios_config_file)
+        adagios.settings.reload_configfile(self.adagios_config_file)
+
 
     def restore_adagios_global_variables(self):
         """ Restores adagios.settings so it looks like before update_adagios_global_variables() was called
