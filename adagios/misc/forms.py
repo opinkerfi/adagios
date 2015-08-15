@@ -22,6 +22,7 @@ from django import forms
 from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
 import os.path
@@ -600,7 +601,7 @@ class SendEmailForm(forms.Form):
         text_content = text_content.replace('\n','<br>')
 
         # self.html_content is rendered in misc.views.mail()
-        html_content = text_content + "<p></p>" + self.html_content
+        html_content = smart_str(text_content) + "<p></p>" + smart_str(self.html_content)
         if self.cleaned_data['add_myself_to_cc']:
             cc_address.append(from_address)
         if self.cleaned_data['acknowledge_all_problems']:
