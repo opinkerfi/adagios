@@ -148,7 +148,13 @@ def add_statistics_to_hosts(result):
                                    host['num_services_warn'] + host['num_services_unknown']
             host['children'] = host['services_with_state']
 
-            if host.get('last_state_change') == 0:
+            # We are inventing a state=3 here for hosts to mean pending host.
+            # We are working around a bug where unchecked hosts are assumed to be up.
+            # We need to check both last_state_change and last_check because those
+            # variables behave differently depending on if host has services or a
+            # check command defined.
+            # TODO: Remove this hack from here and into the frontend.
+            if host.get('last_state_change') == 0 and host.get('last_check') == 0:
                 host['state'] = 3
             host['status'] = state[host['state']]
 
