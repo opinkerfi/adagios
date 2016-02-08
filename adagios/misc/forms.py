@@ -28,10 +28,11 @@ from django.utils.translation import ugettext as _
 import os.path
 from adagios import settings
 import adagios.utils
-from pynag import Model, Control
+from pynag import Model
 from django.core.mail import EmailMultiAlternatives
 import pynag.Parsers
 import pynag.Control.Command
+import adagios.daemon
 
 
 TOPIC_CHOICES = (
@@ -120,8 +121,12 @@ class AdagiosSettingsForm(forms.Form):
         required=False, initial=settings.destination_directory, help_text=_("Where to save new objects that adagios creates."))
     nagios_url = forms.CharField(required=False, initial=settings.nagios_url,
                                  help_text=_("URL (relative or absolute) to your nagios webcgi. Adagios will use this to make it simple to navigate from a configured host/service directly to the cgi."))
+    nagios_service = forms.CharField(
+        required=False,
+        help_text=_("The name of the nagios service, commonly nagios or nagios3. Adagios will use this when stopping/starting/reloading nagios"))
     nagios_init_script = forms.CharField(
-        help_text=_("Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios"))
+        required=False,
+        help_text=_("You should define either 'Nagios service' or 'Nagios init script'. Path to you nagios init script. Adagios will use this when stopping/starting/reloading nagios"))
     nagios_binary = forms.CharField(
         help_text=_("Path to you nagios daemon binary. Adagios will use this to verify config with 'nagios -v nagios_config'"))
     livestatus_path = forms.CharField(
@@ -204,7 +209,7 @@ class AdagiosSettingsForm(forms.Form):
         filename = self.cleaned_data['nagios_init_script']
         if filename.startswith('sudo'):
             self.check_file_exists(filename.split()[1])
-        else:
+        elif filename:
             self.check_file_exists(filename)
         return filename
 
@@ -499,31 +504,31 @@ class NagiosServiceForm(forms.Form):
 
     def save(self):
         #nagios_bin = self.cleaned_data['nagios_bin']
+        daemon = adagios.daemon.Daemon()
         if "reload" in self.data:
-            command = "reload"
+            command = daemon.reload
+            self.command = "reload"
         elif "restart" in self.data:
-            command = "restart"
+            command = daemon.restart
+            self.command = "restart"
         elif "stop" in self.data:
-            command = "stop"
+            command = daemon.stop
+            self.command = "stop"
         elif "start" in self.data:
-            command = "start"
+            command = daemon.start
+            self.command = "start"
         elif "status" in self.data:
-            command = "status"
+            command = daemon.status
+            self.command = "status"
         elif "verify" in self.data:
-            command = "verify"
+            command = daemon.verify_config
+            self.command = "verify"
         else:
             raise Exception(_("Unknown command"))
-        self.command = command
-        nagios_init = settings.nagios_init_script
-        nagios_binary = settings.nagios_binary
-        nagios_config = settings.nagios_config or pynag.Model.config.cfg_file
-        if command == "verify":
-            command = "%s -v '%s'" % (nagios_binary, nagios_config)
-        else:
-            command = "%s %s" % (nagios_init, command)
-        code, stdout, stderr = pynag.Utils.runCommand(command)
-        self.stdout = stdout or ""
-        self.stderr = stderr or ""
+
+        code = command()
+        self.stdout = daemon.stdout or ""
+        self.stderr = daemon.stderr or ""
         self.exit_code = code
 
     def verify(self):

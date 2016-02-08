@@ -33,7 +33,6 @@ from django.utils.translation import ugettext as _
 
 import pynag.Model
 import pynag.Utils
-import pynag.Control
 import pynag.Plugins
 import pynag.Model.EventHandlers
 from pynag.Parsers import ParserError

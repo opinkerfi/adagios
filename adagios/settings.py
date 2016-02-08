@@ -228,7 +228,9 @@ GRAPHITE_DEFAULT_TAB = 'day'
 # Anything put in /etc/adagios.d/adagios.conf will overwrite this.
 nagios_config = None  # Sensible default is "/etc/nagios/nagios.cfg"
 nagios_url = "/nagios"
-nagios_init_script = "/etc/init.d/nagios"
+# define if you are using a sysv5 init script
+nagios_init_script = None
+nagios_service = "nagios"
 nagios_binary = "/usr/bin/nagios"
 livestatus_path = None
 livestatus_limit = 500

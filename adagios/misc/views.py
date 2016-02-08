@@ -31,7 +31,7 @@ import mimetypes
 
 import pynag.Model
 import pynag.Utils
-import pynag.Control
+import adagios.daemon
 import pynag.Model.EventHandlers
 import pynag.Utils
 import os.path
@@ -182,9 +182,7 @@ def nagios_service(request):
     c = {}
     c['errors'] = []
     c['messages'] = []
-    nagios_bin = adagios.settings.nagios_binary
-    nagios_init = adagios.settings.nagios_init_script
-    nagios_cfg = adagios.settings.nagios_config
+
     if request.method == 'GET':
         form = forms.NagiosServiceForm(initial=request.GET)
     else:
@@ -194,20 +192,20 @@ def nagios_service(request):
             c['stdout'] = form.stdout
             c['stderr'] = form.stderr
             c['command'] = form.command
+            c['exit_code'] = form.exit_code
 
             for i in form.stdout.splitlines():
                 if i.strip().startswith('Error:'):
                     c['errors'].append(i)
     c['form'] = form
-    service = pynag.Control.daemon(
-        nagios_bin=nagios_bin, nagios_cfg=nagios_cfg, nagios_init=nagios_init)
-    c['status'] = s = service.status()
-    if s == 0:
+    daemon = adagios.daemon.Daemon()
+    c['nagios_bin'] = daemon.nagios_bin
+    if daemon.running():
+        c['status'] = 0
         c['friendly_status'] = "running"
-    elif s == 1:
-        c['friendly_status'] = "not running"
     else:
-        c['friendly_status'] = 'unknown (exit status %s)' % (s, )
+        c['status'] = 1
+        c['friendly_status'] = "not running"
     needs_reload = pynag.Model.config.needs_reload()
     c['needs_reload'] = needs_reload
     return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))

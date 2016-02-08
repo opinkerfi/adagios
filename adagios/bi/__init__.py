@@ -21,7 +21,7 @@ __author__ = 'palli'
 import simplejson as json
 import pynag.Model
 import pynag.Parsers
-import pynag.Control
+import adagios.daemon
 import adagios.pnp.functions
 import adagios.settings
 import time
@@ -760,11 +760,7 @@ class Domain(Host):
             #host.hostgroups = 'domains,nameservers,mailservers,http-servers,https-servers'
             host.save()
 
-            daemon = pynag.Control.daemon(
-                nagios_bin=adagios.settings.nagios_binary,
-                nagios_cfg=adagios.settings.nagios_config,
-                nagios_init=adagios.settings.nagios_init_script,
-            )
+            daemon = adagios.daemon.Daemon()
 
             result = daemon.reload()
             time.sleep(1)
