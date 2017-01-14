@@ -4,9 +4,20 @@ Adagios is a web based Nagios configuration interface built to be simple and int
 
 Project website is at http://adagios.org
 
-Live Demo
+Testing Adagios
 =========
-http://demo.adagios.org/
+
+If you want to try out Adagios we have 2 docker images available for testing. Feel free to send in feature request and issues. Images hosted on Docker Hub.
+
+- Latest Adagios built from rpms running in a Centos 7 container
+  - [Docker repositry](https://hub.docker.com/r/opinkerfi/adagios-rpm/)
+  - [Source repository](https://github.com/opinkerfi/docker-adagios-git/)
+  - ```docker pull opinkerfi/adagios-rpm```
+  
+- Latest Adagios built from git running in a Centos 7 container
+  - [Docker repositry](https://hub.docker.com/r/opinkerfi/adagios-git/)
+  - [Source repository](https://github.com/opinkerfi/docker-adagios-git/)
+  - ```docker pull opinkerfi/adagios-git```
 
 Features
 ========
