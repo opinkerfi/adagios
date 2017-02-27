@@ -11,7 +11,7 @@ If you want to try out Adagios we have 2 docker images available for testing. Fe
 
 - Latest Adagios built from rpms running in a Centos 7 container
   - [Docker repositry](https://hub.docker.com/r/opinkerfi/adagios-rpm/)
-  - [Source repository](https://github.com/opinkerfi/docker-adagios-git/)
+  - [Source repository](https://github.com/opinkerfi/docker-adagios-rpm/)
   - ```docker pull opinkerfi/adagios-rpm```
   
 - Latest Adagios built from git running in a Centos 7 container
