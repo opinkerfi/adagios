@@ -197,7 +197,13 @@ UNHANDLED_HOSTS = {
     'scheduled_downtime_depth': 0
 }
 
-
+# A list of strings representing the host/domain names that this Django site can
+# serve. This is a security measure to prevent HTTP Host header attacks
+# Values in this list can be fully qualified names (e.g. www.example.com)
+# A value beginning with a period can be used as a subdomain wildcard:
+# '.example.com' will match example.com, www.example.com
+# A value of '*' will match anything
+ALLOWED_HOSTS = ['*']
 
 # Graphite #
 
