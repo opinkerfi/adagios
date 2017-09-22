@@ -31,7 +31,7 @@ import adagios.seleniumtests
 
 from adagios.objectbrowser.forms import PynagAutoCompleteField
 
-pynag.Model.cfg_file = adagios.settings.nagios_config
+pynag.Model.config.cfg_file = adagios.settings.nagios_config
 
 try:
     from selenium.webdriver.common.by import By
