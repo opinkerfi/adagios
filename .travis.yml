@@ -46,6 +46,8 @@ install:
   - pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
+  - pynag config --set 'destination_directory="/etc/nagios3/adagios/"' --filename /etc/adagios/adagios.conf
+  - pynag config --set 'nagios_service = "nagios3"' --filename /etc/adagios/adagios.conf
   - mkdir -p /etc/nagios3/okconfig/templates /etc/nagios3/okconfig/examples
   - mkdir -p /etc/nagios3/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
