@@ -42,7 +42,9 @@ install:
   - cd opinkerfi/pynag/
   - python setup.py build
   - python setup.py install
-  - cd ~/opinkerfi/adagios/adagios
+  - cd ~/ 
+  - pwd
+  - cd opinkerfi/adagios
   - python setup.py build
   - python setup.py install
   - cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
