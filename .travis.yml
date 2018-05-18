@@ -1,6 +1,6 @@
 language: python
 python:
-  - "2.6"
+  #  - "2.6"
   - "2.7"
 env:
   - DJANGO_VERSION="Django<1.5"
@@ -36,7 +36,6 @@ install:
   - pip install paramiko
   - pip install selenium
   - pip install https://github.com/pynag/pynag/zipball/master
-  - pynag livestatus --get hosts --columns "name state last_state_change" --limit 10
   - python setup.py build
   - python setup.py install
   - cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
@@ -64,6 +63,7 @@ install:
   - sudo service nagios3 reload
   - sudo service npcd start
   - sudo chmod -R 777 /var/lib/nagios3
+  - pynag livestatus --get hosts --columns "name state last_state_change" --limit 10
 notifications:
   email: false
 addons:
