@@ -69,13 +69,9 @@ install:
   - git add .
   - git commit -a -m "Initial commit"
   - sudo service npcd start
+  - sudo service nagios3 restart
   - sudo chown -R nagios:nagios /var/lib/nagios3
   - sudo chmod -R 777 /var/lib/nagios3
-  - sudo service nagios3 reload
-  - sudo service nagios3 stop
-  - sudo service nagios3 start
-  - sudo chmod -R 777 /var/lib/nagios3
-  - ls -l /var/lib/nagios3/rw
   - pynag livestatus --get hosts --columns "name state last_state_change" --limit 10
 notifications:
   email: false
