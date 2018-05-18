@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/opinkerfi/adagios.png?branch=master)](https://travis-ci.org/opinkerfi/adagios)
+[![Coverage Status](https://coveralls.io/repos/opinkerfi/adagios/badge.png?branch=master)](https://coveralls.io/r/opinkerfi/adagios?branch=master)
+
 About
 =====
 Adagios is a web based Nagios configuration interface built to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. Additionally adagios has a rest interface for both status and configuration data as well a feature complete status interface that can be used as an alternative to nagios web interface.
