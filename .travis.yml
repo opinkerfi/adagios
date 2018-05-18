@@ -36,6 +36,7 @@ install:
   - pip install paramiko
   - pip install selenium
   - pip install https://github.com/pynag/pynag/zipball/master
+  - pynag livestatus --get hosts --columns "name state last_state_change" --limit 10
   - python setup.py build
   - python setup.py install
   - cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
@@ -48,8 +49,11 @@ install:
   - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'destination_directory="/etc/nagios3/adagios/"' --filename /etc/adagios/adagios.conf
   - pynag config --set 'nagios_service = "nagios3"' --filename /etc/adagios/adagios.conf
+  - cat /etc/adagios/adagios.conf
   - mkdir -p /etc/nagios3/okconfig/templates /etc/nagios3/okconfig/examples
   - mkdir -p /etc/nagios3/adagios
+  - sudo mkdir -p /var/lib/adagios
+  - sudo chown travis:travis /var/lib/adagios
   - pynag config --append cfg_dir=/etc/nagios3/adagios
   - cd /etc/nagios3/
   - git config --global user.email "noreply@travis-ci.org"
