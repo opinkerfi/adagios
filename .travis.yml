@@ -36,13 +36,14 @@ install:
   - pip install simplejson
   - pip install paramiko
   - pip install selenium
-  # - pip install https://github.com/pynag/pynag/zipball/master
+  # - pip install https://github.com/pynag/pynag/zipball/master # Broken
+  # Install Pynag from Github [master branch]
   - git clone https://github.com/pynag/pynag.git ../pynag
   - cd ../pynag/
   - python setup.py build
   - python setup.py install
+  # Install Adagios
   - cd ../adagios 
-  - pwd
   - python setup.py build
   - python setup.py install
   - cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
@@ -67,11 +68,10 @@ install:
   - git init
   - git add .
   - git commit -a -m "Initial commit"
-  - sudo service nagios3 reload
   - sudo service npcd start
   - sudo chmod -R 777 /var/lib/nagios3
-  - pynag livestatus --get hosts --columns "name state last_state_change" --limit 10
   - sudo service nagios3 restart
+  - pynag livestatus --get hosts --columns "name state last_state_change" --limit 10
 notifications:
   email: false
 addons:
