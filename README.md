@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/opinkerfi/adagios.png?branch=master)](https://travis-ci.org/opinkerfi/adagios)
-[![Coverage Status](https://coveralls.io/repos/opinkerfi/adagios/badge.png?branch=master)](https://coveralls.io/r/opinkerfi/adagios?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/opinkerfi/adagios/badge.svg?branch=master)](https://coveralls.io/github/opinkerfi/adagios?branch=master)
 
 About
 =====
