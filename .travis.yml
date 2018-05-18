@@ -44,7 +44,7 @@ install:
   - python setup.py install
   - cd ~/ 
   - pwd
-  - cd opinkerfi/adagios
+  - ls -l
   - python setup.py build
   - python setup.py install
   - cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
