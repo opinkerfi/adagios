@@ -1,3 +1,14 @@
+Changes in 1.6.3
+========================
+
+Summary of features:
+
+* Nagios process interaction through adagios.daemon 
+
+* License file added
+
+* Installation documentation updated
+
 Changes in 1.6.1
 ========================
 
