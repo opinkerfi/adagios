@@ -77,8 +77,3 @@ script:
 after_success: coveralls
 notifications:
   email: false
-addons:
-  sauce_connect:
-    username: gardart
-    access_key:
-      secure: fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
