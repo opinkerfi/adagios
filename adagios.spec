@@ -21,7 +21,7 @@ Prefix: %{_prefix}
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: pynag >= 0.8.8
+Requires: pynag >= 0.9.1
 Requires: httpd
 Requires: mod_wsgi
 Requires: sudo
@@ -32,11 +32,11 @@ Requires: python-django15
 # Force django upgrade
 Conflicts: Django < 1.4.0
 %else
-Requires: python-django
+Requires: python2-django16
 %endif
 
 %description
-Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios. 
+Adagios is a web based Nagios configuration interface build to be simple and intuitive in design, exposing less of the clutter under the hood of nagios.
 
 %prep
 %setup -qn %{name}-%{version} -n %{name}-%{version}
@@ -68,7 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README.md 
+%doc README.md
 %{python_sitelib}/*
 %{_localstatedir}/lib/adagios/contrib/*
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf

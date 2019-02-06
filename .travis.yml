@@ -5,15 +5,13 @@ env:
   matrix:
   - DJANGO_VERSION="Django<1.7"
   - DJANGO_VERSION="Django<1.8"
-  - DJANGO_VERSION="Django<1.9"
-  - DJANGO_VERSION="Django<1.10"
   global:
     secure: fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
 install:
 - whoami
 - sudo apt-get update
 - pip install coveralls
-- sudo apt-get install nagios3 check-mk-livestatus pnp4nagios python-simplejson python-django
+- sudo apt-get install nagios3 check-mk-livestatus pnp4nagios python-simplejson
   -y
 - sudo usermod travis -G nagios -a
 - sudo chown -R nagios:nagios /etc/nagios3
