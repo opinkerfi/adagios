@@ -1,5 +1,5 @@
 from django.test import LiveServerTestCase
-from django.utils import unittest
+from django.test import TestCase
 import adagios.settings
 import adagios.utils
 import os

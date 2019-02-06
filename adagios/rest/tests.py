@@ -22,9 +22,7 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 
-#from django.utils import unittest
-#from django.test.utils import get_runner
-#from django.test import TestCase
+from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _
 import json
@@ -32,7 +30,7 @@ import json
 import adagios.utils
 
 
-class LiveStatusTestCase(django.test.TestCase):
+class LiveStatusTestCase(TestCase):
 
     def setUp(self):
         self.environment = adagios.utils.get_test_environment()

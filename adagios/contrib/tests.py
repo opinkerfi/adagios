@@ -8,18 +8,18 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
-from django.utils import unittest
+from django.test import TestCase
 from django.test.client import Client
 
 import pynag.Parsers
@@ -30,7 +30,7 @@ from adagios.contrib import get_template_name
 import pynag.Utils
 
 
-class ContribTests(unittest.TestCase):
+class ContribTests(TestCase):
     def setUp(self):
         base_path = tempfile.mkdtemp()
         self.base_path = base_path

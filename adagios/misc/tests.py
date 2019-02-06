@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils import unittest
+from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
 import adagios.utils
@@ -26,7 +26,7 @@ import adagios.userdata
 import os
 
 
-class FakeAdagiosEnvironment(unittest.TestCase):
+class FakeAdagiosEnvironment(TestCase):
     """ Test the features of adagios.utils.FakeAdagiosEnvironment
     """
     @classmethod
@@ -59,7 +59,7 @@ class FakeAdagiosEnvironment(unittest.TestCase):
         self.assertTrue(adagios.settings.adagios_configfile == global_config_file)
 
 
-class MiscTestCase(unittest.TestCase):
+class MiscTestCase(TestCase):
 
     def setUp(self):
         self.environment = adagios.utils.get_test_environment()
@@ -106,15 +106,15 @@ class MiscTestCase(unittest.TestCase):
         c = Client()
         response = c.get(url)
         return response
-    
+
     def test_topmenu_highlight(self):
         r = self.load_get('/status/')
         assert '<li class="active">\n  <a href="/status">' in r.content
-    
+
     def test_leftmenu_highlight(self):
         r = self.load_get('/status/problems')
         assert '<li class="active">\n          <a href="/status/problems">' in r.content
-    
+
     def test_app_name(self):
         from adagios import settings
         settings.TOPMENU_HOME = 'Free beer'
@@ -122,7 +122,7 @@ class MiscTestCase(unittest.TestCase):
         assert 'Free beer' in r.content
 
 
-class RestTest(unittest.TestCase):
+class RestTest(TestCase):
     """Tests for adagios.misc.rest"""
     def setUp(self):
         self.environment = adagios.utils.get_test_environment()

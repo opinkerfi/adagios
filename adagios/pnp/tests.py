@@ -8,18 +8,18 @@
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
-from django.utils import unittest
+from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _
 
@@ -28,7 +28,7 @@ from adagios.settings import nagios_config
 from adagios.pnp import functions
 
 
-class PNP4NagiosTestCase(unittest.TestCase):
+class PNP4NagiosTestCase(TestCase):
 
     def testPnpIsConfigured(self):
         config = pynag.Parsers.config()

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils import unittest
+from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-class TestObjectBrowser(unittest.TestCase):
+class TestObjectBrowser(TestCase):
 
     def testNagiosConfigFile(self):
         result = pynag.Model.ObjectDefinition.objects.all
@@ -98,7 +98,7 @@ class TestObjectBrowser(unittest.TestCase):
             self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(error)s") % {'url': url, 'error': e})
 
 
-class TestPynagForm(unittest.TestCase):
+class TestPynagForm(TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
         self.environment = adagios.utils.get_test_environment()
@@ -411,7 +411,7 @@ class TestPynagForm(unittest.TestCase):
         self.assertEqual({}, form.data)
 
 
-class TestPynagAutoCompleteField(unittest.TestCase):
+class TestPynagAutoCompleteField(TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
         self.environment = adagios.utils.get_test_environment()
@@ -465,7 +465,7 @@ class TestPynagAutoCompleteField(unittest.TestCase):
         self.assertEqual('null', field.prepare_value('null'))
 
 
-class TestPynagChoiceField(unittest.TestCase):
+class TestPynagChoiceField(TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
         self.environment = adagios.utils.get_test_environment()
@@ -520,7 +520,7 @@ class TestPynagChoiceField(unittest.TestCase):
         self.assertEqual('', field.get_prefix())
 
 
-class TestImportObjectsForm(unittest.TestCase):
+class TestImportObjectsForm(TestCase):
     def setUp(self):
         self.nagios_config = adagios.settings.nagios_config
 
@@ -550,7 +550,7 @@ class TestImportObjectsForm(unittest.TestCase):
         self.assertEqual(1, len(objects))
         self.assertTrue(pynag.Model.Host.objects.filter(shortname='localhost'))
 
-class AddObjectForm(unittest.TestCase):
+class AddObjectForm(TestCase):
 
     def setUp(self):
         self.environment = adagios.utils.get_test_environment()

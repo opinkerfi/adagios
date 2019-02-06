@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils import unittest
+from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _
 
@@ -41,7 +41,7 @@ except ImportError:
     pass
 
 
-class LiveStatusTestCase(unittest.TestCase):
+class LiveStatusTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -148,7 +148,7 @@ class LiveStatusTestCase(unittest.TestCase):
         self.assertFalse(len(json_reply) > 1, "Too many objects returned" \
                          " limit is 1, json:\n" + str(json_reply))
 
-class Graphite(unittest.TestCase):
+class Graphite(TestCase):
     def test__get_graphite_url(self):
         """ Smoketest for  adagios.status.graphite._get_graphite_url() """
         base = "http://localhost/graphite"
@@ -180,7 +180,7 @@ class Graphite(unittest.TestCase):
         self.assertTrue('packetloss' in result[0]['metrics'])
 
 
-class UtilsTest(unittest.TestCase):
+class UtilsTest(TestCase):
     """Tests for adagios.status.utils"""
     def setUp(self):
         self.host_query = pynag.Parsers.LivestatusQuery('GET hosts')
@@ -341,7 +341,7 @@ class SeleniumStatusTestCase(adagios.seleniumtests.SeleniumTestCase):
 
             self.assertTrue(count <= 3, "Top alert producers returns too many rows")
 
-class RestTests(unittest.TestCase):
+class RestTests(TestCase):
     def test_reschedule_raises_on_float_string_check_time(self):
         """reschedule should raise on string float"""
         self.assertRaises(ValueError, adagios.status.rest.reschedule,
