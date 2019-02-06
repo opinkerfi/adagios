@@ -39,7 +39,7 @@ class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         if not webdriver:
-            self.skipTest('No selenium installed')
+            cls.skipTest('No selenium installed')
             # raise unittest.SkipTest("No selenium installed")
 
         # Tests for pull requests from forks do not get the SAUCE_USERNAME
@@ -48,7 +48,7 @@ class SeleniumTestCase(LiveServerTestCase):
         if os.environ.get('TRAVIS_BUILD_NUMBER') and \
            not os.environ.get('SAUCE_USERNAME'):
             # raise unittest.SkipTest("Travis with no sauce username, skipping")
-            self.skipTest('Travis with no sauce username, skipping')
+            cls.skipTest('Travis with no sauce username, skipping')
 
         super(SeleniumTestCase, cls).setUpClass()
 
@@ -65,7 +65,7 @@ class SeleniumTestCase(LiveServerTestCase):
                 firefox = webdriver.Firefox()
                 cls.drivers.append(firefox)
         except WebDriverException as error:
-            self.skipTest('Exception in running webdriver, skipping')
+            cls.skipTest('Exception in running webdriver, skipping')
             # raise unittest.SkipTest("Exception in running webdriver, skipping " \
                         #  "selenium tests: %s" % str(error))
 
