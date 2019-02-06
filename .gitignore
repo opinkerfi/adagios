@@ -133,3 +133,6 @@ dmypy.json
 
 ### Python Patch ###
 .venv/
+
+# VS Code
+.vscode/
