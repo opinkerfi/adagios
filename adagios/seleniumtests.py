@@ -40,7 +40,7 @@ class SeleniumTestCase(LiveServerTestCase):
     def setUpClass(cls):
         if not webdriver:
             print ('No selenium installed')
-            return None
+            #return None
             # raise unittest.SkipTest("No selenium installed")
 
         # Tests for pull requests from forks do not get the SAUCE_USERNAME
@@ -50,7 +50,7 @@ class SeleniumTestCase(LiveServerTestCase):
            not os.environ.get('SAUCE_USERNAME'):
             # raise unittest.SkipTest("Travis with no sauce username, skipping")
             print ('Travis with no sauce username, skipping')
-            return None
+            #return None
 
         super(SeleniumTestCase, cls).setUpClass()
 
