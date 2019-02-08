@@ -68,7 +68,7 @@ class SeleniumTestCase(LiveServerTestCase):
                 cls.drivers.append(firefox)
         except WebDriverException as error:
             print ('Exception in running webdriver, skipping')
-            return None
+            #return None
             # raise unittest.SkipTest("Exception in running webdriver, skipping " \
                         #  "selenium tests: %s" % str(error))
 
