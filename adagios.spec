@@ -28,7 +28,7 @@ Requires: sudo
 Requires: python-simplejson
 
 %if 0%{?rhel} == 6
-Requires: python-django15
+Requires: python-django
 # Force django upgrade
 Conflicts: Django < 1.4.0
 %else
