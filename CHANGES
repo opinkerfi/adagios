@@ -1,9 +1,18 @@
+Changes in 1.6.4
+========================
+
+Summary of features:
+
+* Django < 1.9 support
+
+* Documentation updated
+
 Changes in 1.6.3
 ========================
 
 Summary of features:
 
-* Nagios process interaction through adagios.daemon 
+* Nagios process interaction through adagios.daemon
 
 * License file added
 
@@ -56,21 +65,21 @@ Summary of features:
     Which can be set from settings.py. French translation
     has already started and anyone can help with the translation
     at https://www.transifex.com/projects/p/adagios/
-    
-    
+
+
 * Theme Support:
     Adagios now supports using multiple themes, which at the
     moment can be changed only by editing settings.py
-    
+
     Also a proof of concept spacelab theme from
     http://bootswatch.com/spacelab/
-    
-    
+
+
 * Authorization support
     Experimental support for authorization. Enable it by setting
     enable_authorization=True in adagios.conf
-    
-    and put a comma seperated list of users (or contactgroups) in 
+
+    and put a comma seperated list of users (or contactgroups) in
     adagios.conf like so:
     administrators="nagiosadmin,administrator,admins"
 
@@ -87,7 +96,7 @@ Changes in version 1.4.1
 ========================
 Start maintaining a changelog again.
 
-Adagios has changed a lot since 1.2.2. Please the commit log for 
+Adagios has changed a lot since 1.2.2. Please the commit log for
 details.
 
 Summary of features:
@@ -103,7 +112,7 @@ added lines: 34743 removed lines : 55573 total lines: -20830
 
 
 Changes in version 1.2.2
-======================== 
+========================
 We have a lot of bugfixes and lot of performance improvements. In this version.
 
 124 files changed, 3577 insertions(+), 4374 deletions(-)
@@ -135,7 +144,7 @@ Status:
 - Very rough protoptype of business intelligence
 - Removed the okconfig add host button
 - enable in-line saving of notes in status detail
-- Clock is back in the top_navigation_bar 
+- Clock is back in the top_navigation_bar
 - Dashboard items are now links
 
 Javascript API:
