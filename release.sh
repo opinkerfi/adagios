@@ -63,7 +63,6 @@ update_version_number() {
     ask "Update version number?" || return 0
     echo    "Current version is: ${current_version}"
     read -p "New version number: " new_version
-
     echo
     echo "### Updating Makefile"
     sed -i '' "s/^VERSION.*=.*/VERSION		= ${new_version}/" Makefile
@@ -73,10 +72,6 @@ update_version_number() {
     sed -i '' "s/^Version: ${current_version}/Version: ${new_version}/" ${project_name}.spec
     echo "### Updating rel-eng/packages/${project_name}"
     echo "${new_version}-${current_release} /" > rel-eng/packages/${project_name}
-
-#    echo "### Updating debian.upstream/changelog"
-#    update_debian_changelog
-
 }
 
 update_release_number() {
