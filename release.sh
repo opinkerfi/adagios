@@ -23,7 +23,7 @@ main() {
     update_changes || echo FAIL
 
     update_version_number || echo FAIL
-    
+
     new_version=$(grep ^VERSION Makefile | awk '{ print $3 }')
 
     git_commit || echo FAIL
@@ -59,14 +59,14 @@ update_version_number() {
     ask "Update version number?" || return 0
     echo    "Current version is: ${current_version}"
     read -p "New version number: " new_version
-    
+
     echo
     echo "### Updating Makefile"
-    sed -i "s/^VERSION.*=.*/VERSION		= ${new_version}/" Makefile
+    sed -i '' "s/^VERSION.*=.*/VERSION		= ${new_version}/" Makefile
     echo "### Updating ${project_name}/__init__.py"
-    sed -i "s/^__version__.*/__version__ = '${new_version}'/" ${project_name}/__init__.py
+    sed -i '' "s/^__version__.*/__version__ = '${new_version}'/" ${project_name}/__init__.py
     echo "### Updating ${project_name}.spec"
-    sed -i "s/^Version: ${current_version}/Version: ${new_version}/" ${project_name}.spec
+    sed -i '' "s/^Version: ${current_version}/Version: ${new_version}/" ${project_name}.spec
     echo "### Updating rel-eng/packages/${project_name}"
     echo "${new_version}-${current_release} /" > rel-eng/packages/${project_name}
 
