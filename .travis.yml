@@ -71,7 +71,7 @@ install:
 - sudo service nagios3 restart
 - sudo chown -R nagios:nagios /var/lib/nagios3
 - sudo chmod -R 777 /var/lib/nagios3
-- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
+#- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
 - cd ~/build/opinkerfi/adagios/adagios
 - python manage.py test
