@@ -14,7 +14,7 @@ install:
 - pip install coveralls
 - sudo apt-get install nagios3 check-mk-livestatus python-simplejson
   -y
-- sudo apt-get install -y pnp4nagios-bin
+#- sudo apt-get install -y pnp4nagios-bin
 - sudo usermod travis -G nagios -a
 - sudo chown -R nagios:nagios /etc/nagios3
 - sudo chmod -R 777 /etc/nagios3
@@ -49,7 +49,7 @@ install:
 - cp -r adagios/etc/adagios/adagios.conf /etc/adagios/
 - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
 - pynag config --set "process_performance_data=1"
-- pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+#- pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
 - pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
 - pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
 - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
@@ -67,7 +67,7 @@ install:
 - git init
 - git add .
 - git commit -a -m "Initial commit"
-- sudo service npcd start
+#- sudo service npcd start
 - sudo service nagios3 restart
 - sudo chown -R nagios:nagios /var/lib/nagios3
 - sudo chmod -R 777 /var/lib/nagios3
