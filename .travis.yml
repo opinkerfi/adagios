@@ -1,9 +1,13 @@
 language: python
+python:
+    - "2.7"
 
 services:
     - docker
 
 before_install:
-    - docker pull opinkerfi/adagios-git
-    - docker run -d -p 127.0.0.1:80:80 opinkerfi/adagios-git /bin/sh -c "echo $PWD"
-    - docker ps -a
+    - echo $PWD
+    - ls -l
+#    - docker pull opinkerfi/adagios-git
+#    - docker run -d -p 127.0.0.1:80:80 opinkerfi/adagios-git /bin/sh -c "echo $PWD"
+#    - docker ps -a
