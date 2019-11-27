@@ -12,7 +12,7 @@ install:
 - whoami
 - sudo apt-get update
 - pip install coveralls
-- sudo apt-get install nagios3 check-mk-livestatus pnp4nagios python-simplejson
+- sudo apt-get install nagios3 check-mk-livestatus python-simplejson
   -y
 - sudo usermod travis -G nagios -a
 - sudo chown -R nagios:nagios /etc/nagios3
@@ -48,7 +48,7 @@ install:
 - cp -r adagios/etc/adagios/adagios.conf /etc/adagios/
 - pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
 - pynag config --set "process_performance_data=1"
-- pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+#- pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
 - pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
 - pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
 - pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
