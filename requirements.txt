@@ -1,5 +1,5 @@
 # Make sure the following python packages are installed
-pynag==0.9.1
+pynag>0.9.1
 Django<1.9
 simplejson
 
