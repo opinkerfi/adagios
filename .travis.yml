@@ -222,6 +222,16 @@ install:
 - sudo setfacl -R -m g:nagios:rwx /usr/local/nagios
 
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
+- pynag config --set "process_performance_data=1"
+- pynag config --set 'nagios_binary="/usr/sbin/nagios"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'nagios_init="/etc/init.d/nagios"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'nagios_config="/usr/local/nagios/etc/nagios.cfg"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'destination_directory="/usr/local/nagios/etc/adagios/"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'nagios_service = "nagios"' --filename /etc/adagios/adagios.conf
+- cat /etc/adagios/adagios.conf
+- mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples ${NAGIOS_HOME}/etc/adagios /var/lib/adagios
+- sudo chown travis:nagios /var/lib/adagios
+- pynag config --append cfg_dir=${NAGIOS_HOME}/etc/adagios
 
 - cd ${NAGIOS_HOME}/etc/
 - git config --global user.email "noreply@travis-ci.org"
