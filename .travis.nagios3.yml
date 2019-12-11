@@ -1,0 +1,81 @@
+dist: trusty
+language: python
+python:
+- '2.7'
+env:
+  matrix:
+  - DJANGO_VERSION="Django<1.7"
+  - DJANGO_VERSION="Django<1.8"
+  - DJANGO_VERSION="Django<1.9"
+  global:
+    secure: fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
+install:
+- whoami
+- sudo apt-get update
+- pip install coveralls
+- sudo apt-get install nagios3 check-mk-livestatus python-simplejson pnp4nagios
+  -y
+- sudo usermod travis -G nagios -a
+- sudo chown -R nagios:nagios /etc/nagios3
+- sudo chmod -R 777 /etc/nagios3
+- sudo chmod -R a+rx /var/log/nagios3/
+- sudo mkdir -p /etc/adagios/
+- sudo chown -R travis /etc/adagios/
+- sudo usermod -G www-data nagios
+- sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
+- sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
+- pip install https://github.com/opinkerfi/okconfig/zipball/master || true
+- sudo touch /etc/okconfig.conf
+- sudo chown travis /etc/okconfig.conf
+- echo 'nagios_config /etc/nagios3/nagios.cfg' >> /etc/okconfig.conf
+- echo 'template_directory /etc/nagios3/okconfig/templates'  >> /etc/okconfig.conf
+- echo 'examples_directory /etc/nagios3/okconfig/examples'  >> /etc/okconfig.conf
+- echo 'destination_directory /etc/nagios3/okconfig' >> /etc/okconfig.conf
+- cat /etc/okconfig.conf
+- okconfig init
+- pip install $DJANGO_VERSION
+- pip install mock
+- pip install simplejson
+- pip install paramiko
+- pip install selenium
+#- git clone https://github.com/pynag/pynag.git ../pynag
+#- cd ../pynag/
+#- python setup.py build
+#- python setup.py install
+- cd ../adagios
+- python setup.py build
+- python setup.py install
+- cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
+- cp -r adagios/etc/adagios/adagios.conf /etc/adagios/
+- pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
+- pynag config --set "process_performance_data=1"
+- pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
+- pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'destination_directory="/etc/nagios3/adagios/"' --filename /etc/adagios/adagios.conf
+- pynag config --set 'nagios_service = "nagios3"' --filename /etc/adagios/adagios.conf
+- cat /etc/adagios/adagios.conf
+- mkdir -p /etc/nagios3/okconfig/templates /etc/nagios3/okconfig/examples
+- mkdir -p /etc/nagios3/adagios
+- sudo mkdir -p /var/lib/adagios
+- sudo chown travis:nagios /var/lib/adagios
+- pynag config --append cfg_dir=/etc/nagios3/adagios
+- cd /etc/nagios3/
+- git config --global user.email "noreply@travis-ci.org"
+- git config --global user.name "Adagios buildbot running inside travis"
+- git init
+- git add .
+- git commit -a -m "Initial commit"
+- sudo service npcd start
+- sudo service nagios3 restart
+- sudo chown -R nagios:nagios /var/lib/nagios3
+- sudo chmod -R 777 /var/lib/nagios3
+#- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
+script:
+- cd ~/build/opinkerfi/adagios/adagios
+- python manage.py test
+- coverage run --source=adagios manage.py test
+after_success: coveralls
+notifications:
+  email: false

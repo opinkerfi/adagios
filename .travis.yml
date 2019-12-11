@@ -1,81 +1,240 @@
-dist: trusty
 language: python
 python:
 - '2.7'
 env:
   matrix:
-  - DJANGO_VERSION="Django<1.7"
-  - DJANGO_VERSION="Django<1.8"
-  - DJANGO_VERSION="Django<1.9"
+    - DJANGO_VERSION="Django<1.7"
+    - DJANGO_VERSION="Django<1.8"
+    - DJANGO_VERSION="Django<1.9"
   global:
-    secure: fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
+    - secure=fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
+    - NAGIOS_HOME=/opt/nagios
+    - NAGIOS_USER=nagios
+    - NAGIOS_GROUP=nagios
+    - NAGIOS_CMDUSER=nagios
+    - NAGIOS_CMDGROUP=nagios
+    - NAGIOS_FQDN=nagios.example.com
+    - NAGIOSADMIN_USER=nagiosadmin
+    - NAGIOSADMIN_PASS=nagios
+    - APACHE_RUN_USER=nagios
+    - APACHE_RUN_GROUP=nagios
+    - NAGIOS_TIMEZONE=UTC
+    - DEBIAN_FRONTEND=noninteractive
+    - NG_NAGIOS_CONFIG_FILE=${NAGIOS_HOME}/etc/nagios.cfg
+    - NG_CGI_DIR=${NAGIOS_HOME}/sbin
+    - NG_WWW_DIR=${NAGIOS_HOME}/share/nagiosgraph
+    - NG_CGI_URL=/cgi-bin
+    - NAGIOS_BRANCH=nagios-4.4.3
+    - NAGIOS_PLUGINS_BRANCH=release-2.2.1
+    - NRPE_BRANCH=nrpe-3.2.1
+    - APACHE_LOCK_DIR=/var/run
+    - APACHE_LOG_DIR=/var/log/apache2
+
 install:
 - whoami
 - sudo apt-get update
+- apt-get install python-pip python-dev build-essential git unzip -y
 - pip install coveralls
-- sudo apt-get install nagios3 check-mk-livestatus python-simplejson pnp4nagios
-  -y
 - sudo usermod travis -G nagios -a
-- sudo chown -R nagios:nagios /etc/nagios3
-- sudo chmod -R 777 /etc/nagios3
-- sudo chmod -R a+rx /var/log/nagios3/
-- sudo mkdir -p /etc/adagios/
+- sudo apt-get install -y    \
+        apache2                             \
+        apache2-utils                       \
+        autoconf                            \
+        automake                            \
+        bc                                  \
+        bsd-mailx                           \
+        build-essential                     \
+        dnsutils                            \
+        fping                               \
+        gettext                             \
+        git                                 \
+        gperf                               \
+        iputils-ping                        \
+        jq                                  \
+        libapache2-mod-php                  \
+        libcache-memcached-perl             \
+        libcgi-pm-perl                      \
+        libdbd-mysql-perl                   \
+        libdbi-dev                          \
+        libdbi-perl                         \
+        libfreeradius-client-dev            \
+        libgd2-xpm-dev                      \
+        libgd-gd2-perl                      \
+        libjson-perl                        \
+        libldap2-dev                        \
+        libmysqlclient-dev                  \
+        libnagios-object-perl               \
+        libnagios-plugin-perl               \
+        libnet-snmp-perl                    \
+        libnet-snmp-perl                    \
+        libnet-tftp-perl                    \
+        libnet-xmpp-perl                    \
+        libpq-dev                           \
+        libredis-perl                       \
+        librrds-perl                        \
+        libssl-dev                          \
+        libswitch-perl                      \
+        libwww-perl                         \
+        m4                                  \
+        netcat                              \
+        parallel                            \
+        php-cli                             \
+        php-gd                              \
+        postfix                             \
+        python-pip                          \
+        rsyslog                             \
+        runit                               \
+        smbclient                           \
+        snmp                                \
+        snmpd                               \
+        snmp-mibs-downloader                \
+        unzip                               \
+        python
+
+- sudo apt-get clean
+- sudo rm -Rf /var/lib/apt/lists/*
+
+- ( egrep -i "^${NAGIOS_GROUP}"    /etc/group || sudo groupadd $NAGIOS_GROUP    )
+- ( egrep -i "^${NAGIOS_CMDGROUP}" /etc/group || sudo groupadd $NAGIOS_CMDGROUP )
+
+- ( id -u $NAGIOS_USER    || sudo useradd --system -d $NAGIOS_HOME -g $NAGIOS_GROUP    $NAGIOS_USER    )
+- ( id -u $NAGIOS_CMDUSER || sudo useradd --system -d $NAGIOS_HOME -g $NAGIOS_CMDGROUP $NAGIOS_CMDUSER )
+
+- sudo usermod travis -G nagios -a
+
+- cd /tmp
+- sudo git clone https://github.com/NagiosEnterprises/nagioscore.git -b $NAGIOS_BRANCH
+- cd nagioscore
+- sudo ./configure                                  \
+        --prefix=${NAGIOS_HOME}                  \
+        --exec-prefix=${NAGIOS_HOME}             \
+        --enable-event-broker                    \
+        --with-command-user=${NAGIOS_CMDUSER}    \
+        --with-command-group=${NAGIOS_CMDGROUP}  \
+        --with-nagios-user=${NAGIOS_USER}        \
+        --with-nagios-group=${NAGIOS_GROUP}
+
+- sudo make all
+- sudo make install
+- sudo make install-config
+- sudo make install-commandmode
+- sudo make install-webconf
+- sudo make install-init
+- sudo make install-daemoninit
+- sudo make clean
+- cd /tmp && sudo rm -Rf nagioscore
+
+- cd /tmp
+- sudo git clone https://github.com/nagios-plugins/nagios-plugins.git -b $NAGIOS_PLUGINS_BRANCH
+- cd nagios-plugins
+- sudo ./tools/setup
+- sudo ./configure                                                 \
+        --prefix=${NAGIOS_HOME}                                 \
+        --with-ipv6                                             \
+        --with-ping6-command="/bin/ping6 -n -U -W %d -c %d %s"
+
+- sudo make
+- sudo make install
+- sudo make clean
+- sudo mkdir -p /usr/lib/nagios/plugins
+- sudo ln -sf ${NAGIOS_HOME}/libexec/utils.pm /usr/lib/nagios/plugins
+
+- sudo wget -O ${NAGIOS_HOME}/libexec/check_ncpa.py https://raw.githubusercontent.com/NagiosEnterprises/ncpa/v2.0.5/client/check_ncpa.py
+- sudo chmod +x ${NAGIOS_HOME}/libexec/check_ncpa.py
+
+- cd /tmp
+- sudo git clone https://github.com/NagiosEnterprises/nrpe.git -b $NRPE_BRANCH
+- cd nrpe
+- sudo ./configure                                   \
+        --with-ssl=/usr/bin/openssl               \
+        --with-ssl-lib=/usr/lib/x86_64-linux-gnu  \
+
+
+- sudo make check_nrpe
+- sudo cp src/check_nrpe ${NAGIOS_HOME}/libexec/
+- sudo make clean
+- cd /tmp && sudo rm -Rf nrpe
+
+- cd /tmp
+- sudo git clone https://git.code.sf.net/p/nagiosgraph/git nagiosgraph
+- cd nagiosgraph
+- sudo ./install.pl --install                                      \
+        --prefix /opt/nagiosgraph                               \
+        --nagios-user ${NAGIOS_USER}                            \
+        --www-user ${NAGIOS_USER}                               \
+        --nagios-perfdata-file ${NAGIOS_HOME}/var/perfdata.log  \
+        --nagios-cgi-url /cgi-bin                               \
+
+- sudo cp share/nagiosgraph.ssi ${NAGIOS_HOME}/share/ssi/common-header.ssi
+- cd /tmp && sudo rm -Rf nagiosgraph
+
+- export DOC_ROOT="DocumentRoot $(echo $NAGIOS_HOME/share)"
+- sudo sed -i "s,DocumentRoot.*,$DOC_ROOT," /etc/apache2/sites-enabled/000-default.conf
+- sudo sed -i "s,</VirtualHost>,<IfDefine ENABLE_USR_LIB_CGI_BIN>\nScriptAlias /cgi-bin/ ${NAGIOS_HOME}/sbin/\n</IfDefine>\n</VirtualHost>," /etc/apache2/sites-enabled/000-default.conf
+- sudo ln -s /etc/apache2/mods-available/cgi.load /etc/apache2/mods-enabled/cgi.load
+
+- sudo mkdir -p -m 0755 /usr/share/snmp/mibs
+- sudo mkdir -p         ${NAGIOS_HOME}/etc/conf.d
+- sudo mkdir -p         ${NAGIOS_HOME}/etc/monitor
+- sudo mkdir -p -m 700  ${NAGIOS_HOME}/.ssh
+- sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} ${NAGIOS_HOME}/.ssh
+- sudo touch /usr/share/snmp/mibs/.foo
+- sudo ln -s /usr/share/snmp/mibs ${NAGIOS_HOME}/libexec/mibs
+- sudo ln -s ${NAGIOS_HOME}/bin/nagios /usr/local/bin/nagios
+- sudo download-mibs
+
+- sudo sed -i 's,/bin/mail,/usr/bin/mail,' ${NAGIOS_HOME}/etc/objects/commands.cfg
+- sudo sed -i 's,/usr/usr,/usr,'           ${NAGIOS_HOME}/etc/objects/commands.cfg
+
+- sudo cp /etc/services /var/spool/postfix/etc/  && \
+
+- sudo rm -rf /etc/rsyslog.d /etc/rsyslog.conf
+- sudo rm -rf /etc/sv/getty-5
+
+- echo "checking permissions for nagios & nagiosgraph"
+- sudo find /opt/nagios \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
+- sudo find /opt/nagiosgraph \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
+
+- echo "use_timezone=${NAGIOS_TIMEZONE}" >> ${NAGIOS_HOME}/etc/nagios.cfg
+
+- sudo mkdir -p /orig/var && sudo mkdir -p /orig/etc
+- sudo cp -Rp ${NAGIOS_HOME}/var/* /orig/var/
+- sudo cp -Rp ${NAGIOS_HOME}/etc/* /orig/etc/
+
+- sudo a2enmod session
+- sudo a2enmod session_cookie
+- sudo a2enmod session_crypto
+- sudo a2enmod auth_form
+- sudo a2enmod request
+
+- sudo chmod +x /usr/local/bin/start_nagios
+- sudo chmod +x /etc/sv/apache/run
+- sudo chmod +x /etc/sv/nagios/run
+- sudo chmod +x /etc/sv/postfix/run
+- sudo chmod +x /etc/sv/rsyslog/run
+- sudo chmod +x /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
+
+- cd /opt/nagiosgraph/etc
+- sudo sh fix-nagiosgraph-multiple-selection.sh
+
+- sudo rm /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
+
+
+- export APACHE_LOCK_DIR=/var/run
+- export APACHE_LOG_DIR=/var/log/apache2
+
 - sudo chown -R travis /etc/adagios/
 - sudo usermod -G www-data nagios
-- sudo sed -i 's/RUN.*/RUN="yes"/' /etc/default/npcd
-- sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
-- pip install https://github.com/opinkerfi/okconfig/zipball/master || true
-- sudo touch /etc/okconfig.conf
-- sudo chown travis /etc/okconfig.conf
-- echo 'nagios_config /etc/nagios3/nagios.cfg' >> /etc/okconfig.conf
-- echo 'template_directory /etc/nagios3/okconfig/templates'  >> /etc/okconfig.conf
-- echo 'examples_directory /etc/nagios3/okconfig/examples'  >> /etc/okconfig.conf
-- echo 'destination_directory /etc/nagios3/okconfig' >> /etc/okconfig.conf
-- cat /etc/okconfig.conf
-- okconfig init
 - pip install $DJANGO_VERSION
 - pip install mock
 - pip install simplejson
 - pip install paramiko
 - pip install selenium
-#- git clone https://github.com/pynag/pynag.git ../pynag
-#- cd ../pynag/
-#- python setup.py build
-#- python setup.py install
-- cd ../adagios
-- python setup.py build
-- python setup.py install
-- cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
-- cp -r adagios/etc/adagios/adagios.conf /etc/adagios/
-- pynag config --append "broker_module=/usr/lib/check_mk/livestatus.o /var/lib/nagios3/rw/livestatus"
-- pynag config --set "process_performance_data=1"
-- pynag config --append "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg"
-- pynag config --set 'nagios_binary="/usr/sbin/nagios3"' --filename /etc/adagios/adagios.conf
-- pynag config --set 'nagios_init="/etc/init.d/nagios3"' --filename /etc/adagios/adagios.conf
-- pynag config --set 'nagios_config="/etc/nagios3/nagios.cfg"' --filename /etc/adagios/adagios.conf
-- pynag config --set 'destination_directory="/etc/nagios3/adagios/"' --filename /etc/adagios/adagios.conf
-- pynag config --set 'nagios_service = "nagios3"' --filename /etc/adagios/adagios.conf
-- cat /etc/adagios/adagios.conf
-- mkdir -p /etc/nagios3/okconfig/templates /etc/nagios3/okconfig/examples
-- mkdir -p /etc/nagios3/adagios
-- sudo mkdir -p /var/lib/adagios
-- sudo chown travis:nagios /var/lib/adagios
-- pynag config --append cfg_dir=/etc/nagios3/adagios
-- cd /etc/nagios3/
-- git config --global user.email "noreply@travis-ci.org"
-- git config --global user.name "Adagios buildbot running inside travis"
-- git init
-- git add .
-- git commit -a -m "Initial commit"
-- sudo service npcd start
-- sudo service nagios3 restart
-- sudo chown -R nagios:nagios /var/lib/nagios3
-- sudo chmod -R 777 /var/lib/nagios3
 #- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
 - cd ~/build/opinkerfi/adagios/adagios
-- python manage.py test
-- coverage run --source=adagios manage.py test
-after_success: coveralls
+#- python manage.py test
+#- coverage run --source=adagios manage.py test
+#after_success: coveralls
 notifications:
   email: false
