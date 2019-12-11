@@ -33,11 +33,7 @@ env:
 install:
 - whoami
 - sudo apt-get update
-<<<<<<< HEAD
 - sudo apt-get install python-pip python-dev build-essential git unzip -y
-=======
-- apt-get install python-pip python-dev build-essential git unzip -y
->>>>>>> 4a28e26433e8f5300acd7659f4c8185b52c7e9a6
 - pip install coveralls
 - sudo usermod travis -G nagios -a
 - sudo apt-get install -y    \
