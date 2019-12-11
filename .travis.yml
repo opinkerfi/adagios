@@ -175,10 +175,30 @@ install:
 - pip install simplejson
 - pip install paramiko
 - pip install selenium
+
+# Livestatus build from source
+- sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+- sudo apt-get update
+- sudo apt-get install gcc-7 g++-7 librrd-dev rrdtool libboost-filesystem-dev libboost-thread-dev
+
+- cd /tmp
+- wget https://checkmk.com/support/1.5.0p16/check-mk-raw-1.5.0p16.cre.tar.gz
+- tar -zxvf check-mk-raw-1.5.0p16.cre.tar.gz
+
+# Sækja livestatus pakkann úr þessum tarball
+
+- sudo ./configure --with-nagios4 --prefix=/opt/nagios
+- sudo make
+- sudo make install
+
+# Setja eftirfarandi í config
+#broker_module=/opt/nagios/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live
+
+
 #- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
-- ls -l ~/build/opinkerfi/adagios/adagios
-
+- cd ~/build/opinkerfi/adagios/adagios
+- sudo ls /opt/nagios/lib/mk-livestatus/livestatus.o
 #- python manage.py test
 #- coverage run --source=adagios manage.py test
 #after_success: coveralls
