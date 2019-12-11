@@ -215,8 +215,8 @@ install:
 - sudo chown -R nagios:nagios ${NAGIOS_HOME}/etc
 
 - sudo mkdir -p ${NAGIOS_HOME}/etc/adagios
-- sudo chown -R nagios:nagios ${NAGIOS_HOME}/etc/
-- sudo chmod -R 775 ${NAGIOS_HOME}/etc/
+- sudo chown -R nagios:nagios ${NAGIOS_HOME}
+- sudo chmod -R 775 ${NAGIOS_HOME}
 
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
 
