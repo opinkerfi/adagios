@@ -140,7 +140,7 @@ install:
 - sudo find /opt/nagios \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
 - sudo find /opt/nagiosgraph \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
 
-- echo "use_timezone=${NAGIOS_TIMEZONE}" >> ${NAGIOS_HOME}/etc/nagios.cfg
+#- echo "use_timezone=${NAGIOS_TIMEZONE}" >> ${NAGIOS_HOME}/etc/nagios.cfg
 
 - sudo mkdir -p /orig/var && sudo mkdir -p /orig/etc
 - sudo cp -Rp ${NAGIOS_HOME}/var/* /orig/var/
