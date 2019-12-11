@@ -46,7 +46,7 @@ install:
 - ( id -u $NAGIOS_USER    || sudo useradd --system -d $NAGIOS_HOME -g $NAGIOS_GROUP    $NAGIOS_USER    )
 - ( id -u $NAGIOS_CMDUSER || sudo useradd --system -d $NAGIOS_HOME -g $NAGIOS_CMDGROUP $NAGIOS_CMDUSER )
 
-- sudo usermod travis -G nagios -a
+- sudo usermod -aG nagios travis
 - cd /tmp
 - sudo git clone https://github.com/NagiosEnterprises/nagioscore.git -b $NAGIOS_BRANCH
 - cd nagioscore
@@ -217,6 +217,8 @@ install:
 - sudo mkdir -p ${NAGIOS_HOME}/etc/adagios
 - sudo chown -R nagios:nagios ${NAGIOS_HOME}
 - sudo chmod -R 775 ${NAGIOS_HOME}
+
+- sudo setfacl -R -m u:travis:rwx /usr/local/nagios
 
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
 
