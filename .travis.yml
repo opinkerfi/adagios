@@ -176,6 +176,13 @@ install:
 - pip install paramiko
 - pip install selenium
 
+# Livestatus deb
+#- cd /tmp
+#- wget http://archive.ubuntu.com/ubuntu/pool/universe/c/check-mk/check-mk-livestatus_1.2.6p12-1_amd64.deb
+#- dpkg -i check-mk-livestatus_1.2.6p12-1_amd64.deb
+#- ls -l /usr/bin/unixcat
+#- ls -l /usr/lib/check_mk/livestatus.o
+
 # Livestatus build from source
 - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 - sudo apt-get update
@@ -190,7 +197,6 @@ install:
 - sudo make
 - sudo make install
 
-# Setja eftirfarandi í config
 #broker_module=/opt/nagios/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live
 - pip install pynag
 
@@ -212,11 +218,12 @@ install:
 - sudo chown -R nagios:nagios ${NAGIOS_HOME}/etc/
 - sudo chmod -R 775 ${NAGIOS_HOME}/etc/
 
+- pynag config --append "broker_module=/opt/nagios/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live"
 #- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
 - cd ~/build/opinkerfi/adagios/adagios
 - ls -l ${NAGIOS_HOME}
-- ls -l /opt/nagios/lib/mk-livestatus
+- cat ${NAGIOS_HOME}/etc/nagios.cfg
 #- python manage.py test
 #- coverage run --source=adagios manage.py test
 #after_success: coveralls
