@@ -49,13 +49,13 @@ install:
 - cd /tmp
 - sudo git clone https://github.com/NagiosEnterprises/nagioscore.git -b $NAGIOS_BRANCH
 - cd nagioscore
-- sudo ./configure                                  \
-        --prefix=${NAGIOS_HOME}                  \
-        --exec-prefix=${NAGIOS_HOME}             \
-        --enable-event-broker                    \
-        --with-command-user=${NAGIOS_CMDUSER}    \
-        --with-command-group=${NAGIOS_CMDGROUP}  \
-        --with-nagios-user=${NAGIOS_USER}        \
+- sudo ./configure
+        --prefix=${NAGIOS_HOME}
+        --exec-prefix=${NAGIOS_HOME}
+        --enable-event-broker
+        --with-command-user=${NAGIOS_CMDUSER}
+        --with-command-group=${NAGIOS_CMDGROUP}
+        --with-nagios-user=${NAGIOS_USER}
         --with-nagios-group=${NAGIOS_GROUP}
 
 - sudo make all
