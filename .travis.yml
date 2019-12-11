@@ -152,7 +152,7 @@ install:
 - sudo a2enmod auth_form
 - sudo a2enmod request
 
-- sudo chmod +x /usr/local/bin/start_nagios
+#- sudo chmod +x /usr/local/bin/start_nagios
 - sudo chmod +x /etc/sv/apache/run
 - sudo chmod +x /etc/sv/nagios/run
 - sudo chmod +x /etc/sv/postfix/run
