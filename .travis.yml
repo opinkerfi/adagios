@@ -216,7 +216,7 @@ install:
 #- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
 - cd ~/build/opinkerfi/adagios/adagios
-- sudo ls /opt/nagios/lib/mk-livestatus/livestatus.o
+- ls -l /opt/nagios/lib/mk-livestatus/livestatus.o
 #- python manage.py test
 #- coverage run --source=adagios manage.py test
 #after_success: coveralls
