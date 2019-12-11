@@ -232,6 +232,7 @@ script:
 - cd ~/build/opinkerfi/adagios/adagios
 - ls -l ${NAGIOS_HOME}
 - cat ${NAGIOS_HOME}/etc/nagios.cfg
+- nagios -v ${NAGIOS_HOME}/etc/nagios.cfg
 #- python manage.py test
 #- coverage run --source=adagios manage.py test
 #after_success: coveralls
