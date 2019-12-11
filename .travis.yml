@@ -126,7 +126,7 @@ install:
 - sudo touch /usr/share/snmp/mibs/.foo
 - sudo ln -s /usr/share/snmp/mibs ${NAGIOS_HOME}/libexec/mibs
 - sudo ln -s ${NAGIOS_HOME}/bin/nagios /usr/local/bin/nagios
-- sudo download-mibs
+#- sudo download-mibs
 
 - sudo sed -i 's,/bin/mail,/usr/bin/mail,' ${NAGIOS_HOME}/etc/objects/commands.cfg
 - sudo sed -i 's,/usr/usr,/usr,'           ${NAGIOS_HOME}/etc/objects/commands.cfg
