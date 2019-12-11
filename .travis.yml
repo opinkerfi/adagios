@@ -198,8 +198,20 @@ install:
 - cd ~/build/opinkerfi/adagios/
 - python setup.py build
 - python setup.py install
-- sudo cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
-- sudo cp -r adagios/etc/adagios/adagios.conf /etc/adagios
+
+- sudo mkdir -p /var/lib/adagios
+- sudo chown -R travis:travis /var/lib/adagios
+- sudo mkdir -p /etc/adagios/conf.d
+- sudo cp -r adagios/etc/adagios/adagios.conf /etc/adagios/
+- sudo cp adagios/etc/sudoers.d/adagios /etc/sudoers.d/
+- sudo cp adagios/etc/adagios/conf.d/okconfig.conf /etc/adagios/conf.d/
+
+- sudo chown -R travis:travis /etc/adagios
+- sudo chown -R nagios:nagios /opt/nagios/etc
+
+- sudo mkdir -p /opt/nagios/etc/adagios
+- sudo chown -R nagios:nagios /opt/nagios/etc/
+- sudo chmod -R 775 /opt/nagios/etc/
 
 #- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
