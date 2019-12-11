@@ -157,18 +157,18 @@ install:
 #- sudo chmod +x /etc/sv/nagios/run
 #- sudo chmod +x /etc/sv/postfix/run
 #- sudo chmod +x /etc/sv/rsyslog/run
-- sudo chmod +x /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
+#- sudo chmod +x /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
 
-- cd /opt/nagiosgraph/etc
-- sudo sh fix-nagiosgraph-multiple-selection.sh
+#- cd /opt/nagiosgraph/etc
+#- sudo sh fix-nagiosgraph-multiple-selection.sh
 
-- sudo rm /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
+#- sudo rm /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
 
 
 - export APACHE_LOCK_DIR=/var/run
 - export APACHE_LOG_DIR=/var/log/apache2
 
-- sudo chown -R travis /etc/adagios/
+#- sudo chown -R travis /etc/adagios/
 - sudo usermod -G www-data nagios
 - pip install $DJANGO_VERSION
 - pip install mock
@@ -177,7 +177,8 @@ install:
 - pip install selenium
 #- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
-- cd ~/build/opinkerfi/adagios/adagios
+- ls -l ~/build/opinkerfi/adagios/adagios
+
 #- python manage.py test
 #- coverage run --source=adagios manage.py test
 #after_success: coveralls
