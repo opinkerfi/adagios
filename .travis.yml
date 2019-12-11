@@ -177,9 +177,9 @@ install:
 - pip install selenium
 
 # Livestatus build from source
-- sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+- sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 - sudo apt-get update
-- sudo apt-get install gcc-7 g++-7 librrd-dev rrdtool libboost-filesystem-dev libboost-thread-dev
+- sudo apt-get install -y gcc-7 g++-7 librrd-dev rrdtool libboost-filesystem-dev libboost-thread-dev
 
 - cd /tmp
 - wget https://checkmk.com/support/1.5.0p16/check-mk-raw-1.5.0p16.cre.tar.gz
@@ -193,7 +193,13 @@ install:
 
 # Setja eftirfarandi í config
 #broker_module=/opt/nagios/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live
+- pip install pynag
 
+- cd ~/build/opinkerfi/adagios/
+- python setup.py build
+- python setup.py install
+- sudo cp -r adagios/etc/adagios/conf.d /etc/adagios/conf.d
+- sudo cp -r adagios/etc/adagios/adagios.conf /etc/adagios
 
 #- pynag livestatus --get hosts --columns "name state last_state_change" --limit 9
 script:
