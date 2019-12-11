@@ -153,10 +153,10 @@ install:
 - sudo a2enmod request
 
 #- sudo chmod +x /usr/local/bin/start_nagios
-- sudo chmod +x /etc/sv/apache/run
-- sudo chmod +x /etc/sv/nagios/run
-- sudo chmod +x /etc/sv/postfix/run
-- sudo chmod +x /etc/sv/rsyslog/run
+#- sudo chmod +x /etc/sv/apache/run
+#- sudo chmod +x /etc/sv/nagios/run
+#- sudo chmod +x /etc/sv/postfix/run
+#- sudo chmod +x /etc/sv/rsyslog/run
 - sudo chmod +x /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
 
 - cd /opt/nagiosgraph/etc
