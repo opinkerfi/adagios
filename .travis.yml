@@ -215,6 +215,7 @@ install:
 
 - sudo chmod g+s ${NAGIOS_HOME}  
 - sudo setfacl -R -m group:nagios:rwx -m d:group:nagios:rwx ${NAGIOS_HOME} /etc/okconfig /etc/adagios /var/lib/adagios
+- sudo setfacl -R -m group:travis:rwx -m d:group:travis:rwx ${NAGIOS_HOME} /etc/okconfig /etc/adagios /var/lib/adagios
 
 # Install OKconfig
 - sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
@@ -225,10 +226,11 @@ install:
 - echo "template_directory ${NAGIOS_HOME}/etc/okconfig/templates"  >> /etc/okconfig.conf
 - echo "examples_directory ${NAGIOS_HOME}/etc/okconfig/examples"  >> /etc/okconfig.conf
 - echo "destination_directory ${NAGIOS_HOME}/etc/okconfig" >> /etc/okconfig.conf
-- sudo mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples
-- sudo cp -r /usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
-- sudo cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
+- mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples
+- cp -r /usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
+- cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
 - pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
+- ls -l ${NAGIOS_HOME}/etc/okconfig 
 
 # Configure Adagios
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
