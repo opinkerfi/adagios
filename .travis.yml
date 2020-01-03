@@ -198,7 +198,8 @@ install:
 - sudo make install
 
 #broker_module=/opt/nagios/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live
-- pip install pynag
+#- pip install pynag
+- pip install git+https://github.com/pynag/pynag.git
 
 - cd ~/build/opinkerfi/adagios/
 - python setup.py build
