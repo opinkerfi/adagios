@@ -200,15 +200,14 @@ install:
 - pip install https://github.com/opinkerfi/okconfig/zipball/master || true
 - sudo touch /etc/okconfig.conf
 - sudo chown travis /etc/okconfig.conf
-- mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples
 - echo "nagios_config ${NAGIOS_HOME}/etc/nagios.cfg" >> /etc/okconfig.conf
 - echo "template_directory ${NAGIOS_HOME}/etc/okconfig/templates"  >> /etc/okconfig.conf
 - echo "examples_directory ${NAGIOS_HOME}/etc/okconfig/examples"  >> /etc/okconfig.conf
 - echo "destination_directory ${NAGIOS_HOME}/etc/okconfig" >> /etc/okconfig.conf
+- sudo mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples
 - sudo cp -r /usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
 - sudo cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
 - pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
-#- okconfig init
 
 # Configuration
 - sudo mkdir -p /var/lib/adagios
