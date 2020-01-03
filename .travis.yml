@@ -195,20 +195,6 @@ install:
 - python setup.py build
 - python setup.py install
 
-# Install OKconfig
-- sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
-- pip install https://github.com/opinkerfi/okconfig/zipball/master || true
-- sudo touch /etc/okconfig.conf
-- sudo chown travis /etc/okconfig.conf
-- echo "nagios_config ${NAGIOS_HOME}/etc/nagios.cfg" >> /etc/okconfig.conf
-- echo "template_directory ${NAGIOS_HOME}/etc/okconfig/templates"  >> /etc/okconfig.conf
-- echo "examples_directory ${NAGIOS_HOME}/etc/okconfig/examples"  >> /etc/okconfig.conf
-- echo "destination_directory ${NAGIOS_HOME}/etc/okconfig" >> /etc/okconfig.conf
-- sudo mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples
-- sudo cp -r /usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
-- sudo cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
-- pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
-
 # Configuration
 - sudo mkdir -p /var/lib/adagios
 - sudo chown -R travis:travis /var/lib/adagios
@@ -224,9 +210,27 @@ install:
 - sudo chown -R nagios:nagios ${NAGIOS_HOME}
 - sudo chmod -R 775 ${NAGIOS_HOME}
 
-- sudo setfacl -R -m u:travis:rwx /usr/local/nagios
-- sudo setfacl -R -m g:nagios:rwx /usr/local/nagios
+#- sudo setfacl -R -m u:travis:rwx /usr/local/nagios
+#- sudo setfacl -R -m g:nagios:rwx /usr/local/nagios
 
+- sudo chmod g+s ${NAGIOS_HOME}  
+- sudo setfacl -R -m group:nagios:rwx -m d:group:nagios:rwx ${NAGIOS_HOME} /etc/okconfig /etc/adagios /var/lib/adagios
+
+# Install OKconfig
+- sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
+- pip install https://github.com/opinkerfi/okconfig/zipball/master || true
+- sudo touch /etc/okconfig.conf
+- sudo chown travis /etc/okconfig.conf
+- echo "nagios_config ${NAGIOS_HOME}/etc/nagios.cfg" >> /etc/okconfig.conf
+- echo "template_directory ${NAGIOS_HOME}/etc/okconfig/templates"  >> /etc/okconfig.conf
+- echo "examples_directory ${NAGIOS_HOME}/etc/okconfig/examples"  >> /etc/okconfig.conf
+- echo "destination_directory ${NAGIOS_HOME}/etc/okconfig" >> /etc/okconfig.conf
+- sudo mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples
+- sudo cp -r /usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
+- sudo cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
+- pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
+
+# Configure Adagios
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
 - pynag config --set "process_performance_data=1"
 - pynag config --set 'nagios_binary="/usr/sbin/nagios"' --filename /etc/adagios/adagios.conf
