@@ -4,8 +4,8 @@ python:
 env:
   matrix:
     - DJANGO_VERSION="Django<1.7"
-    #- DJANGO_VERSION="Django<1.8"
-    #- DJANGO_VERSION="Django<1.9"
+    - DJANGO_VERSION="Django<1.8"
+    - DJANGO_VERSION="Django<1.9"
   global:
     - secure=fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
     - NAGIOS_HOME=/usr/local/nagios
@@ -32,11 +32,12 @@ env:
 
 install:
 - whoami
+- sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 - sudo apt-get update
 - sudo apt-get install python-pip python-dev build-essential git unzip -y
 - pip install coveralls
 - sudo apt-get install -y apache2 apache2-utils autoconf automake bc bsd-mailx build-essential dnsutils fping gettext git gperf iputils-ping jq libapache2-mod-php libcache-memcached-perl libcgi-pm-perl libdbd-mysql-perl libdbi-dev libdbi-perl libfreeradius-client-dev libgd2-xpm-dev libgd-gd2-perl libjson-perl libldap2-dev libmysqlclient-dev  libnagios-object-perl libnagios-plugin-perl  libnet-snmp-perl libnet-snmp-perl libnet-tftp-perl libnet-xmpp-perl libpq-dev libredis-perl librrds-perl libssl-dev libswitch-perl libwww-perl m4 netcat parallel php-cli php-gd postfix python-pip rsyslog smbclient snmp snmpd unzip python
-
+- sudo apt-get install -y gcc-7 g++-7 librrd-dev rrdtool libboost-filesystem-dev libboost-thread-dev
 - sudo apt-get clean
 - sudo rm -Rf /var/lib/apt/lists/*
 
@@ -47,6 +48,7 @@ install:
 - ( id -u $NAGIOS_CMDUSER || sudo useradd --system -d $NAGIOS_HOME -g $NAGIOS_CMDGROUP $NAGIOS_CMDUSER )
 
 - sudo usermod -aG nagios travis
+# Install Nagios
 - cd /tmp
 - sudo git clone https://github.com/NagiosEnterprises/nagioscore.git -b $NAGIOS_BRANCH
 - cd nagioscore
@@ -69,6 +71,7 @@ install:
 - sudo make clean
 - cd /tmp && sudo rm -Rf nagioscore
 
+# Install Nagios Plugins
 - cd /tmp
 - sudo git clone https://github.com/nagios-plugins/nagios-plugins.git -b $NAGIOS_PLUGINS_BRANCH
 - cd nagios-plugins
@@ -87,6 +90,7 @@ install:
 - sudo wget -O ${NAGIOS_HOME}/libexec/check_ncpa.py https://raw.githubusercontent.com/NagiosEnterprises/ncpa/v2.0.5/client/check_ncpa.py
 - sudo chmod +x ${NAGIOS_HOME}/libexec/check_ncpa.py
 
+# Install NRPE
 - cd /tmp
 - sudo git clone https://github.com/NagiosEnterprises/nrpe.git -b $NRPE_BRANCH
 - cd nrpe
@@ -100,6 +104,7 @@ install:
 - sudo make clean
 - cd /tmp && sudo rm -Rf nrpe
 
+# Install Nagios Graph
 - cd /tmp
 - sudo git clone https://git.code.sf.net/p/nagiosgraph/git nagiosgraph
 - cd nagiosgraph
@@ -113,6 +118,7 @@ install:
 - sudo cp share/nagiosgraph.ssi ${NAGIOS_HOME}/share/ssi/common-header.ssi
 - cd /tmp && sudo rm -Rf nagiosgraph
 
+# Configuration
 - export DOC_ROOT="DocumentRoot $(echo $NAGIOS_HOME/share)"
 - sudo sed -i "s,DocumentRoot.*,$DOC_ROOT," /etc/apache2/sites-enabled/000-default.conf
 - sudo sed -i "s,</VirtualHost>,<IfDefine ENABLE_USR_LIB_CGI_BIN>\nScriptAlias /cgi-bin/ ${NAGIOS_HOME}/sbin/\n</IfDefine>\n</VirtualHost>," /etc/apache2/sites-enabled/000-default.conf
@@ -152,23 +158,9 @@ install:
 - sudo a2enmod auth_form
 - sudo a2enmod request
 
-#- sudo chmod +x /usr/local/bin/start_nagios
-#- sudo chmod +x /etc/sv/apache/run
-#- sudo chmod +x /etc/sv/nagios/run
-#- sudo chmod +x /etc/sv/postfix/run
-#- sudo chmod +x /etc/sv/rsyslog/run
-#- sudo chmod +x /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
-
-#- cd /opt/nagiosgraph/etc
-#- sudo sh fix-nagiosgraph-multiple-selection.sh
-
-#- sudo rm /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
-
-
 - export APACHE_LOCK_DIR=/var/run
 - export APACHE_LOG_DIR=/var/log/apache2
 
-#- sudo chown -R travis /etc/adagios/
 - sudo usermod -G www-data nagios
 - pip install $DJANGO_VERSION
 - pip install mock
@@ -183,11 +175,8 @@ install:
 #- ls -l /usr/bin/unixcat
 #- ls -l /usr/lib/check_mk/livestatus.o
 
-# Livestatus build from source
-- sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-- sudo apt-get update
-- sudo apt-get install -y gcc-7 g++-7 librrd-dev rrdtool libboost-filesystem-dev libboost-thread-dev
 
+# Install Livestatus
 - cd /tmp
 - wget https://checkmk.com/support/1.5.0p16/check-mk-raw-1.5.0p16.cre.tar.gz
 - tar -zxvf check-mk-raw-1.5.0p16.cre.tar.gz
@@ -197,14 +186,16 @@ install:
 - sudo make
 - sudo make install
 
-#broker_module=/opt/nagios/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live
+# Install Pynag
 #- pip install pynag
 - pip install git+https://github.com/pynag/pynag.git
 
+# Install Adagios
 - cd ~/build/opinkerfi/adagios/
 - python setup.py build
 - python setup.py install
 
+# Configuration
 - sudo mkdir -p /var/lib/adagios
 - sudo chown -R travis:travis /var/lib/adagios
 - sudo mkdir -p /etc/adagios/conf.d
