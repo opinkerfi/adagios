@@ -4,8 +4,8 @@ python:
 env:
   matrix:
     - DJANGO_VERSION="Django<1.7"
-    - DJANGO_VERSION="Django<1.8"
-    - DJANGO_VERSION="Django<1.9"
+#    - DJANGO_VERSION="Django<1.8"
+#    - DJANGO_VERSION="Django<1.9"
   global:
     - secure=fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
     - NAGIOS_HOME=/usr/local/nagios
@@ -250,6 +250,7 @@ script:
 - cd ~/build/opinkerfi/adagios/adagios
 - ls -l ${NAGIOS_HOME}
 - nagios -v ${NAGIOS_HOME}/etc/nagios.cfg
+- cat /etc/okconfig.conf
 #- python manage.py test
 - coverage run --source=adagios manage.py test
 after_success: coveralls
