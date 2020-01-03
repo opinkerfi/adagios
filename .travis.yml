@@ -186,6 +186,16 @@ install:
 - sudo make
 - sudo make install
 
+# Install OKconfig
+- sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
+- pip install https://github.com/opinkerfi/okconfig/zipball/master || true
+- sudo touch /etc/okconfig.conf
+- sudo chown travis /etc/okconfig.conf
+- echo 'nagios_config ${NAGIOS_HOME}/etc/nagios.cfg' >> /etc/okconfig.conf
+- echo 'template_directory ${NAGIOS_HOME}/etc/okconfig/templates'  >> /etc/okconfig.conf
+- echo 'examples_directory ${NAGIOS_HOME}/etc/okconfig/examples'  >> /etc/okconfig.conf
+- echo 'destination_directory ${NAGIOS_HOME}/etc/okconfig' >> /etc/okconfig.conf
+
 # Install Pynag
 #- pip install pynag
 - pip install git+https://github.com/pynag/pynag.git
