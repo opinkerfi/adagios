@@ -3,8 +3,6 @@ python:
 - '2.7'
 env:
   matrix:
-    - DJANGO_VERSION="Django<1.7"
-    - DJANGO_VERSION="Django<1.8"
     - DJANGO_VERSION="Django<1.9"
   global:
     - secure=fNl4/GNkavnuvJVtPEj0PDt23143mtqMzrrv4iHUWfePQpHthMoNRsm5g5z/UTIwgDKqaK/EAxxtH5u1Bfq2Z4HEcpgsy48AI2uXGDZV+z++11XgXmTR9Jejn47iKVJHgIEItIMJYw/3WngP7oqVhd/5qgLcUF5ywBtbEflRSgQ=
@@ -130,33 +128,19 @@ install:
 - sudo make install-init
 - sudo /etc/init.d/npcd start
 
-# Install Nagios Graph
-# - cd /tmp
-# - sudo git clone https://git.code.sf.net/p/nagiosgraph/git nagiosgraph
-# - cd nagiosgraph
-# - sudo ./install.pl --install
-#         --prefix /opt/nagiosgraph
-#         --nagios-user ${NAGIOS_USER}
-#         --www-user ${NAGIOS_USER}
-#         --nagios-perfdata-file ${NAGIOS_HOME}/var/perfdata.log
-#         --nagios-cgi-url /cgi-bin
-
-# - sudo cp share/nagiosgraph.ssi ${NAGIOS_HOME}/share/ssi/common-header.ssi
-# - cd /tmp && sudo rm -Rf nagiosgraph
-
 # Configuration
 - export DOC_ROOT="DocumentRoot $(echo $NAGIOS_HOME/share)"
 - sudo sed -i "s,DocumentRoot.*,$DOC_ROOT," /etc/apache2/sites-enabled/000-default.conf
 - sudo sed -i "s,</VirtualHost>,<IfDefine ENABLE_USR_LIB_CGI_BIN>\nScriptAlias /cgi-bin/ ${NAGIOS_HOME}/sbin/\n</IfDefine>\n</VirtualHost>," /etc/apache2/sites-enabled/000-default.conf
 - sudo ln -s /etc/apache2/mods-available/cgi.load /etc/apache2/mods-enabled/cgi.load
 
-- sudo mkdir -p -m 0755 /usr/share/snmp/mibs
+#- sudo mkdir -p -m 0755 /usr/share/snmp/mibs
 - sudo mkdir -p         ${NAGIOS_HOME}/etc/conf.d
 - sudo mkdir -p         ${NAGIOS_HOME}/etc/monitor
 - sudo mkdir -p -m 700  ${NAGIOS_HOME}/.ssh
 - sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} ${NAGIOS_HOME}/.ssh
-- sudo touch /usr/share/snmp/mibs/.foo
-- sudo ln -s /usr/share/snmp/mibs ${NAGIOS_HOME}/libexec/mibs
+#- sudo touch /usr/share/snmp/mibs/.foo
+#- sudo ln -s /usr/share/snmp/mibs ${NAGIOS_HOME}/libexec/mibs
 - sudo ln -s ${NAGIOS_HOME}/bin/nagios /usr/local/bin/nagios
 #- sudo download-mibs
 
@@ -170,7 +154,6 @@ install:
 
 - echo "checking permissions for nagios"
 - sudo find /usr/local/nagios \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
-#- sudo find /opt/nagiosgraph \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
 
 #- echo "use_timezone=${NAGIOS_TIMEZONE}" >> ${NAGIOS_HOME}/etc/nagios.cfg
 
@@ -193,14 +176,6 @@ install:
 - pip install simplejson
 - pip install paramiko
 - pip install selenium
-
-# Livestatus deb
-#- cd /tmp
-#- wget http://archive.ubuntu.com/ubuntu/pool/universe/c/check-mk/check-mk-livestatus_1.2.6p12-1_amd64.deb
-#- dpkg -i check-mk-livestatus_1.2.6p12-1_amd64.deb
-#- ls -l /usr/bin/unixcat
-#- ls -l /usr/lib/check_mk/livestatus.o
-
 
 # Install Livestatus
 - cd /tmp
@@ -252,9 +227,6 @@ install:
 - cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
 - pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
 - ls -l ${NAGIOS_HOME}/etc/okconfig 
-
-# Configure PNP4NAGIOS
-- pynag config --append "broker_module=${PNP4NAGIOS_MODULE} config_file=${PNP4NAGIOS_CONFIG_FILE}"
 
 # Configure Adagios
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
