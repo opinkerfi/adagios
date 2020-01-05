@@ -17,8 +17,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
-
 from distutils.core import setup
 from distutils.command.build import build
 from distutils.sysconfig import get_python_lib
@@ -43,7 +44,7 @@ def get_filelist(path):
             elif os.path.isdir(relative_path):
                 directories_to_check.append(relative_path)
             else:
-                print "what am i?", i
+                print("what am i?", i)
     return files
 
 template_files = get_filelist('adagios')
