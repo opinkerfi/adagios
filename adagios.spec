@@ -4,7 +4,7 @@
 %endif
 
 %define name adagios
-%define release 2
+%define release 3
 
 Name: adagios
 Version: 1.6.5
