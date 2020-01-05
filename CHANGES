@@ -1,4 +1,4 @@
-Changes in 1.6.4
+Changes in 1.6.5
 ========================
 
 Summary of features:
@@ -10,6 +10,8 @@ Summary of features:
 * Travis build supports Nagios4
 
 * Bugfixes
+
+* Releaser script updated
 
 * Documentation updated
 
