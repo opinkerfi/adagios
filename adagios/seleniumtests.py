@@ -1,5 +1,5 @@
 from django.test import LiveServerTestCase
-from django.utils import unittest
+from django.test import TestCase
 import adagios.settings
 import adagios.utils
 import os
@@ -39,14 +39,18 @@ class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         if not webdriver:
-            raise unittest.SkipTest("No selenium installed")
+            print ('No selenium installed')
+            #return None
+            # raise unittest.SkipTest("No selenium installed")
 
         # Tests for pull requests from forks do not get the SAUCE_USERNAME
         # exposed because of security considerations. Skip selenium tests for
         # those tests
         if os.environ.get('TRAVIS_BUILD_NUMBER') and \
            not os.environ.get('SAUCE_USERNAME'):
-            raise unittest.SkipTest("Travis with no sauce username, skipping")
+            # raise unittest.SkipTest("Travis with no sauce username, skipping")
+            print ('Travis with no sauce username, skipping')
+            #return None
 
         super(SeleniumTestCase, cls).setUpClass()
 
@@ -63,8 +67,10 @@ class SeleniumTestCase(LiveServerTestCase):
                 firefox = webdriver.Firefox()
                 cls.drivers.append(firefox)
         except WebDriverException as error:
-            raise unittest.SkipTest("Exception in running webdriver, skipping " \
-                         "selenium tests: %s" % str(error))
+            print ('Exception in running webdriver, skipping')
+            #return None
+            # raise unittest.SkipTest("Exception in running webdriver, skipping " \
+                        #  "selenium tests: %s" % str(error))
 
         cls.nagios_config = adagios.settings.nagios_config
         cls.environment = adagios.utils.FakeAdagiosEnvironment()

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load url from future %}
+
 {% load i18n %}
 
 {% block title %}{% trans "Audit Log" %}{% endblock %}
@@ -17,7 +17,7 @@
         <button name="git_init" type="post" class="pull-right btn btn-success">{% trans "Init a new git repo" %}</button>
         </form>
     {% endif %}
-    
+
     {% if uncommited_files %}
         <div class="alert alert-warning">{% trans "There are uncommited files in your git repo" %}</div>
         <form method="post" class="form-horizontal">{% csrf_token %}

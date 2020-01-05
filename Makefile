@@ -1,14 +1,14 @@
-VERSION		= 1.6.3
-RELEASE		= 2
+VERSION		= 1.6.4
+RELEASE		= 1
 DATE		= $(shell date)
 NEWRELEASE	= $(shell echo $$(($(RELEASE) + 1)))
 PYTHON		= /usr/bin/python
 
 TOPDIR = $(shell pwd)
 DIRS	= build docs contrib etc examples adagios scripts debian.upstream
-PYDIRS	= adagios debian.upstream 
+PYDIRS	= adagios debian.upstream
 EXAMPLEDIR = examples
-MANPAGES = 
+MANPAGES =
 
 all: rpms
 
@@ -21,7 +21,7 @@ manpage:
 	for manpage in $(MANPAGES); do (pod2man --center=$$manpage --release="" ./docs/$$manpage.pod > ./docs/$$manpage.1); done
 
 
-build: clean 
+build: clean
 	$(PYTHON) setup.py build -f
 
 clean:
@@ -34,7 +34,7 @@ clean:
 	-rm -f etc/version
 
 clean_hard:
-	-rm -rf $(shell $(PYTHON) -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")/adagios 
+	-rm -rf $(shell $(PYTHON) -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")/adagios
 
 
 clean_hardest: clean_rpms
@@ -47,27 +47,27 @@ install_hard: clean_hard install
 
 install_harder: clean_harder install
 
-install_hardest: clean_harder clean_rpms rpms install_rpm 
+install_hardest: clean_harder clean_rpms rpms install_rpm
 
 install_rpm:
 	-rpm -Uvh rpm-build/adagios-$(VERSION)-$(NEWRELEASE)$(shell rpm -E "%{?dist}").noarch.rpm
 
 
-recombuild: install_harder 
+recombuild: install_harder
 
 clean_rpms:
 	-rpm -e adagios
 
-sdist: 
+sdist:
 	$(PYTHON) setup.py sdist
 
 pychecker:
-	-for d in $(PYDIRS); do ($(MAKE) -C $$d pychecker ); done   
+	-for d in $(PYDIRS); do ($(MAKE) -C $$d pychecker ); done
 pyflakes:
-	-for d in $(PYDIRS); do ($(MAKE) -C $$d pyflakes ); done	
+	-for d in $(PYDIRS); do ($(MAKE) -C $$d pyflakes ); done
 
 money: clean
-	-sloccount --addlang "makefile" $(TOPDIR) $(PYDIRS) $(EXAMPLEDIR) 
+	-sloccount --addlang "makefile" $(TOPDIR) $(PYDIRS) $(EXAMPLEDIR)
 
 testit: clean
 	-cd test; sh test-it.sh

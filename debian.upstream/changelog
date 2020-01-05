@@ -1,3 +1,33 @@
+adagios (1.6.4-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Gardar Thorsteinsson <gardart@gmail.com>  Fri, 08 Mar 2019 14:41:43 +0000
+
+adagios (1.6.4-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Gardar Thorsteinsson <gardart@gmail.com>  Fri, 08 Mar 2019 14:22:22 +0000
+
+adagios (1.6.4-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Gardar Thorsteinsson <gardart@gmail.com>  Fri, 08 Mar 2019 13:34:34 +0000
+
+adagios (1.6.3-2) unstable; urgency=low
+
+  * New upstream version
+
+ -- Gardar Thorsteinsson <gardart@gmail.com>  Fri, 08 Mar 2019 13:29:52 +0000
+
+adagios (1.6.4-2) unstable; urgency=low
+
+  * New upstream version
+
+ -- Gardar Thorsteinsson <gardart@gmail.com>  Fri, 08 Mar 2019 13:19:18 +0000
+
 adagios (1.6.3-2) unstable; urgency=low
 
   * New upstream version
@@ -66,12 +96,12 @@ adagios (1.2.8) unstable; urgency=low
 
 adagios (1.2.7) unstable; urgency=low
 
-  * Upstream version updated 
+  * Upstream version updated
 
  -- Pall Sigurdsson <palli@opensource.is>  Mon, 13 Jan 2014 21:54:00 +0000
 
 adagios (1.2.3) unstable; urgency=low
 
-  * Initial packaging. 
+  * Initial packaging.
 
  -- Pall Sigurdsson <palli@opensource.is>  Fri, 13 Aug 2013 09:54:00 +0000

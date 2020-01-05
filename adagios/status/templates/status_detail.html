@@ -1,5 +1,5 @@
 {% extends "base_status.html" %}
-{% load url from future %}
+
 {% load adagiostags %}
 {% load static %}
 {% load i18n %}
@@ -196,7 +196,7 @@
               {% blocktrans with ot=my_object.object_type ci=my_object.check_interval %}
               This {{ ot }} is checked every <a href="#">{{ ci }}</a> minutes.
               {% endblocktrans %}
-              
+
               {% blocktrans with mca=my_object.max_check_attempts ri=my_object.retry_interval %}
               When a problem occurs it will be checked <a href="#">{{ mca }}</a> times
               every <a href="#">{{ ri }}</a> minutes before going to
@@ -544,7 +544,7 @@
           </div>
         </div>
         {% endif %}
-        
+
         </div>
       </div>
 
