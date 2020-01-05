@@ -5,6 +5,8 @@ Summary of features:
 
 * Django < 1.9 support
 
+* Pynag > 1 support
+
 * Travis build supports Nagios4
 
 * Bugfixes
