@@ -5,6 +5,10 @@ Summary of features:
 
 * Django < 1.9 support
 
+* Travis build supports Nagios4
+
+* Bugfixes
+
 * Documentation updated
 
 Changes in 1.6.3
