@@ -22,13 +22,14 @@ env:
     - DEBIAN_FRONTEND=noninteractive
     - NG_NAGIOS_CONFIG_FILE=${NAGIOS_HOME}/etc/nagios.cfg
     - NG_CGI_DIR=${NAGIOS_HOME}/sbin
-    - NG_WWW_DIR=${NAGIOS_HOME}/share/nagiosgraph
     - NG_CGI_URL=/cgi-bin
     - NAGIOS_BRANCH=nagios-4.4.3
     - NAGIOS_PLUGINS_BRANCH=release-2.2.1
     - NRPE_BRANCH=nrpe-3.2.1
     - APACHE_LOCK_DIR=/var/run
     - APACHE_LOG_DIR=/var/log/apache2
+    - PNP4NAGIOS_MODULE=${NAGIOS_HOME}/lib/npcdmod.o
+    - PNP4NAGIOS_CONFIG_FILE=${NAGIOS_HOME}/etc/pnp/npcd.cfg
 
 install:
 - whoami
@@ -104,19 +105,44 @@ install:
 - sudo make clean
 - cd /tmp && sudo rm -Rf nrpe
 
-# Install Nagios Graph
+# Install PNP4Nagios
+# Build/Install PNP4Nagios
 - cd /tmp
-- sudo git clone https://git.code.sf.net/p/nagiosgraph/git nagiosgraph
-- cd nagiosgraph
-- sudo ./install.pl --install
-        --prefix /opt/nagiosgraph
-        --nagios-user ${NAGIOS_USER}
-        --www-user ${NAGIOS_USER}
-        --nagios-perfdata-file ${NAGIOS_HOME}/var/perfdata.log
-        --nagios-cgi-url /cgi-bin
+- sudo wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.24.tar.gz
+- sudo tar -xzvf pnp4nagios-0.6.24.tar.gz
+- cd pnp4nagios-0.6.24
+- sudo ./configure
+        --prefix=${NAGIOS_HOME} 
+        --with-nagios-user=${NAGIOS_USER} 
+        --with-nagios-group=${NAGIOS_GROUP} 
+        --sysconfdir=${NAGIOS_HOME}/etc/pnp
+        --exec-prefix=${NAGIOS_HOME}
+        --datarootdir=${NAGIOS_HOME}/share/pnp 
+        --with-rrdtool=/usr/bin/rrdtool
+        --sysconfdir=${NAGIOS_HOME}/etc/pnp 
+        --with-perfdata-dir=${NAGIOS_HOME}/share/perfdata
+        --with-perfdata-logfile=${NAGIOS_HOME}/var/perfdata.log
+        --with-perfdata-spool-dir=${NAGIOS_HOME}/var/spool/perfdata
+- sudo make all
+- sudo make install
+- sudo make install-webconf
+- sudo make install-config
+- sudo make install-init
+- sudo /etc/init.d/npcd start
 
-- sudo cp share/nagiosgraph.ssi ${NAGIOS_HOME}/share/ssi/common-header.ssi
-- cd /tmp && sudo rm -Rf nagiosgraph
+# Install Nagios Graph
+# - cd /tmp
+# - sudo git clone https://git.code.sf.net/p/nagiosgraph/git nagiosgraph
+# - cd nagiosgraph
+# - sudo ./install.pl --install
+#         --prefix /opt/nagiosgraph
+#         --nagios-user ${NAGIOS_USER}
+#         --www-user ${NAGIOS_USER}
+#         --nagios-perfdata-file ${NAGIOS_HOME}/var/perfdata.log
+#         --nagios-cgi-url /cgi-bin
+
+# - sudo cp share/nagiosgraph.ssi ${NAGIOS_HOME}/share/ssi/common-header.ssi
+# - cd /tmp && sudo rm -Rf nagiosgraph
 
 # Configuration
 - export DOC_ROOT="DocumentRoot $(echo $NAGIOS_HOME/share)"
@@ -142,9 +168,9 @@ install:
 - sudo rm -rf /etc/rsyslog.d /etc/rsyslog.conf
 - sudo rm -rf /etc/sv/getty-5
 
-- echo "checking permissions for nagios & nagiosgraph"
+- echo "checking permissions for nagios"
 - sudo find /usr/local/nagios \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
-- sudo find /opt/nagiosgraph \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
+#- sudo find /opt/nagiosgraph \! -user ${NAGIOS_USER} -exec sudo chown ${NAGIOS_USER}:${NAGIOS_GROUP} '{}' +
 
 #- echo "use_timezone=${NAGIOS_TIMEZONE}" >> ${NAGIOS_HOME}/etc/nagios.cfg
 
@@ -226,6 +252,9 @@ install:
 - cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
 - pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
 - ls -l ${NAGIOS_HOME}/etc/okconfig 
+
+# Configure PNP4NAGIOS
+- pynag config --append "broker_module=${PNP4NAGIOS_MODULE} config_file=${PNP4NAGIOS_CONFIG_FILE}"
 
 # Configure Adagios
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
