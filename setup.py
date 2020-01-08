@@ -86,12 +86,12 @@ class adagios_build(build):
 setup(name=app_name,
     version=version,
     description='Web Based Nagios Configuration',
-    author='Pall Sigurdsson, Tomas Edwardsson',
-    author_email='palli@opensource.is',
+    author='Pall Sigurdsson, Tomas Edwardsson, Gardar Thorsteinsson',
+    author_email='support@opinkerfi.is',
     url='https://adagios.opensource.is/',
     packages=['adagios'],
     package_data={'adagios': data_files},
-    install_requires=['django<1.9', 'pynag>0.9.1'],
+    install_requires=['django<1.9', 'pynag>0.9.1', 'future'],
     cmdclass=dict(build=adagios_build),
 
 )
