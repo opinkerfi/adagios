@@ -1,6 +1,7 @@
 language: python
 python:
 - '2.7'
+- '3.7'
 env:
   matrix:
     - DJANGO_VERSION="Django<1.9"
@@ -110,14 +111,14 @@ install:
 - sudo tar -xzvf pnp4nagios-0.6.24.tar.gz
 - cd pnp4nagios-0.6.24
 - sudo ./configure
-        --prefix=${NAGIOS_HOME} 
-        --with-nagios-user=${NAGIOS_USER} 
-        --with-nagios-group=${NAGIOS_GROUP} 
+        --prefix=${NAGIOS_HOME}
+        --with-nagios-user=${NAGIOS_USER}
+        --with-nagios-group=${NAGIOS_GROUP}
         --sysconfdir=${NAGIOS_HOME}/etc/pnp
         --exec-prefix=${NAGIOS_HOME}
-        --datarootdir=${NAGIOS_HOME}/share/pnp 
+        --datarootdir=${NAGIOS_HOME}/share/pnp
         --with-rrdtool=/usr/bin/rrdtool
-        --sysconfdir=${NAGIOS_HOME}/etc/pnp 
+        --sysconfdir=${NAGIOS_HOME}/etc/pnp
         --with-perfdata-dir=${NAGIOS_HOME}/share/perfdata
         --with-perfdata-logfile=${NAGIOS_HOME}/var/perfdata.log
         --with-perfdata-spool-dir=${NAGIOS_HOME}/var/spool/perfdata
@@ -226,7 +227,7 @@ install:
 - cp -r /usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
 - cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
 - pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
-- ls -l ${NAGIOS_HOME}/etc/okconfig 
+- ls -l ${NAGIOS_HOME}/etc/okconfig
 
 # Configure Adagios
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
