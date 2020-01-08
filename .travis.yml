@@ -172,6 +172,7 @@ install:
 - export APACHE_LOG_DIR=/var/log/apache2
 
 - sudo usermod -G www-data nagios
+- pip install future
 - pip install $DJANGO_VERSION
 - pip install mock
 - pip install simplejson
