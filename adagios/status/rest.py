@@ -21,7 +21,12 @@ Convenient stateless functions for the status module. These are meant for progra
 with status of Nagios.
 
 """
+from __future__ import division
+from __future__ import print_function
 
+from past.builtins import cmp
+from builtins import str
+from past.utils import old_div
 import time
 import pynag.Control.Command
 import pynag.Model
@@ -60,7 +65,7 @@ def services_dt(request, fields=None, **kwargs):
         'aaData': []
     }
     for service in services:
-        result['aaData'].append(service.values())
+        result['aaData'].append(list(service.values()))
     return result
 
 
@@ -75,7 +80,7 @@ def emails(request, *args, **kwargs):
     """ Returns a list of all emails of all contacts
     """
     l = adagios.status.utils.livestatus(request)
-    return map(lambda x: x['email'], l.get_contacts('Filter: email !='))
+    return [x['email'] for x in l.get_contacts('Filter: email !=')]
 
 
 def acknowledge_many(hostlist, servicelist, sticky=1, notify=1, persistent=0, author="adagios", comment="acknowledged by Adagios"):
@@ -441,9 +446,9 @@ def autocomplete(request, q):
     services = adagios.status.utils.get_services(request, service_description__contains=q)
     hostgroups = adagios.status.utils.get_hostgroups(request, hostgroup_name__contains=q)
 
-    result['hosts'] = sorted(set(map(lambda x: x['name'], hosts)))
-    result['hostgroups'] = sorted(set(map(lambda x: x['name'], hostgroups)))
-    result['services'] = sorted(set(map(lambda x: x['description'], services)))
+    result['hosts'] = sorted(set([x['name'] for x in hosts]))
+    result['hostgroups'] = sorted(set([x['name'] for x in hostgroups]))
+    result['services'] = sorted(set([x['description'] for x in services]))
 
     return result
 
@@ -478,7 +483,7 @@ def top_alert_producers(request, limit=5, start_time=None, end_time=None):
     for i in log:
         if 'host_name' in i and 'state' in i and i['state'] > 0:
             top_alert_producers[i['host_name']] += 1
-    top_alert_producers = top_alert_producers.items()
+    top_alert_producers = list(top_alert_producers.items())
     top_alert_producers.sort(cmp=lambda a, b: cmp(a[1], b[1]), reverse=True)
     if limit > len(top_alert_producers):
         top_alert_producers = top_alert_producers[:int(limit)]
@@ -524,8 +529,8 @@ def state_history(
     elif object_type == 'hostgroup':
         hg = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name)
         hosts = hg.get_effective_hosts()
-        hostnames = map(lambda x: x.host_name, hosts)
-        log_entries = filter(lambda x: x['host_name'] in hostnames, log_entries)
+        hostnames = [x.host_name for x in hosts]
+        log_entries = [x for x in log_entries if x['host_name'] in hostnames]
     else:
         raise Exception(_("Unsupported object type: %s") % object_type)
 
@@ -546,7 +551,7 @@ def state_history(
         css_hint[2] = 'danger'
         css_hint[3] = 'info'
         for i in log:
-            i['duration_percent'] = 100 * i['duration'] / total_duration
+            i['duration_percent'] = old_div(100 * i['duration'], total_duration)
             i['bootstrap_status'] = css_hint[i['state']]
 
     return log_entries
@@ -565,7 +570,7 @@ def _get_service_model(host_name, service_description=None):
     """
     try:
         return pynag.Model.Service.objects.get_by_shortname("%s/%s" % (host_name, service_description))
-    except KeyError, e:
+    except KeyError as e:
         host = pynag.Model.Host.objects.get_by_shortname(host_name)
         for i in host.get_effective_services():
             if i.service_description == service_description:
@@ -602,7 +607,7 @@ def update_check_command(host_name, service_description=None, **kwargs):
     """ Saves all custom variables of a given service
     """
     try:
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
             if service_description is None or service_description == '':
                 obj = pynag.Model.Host.objects.get_by_shortname(host_name)
             else:
@@ -620,7 +625,7 @@ def get_business_process_names():
     """ Returns all configured business processes
     """
     import adagios.businessprocess
-    return map(lambda x: x.name, adagios.businessprocess.get_all_processes())
+    return [x.name for x in adagios.businessprocess.get_all_processes()]
 
 
 def get(request, object_type, *args, **kwargs):
@@ -629,8 +634,7 @@ def get(request, object_type, *args, **kwargs):
         object_type += 's'
     if 'name__contains' in kwargs and object_type == 'services':
         name = str(kwargs['name__contains'])
-        livestatus_arguments = filter(
-            lambda x: x.startswith('name'), livestatus_arguments)
+        livestatus_arguments = [x for x in livestatus_arguments if x.startswith('name')]
         livestatus_arguments.append('Filter: host_name ~ %s' % name)
         livestatus_arguments.append('Filter: description ~ %s' % name)
         livestatus_arguments.append('Or: 2')
@@ -752,7 +756,7 @@ def metrics(request, **kwargs):
     services = adagios.status.utils.get_services(request, fields=fields, **kwargs)
     for service in services:
         metrics = pynag.Utils.PerfData(service['perf_data']).metrics
-        metrics = filter(lambda x: x.is_valid(), metrics)
+        metrics = [x for x in metrics if x.is_valid()]
         for metric in metrics:
             metric_dict = {
                 'host_name': service['host_name'],
@@ -777,7 +781,7 @@ def metric_names(request, **kwargs):
     services = adagios.status.utils.get_services(request, fields=fields, **kwargs)
     for service in services:
         metrics = pynag.Utils.PerfData(service['perf_data']).metrics
-        metrics = filter(lambda x: x.is_valid(), metrics)
+        metrics = [x for x in metrics if x.is_valid()]
         for metric in metrics:
             metric_names.add(metric.label)
 
@@ -789,13 +793,13 @@ def metric_names(request, **kwargs):
     return result
 
 def wait(table, WaitObject, WaitCondition=None, WaitTrigger='check', **kwargs):
-    print _("Lets wait for"), locals()
+    print(_("Lets wait for"), locals())
     if not WaitCondition:
         WaitCondition = "last_check > %s" % int(time.time()-1)
     livestatus = adagios.status.utils.livestatus(None)
-    print _("livestatus ok")
+    print(_("livestatus ok"))
     result = livestatus.get(table, 'Stats: state != 999', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
-    print _("ok no more waiting for "), WaitObject
+    print(_("ok no more waiting for "), WaitObject)
     return result
 
 
@@ -808,13 +812,13 @@ def wait_many(hostlist, servicelist, WaitCondition=None, WaitTrigger='check', **
             continue
         WaitObject = host
         livestatus.get('hosts', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
-        print WaitObject
+        print(WaitObject)
     for service in servicelist.split(';'):
         if not service:
             continue
         WaitObject = service.replace(',', ';')
         livestatus.get('services', WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
-        print WaitObject
+        print(WaitObject)
 
 
 def toggle_backend_visibility(request, backend_name):

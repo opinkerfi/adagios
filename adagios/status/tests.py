@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
 from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _

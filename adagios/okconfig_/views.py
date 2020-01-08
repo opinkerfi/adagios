@@ -68,7 +68,7 @@ def addgroup(request):
                     group_name=group_name, alias=alias, force=force)
                 c['group_name'] = group_name
                 return addcomplete(request, c)
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(_("error adding group: %s") % e)
         else:
             c['errors'].append(_('Could not validate input'))
@@ -105,7 +105,7 @@ def addhost(request):
                                                  force=force, templates=templates)
                 c['host_name'] = host_name
                 return addcomplete(request, c)
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(_("error adding host: %s") % e)
         else:
             c['errors'].append(_('Could not validate input'))
@@ -138,7 +138,7 @@ def addtemplate(request, host_name=None):
                 c['messages'].append(
                     _("Template was successfully added to host."))
                 return HttpResponseRedirect(reverse('adagios.okconfig_.views.edit', args=[host_name]))
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(e)
         else:
             c['errors'].append(_("Could not validate form"))
@@ -169,13 +169,13 @@ def addservice(request):
             c['my_object'] = new_service
 
             # Add custom macros if any were specified
-            for k, v in form.data.items():
+            for k, v in list(form.data.items()):
                 if k.startswith("_") or k.startswith('service_description'):
                     new_service[k] = v
             try:
                 new_service.save()
                 return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': new_service.get_id()}))
-            except IOError, e:
+            except IOError as e:
                 c['errors'].append(e)
         else:
             c['errors'].append(_("Could not validate form"))
@@ -188,7 +188,7 @@ def verify_okconfig(request):
     c = {}
     c['errors'] = []
     c['okconfig_checks'] = okconfig.verify()
-    for i in c['okconfig_checks'].values():
+    for i in list(c['okconfig_checks'].values()):
         if i == False:
             c['errors'].append(
                 _('There seems to be a problem with your okconfig installation'))
@@ -237,7 +237,7 @@ def install_agent(request):
                         c['hint'] = _("No nsclient copy found ")
                     c['stdout'].append(i)
                 c['stdout'] = '\n'.join(c['stdout'])
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(e)
         else:
             c['errors'].append(_('invalid input'))
@@ -259,7 +259,7 @@ def edit(request, host_name):
 
     try:
         c['myhost'] = Model.Host.objects.get_by_shortname(host_name)
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Host %s not found") % e)
         return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
     # Get all services of that host that contain a service_description
@@ -280,7 +280,7 @@ def edit(request, host_name):
                         form.save()
                         c['messages'].append(
                             _("'%s' successfully saved.") % service.get_description())
-                except Exception, e:
+                except Exception as e:
                     c['errors'].append(
                         _("Failed to save service %(service)s: %(exc)s") % {'service': service.get_description(), 'exc': e})
             else:
@@ -314,7 +314,7 @@ def scan_network(request):
     if not okconfig.is_valid():
         return verify_okconfig(request)
     if request.method == 'GET':
-            if request.GET.has_key('network_address'):
+            if 'network_address' in request.GET:
                 initial = request.GET
             else:
                 my_ip = okconfig.network_scan.get_my_ip_address()
@@ -332,6 +332,6 @@ def scan_network(request):
                     network)
                 for i in c['scan_results']:
                     i.check()
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(_("Error running scan"))
     return render_to_response('scan_network.html', c, context_instance=RequestContext(request))

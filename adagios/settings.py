@@ -17,6 +17,7 @@
 
 # Django settings for adagios project.
 
+from past.builtins import execfile
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 USE_TZ = True
@@ -302,7 +303,7 @@ def reload_configfile(adagios_configfile=None):
         configfiles = glob(include)
         for configfile in configfiles:
             execfile(configfile, globals())
-    except IOError, e:
+    except IOError as e:
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
 reload_configfile()
@@ -324,7 +325,7 @@ if not django_secret_key:
         data = "\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n" % SECRET_KEY
         with open(adagios_configfile, "a") as config_fh:
             config_fh.write(data)
-    except Exception, e:
+    except Exception as e:
         warn("ERROR: Got %s while trying to save django secret_key in %s" % (type(e), adagios_configfile))
 
 else:
@@ -337,7 +338,7 @@ if enable_status_view:
 if enable_bi:
     plugins['bi'] = 'adagios.bi'
 
-for k, v in plugins.items():
+for k, v in list(plugins.items()):
     INSTALLED_APPS.append(v)
 
 # default preferences, for new users or when they are not available

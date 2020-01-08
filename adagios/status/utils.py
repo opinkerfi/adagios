@@ -20,6 +20,10 @@
 # Utility functions for the status app. These are mostly used by
 # adagios.status.views
 
+from __future__ import division
+from past.builtins import cmp
+from builtins import str
+from past.utils import old_div
 import pynag.Utils
 import pynag.Parsers
 import adagios.settings
@@ -89,7 +93,7 @@ def get_all_backends():
     # TODO: Properly support multiple instances, using split here is not a good idea
     backends = adagios.settings.livestatus_path or ''
     backends = backends.split(',')
-    backends = map(lambda x: x.strip(), backends)
+    backends = [x.strip() for x in backends]
     return backends
 
 
@@ -110,7 +114,7 @@ def livestatus(request):
         try:
             user = userdata.User(request)
             if user.disabled_backends is not None:
-                backends = filter(lambda x: x not in user.disabled_backends, backends)
+                backends = [x for x in backends if x not in user.disabled_backends]
             clear_notification("userdata problem")
         except Exception as e:
             message = "%s: %s" % (type(e), str(e))
@@ -169,11 +173,11 @@ def add_statistics_to_hosts(result):
             try:
                 total = float(total)
                 host['health'] = float(ok) / total * 100.0
-                host['percent_ok'] = ok / total * 100
-                host['percent_warn'] = warn / total * 100
-                host['percent_crit'] = crit / total * 100
-                host['percent_unknown'] = unknown / total * 100
-                host['percent_pending'] = pending / total * 100
+                host['percent_ok'] = old_div(ok, total) * 100
+                host['percent_warn'] = old_div(warn, total) * 100
+                host['percent_crit'] = old_div(crit, total) * 100
+                host['percent_unknown'] = old_div(unknown, total) * 100
+                host['percent_pending'] = old_div(pending, total) * 100
             except ZeroDivisionError:
                 host['health'] = 'n/a'
         except Exception:
@@ -288,7 +292,7 @@ def get_hosts(request, fields=None, *args, **kwargs):
         fields = _DEFAULT_HOST_COLUMNS
 
     # fields should be a list, lets create a Column: query for livestatus
-    if isinstance(fields, (str, unicode)):
+    if isinstance(fields, str):
         fields = fields.split(',')
 
     query.set_columns(*fields)
@@ -478,11 +482,11 @@ def get_statistics(request, *args, **kwargs):
 
     # Calculate percentage of hosts/services that are "ok"
     try:
-        c['service_totals_percent'] = map(lambda x: float(100.0 * x / c['total_services']), c['service_totals'])
+        c['service_totals_percent'] = [float(old_div(100.0 * x, c['total_services'])) for x in c['service_totals']]
     except ZeroDivisionError:
         c['service_totals_percent'] = [0, 0, 0, 0]
     try:
-        c['host_totals_percent'] = map(lambda x: float(100.0 * x / c['total_hosts']), c['host_totals'])
+        c['host_totals_percent'] = [float(old_div(100.0 * x, c['total_hosts'])) for x in c['host_totals']]
     except ZeroDivisionError:
         c['host_totals_percent'] = [0, 0, 0, 0]
     

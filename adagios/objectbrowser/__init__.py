@@ -48,5 +48,5 @@ def startup():
 try:
     import pynag.Model
     startup()
-except Exception, e:
+except Exception as e:
     pass

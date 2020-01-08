@@ -58,7 +58,7 @@ class LiveStatusTestCase(TestCase):
             json_data = json.loads(response.content)
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
             self.assertEqual(True, 'addresslist' in json_data, _("Expected 'addresslist' to appear in response"))
-        except KeyError, e:
+        except KeyError as e:
             self.assertEqual(True, _("Unhandled exception while loading %(path)s: %(exc)s") % {'path': path, 'exc': e})
 
     def testGetAllHostsViaJSON(self):
@@ -70,7 +70,7 @@ class LiveStatusTestCase(TestCase):
         json_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
         self.assertEqual(['ok_host'], [x['name'] for x in json_data])
-        self.assertEqual(['name', 'backend'], json_data[0].keys())
+        self.assertEqual(['name', 'backend'], list(json_data[0].keys()))
 
     def loadPage(self, url):
         """ Load one specific page, and assert if return code is not 200 """
@@ -78,5 +78,5 @@ class LiveStatusTestCase(TestCase):
             c = Client()
             response = c.get(url)
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
-        except Exception, e:
+        except Exception as e:
             self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(exc)s") % {'url': url, 'exc': e})

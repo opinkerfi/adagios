@@ -48,7 +48,7 @@ def get_filelist(path):
     return files
 
 template_files = get_filelist('adagios')
-data_files = map(lambda x: x.replace('adagios/', '', 1), template_files)
+data_files = [x.replace('adagios/', '', 1) for x in template_files]
 
 
 class adagios_build(build):
