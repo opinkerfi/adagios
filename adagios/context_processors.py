@@ -90,7 +90,7 @@ def on_page_load(request):
 
 def update_global_variables():
     """Updates all required global variables."""
-    pynag.Model.cfg_file = adagios.settings.nagios_config
+    pynag.Model.config.cfg_file = adagios.settings.nagios_config
 
 
 def get_current_time(request):
@@ -267,7 +267,6 @@ def check_destination_directory(request):
     """ Check that adagios has a place to store new objects """
     dest = settings.destination_directory
     dest_dir_was_found = False
-
     # If there are problems with finding nagios.cfg, we don't
     # need to display any errors here regarding destination_directories
     try:
@@ -281,7 +280,7 @@ def check_destination_directory(request):
             dest_dir_was_found = True
     if not dest_dir_was_found:
         add_notification(level="warning", notification_id="dest_dir",
-                         message=_("Destination for new objects (%s) is not defined in nagios.cfg") % dest)
+                         message=_("Destination for new objects (%s) is not defined in %s") % (dest, pynag.Model.config.cfg_file))
     elif not os.path.isdir(dest):
         add_notification(level="warning", notification_id="dest_dir",
                          message=_("Destination directory for new objects (%s) is not found. Please create it.") % dest)
