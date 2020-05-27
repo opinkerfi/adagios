@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+#from __future__ import unicode_literals
 from builtins import str
 from past.builtins import basestring
 from django import forms
@@ -169,7 +169,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         if value is None:
             return []
-        if isinstance(value, str):
+        if isinstance(u'value', str):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields
