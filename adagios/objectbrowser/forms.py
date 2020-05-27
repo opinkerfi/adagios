@@ -169,7 +169,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         if value is None:
             return []
-        if isinstance(u'value', str):
+        if isinstance(value, basestring):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields

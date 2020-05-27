@@ -21,7 +21,9 @@
 # adagios.status.views
 
 from __future__ import division
+#from __future__ import unicode_literals
 from past.builtins import cmp
+from past.builtins import basestring
 from builtins import str
 from past.utils import old_div
 import pynag.Utils
@@ -292,7 +294,10 @@ def get_hosts(request, fields=None, *args, **kwargs):
         fields = _DEFAULT_HOST_COLUMNS
 
     # fields should be a list, lets create a Column: query for livestatus
-    if isinstance(fields, str):
+#    if isinstance(fields, str):
+#        fields = fields.split(',')
+
+    if isinstance(fields, basestring):
         fields = fields.split(',')
 
     query.set_columns(*fields)
