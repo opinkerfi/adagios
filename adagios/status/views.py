@@ -369,12 +369,12 @@ def _get_network_parents(request, host_name):
     result = []
     backend = request.GET.get('backend', None)
     livestatus = adagios.status.utils.livestatus(request)
-    if isinstance(host_name, str):
+    if isinstance(u'host_name', str):
         host_name = smart_str(host_name)
 
-    if isinstance(host_name, str):
+    if isinstance(u'host_name', str):
         host = livestatus.get_host(host_name, backend)
-    elif isinstance(host_name, dict):
+    elif isinstance(u'host_name', dict):
         host = host_name
     else:
         raise KeyError(
