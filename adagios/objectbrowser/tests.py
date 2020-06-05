@@ -16,7 +16,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _
@@ -135,7 +137,7 @@ class TestPynagForm(TestCase):
         # See if the output more or less makes sense
         search_string_re = '<input[^>]* name="advanced-host_name"[^>]* value="{host_name}"'
         search_string_re = search_string_re.format(host_name=host_name)
-        self.assertTrue(re.search(search_string_re, response.content))
+        self.assertTrue(re.search(b'search_string_re', response.content))
 
         # Check the actual form we were sent
         form = response.context['form']

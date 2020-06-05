@@ -334,9 +334,11 @@ else:
 ALLOWED_INCLUDE_ROOTS = (serverside_includes,)
 
 if enable_status_view:
-    plugins['status'] = 'adagios.status'
+    #plugins['status'] = 'adagios.status'
+    plugins['status'] = 'status'
 if enable_bi:
-    plugins['bi'] = 'adagios.bi'
+    #plugins['bi'] = 'adagios.bi'
+    plugins['bi'] = 'bi'
 
 for k, v in list(plugins.items()):
     INSTALLED_APPS.append(v)

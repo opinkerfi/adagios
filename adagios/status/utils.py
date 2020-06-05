@@ -31,6 +31,7 @@ import pynag.Parsers
 import adagios.settings
 from adagios.misc.rest import add_notification, clear_notification
 import simplejson as json
+import django.utils.six
 
 from collections import defaultdict
 from adagios import userdata
@@ -299,6 +300,9 @@ def get_hosts(request, fields=None, *args, **kwargs):
 
     if isinstance(fields, basestring):
         fields = fields.split(',')
+
+#    if isinstance(fields, six.string_types):
+#        fields = fields.split(',')
 
     query.set_columns(*fields)
     l = livestatus(request)

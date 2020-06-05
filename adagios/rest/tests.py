@@ -21,12 +21,14 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-#from __future__ import unicode_literals
+from __future__ import unicode_literals
+#from django.utils.encoding import force_text
 from builtins import str
 from django.test import TestCase
-from django.test.client import Client
+from django.test.client import Client, RequestFactory
 from django.utils.translation import ugettext as _
 import json
+import sys
 
 import adagios.utils
 
@@ -56,7 +58,14 @@ class LiveStatusTestCase(TestCase):
         try:
             c = Client()
             response = c.post(path=path, data=data)
-            json_data = json.loads(response.content)
+            response_content = response.content
+            #json_data = json.loads(response_content)
+           # json_data = json.loads(response_content)
+            #json_data = json.loads(response.content)
+            if sys.version_info[0] < 3:
+                json_data = json.loads(response.content)
+            else:
+                json_data = json.loads(response.content.decode('utf-8'))
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
             self.assertEqual(True, 'addresslist' in json_data, _("Expected 'addresslist' to appear in response"))
         except KeyError as e:
