@@ -19,7 +19,7 @@
 
 #from __future__ import unicode_literals
 from builtins import str
-from past.builtins import basestring
+from past.builtins import six.string_types
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
@@ -32,6 +32,7 @@ from adagios.objectbrowser.help_text import object_definitions
 from adagios.forms import AdagiosForm
 import adagios.misc.rest
 import adagios.settings
+import six
 
 # These fields are special, they are a comma seperated list, and may or
 # may not have +/- in front of them.
@@ -131,7 +132,7 @@ class PynagAutoCompleteField(forms.CharField):
         """
         if value == 'null':
             return value
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.string_types):
             a = AttributeList(value)
             self.__prefix = a.operator
             a.operator = ''
@@ -169,7 +170,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         if value is None:
             return []
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields
