@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 from past.builtins import cmp
+from future.utils import string_types
 from builtins import str
 from builtins import map
 from past.utils import old_div
@@ -264,7 +265,7 @@ def service_detail(request, host_name, service_description):
     today = now - seconds_passed_today  # midnight of today
 
     try:
-        c['host'] = my_host = livestatus.get_host(host_name, backend)
+        c['host'] = my_host = livestatus.get_host(host_name.decode('utf-8'), backend)
         my_host['object_type'] = 'host'
         my_host['short_name'] = my_host['name']
     except IndexError:
@@ -280,7 +281,7 @@ def service_detail(request, host_name, service_description):
     else:
         try:
             c['service'] = my_service = livestatus.get_service(
-                host_name, service_description, backend=backend)
+                host_name.decode('utf-8'), service_description.decode('utf-8'), backend=backend)
             my_service['object_type'] = 'service'
             c['service_description'] = service_description
             my_service['short_name'] = "%s/%s" % (

@@ -21,9 +21,10 @@
 # adagios.status.views
 
 from __future__ import division
+from future.utils import string_types
 #from __future__ import unicode_literals
 from past.builtins import cmp
-from past.builtins import six.string_types
+#from past.builtins import six.string_types
 from builtins import str
 from past.utils import old_div
 import pynag.Utils
@@ -35,7 +36,7 @@ import django.utils.six
 
 from collections import defaultdict
 from adagios import userdata
-import six
+#import six
 
 state = defaultdict(lambda: "unknown")
 state[0] = "ok"
@@ -296,11 +297,11 @@ def get_hosts(request, fields=None, *args, **kwargs):
         fields = _DEFAULT_HOST_COLUMNS
 
     # fields should be a list, lets create a Column: query for livestatus
-#    if isinstance(fields, str):
-#        fields = fields.split(',')
-
-    if isinstance(fields, six.string_types):
+    if isinstance(fields, str):
         fields = fields.split(',')
+
+#    if isinstance(fields, string_types):
+#        fields = fields.split(',')
 
 #    if isinstance(fields, six.string_types):
 #        fields = fields.split(',')
