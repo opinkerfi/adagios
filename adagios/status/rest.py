@@ -23,9 +23,9 @@ with status of Nagios.
 """
 from __future__ import division
 from __future__ import print_function
-#from __future__ import unicode_literals
-
+from __future__ import unicode_literals
 from past.builtins import cmp
+from functools import cmp_to_key
 from builtins import str, int
 from past.utils import old_div
 import time
@@ -485,7 +485,7 @@ def top_alert_producers(request, limit=5, start_time=None, end_time=None):
         if 'host_name' in i and 'state' in i and i['state'] > 0:
             top_alert_producers[i['host_name']] += 1
     top_alert_producers = list(top_alert_producers.items())
-    top_alert_producers.sort(cmp=lambda a, b: cmp(a[1], b[1]), reverse=True)
+    top_alert_producers.sort(reverse=True, key=cmp_to_key(lambda a, b: cmp(a[1], b[1])))
     if limit > len(top_alert_producers):
         top_alert_producers = top_alert_producers[:int(limit)]
     return top_alert_producers

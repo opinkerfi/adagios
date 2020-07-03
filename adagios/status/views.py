@@ -26,6 +26,7 @@ from builtins import str
 from builtins import map
 from past.utils import old_div
 from django.http import HttpResponse
+from functools import cmp_to_key
 
 import time
 from os.path import dirname
@@ -780,9 +781,9 @@ def dashboard(request):
 
     # Sort problems by state and last_check as secondary sort field
     c['service_problems'].sort(
-        reverse=True, cmp=lambda a, b: cmp(a['last_check'], b['last_check']))
+        reverse=True, key=cmp_to_key(lambda a, b: cmp(a['last_check'], b['last_check'])))
     c['service_problems'].sort(
-        reverse=True, cmp=lambda a, b: cmp(a['state'], b['state']))
+        reverse=True, key=cmp_to_key(lambda a, b: cmp(a['state'], b['state'])))
     return render_to_response('status_dashboard.html', c, context_instance=RequestContext(request))
 
 
