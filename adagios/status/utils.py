@@ -21,8 +21,9 @@
 # adagios.status.views
 
 from __future__ import division
+from __future__ import unicode_literals
 from future.utils import string_types
-#from __future__ import unicode_literals
+from functools import cmp_to_key
 from past.builtins import cmp
 #from past.builtins import six.string_types
 from builtins import str
@@ -312,8 +313,8 @@ def get_hosts(request, fields=None, *args, **kwargs):
 
     add_statistics_to_hosts(hosts)
     
-    hosts.sort(reverse=True, cmp=lambda a, b: cmp(a.get('num_problems'), b.get('num_problems')))
-    hosts.sort(reverse=True, cmp=lambda a, b: cmp(a.get('state'), b.get('state')))
+    hosts.sort(reverse=True, key=cmp_to_key(lambda a, b: cmp(a.get('num_problems'), b.get('num_problems'))))
+    hosts.sort(reverse=True, key=cmp_to_key(lambda a, b: cmp(a.get('state'), b.get('state'))))
 
     if limit:
         return hosts[:limit]
