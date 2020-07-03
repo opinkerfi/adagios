@@ -407,7 +407,7 @@ def get_map_data(request, host_name=None):
             hosts.append(i)
 
     # For all hosts that have network parents, lets return a proper line for
-    # those two
+    # those two.
     for i in hosts:
         # Loop through all network parents. If network parent is also in our hostlist
         # Then create a connection between the two
