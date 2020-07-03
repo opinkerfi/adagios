@@ -486,7 +486,7 @@ def top_alert_producers(request, limit=5, start_time=None, end_time=None):
             top_alert_producers[i['host_name']] += 1
     top_alert_producers = list(top_alert_producers.items())
     top_alert_producers.sort(reverse=True, key=cmp_to_key(lambda a, b: cmp(a[1], b[1])))
-    if limit > len(top_alert_producers):
+    if int(limit) > len(top_alert_producers):
         top_alert_producers = top_alert_producers[:int(limit)]
     return top_alert_producers
 
