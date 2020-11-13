@@ -106,9 +106,10 @@ install:
 # Install PNP4Nagios
 # Build/Install PNP4Nagios
 - cd /tmp
-- sudo wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.24.tar.gz
-- sudo tar -xzvf pnp4nagios-0.6.24.tar.gz
-- cd pnp4nagios-0.6.24
+#- sudo wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.24.tar.gz
+- sudo wget https://github.com/lingej/pnp4nagios/archive/0.6.24.tar.gz
+- sudo tar -xzvf 0.6.24.tar.gz
+- cd 0.6.24
 - sudo ./configure
         --prefix=${NAGIOS_HOME}
         --with-nagios-user=${NAGIOS_USER}
