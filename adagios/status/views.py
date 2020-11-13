@@ -405,21 +405,20 @@ def hostgroup_detail(request, hostgroup_name):
     c['hostgroup_name'] = hostgroup_name
     c['object_type'] = 'hostgroup'
     livestatus = adagios.status.utils.livestatus(request)
-
-    my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(
-        hostgroup_name)
-    c['my_hostgroup'] = livestatus.get_hostgroups(
-        'Filter: name = %s' % hostgroup_name)[0]
-
+    my_hostgroup = pynag.Model.Hostgroup.objects.get_by_shortname(hostgroup_name.decode('utf-8'))
+    c['my_hostgroup'] = livestatus.get_hostgroups('Filter: name = %s' % hostgroup_name.decode('utf-8'))[0]
     _add_statistics_to_hostgroups([c['my_hostgroup']])
+    
     # Get information about child hostgroups
-    subgroups = my_hostgroup.hostgroup_members or ''
-    subgroups = subgroups.split(',')
-    if subgroups == ['']:
-        subgroups = []
-    c['hostgroups'] = [livestatus.get_hostgroups('Filter: name = %s' % x)[0] for x in subgroups]
-    _add_statistics_to_hostgroups(c['hostgroups'])
-
+    try:
+        subgroups = my_hostgroup.hostgroup_members or ''
+        subgroups = subgroups.split(',')
+        if subgroups == ['']:
+            subgroups = []
+        c['hostgroups'] = [livestatus.get_hostgroups('Filter: name = %s' % x)[0] for x in subgroups]
+        _add_statistics_to_hostgroups(c['hostgroups'])
+    except Exception as e:
+        c['errors'].append(e)
     return render_to_response('status_hostgroup.html', c, context_instance=RequestContext(request))
 
 
@@ -509,7 +508,7 @@ def status_hostgroups(request):
         for i in hostgroups:
             if len(i['parent_hostgroups']) == 0:
                 my_hostgroups.append(i)
-        my_hostgroups.sort()
+        my_hostgroups.sort(reverse=False, key=cmp_to_key(lambda a, b: cmp(a['name'], b['name'])))
         c['hostgroups'] = my_hostgroups
 
     else:
