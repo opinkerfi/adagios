@@ -1,7 +1,6 @@
 language: python
 python:
 - '3.6'
-- '3.7'
 env:
   matrix:
     - DJANGO_VERSION="Django<1.9"
@@ -220,6 +219,7 @@ install:
 - git clone https://github.com/opinkerfi/okconfig.git ~/build/opinkerfi/okconfig
 - cd ~/build/opinkerfi/okconfig/
 - python setup.py build
+- sudo python setup.py install
 - python setup.py install
 - sudo touch /etc/okconfig.conf
 - sudo chown travis /etc/okconfig.conf
