@@ -1032,14 +1032,14 @@ def contact_detail(request, contact_name):
 
     # Fetch contact and basic information
     try:
-        contact = l.get_contact(contact_name, backend)
+        contact = l.get_contact(contact_name.decode('utf-8'), backend)
         c['contact'] = contact
     except IndexError:
-        raise Exception("Contact named '%s' was not found." % contact_name)
+        raise Exception("Contact named '%s' was not found." % contact_name.decode('utf-8'))
 
     # Active comments
     c['comments'] = l.query(
-        'GET comments', 'Filter: comment ~ %s' % contact_name,)
+        'GET comments', 'Filter: comment ~ %s' % contact_name.decode('utf-8'))
     for i in c['comments']:
         if i.get('type') == 1:
             i['state'] = i['host_state']
@@ -1048,19 +1048,19 @@ def contact_detail(request, contact_name):
 
     # Services this contact can see
     c['services'] = l.query(
-        'GET services', "Filter: contacts >= %s" % contact_name)
+        'GET services', "Filter: contacts >= %s" % contact_name.decode('utf-8'))
 
     # Activity log
-    c['log'] = utils.get_log_entries(request, search=str(contact_name))
+    c['log'] = utils.get_log_entries(request, search=str(contact_name.decode('utf-8')))
 
     # Contact groups
     c['groups'] = l.query(
-        'GET contactgroups', 'Filter: members >= %s' % contact_name)
+        'GET contactgroups', 'Filter: members >= %s' % contact_name.decode('utf-8'))
 
     # Git audit logs
     nagiosdir = dirname(adagios.settings.nagios_config or pynag.Model.config.guess_cfg_file())
     git = pynag.Utils.GitRepo(directory=nagiosdir)
-    c['gitlog'] = git.log(author_name=contact_name)
+    c['gitlog'] = git.log(author_name=contact_name.decode('utf-8'))
     return render_to_response('status_contact.html', c, context_instance=RequestContext(request))
 
 
@@ -1113,21 +1113,21 @@ def contactgroup_detail(request, contactgroup_name):
 
     # Fetch contact and basic information
     result = l.query("GET contactgroups", "Filter: name = %s" %
-                     contactgroup_name)
+                     contactgroup_name.decode('utf-8'))
     if result == []:
         c['errors'].append(
-            "Contactgroup named '%s' was not found." % contactgroup_name)
+            "Contactgroup named '%s' was not found." % contactgroup_name.decode('utf-8'))
     else:
         contactgroup = result[0]
         c['contactgroup'] = contactgroup
 
     # Services this contact can see
     c['services'] = l.query(
-        'GET services', "Filter: contact_groups >= %s" % contactgroup_name)
+        'GET services', "Filter: contact_groups >= %s" % contactgroup_name.decode('utf-8'))
 
     # Hosts this contact can see
     c['hosts'] = l.query(
-        'GET hosts', "Filter: contact_groups >= %s" % contactgroup_name)
+        'GET hosts', "Filter: contact_groups >= %s" % contactgroup_name.decode('utf-8'))
 
     # Members of this contactgroup
     contacts = []

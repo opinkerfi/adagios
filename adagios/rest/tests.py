@@ -80,7 +80,8 @@ class LiveStatusTestCase(TestCase):
         json_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
         self.assertEqual(['ok_host'], [x['name'] for x in json_data])
-        self.assertEqual(['name', 'backend'], list(json_data[0].keys()))
+        #self.assertEqual(['name', 'backend'], list(json_data[0].keys()))
+        self.assertEqual(['backend', 'name'], list(json_data[0].keys()))
 
     def loadPage(self, url):
         """ Load one specific page, and assert if return code is not 200 """

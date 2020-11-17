@@ -365,7 +365,8 @@ def _process_querystring_for_service(*args, **kwargs):
     if search_parameter:
         if isinstance(search_parameter, list):
             search_parameter = search_parameter[0]
-        search_parameter = search_parameter.encode('utf-8')
+        # TODO:
+        #search_parameter = search_parameter.encode('utf-8')
         query.add_filters(host_name__contains=search_parameter)
         query.add_filters(description__contains=search_parameter)
         query.add_filters(plugin_output__contains=search_parameter)

@@ -5,12 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Django",
+            "name": "Python: Django Runserver",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/adagios/manage.py",
             "args": [
                 "runserver"        
+            ],
+            "django": true
+        },
+        {
+            "name": "Python: Django Tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/adagios/manage.py",
+            "args": [
+                "test"        
             ],
             "django": true
         }

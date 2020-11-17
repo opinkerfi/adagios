@@ -137,7 +137,7 @@ class TestPynagForm(TestCase):
         # See if the output more or less makes sense
         search_string_re = '<input[^>]* name="advanced-host_name"[^>]* value="{host_name}"'
         search_string_re = search_string_re.format(host_name=host_name)
-        self.assertTrue(re.search(b'search_string_re', response.content))
+        self.assertTrue(re.search(search_string_re, response.content.decode('utf-8')))
 
         # Check the actual form we were sent
         form = response.context['form']
