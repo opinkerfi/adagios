@@ -76,7 +76,7 @@ def settings(request):
             try:
                 form.save()
                 m.append(_("%s successfully saved.") % form.adagios_configfile)
-            except IOError, exc:
+            except IOError as exc:
                 e.append(exc)
     else:
         raise Exception(_("We only support methods GET or POST"))
@@ -134,12 +134,12 @@ def gitlog(request):
                     raise Exception(_("No files selected."))
                 git.commit(message=commit_message, filelist=filelist)
                 m.append(_("%s files successfully commited.") % len(filelist))
-        except Exception, e:
+        except Exception as e:
             c['errors'].append(e)
     # Check if nagiosdir has a git repo or not
     try:
         c['uncommited_files'] = git.get_uncommited_files()
-    except pynag.Model.EventHandlers.EventHandlerError, e:
+    except pynag.Model.EventHandlers.EventHandlerError as e:
         if e.errorcode == 128:
             c['no_git_repo_found'] = True
 
@@ -171,7 +171,7 @@ def gitlog(request):
                 difflines.append({'tag': tag, 'line': i})
             c['difflines'] = difflines
             c['commit_id'] = commit
-    except Exception, e:
+    except Exception as e:
         c['errors'].append(e)
     return render_to_response('gitlog.html', c, context_instance=RequestContext(request))
 
@@ -225,7 +225,7 @@ def pnp4nagios(request):
 
     try:
         c['npcd_config'] = forms.PNPConfigForm(initial=request.GET)
-    except Exception, e:
+    except Exception as e:
         c['errors'].append(e)
     #c['interesting_objects'] = form.interesting_objects
     if request.method == 'POST' and 'save_broker_module' in request.POST:
@@ -271,7 +271,7 @@ def edit_file(request, filename):
                 filename=filename, data=request.POST)
             if c['form'].is_valid():
                 c['form'].save()
-    except Exception, e:
+    except Exception as e:
         c['errors'].append(e)
     return render_to_response('editfile.html', c, context_instance=RequestContext(request))
 
@@ -311,10 +311,10 @@ def icons(request, image_name=None):
         for filename in files:
             filenames.append(os.path.join(root, filename))
     # Cut image_path out of every filename
-    filenames = map(lambda x: x[len(image_path):], filenames)
+    filenames = [x[len(image_path):] for x in filenames]
 
     # Filter out those silly .gd2 files that don't display inside a browser
-    filenames = filter(lambda x: not x.lower().endswith('.gd2'), filenames)
+    filenames = [x for x in filenames if not x.lower().endswith('.gd2')]
 
     filenames.sort()
     if not image_name:
@@ -380,9 +380,9 @@ def mail(request):
             for x in service:
                 c['form'].status_objects.append(x)
                 c['form'].services.append(x)
-        except AttributeError, e:
+        except AttributeError as e:
             c['errors'].append(_("AttributeError for '%(i)s': %(e)s") % {'i': i, 'e': e})
-        except KeyError, e:
+        except KeyError as e:
             c['errors'].append(_("Error adding service '%(i)s': %(e)s") % {'i': i, 'e': e})
 
     c['services'] = c['form'].services
@@ -444,7 +444,7 @@ def preferences(request):
     if request.method == 'POST':
         c['form'] = forms.UserdataForm(data=request.POST)
         if c['form'].is_valid():
-            for k, v in c['form'].cleaned_data.iteritems():
+            for k, v in c['form'].cleaned_data.items():
                 user.set_pref(k, v)
             user.save() # will save in json and trigger the hooks
             c['messages'].append(_('Preferences have been saved.'))

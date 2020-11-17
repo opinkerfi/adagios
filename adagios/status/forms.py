@@ -49,8 +49,7 @@ class RemoveSubProcessForm(forms.Form):
         self.bp.remove_process(process_name, process_type)
         self.bp.save()
 
-status_method_choices = map(
-    lambda x: (x, x), adagios.businessprocess.BusinessProcess.status_calculation_methods)
+status_method_choices = [(x, x) for x in adagios.businessprocess.BusinessProcess.status_calculation_methods]
 
 
 class BusinessProcessForm(forms.Form):
@@ -129,7 +128,7 @@ class BusinessProcessForm(forms.Form):
         self.bp.save()
 
 choices = 'businessprocess', 'hostgroup', 'servicegroup', 'service', 'host'
-process_type_choices = map(lambda x: (x, x), choices)
+process_type_choices = [(x, x) for x in choices]
 
 
 class AddSubProcess(forms.Form):

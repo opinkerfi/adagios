@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
 from django.shortcuts import render_to_response, redirect, HttpResponse, Http404
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -61,12 +62,12 @@ def geek_edit(request, object_id):
     # Get our object
     try:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
-    except Exception, e:
+    except Exception as e:
         # This is an ugly hack. If unknown object ID was specified and it so happens to
         # Be the same as a brand new empty object definition we will assume that we are
         # to create a new object definition instead of throwing error because ours was
         # not found.
-        for i in Model.string_to_class.values():
+        for i in list(Model.string_to_class.values()):
             if i().get_id() == object_id:
                 o = i()
                 break
@@ -82,7 +83,7 @@ def geek_edit(request, object_id):
             try:
                 form.save()
                 m.append("Object Saved manually to '%s'" % o['filename'])
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(e)
                 return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
         else:
@@ -108,12 +109,12 @@ def advanced_edit(request, object_id):
     try:
         o = ObjectDefinition.objects.get_by_id(id=object_id)
         c['my_object'] = o
-    except Exception, e:
+    except Exception as e:
         # This is an ugly hack. If unknown object ID was specified and it so happens to
         # Be the same as a brand new empty object definition we will assume that we are
         # to create a new object definition instead of throwing error because ours was
         # not found.
-        for i in Model.string_to_class.values():
+        for i in list(Model.string_to_class.values()):
             if i().get_id() == object_id:
                 o = i()
                 break
@@ -130,7 +131,7 @@ def advanced_edit(request, object_id):
             try:
                 c['advanced_form'].save()
                 m.append(_("Object Saved to %(filename)s") % o)
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(e)
                 return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
     else:
@@ -183,7 +184,7 @@ def edit_object(request, object_id=None):
                 c['form'].save()
                 c['messages'].append(_("Object Saved to %(filename)s") % my_object)
                 return HttpResponseRedirect(reverse('edit_object', kwargs={'object_id': my_object.get_id()}))
-            except Exception, e:
+            except Exception as e:
                 c['errors'].append(e)
         else:
             c['errors'].append(_("Could not validate form input"))
@@ -197,14 +198,14 @@ def edit_object(request, object_id=None):
 
     try:
         c['effective_hosts'] = my_object.get_effective_hosts()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find host: %(error)s") % {'error': str(e)})
     except AttributeError:
         pass
 
     try:
         c['effective_parents'] = my_object.get_effective_parents(cache_only=True)
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find parent: %(error)s") % {'error': str(e)})
 
     # Every object type has some special treatment, so lets resort
@@ -241,7 +242,7 @@ def _edit_contact(request, c):
     try:
         c['effective_contactgroups'] = c[
             'my_object'].get_effective_contactgroups()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find contact: %(error)s") % {'error': str(e)})
 
     return render_to_response('edit_contact.html', c, context_instance=RequestContext(request))
@@ -283,27 +284,27 @@ def _edit_service(request, c):
 
     try:
         c['effective_servicegroups'] = service.get_effective_servicegroups()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find servicegroup: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contacts'] = service.get_effective_contacts()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find contact: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contactgroups'] = service.get_effective_contact_groups()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find contact_group: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_hostgroups'] = service.get_effective_hostgroups()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find hostgroup: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_command'] = service.get_effective_check_command()
-    except KeyError, e:
+    except KeyError as e:
         if service.check_command is not None:
             c['errors'].append(_("Could not find check_command: %(error)s") % {'error': str(e)})
         elif service.register != '0':
@@ -312,8 +313,7 @@ def _edit_service(request, c):
     # For the check_command editor, we inject current check_command and a list
     # of all check_commands
     c['check_command'] = (service.check_command or '').split("!")[0]
-    c['command_names'] = map(
-        lambda x: x.get("command_name", ''), Model.Command.objects.all)
+    c['command_names'] = [x.get("command_name", '') for x in Model.Command.objects.all]
     if c['check_command'] in (None, '', 'None'):
         c['check_command'] = ''
 
@@ -331,18 +331,18 @@ def _edit_contactgroup(request, c):
     try:
         c['effective_contactgroups'] = c[
             'my_object'].get_effective_contactgroups()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find contact_group: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contacts'] = c['my_object'].get_effective_contacts()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append("Could not find contact: %s" % str(e))
 
     try:
         c['effective_memberof'] = Model.Contactgroup.objects.filter(
             contactgroup_members__has_field=c['my_object'].contactgroup_name)
-    except Exception, e:
+    except Exception as e:
         c['errors'].append(e)
     return render_to_response('edit_contactgroup.html', c, context_instance=RequestContext(request))
 
@@ -354,12 +354,12 @@ def _edit_hostgroup(request, c):
     try:
         c['effective_services'] = sorted(
             hostgroup.get_effective_services(), key=lambda x: x.get_description())
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find service: %(error)s") % {'error': str(e)})
     try:
         c['effective_memberof'] = Model.Hostgroup.objects.filter(
             hostgroup_members__has_field=c['my_object'].hostgroup_name)
-    except Exception, e:
+    except Exception as e:
         c['errors'].append(e)
     return render_to_response('edit_hostgroup.html', c, context_instance=RequestContext(request))
 
@@ -370,7 +370,7 @@ def _edit_servicegroup(request, c):
     try:
         c['effective_memberof'] = Model.Servicegroup.objects.filter(
             servicegroup_members__has_field=c['my_object'].servicegroup_name)
-    except Exception, e:
+    except Exception as e:
         c['errors'].append(e)
     return render_to_response('edit_servicegroup.html', c, context_instance=RequestContext(request))
 
@@ -418,27 +418,27 @@ def _edit_host(request, c):
     try:
         c['effective_services'] = sorted(
             host.get_effective_services(), key=lambda x: x.get_description())
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find service: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_hostgroups'] = host.get_effective_hostgroups()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find hostgroup: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contacts'] = host.get_effective_contacts()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find contact: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_contactgroups'] = host.get_effective_contact_groups()
-    except KeyError, e:
+    except KeyError as e:
         c['errors'].append(_("Could not find contact_group: %(error)s") % {'error': str(e)})
 
     try:
         c['effective_command'] = host.get_effective_check_command()
-    except KeyError, e:
+    except KeyError as e:
         if host.check_command is not None:
             c['errors'].append(_("Could not find check_command: %(error)s") % {'error': str(e)})
         elif host.register != '0':
@@ -562,7 +562,7 @@ def bulk_edit(request):
                                                                                    'description': i.get_description(),
                                                                                     })
                 c['success'] = "success"
-            except IOError, e:
+            except IOError as e:
                 c['errors'].append(e)
 
     return render_to_response('bulk_edit.html', c, context_instance=RequestContext(request))
@@ -595,7 +595,7 @@ def bulk_delete(request):
     if request.method == "POST":
         # Post items starting with "hidden_" will be displayed on the resulting web page
         # Post items starting with "change_" will be modified
-        for i in request.POST.keys():
+        for i in list(request.POST.keys()):
             if i.startswith('change_'):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
@@ -610,7 +610,7 @@ def bulk_delete(request):
                 for i in c['form'].changed_objects:
                     c['messages'].append(
                         "Deleted %s %s" % (i.object_type, i.get_description()))
-            except IOError, e:
+            except IOError as e:
                 c['errors'].append(e)
 
     return render_to_response('bulk_delete.html', c, context_instance=RequestContext(request))
@@ -642,7 +642,7 @@ def bulk_copy(request):
     elif request.method == "POST":
         # Post items starting with "hidden_" will be displayed on the resulting web page
         # Post items starting with "change_" will be modified
-        for i in request.POST.keys():
+        for i in list(request.POST.keys()):
             if i.startswith('change_'):
                 my_id = i[len('change_'):]
                 my_obj = ObjectDefinition.objects.get_by_id(my_id)
@@ -658,7 +658,7 @@ def bulk_copy(request):
                     c['messages'].append(
                         _("Successfully copied %(object_type)s %(description)s") % {'object_type': i.object_type,
                                                                                     'description': i.get_description()})
-            except IOError, e:
+            except IOError as e:
                 c['errors'].append(e)
 
     return render_to_response('bulk_copy.html', c, context_instance=RequestContext(request))
@@ -687,7 +687,7 @@ def delete_object(request, object_id):
             if f.is_valid():
                 f.delete()
             return HttpResponseRedirect(reverse('objectbrowser') + "#" + my_obj.object_type)
-        except Exception, e:
+        except Exception as e:
             c['errors'].append(e)
     return render_to_response('delete_object.html', c, context_instance=RequestContext(request))
 
@@ -710,7 +710,7 @@ def copy_object(request, object_id):
                 f.save()
                 c['copied_objects'] = f.copied_objects
                 c['success'] = 'success'
-            except IndexError, e:
+            except IndexError as e:
                 c['errors'].append(e)
     return render_to_response('copy_object.html', c, context_instance=RequestContext(request))
 
@@ -757,7 +757,7 @@ def _querystring_to_objects(dictionary):
     """
     result = []
     Object = namedtuple('Object', 'object_type description')
-    for object_type in string_to_class.keys():
+    for object_type in list(string_to_class.keys()):
         objects = dictionary.getlist(object_type)
         for i in objects:
             obj = (Object(object_type, i))
@@ -787,18 +787,18 @@ def _querydict_to_objects(request, raise_on_not_found=False):
         try:
             my_object = ObjectDefinition.objects.get_by_id(object_id)
             result.append(my_object)
-        except Exception, e:
+        except Exception as e:
             if raise_on_not_found is True:
                 raise e
 
     # Find everything in querystring in the form of object_type=[shortnames]
-    for object_type,Class in string_to_class.items():
+    for object_type,Class in list(string_to_class.items()):
         objects = mydict.getlist(object_type)
         for shortname in objects:
             try:
                 my_object = Class.objects.get_by_shortname(shortname)
                 result.append(my_object)
-            except Exception, e:
+            except Exception as e:
                 # If a service was not found, check if it was registered in
                 # some unusual way
                 if object_type == 'service' and '/' in shortname:
@@ -846,7 +846,7 @@ def add_to_group(request, group_type=None, group_name=''):
                 elif group_type == 'servicegroup':
                     obj.add_to_servicegroup(group_name)
                 return HttpResponse("Success")
-            except Exception, e:
+            except Exception as e:
                 errortype = e.__dict__.get('__name__') or str(type(e))
                 error = str(e)
                 return HttpResponse(_("Failed to add object: %(errortype)s %(error)s ") % {'errortype': errortype,
@@ -866,7 +866,7 @@ def edit_all(request, object_type, attribute_name):
     messages = []
     errors = []
     objects = Model.string_to_class.get(object_type).objects.all
-    objects = map(lambda x: (x.get_shortname, x.get(attribute_name)), objects)
+    objects = [(x.get_shortname, x.get(attribute_name)) for x in objects]
     return render_to_response('edit_all.html', locals(), context_instance=RequestContext(request))
 
 
@@ -913,7 +913,7 @@ def copy_and_edit_object(request, object_id):
     If object_id is provided, that object will be copied into this one.
     """
     kwargs = {}
-    for k, v in request.GET.items():
+    for k, v in list(request.GET.items()):
         if v in ('', None, 'None'):
             v = None
         kwargs[k] = v

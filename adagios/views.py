@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
 from django.http import HttpResponse
 import traceback
 from django.shortcuts import render_to_response, redirect
@@ -45,7 +46,7 @@ def adagios_decorator(view_func):
             time_now = time.ctime()
             duration = end_time - start_time
             return result
-        except Exception, e:
+        except Exception as e:
             c = {}
             c['exception'] = str(e)
             c['exception_type'] = str(type(e).__name__)

@@ -23,6 +23,7 @@ This is a rest interface used by the "/rest/" module that affects adagios direct
 
 """
 
+from builtins import str
 from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
 from adagios import userdata
@@ -68,7 +69,7 @@ def clear_notification(notification_id):
 def get_notifications(request):
     """ Shows all current notifications """
     result = []
-    for k in notifications.keys():
+    for k in list(notifications.keys()):
         i = notifications[k]
         if i.get('user') and i.get('user') != request.META.get('remote_user'):
             continue # Skipt this message if it is meant for someone else
@@ -125,7 +126,7 @@ def set_user_preference(request, **kwargs):
     except Exception as e:
         raise e
     
-    for (k, v) in kwargs.iteritems():
+    for (k, v) in kwargs.items():
         if not k.startswith('_'):
             user.set_pref(k, v)
     user.save()

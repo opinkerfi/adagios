@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
 import pynag.Model
 import os
 import getpass
@@ -41,49 +42,49 @@ def on_page_load(request):
     results = {}
     update_global_variables()
 
-    for k, v in reload_configfile(request).items():
+    for k, v in list(reload_configfile(request).items()):
         results[k] = v
-    for k, v in get_httpuser(request).items():
+    for k, v in list(get_httpuser(request).items()):
         results[k] = v
-    for k, v in get_tagged_comments(request).items():
+    for k, v in list(get_tagged_comments(request).items()):
         results[k] = v
-    for k, v in check_nagios_running(request).items():
+    for k, v in list(check_nagios_running(request).items()):
         results[k] = v
-    for k, v in get_notifications(request).items():
+    for k, v in list(get_notifications(request).items()):
         results[k] = v
-    for k, v in get_unhandled_problems(request).items():
+    for k, v in list(get_unhandled_problems(request).items()):
         results[k] = v
-    for k, v in resolve_urlname(request).items():
+    for k, v in list(resolve_urlname(request).items()):
         results[k] = v
-    for k, v in check_selinux(request).items():
+    for k, v in list(check_selinux(request).items()):
         results[k] = v
-    for k, v in activate_plugins(request).items():
+    for k, v in list(activate_plugins(request).items()):
         results[k] = v
-    for k, v in check_destination_directory(request).items():
+    for k, v in list(check_destination_directory(request).items()):
         results[k] = v
-    for k, v in check_nagios_cfg(request).items():
+    for k, v in list(check_nagios_cfg(request).items()):
         results[k] = v
-    for k, v in get_current_time(request).items():
+    for k, v in list(get_current_time(request).items()):
         results[k] = v
-    for k, v in get_okconfig(request).items():
+    for k, v in list(get_okconfig(request).items()):
         results[k] = v
-    for k, v in get_nagios_url(request).items():
+    for k, v in list(get_nagios_url(request).items()):
         results[k] = v
-    for k, v in get_local_user(request).items():
+    for k, v in list(get_local_user(request).items()):
         results[k] = v
-    for k, v in get_current_settings(request).items():
+    for k, v in list(get_current_settings(request).items()):
         results[k] = v
-    for k, v in get_plugins(request).items():
+    for k, v in list(get_plugins(request).items()):
         results[k] = v
-    for k, v in get_current_version(request).items():
+    for k, v in list(get_current_version(request).items()):
         results[k] = v
-    for k, v in get_serverside_includes(request).items():
+    for k, v in list(get_serverside_includes(request).items()):
         results[k] = v
-    for k, v in get_user_preferences(request).items():
+    for k, v in list(get_user_preferences(request).items()):
         results[k] = v
-    for k, v in get_all_backends(request).items():
+    for k, v in list(get_all_backends(request).items()):
         results[k] = v
-    for k, v in get_all_nonworking_backends(request).items():
+    for k, v in list(get_all_nonworking_backends(request).items()):
         results[k] = v
     return results
 
@@ -138,7 +139,7 @@ def get_serverside_includes(request):
 
 def activate_plugins(request):
     """ Activates any plugins specified in settings.plugins """
-    for k, v in settings.plugins.items():
+    for k, v in list(settings.plugins.items()):
         add_plugin(name=k, modulepath=v)
     return {'misc_menubar_items': adagios.misc_menubar_items, 'menubar_items': adagios.menubar_items}
 
@@ -344,7 +345,7 @@ def reload_configfile(request):
     try:
         clear_notification("configfile")
         settings.reload_configfile()
-    except Exception, e:
+    except Exception as e:
         add_notification(
             level="warning", message=str(e), notification_id="configfile")
     return {}

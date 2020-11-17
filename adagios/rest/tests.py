@@ -21,11 +21,14 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-
+from __future__ import unicode_literals
+#from django.utils.encoding import force_text
+from builtins import str
 from django.test import TestCase
-from django.test.client import Client
+from django.test.client import Client, RequestFactory
 from django.utils.translation import ugettext as _
 import json
+import sys
 
 import adagios.utils
 
@@ -55,10 +58,17 @@ class LiveStatusTestCase(TestCase):
         try:
             c = Client()
             response = c.post(path=path, data=data)
-            json_data = json.loads(response.content)
+            response_content = response.content
+            #json_data = json.loads(response_content)
+           # json_data = json.loads(response_content)
+            #json_data = json.loads(response.content)
+            if sys.version_info[0] < 3:
+                json_data = json.loads(response.content)
+            else:
+                json_data = json.loads(response.content.decode('utf-8'))
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
             self.assertEqual(True, 'addresslist' in json_data, _("Expected 'addresslist' to appear in response"))
-        except KeyError, e:
+        except KeyError as e:
             self.assertEqual(True, _("Unhandled exception while loading %(path)s: %(exc)s") % {'path': path, 'exc': e})
 
     def testGetAllHostsViaJSON(self):
@@ -70,7 +80,8 @@ class LiveStatusTestCase(TestCase):
         json_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % path)
         self.assertEqual(['ok_host'], [x['name'] for x in json_data])
-        self.assertEqual(['name', 'backend'], json_data[0].keys())
+        #self.assertEqual(['name', 'backend'], list(json_data[0].keys()))
+        self.assertEqual(['backend', 'name'], list(json_data[0].keys()))
 
     def loadPage(self, url):
         """ Load one specific page, and assert if return code is not 200 """
@@ -78,5 +89,5 @@ class LiveStatusTestCase(TestCase):
             c = Client()
             response = c.get(url)
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
-        except Exception, e:
+        except Exception as e:
             self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(exc)s") % {'url': url, 'exc': e})

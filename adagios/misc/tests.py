@@ -16,10 +16,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
+import django.utils.six
 import adagios.utils
 import adagios.misc.rest
 import adagios.userdata
@@ -90,7 +93,7 @@ class MiscTestCase(TestCase):
             c = Client()
             response = c.get(url)
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
-        except Exception, e:
+        except Exception as e:
             self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(e)s") % {'url': url, 'e': e})
 
     def test_user_preferences(self):
@@ -99,8 +102,8 @@ class MiscTestCase(TestCase):
                           {'theme': 'spacelab', 'language': 'fr'})
 
         assert(response.status_code == 200)
-        assert('spacelab/style.css' in response.content)
-        assert('(fr)' in response.content)
+        assert(b'spacelab/style.css' in response.content)
+        assert(b'(fr)' in response.content)
 
     def load_get(self, url):
         c = Client()
@@ -119,7 +122,7 @@ class MiscTestCase(TestCase):
         from adagios import settings
         settings.TOPMENU_HOME = 'Free beer'
         r = self.load_get('/status')
-        assert 'Free beer' in r.content
+        assert b'Free beer' in r.content
 
 
 class RestTest(TestCase):

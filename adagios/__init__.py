@@ -63,7 +63,7 @@ def add_plugin(name="myplugin", modulepath=None):
 # will successfully start up if any of the plugins have errors
 try:
     from adagios import settings
-    for k,v in settings.plugins.items():
+    for k,v in list(settings.plugins.items()):
         try:
             add_plugin(k,v)
         except Exception:

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.test import LiveServerTestCase
 from django.test import TestCase
 import adagios.settings

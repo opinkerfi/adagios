@@ -17,8 +17,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
-
 from distutils.core import setup
 from distutils.command.build import build
 from distutils.sysconfig import get_python_lib
@@ -43,11 +44,11 @@ def get_filelist(path):
             elif os.path.isdir(relative_path):
                 directories_to_check.append(relative_path)
             else:
-                print "what am i?", i
+                print("what am i?", i)
     return files
 
 template_files = get_filelist('adagios')
-data_files = map(lambda x: x.replace('adagios/', '', 1), template_files)
+data_files = [x.replace('adagios/', '', 1) for x in template_files]
 
 
 class adagios_build(build):
@@ -85,12 +86,12 @@ class adagios_build(build):
 setup(name=app_name,
     version=version,
     description='Web Based Nagios Configuration',
-    author='Pall Sigurdsson, Tomas Edwardsson',
-    author_email='palli@opensource.is',
+    author='Pall Sigurdsson, Tomas Edwardsson, Gardar Thorsteinsson',
+    author_email='support@opinkerfi.is',
     url='https://adagios.opensource.is/',
     packages=['adagios'],
     package_data={'adagios': data_files},
-    install_requires=['django<1.9', 'pynag>0.9.1'],
+    install_requires=['django<1.9', 'pynag>0.9.1', 'future'],
     cmdclass=dict(build=adagios_build),
 
 )

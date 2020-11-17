@@ -157,7 +157,7 @@ class TestBusinessProcess(TestCase):
             c = Client()
             response = c.get(url)
             self.assertEqual(response.status_code, 200, _("Expected status code 200 for page %s") % url)
-        except Exception, e:
+        except Exception as e:
             self.assertEqual(True, "Unhandled exception while loading %s: %s" % (url, e))
 
     def test_delete(self):

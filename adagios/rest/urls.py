@@ -40,7 +40,7 @@ rest_modules['adagios'] = 'adagios.misc.rest'
 #url(r'^/status.js$', 'rest.views.javascript', { 'module_name': 'adagios.rest.status'    }, ),
 #(r'^/status/(?P<format>.+?)/(?P<attribute>.+?)/?$', 'rest.views.handle_request', { 'module_name': 'adagios.rest.status' }),
 
-for module_name, module_path in rest_modules.items():
+for module_name, module_path in list(rest_modules.items()):
     base_pattern = r'^/%s' % module_name
     args = {'module_name': module_name, 'module_path': module_path}
     urlpatterns += patterns('adagios',

@@ -16,6 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Create your views here.
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from past.builtins import cmp
+from future.utils import string_types
+from builtins import map
+from builtins import str
 from django.shortcuts import render_to_response, redirect, render
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
@@ -61,14 +68,14 @@ def handle_request(request, module_name, module_path, attribute, format):
             c['form'] = CallFunctionForm(function=item, initial=request.GET)
             c['docstring'] = docstring
             c['module_name'] = module_name
-            if not request.GET.items():
+            if not list(request.GET.items()):
                 return render_to_response('function_form.html', c, context_instance=RequestContext(request))
             # Handle get parameters
             arguments = {}
-            for k, v in request.GET.items():
+            for k, v in list(request.GET.items()):
                 # TODO: Is it safe to turn all digits to int ?
                 #if str(v).isdigit(): v = int(float(v))
-                arguments[k.encode('utf-8')] = v.encode('utf-8')
+                arguments[k] = v
             # Here is a special hack, if the method we are calling has an argument
             # called "request" we will not let the remote user ship it in.
             # instead we give it a django request object
@@ -81,8 +88,8 @@ def handle_request(request, module_name, module_path, attribute, format):
             result = item
         else:
             arguments = {}  # request.POST.items()
-            for k, v in request.POST.items():
-                arguments[k.encode('utf-8')] = v.encode('utf-8')
+            for k, v in list(request.POST.items()):
+                arguments[k] = v
             # Here is a special hack, if the method we are calling has an argument
             # called "request" we will not let the remote user ship it in.
             # instead we give it a django request object
@@ -213,8 +220,8 @@ class CallFunctionForm(forms.Form):
         function_paramaters = {}
         # If any paramaters were past via querystring, lets generate fields for
         # them
-        if kwargs.has_key('initial'):
-            for k, v in kwargs['initial'].items():
+        if 'initial' in kwargs:
+            for k, v in list(kwargs['initial'].items()):
                 function_paramaters[k] = v
         # Generate fields which resemble our functions default arguments
         argspec = inspect.getargspec(function)
@@ -230,7 +237,7 @@ class CallFunctionForm(forms.Form):
             defaults = list(defaults)
         for i in args:
             self.fields[i] = forms.CharField(label=i)
-        for k, v in function_paramaters.items():
+        for k, v in list(function_paramaters.items()):
             self.fields[k] = forms.CharField(label=k, initial=v)
         while len(defaults) > 0:
             value = defaults.pop()

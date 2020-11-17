@@ -1,3 +1,4 @@
+from __future__ import division
 # Adagios is a web based Nagios configuration interface
 #
 # Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
@@ -15,6 +16,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
+from builtins import object
+from past.utils import old_div
 from pynag.Utils import PynagError, defaultdict
 
 __author__ = 'palli'
@@ -122,7 +126,7 @@ class BusinessProcess(object):
                 self.errors.append(
                     _("We have not implemented how to use status method %s") % str(self.status_method))
                 return 3
-        except Exception, e:
+        except Exception as e:
             self.errors.append(e)
             return 3
 
@@ -137,14 +141,14 @@ class BusinessProcess(object):
 
     def get_all_states(self):
         """ Returns a list of all subprocess states """
-        return map(lambda x: x.get_status(), self.get_processes())
+        return [x.get_status() for x in self.get_processes()]
 
     def get_worst_state(self):
         """ Returns the worst state of any sub items
         """
         try:
             return int(max(self.get_all_states()))
-        except Exception, e:
+        except Exception as e:
             self.errors.append(e)
             return 3
 
@@ -153,7 +157,7 @@ class BusinessProcess(object):
         """
         try:
             return int(min(self.get_all_states()))
-        except Exception, e:
+        except Exception as e:
             self.errors.append(e)
             return 3
 
@@ -191,7 +195,7 @@ class BusinessProcess(object):
             states = tags[tag]
 
             # Filter out states ok
-            states = filter(lambda x: x > 0, states)
+            states = [x for x in states if x > 0]
             if not states:  # Nothing more to do
                 continue
             if len(states) >= num_problems:
@@ -255,7 +259,7 @@ class BusinessProcess(object):
         all_macros = self.resolve_all_macros()
         try:
             return string.format(**all_macros)
-        except KeyError, e:
+        except KeyError as e:
             raise PynagError(_("Invalid macro in string. %s") % str(e))
 
     def resolve_macro(self, macroname, default='raise exception'):
@@ -288,23 +292,23 @@ class BusinessProcess(object):
         elif macroname == 'percent_state_0':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * state_summary[0] / sum(state_summary)
+            return old_div(100.0 * state_summary[0], sum(state_summary))
         elif macroname == 'percent_state_1':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * state_summary[1] / sum(state_summary)
+            return old_div(100.0 * state_summary[1], sum(state_summary))
         elif macroname == 'percent_state_2':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * state_summary[2] / sum(state_summary)
+            return old_div(100.0 * state_summary[2], sum(state_summary))
         elif macroname == 'percent_state_3':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * state_summary[3] / sum(state_summary)
+            return old_div(100.0 * state_summary[3], sum(state_summary))
         elif macroname == 'percent_problems':
             if len(self.get_all_states()) == 0:
                 return 0
-            return 100.0 * sum(state_summary[1:]) / sum(state_summary)
+            return old_div(100.0 * sum(state_summary[1:]), sum(state_summary))
         elif macroname == 'current_state':
             return self.get_status()
         elif macroname == 'friendly_state':
@@ -372,8 +376,7 @@ class BusinessProcess(object):
         data['metric_name'] = metric_name
         if not self.graphs:
             return
-        self.graphs = filter(
-            lambda x: frozenset(x) != frozenset(data), self.graphs)
+        self.graphs = [x for x in self.graphs if frozenset(x) != frozenset(data)]
 
     def get_pnp_last_value(self, host_name, service_description, metric_name):
         """ Looks up current nagios perfdata via mk-livestatus and returns the last value for a specific metric (str)
@@ -572,7 +575,7 @@ class Hostgroup(BusinessProcess):
             if service_status == 3:
                 return 2
             return service_status
-        except Exception, e:
+        except Exception as e:
             self.errors.append(e)
             return 3
 
@@ -583,11 +586,8 @@ class Hostgroup(BusinessProcess):
         else:
             services = self._livestatus.get_services(
                 'Filter: host_groups >= %s' % self.name)
-            livestatus_objects = map(
-                lambda x: [x.get('host_name') + '/' + x.get(
-                    'description'), x.get('state')],
-                services
-            )
+            livestatus_objects = [[x.get('host_name') + '/' + x.get(
+                    'description'), x.get('state')] for x in services]
         for i in livestatus_objects:
             process = BusinessProcess(i[0])
             process.get_status = lambda: i[1]
@@ -667,7 +667,7 @@ class Service(BusinessProcess):
         try:
             self.load()
             return self._service.get('state', 3)
-        except Exception, e:
+        except Exception as e:
             self.errors.append(e)
             return 3
 
@@ -687,7 +687,7 @@ class Host(BusinessProcess):
     def get_status(self):
         try:
             self.load()
-        except Exception, e:
+        except Exception as e:
             self.errors.append(e)
             return 3
         method = self.status_method
@@ -753,7 +753,7 @@ class Domain(Host):
             self.host_not_found = True
             self.errors.append(_("Host not found: ") % self.name)
         all_hosts = pynag.Model.Host.objects.all
-        all_hosts = map(lambda x: x.host_name, all_hosts)
+        all_hosts = [x.host_name for x in all_hosts]
         if self.name not in all_hosts:
             host = pynag.Model.Host(use="generic-domain", host_name=self.name, address=self.name)
             host.action_url = "http://%s" % self.name
@@ -819,7 +819,7 @@ def get_all_json(filename=None):
     raw_data = None
     try:
         raw_data = open(filename, 'r').read()
-    except IOError, e:
+    except IOError as e:
         if e.errno == 2:  # File does not exist
             return []
     if not raw_data:
@@ -834,7 +834,7 @@ def get_all_processes(filename=None):
     result = []
     try:
         json_data = get_all_json(filename=filename)
-    except IOError, e:
+    except IOError as e:
         if e.errno == 2:
             json_data = []
         else:
@@ -848,7 +848,7 @@ def get_all_processes(filename=None):
 def get_all_process_names(filename=None):
     """ Return a list of all process names out there
     """
-    return map(lambda x: x.name, get_all_processes(filename=filename))
+    return [x.name for x in get_all_processes(filename=filename)]
 
 
 def get_business_process(process_name, process_type=None, **kwargs):
@@ -862,13 +862,13 @@ def get_business_process(process_name, process_type=None, **kwargs):
     my_business_process = BPClass(process_name)
     try:
         my_business_process.load()
-    except Exception, e:
+    except Exception as e:
         my_business_process.errors.append(e)
     my_business_process.data.update(kwargs)
     return my_business_process
 
 
-class PNP4NagiosGraph:
+class PNP4NagiosGraph(object):
 
     """ Represents one single PNP 4 nagios graph
     """
@@ -885,5 +885,5 @@ class PNP4NagiosGraph:
             'json', host=self.host_name, srv=self.service_description)
         graphs = json.loads(json_str)
         # only use graphs with same label
-        graphs = filter(lambda x: x['ds_name'] == self.label, graphs)
+        graphs = [x for x in graphs if x['ds_name'] == self.label]
         return graphs

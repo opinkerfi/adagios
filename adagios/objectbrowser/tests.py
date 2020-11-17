@@ -16,7 +16,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _
@@ -94,7 +96,7 @@ class TestObjectBrowser(TestCase):
             c = Client()
             response = c.get(url)
             self.assertEqual(response.status_code, expected_code, _("Expected status code 200 for page %(url)s") % {'url': url})
-        except Exception, e:
+        except Exception as e:
             self.assertEqual(True, _("Unhandled exception while loading %(url)s: %(error)s") % {'url': url, 'error': e})
 
 
@@ -135,7 +137,7 @@ class TestPynagForm(TestCase):
         # See if the output more or less makes sense
         search_string_re = '<input[^>]* name="advanced-host_name"[^>]* value="{host_name}"'
         search_string_re = search_string_re.format(host_name=host_name)
-        self.assertTrue(re.search(search_string_re, response.content))
+        self.assertTrue(re.search(search_string_re, response.content.decode('utf-8')))
 
         # Check the actual form we were sent
         form = response.context['form']
@@ -225,7 +227,7 @@ class TestPynagForm(TestCase):
             my_object = self._create_new_host()
 
         data = {}
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             data[key] = value
         # Create new form for saving the data
         form = adagios.objectbrowser.forms.PynagForm(my_object, data=data)
@@ -249,7 +251,7 @@ class TestPynagForm(TestCase):
         data['service_description'] = "new_description"
         form = adagios.objectbrowser.forms.PynagForm(my_object, data=data)
         self.assertTrue(form.is_valid())
-        self.assertEqual(data.keys(), form.changed_data)
+        self.assertEqual(list(data.keys()), form.changed_data)
 
         data['hostgroup_name'] = 'bla'
         form = adagios.objectbrowser.forms.PynagForm(my_object, data=data)
@@ -328,7 +330,7 @@ class TestPynagForm(TestCase):
 
         # Iterate through every field in our original service, make sure
         # They are all same as expected
-        for key, old_value in my_object._defined_attributes.items():
+        for key, old_value in list(my_object._defined_attributes.items()):
             new_value = new_service[key]
             # TODO: Find out what is broken in check_command
             if key in ('check_command'):
@@ -376,7 +378,7 @@ class TestPynagForm(TestCase):
         self.assertEqual(dataset, form.initial)
         self.assertEqual({}, form.data)
 
-        for field_name, field in form.fields.items():
+        for field_name, field in list(form.fields.items()):
             expected_data = dataset.get(field_name, None)
             message = "Testing initial value for field %s" % field_name
             self.assertEqual(expected_data, field.initial, message)

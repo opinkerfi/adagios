@@ -24,6 +24,7 @@ Convenient stateless functions for pynag. This module is used by the /rest/ inte
 """
 
 
+from builtins import str
 import platform
 import re
 from pynag import Model
@@ -66,7 +67,7 @@ def get_objects(object_type=None, with_fields="id,shortname,object_type", **kwar
         object_type=object_type, **kwargs)
     with_fields = with_fields.split(',')
     # return map(lambda x: _get_dict(x), tmp)
-    return map(lambda x: object_to_dict(x, attributes=with_fields), tmp)
+    return [object_to_dict(x, attributes=with_fields) for x in tmp]
 
 
 def servicestatus(with_fields="host_name,service_description,current_state,plugin_output"):
@@ -77,7 +78,7 @@ def servicestatus(with_fields="host_name,service_description,current_state,plugi
     result_list = []
     for serv in s.data['servicestatus']:
         current_object = {}
-        for k, v in serv.items():
+        for k, v in list(serv.items()):
             if fields == ['*'] or k in fields:
                 current_object[k] = v
         result_list.append(current_object)
@@ -167,7 +168,7 @@ def change_service_attribute(identifier, new_value):
     try:
         service = Model.Service.objects.get_by_shortname(
             "%s/%s" % (host_name, service_description))
-    except KeyError, e:
+    except KeyError as e:
         raise KeyError(_("Could not find service %s") % e)
     service[attribute_name] = new_value
     service.save()
@@ -260,7 +261,7 @@ def dnslookup(host_name):
     try:
         (name, aliaslist, addresslist) = gethostbyname_ex(host_name)
         return {'host': name, 'aliaslist': aliaslist, 'addresslist': addresslist}
-    except Exception, e:
+    except Exception as e:
         return {'error': str(e)}
 
 
@@ -276,7 +277,7 @@ def contactgroup_hierarchy(**kwargs):
             arr = [display, i.contactgroup_members or '', str(i)]
             result.append(arr)
         return result
-    except Exception, e:
+    except Exception as e:
         return {'error': str(e)}
 
 
@@ -297,7 +298,7 @@ def add_object(object_type, filename=None, **kwargs):
     my_object = Model.string_to_class.get(object_type)()
     if filename is not None:
         my_object.set_filename(filename)
-    for k, v in kwargs.items():
+    for k, v in list(kwargs.items()):
         my_object[k] = v
     my_object.save()
     return {"filename": my_object.get_filename(), "raw_definition": str(my_object)}
@@ -390,7 +391,7 @@ def get_object_statistics():
     """
     object_types = []
     Model.ObjectDefinition.objects.reload_cache()
-    for k, v in Model.ObjectFetcher._cached_object_type.items():
+    for k, v in list(Model.ObjectFetcher._cached_object_type.items()):
         total = len(v)
         object_types.append({"object_type": k, "total": total})
     return object_types
@@ -407,8 +408,8 @@ def autocomplete(q):
     services = Model.Service.objects.filter(service_description__contains=q)
     hostgroups = Model.Hostgroup.objects.filter(hostgroup_name__contains=q)
 
-    result['hosts'] = sorted(set(map(lambda x: x.host_name, hosts)))
-    result['hostgroups'] = sorted(set(map(lambda x: x.hostgroup_name, hostgroups)))
-    result['services'] = sorted(set(map(lambda x: x.service_description, services)))
+    result['hosts'] = sorted(set([x.host_name for x in hosts]))
+    result['hostgroups'] = sorted(set([x.hostgroup_name for x in hostgroups]))
+    result['services'] = sorted(set([x.service_description for x in services]))
 
     return result

@@ -21,6 +21,7 @@
 """
 static_businessprocesses .. This script loads a business process and staticly writes html view for it
 """
+from __future__ import print_function
 
 #source_template = "/usr/lib/python2.6/site-packages/adagios/status/templates/business_process_view.html"
 source_template = "/etc/adagios/pages.d/bi_process.html"
@@ -57,7 +58,7 @@ parser.add_option('--verbose', help="verbose output", dest="verbose", action="st
 
 def verbose(message):
     if options.verbose:
-        print message
+        print(message)
 
 
 def businessprocess_to_html(process_name, process_type='businessprocess'):
@@ -132,5 +133,5 @@ if not processlist:
     parser.error("Either provide business process name or specify --all")
 
 for i in processlist:
-    print "doing ", i
+    print("doing ", i)
     businessprocess_to_html(i)

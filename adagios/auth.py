@@ -19,6 +19,8 @@
 
 """
 
+from builtins import str
+from builtins import object
 import adagios.status.utils
 import adagios.views
 
@@ -186,5 +188,5 @@ class AuthorizationMiddleWare(object):
         try:
             path = module_name + '.' + function_name
             check_access_to_path(request, path)
-        except adagios.exceptions.AccessDenied, e:
+        except adagios.exceptions.AccessDenied as e:
             return adagios.views.http_403(request, exception=e)
