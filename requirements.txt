@@ -2,10 +2,5 @@
 pynag>0.9.1
 Django<1.9
 simplejson
-
-
-# nagios (or icinga)
-# okconfig (optional)
-# mk-livestatus (if you intent to use adagios as your status interface)
-# apache
-# mod_wsgi
+future
+gunicorn
