@@ -355,4 +355,4 @@ os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000-9000'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-FORCE_SCRIPT_NAME = os.environ.get('DJANGO_FORCE_SCRIPT_NAME', '/adagios')  # without trailing slash
+# FORCE_SCRIPT_NAME = os.environ.get('DJANGO_FORCE_SCRIPT_NAME', '/adagios')  # without trailing slash
