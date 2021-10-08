@@ -17,11 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
+from builtins import object
 import os
 import json
 import collections
 
-import settings
+from . import settings
 
 
 class User(object):
@@ -46,7 +48,7 @@ class User(object):
         self._conffile = self._get_prefs_location()
         self._check_path(self._conffile)
         # sets the preferences as attributes:
-        for k, v in self._get_conf().iteritems():
+        for k, v in self._get_conf().items():
             self.__dict__[k] = v
 
     def _check_path(self, path):
@@ -91,7 +93,7 @@ class User(object):
     
     def __getattr__(self, name):
         """ Provides None as a default value. """
-        if name not in self.__dict__.keys():
+        if name not in list(self.__dict__.keys()):
             return None
         return self.__dict__[name]
 
@@ -107,7 +109,7 @@ class User(object):
 
     def to_dict(self):
         d = {}
-        for k in filter(lambda x: not(x.startswith('_')), self.__dict__.keys()):
+        for k in [x for x in list(self.__dict__.keys()) if not(x.startswith('_'))]:
             d[k] = self.__dict__[k]
         return d
     

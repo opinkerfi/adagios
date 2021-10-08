@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+from builtins import object
 import adagios.status.utils
 import adagios
 import pynag.Model
@@ -32,7 +34,7 @@ SELENIUM_DRIVER = None
 def wait(object_type, WaitObject, WaitCondition, WaitTrigger, **kwargs):
     livestatus = adagios.status.utils.livestatus(None)
     livestatus.get(object_type, WaitObject=WaitObject, WaitCondition=WaitCondition, WaitTrigger=WaitTrigger, **kwargs)
-    print WaitObject
+    print(WaitObject)
 
 def wait_for_objects(object_type, object_list, condition=None, trigger='check'):
     if not condition:
@@ -60,7 +62,7 @@ class Task(object):
         self._pool = ThreadPool(processes=num_processes)
 
     def add(self, function, *args, **kwargs):
-        print "Adding Task:", locals()
+        print("Adding Task:", locals())
         result = self._pool.apply_async(function, args, kwargs)
         self._tasks.append(result)
         #print result.get()
@@ -68,8 +70,8 @@ class Task(object):
     def status(self):
         all_tasks = self._tasks
         for i in all_tasks:
-            print i.ready()
-        completed_tasks = filter(lambda x: x.ready(), all_tasks)
+            print(i.ready())
+        completed_tasks = [x for x in all_tasks if x.ready()]
         return "{done}/{total} done.".format(done=len(completed_tasks), total=len(all_tasks))
 
     def get_id(self):
@@ -77,7 +79,7 @@ class Task(object):
 
     def ready(self):
         """ Returns True if all the Tasks in this class have finished running. """
-        return max(map(lambda x: x.ready(), self._tasks))
+        return max([x.ready() for x in self._tasks])
 
 
 def update_eventhandlers(request):

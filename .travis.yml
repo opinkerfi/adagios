@@ -1,6 +1,6 @@
 language: python
 python:
-- '2.7'
+- '3.6'
 env:
   matrix:
     - DJANGO_VERSION="Django<1.9"
@@ -106,18 +106,19 @@ install:
 # Install PNP4Nagios
 # Build/Install PNP4Nagios
 - cd /tmp
-- sudo wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.24.tar.gz
-- sudo tar -xzvf pnp4nagios-0.6.24.tar.gz
+#- sudo wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.24.tar.gz
+- sudo wget https://github.com/lingej/pnp4nagios/archive/0.6.24.tar.gz
+- sudo tar -xzvf 0.6.24.tar.gz
 - cd pnp4nagios-0.6.24
 - sudo ./configure
-        --prefix=${NAGIOS_HOME} 
-        --with-nagios-user=${NAGIOS_USER} 
-        --with-nagios-group=${NAGIOS_GROUP} 
+        --prefix=${NAGIOS_HOME}
+        --with-nagios-user=${NAGIOS_USER}
+        --with-nagios-group=${NAGIOS_GROUP}
         --sysconfdir=${NAGIOS_HOME}/etc/pnp
         --exec-prefix=${NAGIOS_HOME}
-        --datarootdir=${NAGIOS_HOME}/share/pnp 
+        --datarootdir=${NAGIOS_HOME}/share/pnp
         --with-rrdtool=/usr/bin/rrdtool
-        --sysconfdir=${NAGIOS_HOME}/etc/pnp 
+        --sysconfdir=${NAGIOS_HOME}/etc/pnp
         --with-perfdata-dir=${NAGIOS_HOME}/share/perfdata
         --with-perfdata-logfile=${NAGIOS_HOME}/var/perfdata.log
         --with-perfdata-spool-dir=${NAGIOS_HOME}/var/spool/perfdata
@@ -171,6 +172,7 @@ install:
 - export APACHE_LOG_DIR=/var/log/apache2
 
 - sudo usermod -G www-data nagios
+- pip install future
 - pip install $DJANGO_VERSION
 - pip install mock
 - pip install simplejson
@@ -214,8 +216,11 @@ install:
 - sudo setfacl -R -m group:travis:rwx -m d:group:travis:rwx ${NAGIOS_HOME} /etc/okconfig /etc/adagios /var/lib/adagios
 
 # Install OKconfig
-- sudo pip install https://github.com/opinkerfi/okconfig/zipball/master
-- pip install https://github.com/opinkerfi/okconfig/zipball/master || true
+- git clone https://github.com/opinkerfi/okconfig.git ~/build/opinkerfi/okconfig
+- cd ~/build/opinkerfi/okconfig/
+- python setup.py build
+- sudo python setup.py install
+- python setup.py install
 - sudo touch /etc/okconfig.conf
 - sudo chown travis /etc/okconfig.conf
 - echo "nagios_config ${NAGIOS_HOME}/etc/nagios.cfg" >> /etc/okconfig.conf
@@ -223,10 +228,10 @@ install:
 - echo "examples_directory ${NAGIOS_HOME}/etc/okconfig/examples"  >> /etc/okconfig.conf
 - echo "destination_directory ${NAGIOS_HOME}/etc/okconfig" >> /etc/okconfig.conf
 - mkdir -p ${NAGIOS_HOME}/etc/okconfig/templates ${NAGIOS_HOME}/etc/okconfig/examples
-- cp -r /usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
-- cp -r /usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
+- cp -r ~/build/opinkerfi/okconfig/usr/share/okconfig/templates/* ${NAGIOS_HOME}/etc/okconfig/templates/
+- cp -r ~/build/opinkerfi/okconfig/usr/share/okconfig/examples/* ${NAGIOS_HOME}/etc/okconfig/examples/
 - pynag config --append cfg_dir=${NAGIOS_HOME}/etc/okconfig
-- ls -l ${NAGIOS_HOME}/etc/okconfig 
+- ls -l ${NAGIOS_HOME}/etc/okconfig
 
 # Configure Adagios
 - pynag config --append "broker_module=/usr/local/nagios/lib/mk-livestatus/livestatus.o /usr/local/nagios/var/rw/live"
@@ -256,7 +261,7 @@ script:
 - cd ~/build/opinkerfi/adagios/adagios
 - ls -l ${NAGIOS_HOME}
 - nagios -v ${NAGIOS_HOME}/etc/nagios.cfg
-- okconfig verify
+#- okconfig verify
 - coverage run --source=adagios manage.py test
 after_success: coveralls
 notifications:

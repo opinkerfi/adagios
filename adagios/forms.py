@@ -26,10 +26,10 @@ class AdagiosForm(forms.Form):
     def clean(self):
         cleaned_data = {}
         tmp = super(AdagiosForm, self).clean()
-        for k,v in tmp.items():
-            if isinstance(k, (unicode)):
+        for k,v in list(tmp.items()):
+            if isinstance(k, (str)):
                 k = smart_str(k)
-            if isinstance(v, (unicode)):
+            if isinstance(v, (str)):
                 v = smart_str(v)
             cleaned_data[k] = v
         return cleaned_data

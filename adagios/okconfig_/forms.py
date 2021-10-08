@@ -27,24 +27,23 @@ from django.utils.translation import ugettext as _
 
 
 def get_all_hosts():
-    return [('', _('Select a host'))] + map(lambda x: (x, x), helpers.get_host_names())
+    return [('', _('Select a host'))] + [(x, x) for x in helpers.get_host_names()]
 
 
 def get_all_templates():
     all_templates = okconfig.get_templates()
-    service_templates = filter(lambda x: 'host' not in x, all_templates)
-    return map(lambda x: (x, _("Standard %(service_template)s checks") % {"service_template": x}), service_templates)
+    service_templates = [x for x in all_templates if 'host' not in x]
+    return [(x, _("Standard %(service_template)s checks") % {"service_template": x}) for x in service_templates]
 
 
 def get_all_groups():
-    return map(lambda x: (x, x), okconfig.get_groups())
+    return [(x, x) for x in okconfig.get_groups()]
 
 
 def get_inactive_services():
     """ List of all unregistered services (templates) """
     inactive_services = [('', _('Select a service'))]
-    inactive_services += map(lambda x: (x.name, x.name),
-                             Model.Service.objects.filter(service_description__contains="", name__contains="", register="0"))
+    inactive_services += [(x.name, x.name) for x in Model.Service.objects.filter(service_description__contains="", name__contains="", register="0")]
     inactive_services.sort()
     return inactive_services
 
@@ -113,7 +112,7 @@ class AddHostForm(AdagiosForm):
         host_name = self.cleaned_data.get('host_name')
         templates = self.cleaned_data.get('templates')
         for i in templates:
-            if i not in okconfig.get_templates().keys():
+            if i not in list(okconfig.get_templates().keys()):
                 self._errors['templates'] = self.error_class(
                     [_('template %s was not found') % i])
         if not force and host_name in okconfig.get_hosts():
@@ -141,7 +140,7 @@ class AddTemplateForm(AdagiosForm):
         host_name = self.cleaned_data.get('host_name')
         templates = self.cleaned_data.get('templates')
         for i in templates:
-            if i not in okconfig.get_templates().keys():
+            if i not in list(okconfig.get_templates().keys()):
                 self._errors['templates'] = self.error_class(
                     [_('template %s was not found') % i])
         if not force and host_name not in okconfig.get_hosts():
@@ -211,7 +210,7 @@ class EditTemplateForm(AdagiosForm):
         self.command_line = None
         try:
             self.command_line = service.get_effective_command_line()
-            for macro, value in service.get_all_macros().items():
+            for macro, value in list(service.get_all_macros().items()):
                 if macro.startswith('$_SERVICE') or macro.startswith('S$ARG'):
                     macros.append(macro)
             for k in sorted(macros):

@@ -17,6 +17,7 @@
 
 # Django settings for adagios project.
 
+from past.builtins import execfile
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 USE_TZ = True
@@ -302,7 +303,7 @@ def reload_configfile(adagios_configfile=None):
         configfiles = glob(include)
         for configfile in configfiles:
             execfile(configfile, globals())
-    except IOError, e:
+    except IOError as e:
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
 reload_configfile()
@@ -324,7 +325,7 @@ if not django_secret_key:
         data = "\n# Automaticly generated secret_key\ndjango_secret_key = '%s'\n" % SECRET_KEY
         with open(adagios_configfile, "a") as config_fh:
             config_fh.write(data)
-    except Exception, e:
+    except Exception as e:
         warn("ERROR: Got %s while trying to save django secret_key in %s" % (type(e), adagios_configfile))
 
 else:
@@ -333,11 +334,13 @@ else:
 ALLOWED_INCLUDE_ROOTS = (serverside_includes,)
 
 if enable_status_view:
-    plugins['status'] = 'adagios.status'
+    #plugins['status'] = 'adagios.status'
+    plugins['status'] = 'status'
 if enable_bi:
-    plugins['bi'] = 'adagios.bi'
+    #plugins['bi'] = 'adagios.bi'
+    plugins['bi'] = 'bi'
 
-for k, v in plugins.items():
+for k, v in list(plugins.items()):
     INSTALLED_APPS.append(v)
 
 # default preferences, for new users or when they are not available
@@ -351,3 +354,5 @@ PREFS_DEFAULT = {
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000-9000'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+# FORCE_SCRIPT_NAME = os.environ.get('DJANGO_FORCE_SCRIPT_NAME', '/adagios')  # without trailing slash

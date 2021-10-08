@@ -1,0 +1,22 @@
+[Unit]
+Description=Adagios WSGI Service
+Documentation=https://adagios.org
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=adagios
+Group=adagios
+PIDFile=/var/tmp/adagios.pid
+WorkingDirectory=/opt/adagios
+
+ExecStart=/opt/adagios/venv/bin/gunicorn --pid /var/tmp/adagios.pid --pythonpath /opt/adagios/adagios --config /opt/adagios/gunicorn.py adagios.wsgi
+
+Restart=on-failure
+RestartSec=30
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

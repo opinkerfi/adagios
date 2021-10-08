@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#from __future__ import unicode_literals
+from builtins import str
+#from past.builtins import six.string_types
+from future.utils import string_types
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
@@ -29,6 +33,7 @@ from adagios.objectbrowser.help_text import object_definitions
 from adagios.forms import AdagiosForm
 import adagios.misc.rest
 import adagios.settings
+#import six
 
 # These fields are special, they are a comma seperated list, and may or
 # may not have +/- in front of them.
@@ -53,7 +58,7 @@ HOST_NOTIFICATION_OPTIONS = (
 )
 
 # All objects definition types in our config, in a form that is good for pynag forms
-ALL_OBJECT_TYPES = sorted(map(lambda x: (x, x), Model.string_to_class.keys()))
+ALL_OBJECT_TYPES = sorted([(x, x) for x in list(Model.string_to_class.keys())])
 
 # When boolean fields are set in configuration, generally 1=True and 0=False
 BOOLEAN_CHOICES = (('', 'not set'), ('1', '1'), ('0', '0'))
@@ -100,20 +105,20 @@ class PynagAutoCompleteField(forms.CharField):
     def get_all_shortnames(self, object_type):
         """ Returns a list of all shortnames, given a specific object type."""
         objects = self.get_all_objects(object_type)
-        shortnames = map(lambda x: x.get_shortname(), objects)
+        shortnames = [x.get_shortname() for x in objects]
 
         # Remove objects with no shortname
-        shortnames = filter(lambda x: x, shortnames)
+        shortnames = [x for x in shortnames if x]
 
         return shortnames
 
     def get_all_object_names(self, object_type):
         """ Returns a list of all object names (name attribute) for a given object type. """
         objects = self.get_all_objects(object_type)
-        names = map(lambda x: x.name, objects)
+        names = [x.name for x in objects]
 
         # Remove objects with no name
-        names = filter(lambda x: x, names)
+        names = [x for x in names if x]
         return names
 
     def get_all_objects(self, object_type):
@@ -128,7 +133,7 @@ class PynagAutoCompleteField(forms.CharField):
         """
         if value == 'null':
             return value
-        elif isinstance(value, basestring):
+        elif isinstance(value, string_types):
             a = AttributeList(value)
             self.__prefix = a.operator
             a.operator = ''
@@ -166,7 +171,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         if value is None:
             return []
-        if isinstance(value, str):
+        if isinstance(value, string_types):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields
@@ -208,7 +213,7 @@ class PynagForm(AdagiosForm):
 
     def clean(self):
         cleaned_data = super(PynagForm, self).clean()
-        for k, v in cleaned_data.items():
+        for k, v in list(cleaned_data.items()):
             # change from unicode to str
             v = cleaned_data[k] = smart_str(v)
 
@@ -228,11 +233,11 @@ class PynagForm(AdagiosForm):
         # This can happen for example because some views decide not to print all
         # Fields to the browser
         changed_data = super(PynagForm, self).changed_data
-        changed_data = filter(lambda x: x in self.data, changed_data)
+        changed_data = [x for x in changed_data if x in self.data]
         return changed_data
 
     def save(self):
-        changed_keys = map(lambda x: smart_str(x), self.changed_data)
+        changed_keys = [smart_str(x) for x in self.changed_data]
         for k in changed_keys:
 
             # Ignore fields that did not appear in the POST at all EXCEPT
@@ -288,7 +293,7 @@ class PynagForm(AdagiosForm):
         # Special hack for macros
         # If this is a post and any post data looks like a nagios macro
         # We will generate a field for it on the fly
-        macros = filter(lambda x: x.startswith('$') and x.endswith('$'), self.data.keys())
+        macros = [x for x in list(self.data.keys()) if x.startswith('$') and x.endswith('$')]
         for field_name in macros:
             # if field_name.startswith('$ARG'):
             #    self.fields[field_name] = self.get_pynagField(field_name, css_tag='defined')
@@ -318,7 +323,7 @@ class PynagForm(AdagiosForm):
             self.initial = pynag_object._defined_attributes
             self.initial.update(pynag_object._changes)
 
-        for name, field in self.fields.items():
+        for name, field in list(self.fields.items()):
             if name in self.initial:
                 field.initial = self.initial[name]
             elif name in self.pynag_object:
@@ -360,14 +365,12 @@ class PynagForm(AdagiosForm):
         elif field_name.endswith('_period'):
             all_objects = Model.Timeperiod.objects.filter(
                 timeperiod_name__contains='')
-            choices = [('', '')] + map(
-                lambda x: (x.timeperiod_name, x.timeperiod_name), all_objects)
+            choices = [('', '')] + [(x.timeperiod_name, x.timeperiod_name) for x in all_objects]
             field = forms.ChoiceField(choices=sorted(choices))
         elif field_name.endswith('notification_commands'):
             all_objects = Model.Command.objects.filter(
                 command_name__contains='')
-            choices = [('', '')] + map(
-                lambda x: (x.command_name, x.command_name), all_objects)
+            choices = [('', '')] + [(x.command_name, x.command_name) for x in all_objects]
             field = PynagChoiceField(choices=sorted(choices))
         # elif field_name == 'check_command':
         #    all_objects = Model.Command.objects.all
@@ -474,7 +477,7 @@ class AdvancedEditForm(AdagiosForm):
 
     def clean(self):
         cleaned_data = super(AdvancedEditForm, self).clean()
-        for k, v in cleaned_data.items():
+        for k, v in list(cleaned_data.items()):
             # change from unicode to str
             cleaned_data[k] = smart_str(v)
         return cleaned_data
@@ -487,7 +490,7 @@ class AdvancedEditForm(AdagiosForm):
         # Lets find out what attributes to create
         object_type = pynag_object['object_type']
         all_attributes = sorted(object_definitions.get(object_type).keys())
-        for field_name in self.pynag_object.keys() + all_attributes:
+        for field_name in list(self.pynag_object.keys()) + all_attributes:
             if field_name == 'meta':
                 continue
             help_text = ""
@@ -650,7 +653,7 @@ class BaseBulkForm(AdagiosForm):
         if not objects:
             objects = []
         forms.Form.__init__(self, *args, **kwargs)
-        for k, v in self.data.items():
+        for k, v in list(self.data.items()):
             if k.startswith('hidden_'):
                 obj = Model.ObjectDefinition.objects.get_by_id(v)
                 if obj not in self.all_objects:
@@ -665,7 +668,7 @@ class BaseBulkForm(AdagiosForm):
 
     def clean(self):
         #self.cleaned_data = {}
-        for k, v in self.data.items():
+        for k, v in list(self.data.items()):
             if k.startswith('hidden_'):
                 self.cleaned_data[k] = v
                 obj = Model.ObjectDefinition.objects.get_by_id(v)
@@ -677,7 +680,7 @@ class BaseBulkForm(AdagiosForm):
                 obj = Model.ObjectDefinition.objects.get_by_id(object_id)
                 if obj not in self.changed_objects:
                     self.changed_objects.append(obj)
-        for k, v in self.cleaned_data.items():
+        for k, v in list(self.cleaned_data.items()):
             self.cleaned_data[k] = smart_str(self.cleaned_data[k])
         return self.cleaned_data
 
@@ -799,7 +802,7 @@ class AddObjectForm(PynagForm):
         # For some reason calling super()__init__() with initial as a parameter
         # will not work on PynagChoiceFields. This forces initial value to be set:
         initial = initial or {}
-        for field_name, field in self.fields.items():
+        for field_name, field in list(self.fields.items()):
             initial_value = initial.get(field_name, None)
             if initial_value:
                 field.initial = str(initial_value)
@@ -835,7 +838,7 @@ class AddObjectForm(PynagForm):
 
         See https://github.com/opinkerfi/adagios/issues/527
         """
-        return self.fields.keys()
+        return list(self.fields.keys())
 
     def clean(self):
         cleaned_data = super(AddObjectForm, self).clean()

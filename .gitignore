@@ -10,10 +10,6 @@ dist
 adagios.conf
 *.mo
 
-
-# Created by https://www.gitignore.io/api/python
-# Edit at https://www.gitignore.io/?templates=python
-
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -134,5 +130,13 @@ dmypy.json
 ### Python Patch ###
 .venv/
 
-# VS Code
-.vscode/
+### VisualStudioCode ###
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide

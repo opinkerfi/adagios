@@ -1,25 +1,22 @@
-# Adagios is a web based Nagios configuration interface
-#
-# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-# 
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import os
+from django.core.wsgi import get_wsgi_application
+from django.conf import settings
 
-from pkg_resources import require
-require('Django>=1.5')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'adagios.settings')
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+_application = get_wsgi_application()
+
+# Here is the important part
+def application(environ, start_response):
+    script_name = getattr(settings, 'FORCE_SCRIPT_NAME', None)
+    if script_name:
+        environ['SCRIPT_NAME'] = script_name
+        path_info = environ['PATH_INFO']
+        if path_info.startswith(script_name):
+            environ['PATH_INFO'] = path_info[len(script_name):]
+
+    scheme = environ.get('HTTP_X_SCHEME', '')
+    if scheme:
+        environ['wsgi.url_scheme'] = scheme
+
+    return _application(environ, start_response)

@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
 from django import forms
 
 from django.core.mail import send_mail
@@ -184,7 +185,7 @@ class AdagiosSettingsForm(forms.Form):
         if not os.path.isfile(settings.adagios_configfile):
             open(settings.adagios_configfile, 'w').write(
                 _("# Autocreated by adagios"))
-        for k, v in self.cleaned_data.items():
+        for k, v in list(self.cleaned_data.items()):
             Model.config._edit_static_file(
                 attribute=k, new_value=v, filename=settings.adagios_configfile)
             self.adagios_configfile = settings.adagios_configfile
@@ -229,7 +230,7 @@ class AdagiosSettingsForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(self.__class__, self).clean()
-        for k, v in cleaned_data.items():
+        for k, v in list(cleaned_data.items()):
             # Convert all unicode to quoted strings
             if type(v) == type(u''):
                 cleaned_data[k] = str('''"%s"''' % v)
@@ -433,7 +434,7 @@ class PNPBrokerModuleForm(forms.Form):
             elif k == "event_broker_options":
                 my_initial[k] = v
         # If view specified any initial values, they overwrite ours
-        for k, v in initial.items():
+        for k, v in list(initial.items()):
             my_initial[k] = v
         if 'broker_module' not in my_initial:
             my_initial['broker_module'] = self.get_suggested_npcdmod_path()
@@ -689,7 +690,7 @@ class PasteForm(forms.Form):
         c.pre_object_list = items
         c._post_parse()
         all_objects = []
-        for object_type, objects in c.data.items():
+        for object_type, objects in list(c.data.items()):
             model = pynag.Model.string_to_class.get(
                 object_type, pynag.Model.ObjectDefinition)
             for i in objects:

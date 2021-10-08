@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
 from django.test import TestCase
 from django.test.client import Client
 from django.utils.translation import ugettext as _
@@ -99,16 +100,16 @@ class LiveStatusTestCase(TestCase):
     def test_status_detail(self):
         """ Tests for /status/detail """
         tmp = self.loadPage('/status/detail?contact_name=nagiosadmin')
-        self.assertTrue('nagiosadmin belongs to the following' in tmp.content)
+        self.assertTrue('nagiosadmin belongs to the following' in tmp.content.decode('utf-8'))
 
         tmp = self.loadPage('/status/detail?host_name=ok_host')
-        self.assertTrue('ok_host' in tmp.content)
+        self.assertTrue('ok_host' in tmp.content.decode('utf-8'))
 
         tmp = self.loadPage('/status/detail?host_name=ok_host&service_description=ok%20service%201')
-        self.assertTrue('ok_host' in tmp.content)
+        self.assertTrue('ok_host' in tmp.content.decode('utf-8'))
 
         tmp = self.loadPage('/status/detail?contactgroup_name=admins')
-        self.assertTrue('nagiosadmin' in tmp.content)
+        self.assertTrue('nagiosadmin' in tmp.content.decode('utf-8'))
 
 
     def testStateHistory(self):
@@ -229,9 +230,9 @@ class UtilsTest(TestCase):
 
     def test__process_querystring_for_host_unhandled(self):
         query = adagios.status.utils._process_querystring_for_host(unhandled=True)
-        self.host_query.add_filter('scheduled_downtime_depth', 0)
         self.host_query.add_filter('state', 1)
         self.host_query.add_filter('acknowledged', 0)
+        self.host_query.add_filter('scheduled_downtime_depth', 0)
         self.assertEqual(self.host_query, query)
 
     def test__process_querystring_for_host_downtime_on(self):
@@ -270,11 +271,11 @@ class UtilsTest(TestCase):
 
     def test__process_querystring_for_service_unhandled(self):
         query = adagios.status.utils._process_querystring_for_service(unhandled=True)
-        self.service_query.add_filter('host_scheduled_downtime_depth', 0)
-        self.service_query.add_filter('host_state', 0)
-        self.service_query.add_filter('scheduled_downtime_depth', 0)
-        self.service_query.add_filter('acknowledged', 0)
         self.service_query.add_filter('state__isnot', 0)
+        self.service_query.add_filter('acknowledged', 0)
+        self.service_query.add_filter('scheduled_downtime_depth', 0)
+        self.service_query.add_filter('host_state', 0)
+        self.service_query.add_filter('host_scheduled_downtime_depth', 0)
         self.service_query.add_filter('host_acknowledged', 0)
         self.assertEqual(self.service_query, query)
 
