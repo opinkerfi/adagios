@@ -22,16 +22,11 @@ from adagios import settings
 
 class Daemon(daemon):
     def __init__(self):
-        super(Daemon, self).__init__()
-
-        # Mapping needed
-        if settings.nagios_binary:
-            self.nagios_bin = settings.nagios_binary
-        if settings.nagios_config:
-            self.nagios_cfg = settings.nagios_config
-        if settings.nagios_init_script:
-            self.nagios_init = settings.nagios_init_script
-        if settings.nagios_service:
-            self.service_name = settings.nagios_service
+        super().__init__(
+            nagios_bin=settings.nagios_binary,
+            nagios_cfg=settings.nagios_config,
+            nagios_init=settings.nagios_init_script,
+            service_name=settings.nagios_service,
+        )
 
 # vim: sts=4 expandtab autoindent
