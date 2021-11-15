@@ -91,7 +91,6 @@ def on_page_load(request):
 
 def update_global_variables():
     """Updates all required global variables."""
-    # pynag.Model.cfg_file = adagios.settings.nagios_config
     if pynag.Model.cfg_file != adagios.settings.nagios_config:
         pynag.Model.cfg_file = adagios.settings.nagios_config
         Model.ObjectDefinition.objects.reload_cache()
