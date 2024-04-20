@@ -7,7 +7,7 @@
 %define release 1
 
 Name: adagios
-Version: 1.6.6
+Version: 2.0.1
 Release: %{release}%{?dist}
 Summary: Web Based Nagios Configuration
 Group: Applications/Internet
@@ -18,21 +18,21 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildArch: noarch
 Prefix: %{_prefix}
 
-BuildRequires: python2-devel
-BuildRequires: python-setuptools
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
 
 Requires: pynag > 0.9.1
 Requires: httpd
-Requires: mod_wsgi
+Requires: python3-mod_wsgi
 Requires: sudo
-Requires: python-simplejson
+Requires: python3-simplejson
 
 %if 0%{?rhel} == 6
 Requires: python-django
 # Force django upgrade
 Conflicts: Django < 1.4.0
 %else
-Requires: python2-django16
+Requires: python3-django
 %endif
 
 %description
@@ -68,7 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README.md
+#%doc README.md
 %{python_sitelib}/*
 %{_localstatedir}/lib/adagios/contrib/*
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/httpd/conf.d/adagios.conf
