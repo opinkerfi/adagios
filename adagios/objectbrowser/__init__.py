@@ -34,7 +34,7 @@ def startup():
 
     from pynag.Model import EventHandlers
     if settings.enable_githandler == True:
-        nagios_dir = os.path.dirname(pynag.Model.config.cfg_file)
+        nagios_dir = os.path.dirname(pynag.Model.cfg_file)
         githandler = pynag.Model.EventHandlers.GitEventHandler(nagios_dir, 'adagios', 'tommi')
         pynag.Model.eventhandlers.append(githandler)
     if settings.auto_reload:
