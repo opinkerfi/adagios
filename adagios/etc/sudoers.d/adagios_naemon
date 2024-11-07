@@ -1,0 +1,3 @@
+Defaults:%naemon    !requiretty
+%naemon             ALL = (root) NOPASSWD: /sbin/service naemon *
+%naemon             ALL = (root) NOPASSWD: /usr/bin/naemon -v /etc/naemon/naemon.cfg
