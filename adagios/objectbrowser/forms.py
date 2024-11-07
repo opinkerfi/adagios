@@ -71,7 +71,6 @@ localhost,127.0.0.1,generic-host
 otherhost,127.0.0.2,generic-host
 """
 
-
 class PynagAutoCompleteField(forms.CharField):
     """ Behaves like Charfield, but includes data-choices for select2 autocomplete. """
     def __init__(self, object_type, inline_help_text=None, complete="shortname", *args, **kwargs):
@@ -83,7 +82,7 @@ class PynagAutoCompleteField(forms.CharField):
             inline_help_text = inline_help_text.format(object_type=object_type)
         self.widget.attrs['data-placeholder'] = inline_help_text
 
-        # Add autcomplete choices in data-choices
+        # Add autocomplete choices in data-choices
         if complete == 'shortname':
             choices = self.get_all_shortnames(object_type=object_type)
         elif complete == 'name':
@@ -97,8 +96,7 @@ class PynagAutoCompleteField(forms.CharField):
         self.widget.attrs['class'] = self.widget.attrs.get('class', '')
         self.widget.attrs['class'] += ' pynag-autocomplete '
 
-        # Hardcode widget length to 500px, because select2 plays badly
-        # with css
+        # Hardcode widget length to 500px, because select2 plays badly with css
         self.widget.attrs['style'] = self.widget.attrs.get('style', '')
         self.widget.attrs['style'] += ' width: 500px; '
 
@@ -109,7 +107,6 @@ class PynagAutoCompleteField(forms.CharField):
 
         # Remove objects with no shortname
         shortnames = [x for x in shortnames if x]
-
         return shortnames
 
     def get_all_object_names(self, object_type):
@@ -128,23 +125,21 @@ class PynagAutoCompleteField(forms.CharField):
         return objects
 
     def prepare_value(self, value):
-        """
-        Takes a comma separated string, removes + if it is prefixed so. Returns a comma seperated string
-        """
+        """Ensures the value is a comma-separated string without a prefixed '+'."""
         if value == 'null':
             return value
+        elif isinstance(value, list):
+            return ', '.join(value)
         elif isinstance(value, string_types):
             a = AttributeList(value)
             self.__prefix = a.operator
             a.operator = ''
-            a = str(a)
-            value = a
+            return str(a)
         return value
 
 
 class PynagChoiceField(forms.MultipleChoiceField):
-
-    """ multichoicefields that accepts comma seperated input as values """
+    """ Multichoice fields that accept comma-separated input as values """
 
     def __init__(self, inline_help_text=_("Select some options"), *args, **kwargs):
         self.__prefix = ''
@@ -154,7 +149,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
 
     def clean(self, value):
         """
-        Changes list into a comma separated string. Removes duplicates.
+        Changes list into a comma-separated string. Removes duplicates.
         """
         if not value:
             return "null"
@@ -166,17 +161,16 @@ class PynagChoiceField(forms.MultipleChoiceField):
         return value
 
     def prepare_value(self, value):
-        """
-        Takes a comma separated string, removes + if it is prefixed so. Returns a list
-        """
+        """Converts value to a list if it is a comma-separated string, otherwise handles as list."""
         if value is None:
             return []
+        if isinstance(value, list):
+            return value  # Already a list, return as-is
         if isinstance(value, string_types):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields
-        else:
-            raise ValueError("Expected string. Got %s" % type(value))
+        return value
 
     def set_prefix(self, value):
         self.__prefix = value
